@@ -10,18 +10,8 @@ require_once(root."/config.php");
 // подключаем и инициируем все используемые классы движка
 require_once(root."/load.php");
 
-
-echo $template->carcase();
-
-
-
-
-
-
-
-
-
-
-
-
+// сборка шаблона, первый вариант.
+$template->init();
+echo $template->compile();
+$template->cleanafterprint();
 ?>

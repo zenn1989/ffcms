@@ -5,6 +5,17 @@
  */
 class page
 {
+
+	function __construct()
+	{
+		
+	}
+	
+	private function rawuri()
+	{
+		$uri = $_SERVER['REQUEST_URI'];
+		
+	}
     
 }
 

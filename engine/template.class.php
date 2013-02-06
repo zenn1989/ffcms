@@ -6,16 +6,44 @@
 class template
 {
 	private $separator = "/";
+	
+	private $pos_header = array();
+	private $pos_left = array();
+	private $pos_main = array();
+	private $pos_right = array();
+	private $pos_bottom = array();
+	private $pos_footer = array();
+	
+	private $content = null;
 
 	/**
-	* Загрузка каркаса шаблона
+	* Инициация шаблонизатора. Загрузка стандартных блоков.
+	* Данные по каждой позиции расположены в page.class.php
 	*/
-	public function carcase()
+	public function init()
 	{
-		$main = $this->tplget('main');
-		return $main;
+		$this->pos_main[] = $this->tplget("main");
 	}
 
+	/**
+	* Сборка и отображение шаблона
+	*/
+	public function compile()
+	{
+		$this->fortpl('pos_main');
+		return $this->content;
+	}
+	
+	private function fortpl($position_name)
+	{
+		if(count($this->{$position_name}) > 0)
+		{
+			foreach($this->{$position_name} as $enteries)
+			{
+				$this->content .= $enteries;
+			}
+		}
+	}
 	
 	
 	/**
@@ -33,13 +61,17 @@ class template
 		return $file;
 	}
 	
+	/**
+	* Выход при отсутствии файлов шаблона
+	*/
 	private function tplException($tpl)
 	{
 		exit("Template file not founded: ".$tpl);
 	}
-
-
-
-
+	
+	public function cleanafterprint()
+	{
+		unset($this->content);
+	}
 }
 ?>
