@@ -1,5 +1,7 @@
 <html>
 <body>
-Hello world!
+{$header}
+{$body}
+{$footer}
 </body>
 </html>

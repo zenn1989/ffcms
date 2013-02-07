@@ -14,4 +14,5 @@ require_once(root."/load.php");
 $template->init();
 echo $template->compile();
 $template->cleanafterprint();
+
 ?>

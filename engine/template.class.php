@@ -3,16 +3,16 @@
 /**
  * Класс шаблонизатора системы
  */
-class template
+class template extends page
 {
 	private $separator = "/";
 	
-	private $pos_header = array();
-	private $pos_left = array();
-	private $pos_main = array();
-	private $pos_right = array();
-	private $pos_bottom = array();
-	private $pos_footer = array();
+	private $header = array();
+	private $left = array();
+	private $body = array();
+	private $right = array();
+	private $bottom = array();
+	private $footer = array();
 	
 	private $content = null;
 
@@ -22,7 +22,9 @@ class template
 	*/
 	public function init()
 	{
-		$this->pos_main[] = $this->tplget("main");
+		$this->header = $this->getHeader();
+		$this->content = $this->getCarcase();
+		$this->set('body', "Hello world");
 	}
 
 	/**
@@ -30,19 +32,34 @@ class template
 	*/
 	public function compile()
 	{
-		$this->fortpl('pos_main');
+		$this->fortpl('header');
 		return $this->content;
 	}
 	
+	/**
+	* Установка всех значений 1 блока по имени блока.
+	*/
 	private function fortpl($position_name)
 	{
+		$result = null;
 		if(count($this->{$position_name}) > 0)
 		{
 			foreach($this->{$position_name} as $enteries)
 			{
-				$this->content .= $enteries;
+				$result .= $enteries;
 			}
 		}
+		$this->set($position_name, $result);
+	}
+	
+	private function getCarcase()
+	{
+		return $this->tplget('main');
+	}
+	
+	private function set($var, $value)
+	{
+		$this->content = str_replace('{$'.$var.'}', $value, $this->content);
 	}
 	
 	
