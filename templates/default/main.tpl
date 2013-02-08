@@ -72,24 +72,7 @@
 	</div>
 	<!-- second navi menu -->
 	<div class="subnav">
-		<ul class="nav nav-pills pull-left">
-			<li class=""><a href="/"><i class="icon-home"></i> Home </a></li>
-			<li class="dropdown">
-						<a class="dropdown-toggle" data-toggle="dropdown" href="#">Dropdown Menu
-						<b class="caret"></b>
-						</a>
-
-						<ul class="dropdown-menu">
-							<li>
-							<a href="#"> Menu</a>
-							</li>
-
-							<li>
-							<a href="#"> Menu</a>
-							</li>
-						</ul>
-			</li>
-		</ul>
+		{$mod_top_menu}
 	</div>
 	<!-- /second navi menu -->
 	<div style="padding-top: 15px;"></div>

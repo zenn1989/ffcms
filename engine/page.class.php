@@ -14,7 +14,6 @@ class page
 	{
 		$this->rawuri();
 		$this->rawcomponents();
-		$this->buildmodules();
 	}
 	
 	/**
@@ -56,6 +55,8 @@ class page
 		$this->content_body[] = $result_body;
 		// инициация шаблонизатора, нужно сделать умней!
 		$template->init();
+		// билдим модули
+		$this->buildmodules();
 		return $template->compile();	
 	}
 	

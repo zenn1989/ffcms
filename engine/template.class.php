@@ -63,7 +63,7 @@ class template
 		return $this->tplget('main');
 	}
 	
-	private function set($var, $value)
+	public function set($var, $value)
 	{
 		$this->content = str_replace('{$'.$var.'}', $value, $this->content);
 	}

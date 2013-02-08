@@ -1,0 +1,1 @@
+<li>{$menu_item}</li>
