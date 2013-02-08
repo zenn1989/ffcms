@@ -54,12 +54,22 @@ class template extends page
 	
 	private function getCarcase()
 	{
-		return $this->tplget('main');
+		return $this->setDefaults($this->tplget('main'));
 	}
 	
 	private function set($var, $value)
 	{
 		$this->content = str_replace('{$'.$var.'}', $value, $this->content);
+	}
+	
+	/**
+	* Установка стандартных шаблоных переменных. Пример: {$url} => http://blabla
+	*/
+	private function setDefaults($theme)
+	{
+		global $constant;
+		$template_path = $constant->tpl_dir.$this->separator.$constant->tpl_name;
+		return str_replace(array('{$url}', '{$tpl_dir}'), array($constant->url, $template_path), $theme);
 	}
 	
 	
