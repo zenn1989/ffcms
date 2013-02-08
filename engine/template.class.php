@@ -3,7 +3,7 @@
 /**
  * Класс шаблонизатора системы
  */
-class template extends page
+class template
 {
 	private $separator = "/";
 	
@@ -22,7 +22,8 @@ class template extends page
 	*/
 	public function init()
 	{
-		$this->header = $this->getHeader();
+		global $page;
+		$this->header = $page->getHeader();
 		$this->content = $this->getCarcase();
 		$this->set('body', "Hello world");
 	}
@@ -52,6 +53,9 @@ class template extends page
 		$this->set($position_name, $result);
 	}
 	
+	/**
+	* Загрузка основного каркаса шаблона, main.tpl
+	*/
 	private function getCarcase()
 	{
 		return $this->setDefaults($this->tplget('main'));
@@ -65,7 +69,7 @@ class template extends page
 	/**
 	* Установка стандартных шаблоных переменных. Пример: {$url} => http://blabla
 	*/
-	private function setDefaults($theme)
+	public function setDefaults($theme)
 	{
 		global $constant;
 		$template_path = $constant->tpl_dir.$this->separator.$constant->tpl_name;
@@ -80,12 +84,12 @@ class template extends page
 	private function tplget($tplname, $customdirectory = null)
 	{
 		global $constant;
-		$file = file_get_contents($constant->root.$this->separator.$constant->tpl_dir.$this->separator.$constant->tpl_name.$this->separator.$customdirectory.$tplname.".tpl");
-		if(!$file)
+		$file = $constant->root.$this->separator.$constant->tpl_dir.$this->separator.$constant->tpl_name.$this->separator.$customdirectory.$tplname.".tpl";
+		if(file_exists($file))
 		{
-			return $this->tplException($tplname);
+			return file_get_contents($file);
 		}
-		return $file;
+		return $this->tplException($tplname);
 	}
 	
 	/**
@@ -96,9 +100,18 @@ class template extends page
 		exit("Template file not founded: ".$tpl);
 	}
 	
+	/**
+	* Очистка всех позиций. Возможна повторная выгрузка другого шаблона.
+	*/	
 	public function cleanafterprint()
 	{
 		unset($this->content);
+		unset($this->header);
+		unset($this->left);
+		unset($this->body);
+		unset($this->right);
+		unset($this->bottom);
+		unset($this->footer);
 	}
 }
 ?>
