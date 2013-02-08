@@ -8,16 +8,10 @@
 * регистрация области uri компонента
 * Первый параметр - uri, второй - директория компонента
 */
-$static_selfway = 'static';
-$static_dirname = 'static';
-$register = page::registerPathWay($static_selfway, $static_dirname);
-
-
-if(!$register) { exit("Component $selfway => $dirname cannot be registered!"); }
-
+if(!page::registerPathWay('static', 'static')) { exit("Component $selfway => $dirname cannot be registered!"); }
 
 /**
-* Главный класс компонента. Имя = имя директории компонента.
+* Главный класс компонента. Имя = com_ + имя директории компонента.
 */
 class com_static
 {
@@ -26,8 +20,47 @@ class com_static
 	*/
 	public function load()
 	{
-		return "This is welcome message!";
+		global $page,$template,$system;
+		$way = $page->getPathway();
+		// генерируем pathway для sql запроса из массива
+		$sqllink = null;
+		for($i=1;$i<=count($way)-1;$i++)
+		{
+			$sqllink .= $way[$i];
+			if($i!=count($way)-1)
+			{
+				$sqllink .= "/";
+			}
+		}
+		// либо запрос пуст, либо пользователь наркоман
+		if($sqllink == null)
+		{
+			return $template->compile404();
+		}
+		return $this->loadSinglePage($sqllink);
+
 	}
+	
+	/**
+	* Отображение статической страницы. Первый компонент (:
+	*/
+	private function loadSinglePage($pathway)
+	{
+		global $database,$constant,$template;
+		$query = "SELECT * FROM {$constant->db['prefix']}_static WHERE pathway = ?";
+		$stmt = $database->con->prepare($query);
+		$stmt->bindParam(1, $pathway, PDO::PARAM_STR);
+		$stmt->execute();
+		$result = $stmt->fetch();
+		if($stmt->rowCount() != 1)
+		{
+			return $template->compile404();
+		}
+		$com_theme = $template->tplget("com_static", "components/");
+		return $template->assign(array('title', 'text', 'date'), array($result['title'], $result['text'], $result['date']), $com_theme);
+		
+	}
+	
 }
 
 ?>

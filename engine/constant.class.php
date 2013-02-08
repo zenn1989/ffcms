@@ -10,6 +10,8 @@ class constant
     public $tpl_dir = null;
 	public $tpl_name = null;
     public $url = null;
+	
+	public $db = array();
     
     function __construct() 
     {
@@ -18,8 +20,14 @@ class constant
 		$this->tpl_dir = $config['tpl_dir'];
 		$this->tpl_name = $config['tpl_name'];
 		$this->url = $config['url'];
-        
+		
+		$this->db['host'] = $config['db_host'];
+		$this->db['user'] = $config['db_user'];
+		$this->db['pass'] = $config['db_pass'];
+		$this->db['db'] = $config['db_name'];
+		$this->db['prefix'] = 'ffcms';
     }
+	
     
 }
 ?>

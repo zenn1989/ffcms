@@ -7,6 +7,8 @@ class page
 {
 	private $pathway = array();
 	private $registeredway = array();
+	
+	private $content_body = array();
 
 	function __construct()
 	{
@@ -20,8 +22,9 @@ class page
 	public function printload()
 	{
 		global $template,$system;
-		// если размер пачвея более 0 - передаем управление на компонент
-		if(sizeof($this->pathway) > 0)
+		$isComponent = false;
+		// если размер пачвея более 0 и не содержит .html в тексте - передаем управление на компонент
+		if(sizeof($this->pathway) > 0 && !$system->contains('.html', $this->pathway[0]))
 		{
 			foreach($this->registeredway as $com_path=>$com_dir)
 			{
@@ -29,10 +32,28 @@ class page
 				{
 					$class_com_name = "com_{$com_dir}";
 					$init_class = new $class_com_name;
-					$result_class = $init_class->load();
+					$result_body = $init_class->load();
+					// вхождение в путь найдено, дальнейшая обработка не нужна.
+					$isComponent = true;
 				}
 			}
 		}
+		// вхождение по урлам не найдено. Кхм!
+		if(!$isComponent)
+		{
+			// может быть это главная страничка?
+			if(sizeof($this->pathway) == 0 || $system->contains('index.', $this->pathway[0]))
+			{
+				$result_body = "This is main page example";
+			}
+			// Нет? Не главная? Скомпилим 404
+			else
+			{
+				$result_body = $template->compile404();
+			}
+		}
+		$this->content_body[] = $result_body;
+		// инициация шаблонизатора, нужно сделать умней!
 		$template->init();
 		return $template->compile();	
 	}
@@ -46,7 +67,7 @@ class page
 		$enabled = $constant->root.'/extensions/components/enabled';
 		if(!file_exists($enabled))
 		{
-			exit("Component list at /extensions/components/enabled not founded! Take care!");
+			exit("Component list at <b>/extensions/components/enabled</b> not founded! Be care!");
 			return;
 		}
 		$list = file_get_contents($enabled);
@@ -56,7 +77,7 @@ class page
 			$component_front = $constant->root.'/extensions/components/'.$components.'/front.php';
 			if(!file_exists($component_front))
 			{
-				exit("Component $components directory not exists! Remove it from enabled list!");
+				exit("Component <b>$components</b> not exists! Remove it from enabled list - <b>/extensions/components/enable</b> !");
 				return;
 			}
 			require_once($component_front);
@@ -107,6 +128,11 @@ class page
 	public function getHeader()
 	{
 		return array('<p>', 'This is test', '</p>');
+	}
+	
+	public function getBody()
+	{
+		return $this->content_body;
 	}
     
 }

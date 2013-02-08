@@ -24,8 +24,8 @@ class template
 	{
 		global $page;
 		$this->header = $page->getHeader();
+		$this->body = $page->getBody();
 		$this->content = $this->getCarcase();
-		$this->set('body', "Hello world");
 	}
 
 	/**
@@ -34,6 +34,7 @@ class template
 	public function compile()
 	{
 		$this->fortpl('header');
+		$this->fortpl('body');
 		return $this->content;
 	}
 	
@@ -58,7 +59,7 @@ class template
 	*/
 	private function getCarcase()
 	{
-		return $this->setDefaults($this->tplget('main'));
+		return $this->tplget('main');
 	}
 	
 	private function set($var, $value)
@@ -69,7 +70,7 @@ class template
 	/**
 	* Установка стандартных шаблоных переменных. Пример: {$url} => http://blabla
 	*/
-	public function setDefaults($theme)
+	private function setDefaults($theme)
 	{
 		global $constant;
 		$template_path = $constant->tpl_dir.$this->separator.$constant->tpl_name;
@@ -81,15 +82,29 @@ class template
 	* Загрузка файла шаблона. 
 	* Содержит 2 аргумента - имя шаблона, и возможный - отдельная директория с бекслешем на конце или $this->separator
 	*/
-	private function tplget($tplname, $customdirectory = null)
+	public function tplget($tplname, $customdirectory = null)
 	{
 		global $constant;
 		$file = $constant->root.$this->separator.$constant->tpl_dir.$this->separator.$constant->tpl_name.$this->separator.$customdirectory.$tplname.".tpl";
 		if(file_exists($file))
 		{
-			return file_get_contents($file);
+			return $this->setDefaults(file_get_contents($file));
 		}
 		return $this->tplException($tplname);
+	}
+	
+	public function assign($tag, $data, $where)
+	{
+		if(is_array($tag))
+		{
+			$copy = array();
+			foreach($tag as $entery)
+			{
+				$copy[] = '{$'.$entery.'}';
+			}
+			return str_replace($copy, $data, $where);
+		}
+		return str_replace('{$'.$tag.'}', $data, $where);
 	}
 	
 	/**
@@ -98,6 +113,14 @@ class template
 	private function tplException($tpl)
 	{
 		exit("Template file not founded: ".$tpl);
+	}
+	
+	/**
+	* Ошибка 404 для пользователей
+	*/
+	public function compile404()
+	{
+		return $this->tplget('404');
 	}
 	
 	/**

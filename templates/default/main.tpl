@@ -114,7 +114,7 @@
 			</div>
 		</div>
 		<div class="span9" id="body">
-			Hello world! Example of main content body! Its powerful and work!
+			{$body}
 		</div>
 	</div>
 </div>
