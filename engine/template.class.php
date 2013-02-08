@@ -15,6 +15,7 @@ class template
 	private $footer = array();
 	
 	private $content = null;
+	private $debug_readcount = 0;
 
 	/**
 	* Инициация шаблонизатора. Загрузка стандартных блоков.
@@ -88,6 +89,7 @@ class template
 		$file = $constant->root.$this->separator.$constant->tpl_dir.$this->separator.$constant->tpl_name.$this->separator.$customdirectory.$tplname.".tpl";
 		if(file_exists($file))
 		{
+			$this->debug_readcount++;
 			return $this->setDefaults(file_get_contents($file));
 		}
 		return $this->tplException($tplname);
@@ -121,6 +123,14 @@ class template
 	public function compile404()
 	{
 		return $this->tplget('404');
+	}
+	
+	/**
+	* Отладочная информация о кол-ве считанных шаблонов
+	*/
+	public function getReadCount()
+	{
+		return $this->debug_readcount;
 	}
 	
 	/**

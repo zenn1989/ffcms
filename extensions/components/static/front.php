@@ -48,7 +48,7 @@ class com_static
 	{
 		global $database,$constant,$template;
 		$query = "SELECT * FROM {$constant->db['prefix']}_static WHERE pathway = ?";
-		$stmt = $database->con->prepare($query);
+		$stmt = $database->con()->prepare($query);
 		$stmt->bindParam(1, $pathway, PDO::PARAM_STR);
 		$stmt->execute();
 		$result = $stmt->fetch();

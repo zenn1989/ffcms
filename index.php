@@ -23,6 +23,6 @@ $debug_endtime = microtime(true);
 if($config['debug'])
 {
 	$load_time = $debug_endtime-$debug_starttime;
-	echo "<hr />Debug loading: ".$load_time." sec";
+	echo "<hr />Debug loading: ".$load_time." sec <br />Sql query count: ".$database->totalQueryCount()."<br />Theme files readed count: ".$template->getReadCount();
 }
 ?>
