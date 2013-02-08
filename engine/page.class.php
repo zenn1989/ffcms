@@ -14,6 +14,7 @@ class page
 	{
 		$this->rawuri();
 		$this->rawcomponents();
+		$this->buildmodules();
 	}
 	
 	/**
@@ -82,6 +83,36 @@ class page
 			}
 			require_once($component_front);
 		}
+	}
+	
+	/**
+	* Сборка модулей страницы
+	*/
+	private function buildmodules()
+	{
+		global $constant;
+		$file = $constant->root.'/extensions/modules/enabled';
+		if(!file_exists($file))
+		{
+			exit("Module list at <b>/extensions/modules/enabled</b> not founded.");
+			return;
+		}
+		$list = file_get_contents($file);
+		$mod_array = explode("\n", $list);
+		foreach($mod_array as $modules)
+		{
+			$module_front = $constant->root.'/extensions/modules/'.$modules.'/front.php';
+			if(!file_exists($module_front))
+			{
+				exit("Module <b>$modules</b> not exists! Remove it from enabled list!");
+				return;
+			}
+			require_once($module_front);
+			$mod_class = "mod_{$modules}";
+			$load_module = new $mod_class;
+			$load_module->load();
+		}
+		
 	}
 	
 	// регистрация путей от компонентов.
