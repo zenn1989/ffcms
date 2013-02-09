@@ -46,12 +46,19 @@ class cache
 	
 	public function save($data)
 	{
-		global $page;
+		global $page,$user;
+		// не сохраняем для авторизованных пользователей
+		if($user->getUserId() != 0)
+		{
+			return;
+		}
+		// Не сохраняем 404 ошибки как кеш
 		if($this->noexist)
 		{
 			return;
 		}
 		$way = $page->getPathway();
+		// если кеш запрещен - не сохраняем
 		if(in_array($way[0], $page->getNoCache()))
 		{
 			return;

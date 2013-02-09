@@ -24,9 +24,10 @@ class page
 	*/
 	public function printload()
 	{
-		global $template,$system,$cache;
+		global $template,$system,$cache,$user;
 		$isComponent = false;
-		if($cache->check())
+		// если пользователь не авторизован и есть полный кеш страницы
+		if($user->getUserId() == 0 && $cache->check())
 		{
 			return $cache->get();
 		}

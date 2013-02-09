@@ -14,6 +14,9 @@ class constant
 	public $db = array();
 	
 	public $cache_interval = 60;
+	
+	// время жизни токена авторизации, дефолт = 1 сутки
+	public $token_time = 86400;
     
     function __construct() 
     {
