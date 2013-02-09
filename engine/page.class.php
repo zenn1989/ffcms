@@ -7,6 +7,9 @@ class page
 {
 	private $pathway = array();
 	private $registeredway = array();
+	private $nocacheurl = array();
+	
+	private $string_pathway = null;
 	
 	private $content_body = array();
 
@@ -21,8 +24,12 @@ class page
 	*/
 	public function printload()
 	{
-		global $template,$system;
+		global $template,$system,$cache;
 		$isComponent = false;
+		if($cache->check())
+		{
+			return $cache->get();
+		}
 		// если размер пачвея более 0 и не содержит .html в тексте - передаем управление на компонент
 		if(sizeof($this->pathway) > 0 && !$system->contains('.html', $this->pathway[0]))
 		{
@@ -136,13 +143,38 @@ class page
 	}
 	
 	/**
+	* Чистый пачвей для спец. нужд
+	*/
+	public function getStrPathway()
+	{
+		return $this->string_pathway;
+	}
+	
+	/**
+	* Запретить кеширование
+	*/
+	public function setNoCache($nullway)
+	{
+		$this->nocacheurl[] = $nullway;
+	}
+	
+	/**
+	* Получить запрещенные урл-ы для кеша
+	*/
+	public function getNoCache()
+	{
+		return $this->nocacheurl;
+	}
+	
+	/**
 	* Разбивка запроса от пользователя на массив.
 	* Пример: /novosti/obshestvo/segodnya-sluchilos-prestuplenie.html приймет вид:
 	* array(0 => 'novosti', 1 => 'obshestvo', 2 => 'segodnya-sluchilos-prestuplenie.html')
 	*/
 	private function rawuri()
 	{
-		$split = explode("/", $_SERVER['REQUEST_URI']);
+		$this->string_pathway = $_SERVER['REQUEST_URI'];
+		$split = explode("/", $this->string_pathway);
 		foreach($split as $values)
 		{
 			if($values != null)

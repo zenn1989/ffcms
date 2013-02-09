@@ -34,8 +34,10 @@ class template
 	*/
 	public function compile()
 	{
+		global $cache;
 		$this->fortpl('header');
 		$this->fortpl('body');
+		$cache->save($this->content);
 		return $this->content;
 	}
 	
@@ -122,6 +124,8 @@ class template
 	*/
 	public function compile404()
 	{
+		global $cache;
+		$cache->setNoExist(true);
 		return $this->tplget('404');
 	}
 	

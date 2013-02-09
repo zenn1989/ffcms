@@ -12,6 +12,8 @@ class constant
     public $url = null;
 	
 	public $db = array();
+	
+	public $cache_interval = 60;
     
     function __construct() 
     {

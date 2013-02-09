@@ -1,6 +1,9 @@
 <?php
 
+// регистрируем компонент
 if(!page::registerPathWay('admin', 'admin')) { exit("Component $selfway => $dirname cannot be registered!"); }
+// запрещаем кеширование компонента
+page::setNoCache('admin');
 
 class com_admin
 {
