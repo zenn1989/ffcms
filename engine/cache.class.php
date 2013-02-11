@@ -11,6 +11,10 @@ class cache
 	public function check()
 	{
 		global $page,$constant;
+		if($constant->debug_no_cache)
+		{
+			return false;
+		}
 		$way = $page->getPathway();
 		// анализируем базовые нулевые пачвеи на список игнора кеша
 		if(in_array($way[0], $page->getNoCache()))

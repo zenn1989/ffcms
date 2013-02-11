@@ -13,43 +13,9 @@
 <![endif]-->
 </head>
 <body>
-<!-- {$header} menu, position: $template->header[0] = parrent; -->
-<div class="navbar navbar-fixed-top">
-	<div class="navbar-inner">
-		<div class="container">
-			<div class="nav-collapse">
-				<ul class="nav">
-					<li><a href="#"> Menu</a></li>
-
-					<li class="dropdown">
-						<a class="dropdown-toggle" data-toggle="dropdown" href="#">Dropdown Menu
-						<b class="caret"></b>
-						</a>
-
-						<ul class="dropdown-menu">
-							<li>
-							<a href="#"> Menu</a>
-							</li>
-
-							<li>
-							<a href="#"> Menu</a>
-							</li>
-						</ul>
-					</li>
-
-					<li><a href="#"> Menu</a></li>
-
-					<li><a href="#"> Menu</a></li>
-				</ul>
-				<ul class="nav pull-right">
-					<li class="navbar-text"><a href="#"><strong> Register</strong></a></li>
-					<li class="navbar-text"><a href="#"><strong> Login</strong></a></li>
-				</ul>
-			</div>
-		</div>
-	</div>
-</div>
-<!-- / {$header} -->
+<!-- {header} menu, position: $template->header[0] = parrent; -->
+{$header}
+<!-- / {header} -->
 
 <div class="container">
 	<div class="row">

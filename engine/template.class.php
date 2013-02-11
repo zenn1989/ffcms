@@ -16,6 +16,12 @@ class template
 	
 	private $content = null;
 	private $debug_readcount = 0;
+	
+	
+	function __construct()
+	{
+		$this->content = $this->getCarcase();
+	}
 
 	/**
 	* Инициация шаблонизатора. Загрузка стандартных блоков.
@@ -24,9 +30,12 @@ class template
 	public function init()
 	{
 		global $page;
-		$this->header = $page->getHeader();
-		$this->body = $page->getBody();
-		$this->content = $this->getCarcase();
+		$this->header = $page->getContentPosition('header');
+		$this->left = $page->getContentPosition('left');
+		$this->right = $page->getContentPosition('right');
+		$this->bottom = $page->getContentPosition('bottom');
+		$this->footer = $page->getContentPosition('footer');
+		$this->body = $page->getContentPosition('body');
 	}
 
 	/**
@@ -36,9 +45,19 @@ class template
 	{
 		global $cache;
 		$this->fortpl('header');
+		$this->fortpl('left');
+		$this->fortpl('right');
+		$this->fortpl('bottom');
+		$this->fortpl('footer');
 		$this->fortpl('body');
+		$this->cleanvar();
 		$cache->save($this->content);
 		return $this->content;
+	}
+	
+	private function removeUseLessTags()
+	{
+		$this->content = str_replace($this->registered_vars, '', $this->content);
 	}
 	
 	/**
@@ -47,9 +66,10 @@ class template
 	private function fortpl($position_name)
 	{
 		$result = null;
-		if(count($this->{$position_name}) > 0)
+		$sort_entery = $this->{$position_name};
+		if(count($sort_entery) > 0)
 		{
-			foreach($this->{$position_name} as $enteries)
+			foreach($sort_entery as $enteries)
 			{
 				$result .= $enteries;
 			}
@@ -68,6 +88,15 @@ class template
 	public function set($var, $value)
 	{
 		$this->content = str_replace('{$'.$var.'}', $value, $this->content);
+	}
+	
+	/**
+	* Очистка от {$__?___} в результате.
+	* Для контента, обязательно использовать эквивалент -> $ = &#36;
+	*/
+	private function cleanvar()
+	{
+		$this->content = preg_replace('/{\$(.*)}/', '', $this->content);
 	}
 	
 	/**

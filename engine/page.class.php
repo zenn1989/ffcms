@@ -12,6 +12,11 @@ class page
 	private $string_pathway = null;
 	
 	private $content_body = array();
+	private $content_header = array();
+	private $content_left = array();
+	private $content_right = array();
+	private $content_bottom = array();
+	private $content_footer = array();
 
 	function __construct()
 	{
@@ -31,8 +36,8 @@ class page
 		{
 			return $cache->get();
 		}
-		// если размер пачвея более 0 и не содержит .html в тексте - передаем управление на компонент
-		if(sizeof($this->pathway) > 0 && !$system->contains('.html', $this->pathway[0]))
+		// если размер пачвея более 0
+		if(sizeof($this->pathway) > 0)
 		{
 			foreach($this->registeredway as $com_path=>$com_dir)
 			{
@@ -61,10 +66,10 @@ class page
 			}
 		}
 		$this->content_body[] = $result_body;
-		// инициация шаблонизатора, нужно сделать умней!
-		$template->init();
 		// билдим модули
 		$this->buildmodules();
+		// инициация шаблонизатора, нужно сделать умней!
+		$template->init();
 		return $template->compile();	
 	}
 	
@@ -73,21 +78,17 @@ class page
 	*/
 	private function rawcomponents()
 	{
-		global $constant;
-		$enabled = $constant->root.'/extensions/components/enabled';
-		if(!file_exists($enabled))
+		global $constant,$database;
+		$stmt = $database->con()->query("SELECT * FROM {$constant->db['prefix']}_components WHERE enabled = 1");
+		$stmt->execute();
+		while($result = $stmt->fetch())
 		{
-			exit("Component list at <b>/extensions/components/enabled</b> not founded! Be care!");
-			return;
-		}
-		$list = file_get_contents($enabled);
-		$com_array = explode("\n", $list);
-		foreach($com_array as $components)
-		{
-			$component_front = $constant->root.'/extensions/components/'.$components.'/front.php';
+			$component_front = $constant->root.'/extensions/components/'.$result['dir'].'/front.php';
 			if(!file_exists($component_front))
 			{
-				exit("Component <b>$components</b> not exists! Remove it from enabled list - <b>/extensions/components/enable</b> !");
+				// завершение, однако в дальнейшем, нужно переработать этот механизм на мягкую нотификацию админа
+				// когда возможно будет идентифицировать инициатора запроса как админа
+				exit("Component frontend not founded at $component_front");
 				return;
 			}
 			require_once($component_front);
@@ -99,40 +100,130 @@ class page
 	*/
 	private function buildmodules()
 	{
-		global $constant;
-		$file = $constant->root.'/extensions/modules/enabled';
-		if(!file_exists($file))
+		global $constant,$database;
+		$stmt = $database->con()->query("SELECT * FROM {$constant->db['prefix']}_modules WHERE enabled = 1");
+		$stmt->execute();
+		while($result = $stmt->fetch())
 		{
-			exit("Module list at <b>/extensions/modules/enabled</b> not founded.");
-			return;
-		}
-		$list = file_get_contents($file);
-		$mod_array = explode("\n", $list);
-		foreach($mod_array as $modules)
-		{
-			$module_front = $constant->root.'/extensions/modules/'.$modules.'/front.php';
-			if(!file_exists($module_front))
+			//обработка разрешенных и запрещенных урлов
+			// 1 - работает там, где path_allowed, на других - нет
+			$work_on_this_path = false;
+			if($result['path_choice'] == 1)
 			{
-				exit("Module <b>$modules</b> not exists! Remove it from enabled list!");
-				return;
+				// 	 { component/aaa/ddd.html
+				//	<   						=> ok
+				//	 { component/*
+				$allowed_array = explode(';', $result['path_allow']);
+				foreach($allowed_array as $allowed)
+				{
+					// если найдено вхождение, ставим маркер на true
+					// нельзя выставить сразу, т.к. если в дальнейших маршрутах
+					// не будет найдено вхождение, оно перекроет предидущее.
+					$canwork = $this->findRuleInteration($allowed);
+					if($canwork)
+					{
+						$work_on_this_path = true;
+					}
+				}
 			}
-			require_once($module_front);
-			$mod_class = "mod_{$modules}";
-			$load_module = new $mod_class;
-			$load_module->load();
-		}
-		
+			// обработка списка запрещенных урлов, на других - работаем
+			else
+			{
+				$find_deny = false;
+				$deny_array = explode(';', $result['path_deny']);
+				foreach($deny_array as $deny)
+				{
+					if($this->findRuleInteration($deny))
+					{
+						$find_deny = true;
+					}
+				}
+				$work_on_this_path = !$find_deny;
+			}
+			if($work_on_this_path)
+			{
+				$file = $constant->root.'/extensions/modules/'.$result['dir'].'/front.php';
+				if(!file_exists($file))
+				{
+					// далее - мягкое уведомление админа в будующем
+					exit("Module $file not founded");
+					return;
+				}
+				require_once($file);
+				$mod_class = "mod_{$result['dir']}";
+				$load_module = new $mod_class;
+				$load_module->load();
+			}
+		}		
 	}
 	
-	// регистрация путей от компонентов.
+	/**
+	* Функция по поиску вхождений в правилах урл-ов
+	* к примеру /com/site/dddd/static.html является вхождением
+	* в /com/*
+	*/
+	private function findRuleInteration($rule_way)
+	{
+		global $system;
+		$rule_split = explode("/", $rule_way);
+		for($i=0;$i<=sizeof($rule_split);$i++)
+		{
+			// если уровень правила содержит * - возвращаем истину
+			if($rule_split[$i] == "*")
+			{
+				return true;
+			}
+			else
+			{
+				// если уровень правила и пачвея совпали
+				if($rule_split[$i] == $this->pathway[$i])
+				{
+					// если это последний элемент пачвея
+					if($system->contains('.html', $this->pathway[$i]))
+					{
+						return true;
+					}
+					// иначе - крутим дальше цикл
+				}
+				else
+				{
+					// если не совпали - возврат лжи
+					return false;
+				}
+			}
+		}
+		// если после цикла нет точного определения, возвращаем лож, так как вхождения нет
+		return false;
+	}
+	
+	
+	/**
+	* Регистрация путей для компонентов
+	* Для первого параметра(пути) возможен массив путей registerPathWay(array('login', 'registration', 'recovery), 'usercontrol') 
+	*/
 	public function registerPathWay($way, $dir)
 	{
-		if(array_key_exists($way, $this->registeredway))
+		if(is_array($way))
 		{
-			return false;
+			foreach($way as $pathset)
+			{
+				if(array_key_exists($pathset, $this->registeredway))
+				{
+					return false;
+				}
+				$this->registeredway[$pathset] = $dir;
+			}
+			return true;
 		}
-		$this->registeredway[$way] = $dir;
-		return true;
+		else
+		{
+			if(array_key_exists($way, $this->registeredway))
+			{
+				return false;
+			}
+			$this->registeredway[$way] = $dir;
+			return true;
+		}
 	}
 	
 	/**
@@ -190,16 +281,27 @@ class page
 	/**
 	* Возвращение массива позиции. Пример.
 	*/
-	public function getHeader()
+	public function getContentPosition($position)
 	{
-		return array('<p>', 'This is test', '</p>');
+		$pos = "content_{$position}";
+		return $this->{$pos};
 	}
 	
-	public function getBody()
+	/**
+	* Добавление к массиву позиций значения
+	*/
+	public function setContentPosition($position, $content, $index = null)
 	{
-		return $this->content_body;
-	}
-    
+		$var = "content_{$position}";
+		if($index == null)
+		{
+			$this->{$var}[] = $content;
+		}
+		else
+		{
+			$this->{$var}[$index] = $content;
+		}
+	}    
 }
 
 
