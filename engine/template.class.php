@@ -50,6 +50,7 @@ class template
 		$this->fortpl('bottom');
 		$this->fortpl('footer');
 		$this->fortpl('body');
+		$this->language();
 		$this->cleanvar();
 		$cache->save($this->content);
 		return $this->content;
@@ -75,6 +76,15 @@ class template
 			}
 		}
 		$this->set($position_name, $result);
+	}
+	
+	/**
+	* Установка языковых переменных
+	*/
+	private function language()
+	{
+		global $language;
+		$this->content = $language->set($this->content);
 	}
 	
 	/**

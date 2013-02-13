@@ -1,0 +1,4 @@
+usercontrol_auth_header<=>Авторизация
+usercontrol_reg_header<=>Регистрация
+usercontrol_recovery_header<=>Восстановление
+usercontrol_auth_email<=>Почта

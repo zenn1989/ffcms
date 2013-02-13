@@ -13,7 +13,7 @@
 <![endif]-->
 </head>
 <body>
-<!-- <p>This is test</p> menu, position: $template->header[0] = parrent; -->
+<!-- {header} menu, position: $template->header[0] = parrent; -->
 <div class="navbar navbar-fixed-top">
 	<div class="navbar-inner">
 		<div class="container">
@@ -49,7 +49,7 @@
 		</div>
 	</div>
 </div>
-<!-- / <p>This is test</p> -->
+<!-- / {header} -->
 
 <div class="container">
 	<div class="row">

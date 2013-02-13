@@ -8,7 +8,7 @@
 * регистрация области uri компонента
 * Первый параметр - uri, второй - директория компонента
 */
-if(!page::registerPathWay('static', 'static')) { exit("Component $selfway => $dirname cannot be registered!"); }
+if(!page::registerPathWay('static', 'static')) { exit("Component static cannot be registered!"); }
 
 /**
 * Главный класс компонента. Имя = com_ + имя директории компонента.
@@ -35,9 +35,10 @@ class com_static
 		// либо запрос пуст, либо пользователь наркоман
 		if($sqllink == null)
 		{
-			return $template->compile404();
+			$page->setContentPosition('body', $template->compile404());
+			return;
 		}
-		return $this->loadSinglePage($sqllink);
+		$page->setContentPosition('body', $this->loadSinglePage($sqllink));
 
 	}
 	

@@ -1,4 +1,5 @@
 <?php
+session_start();
 // маркер начала загруки, для отладочной информации. Через ob_start() нет желания.
 $debug_starttime = microtime(true);
 // задаем глобальную корня
@@ -23,6 +24,6 @@ $debug_endtime = microtime(true);
 if($config['debug'])
 {
 	$load_time = $debug_endtime-$debug_starttime;
-	echo "<hr />Debug loading: ".$load_time." sec <br />Sql query count: ".$database->totalQueryCount()."<br />Theme files readed count: ".$template->getReadCount();
+	echo "<hr />Debug loading: ".$load_time." sec <br />Sql query count: ".$database->totalQueryCount()."<br />Theme files readed count: ".$template->getReadCount()."<br />Memory(peak/now)mb :(".round(memory_get_peak_usage(true)/1048576,2)."/".round(memory_get_usage()/1048576,2).")";
 }
 ?>

@@ -32,12 +32,24 @@ class com_usercontrol
 	
 	private function loginComponent()
 	{
-	
+		global $page,$template,$hook,$language;
+		$notify = null;
+		if($_POST['submit'])
+		{
+			if(strtolower($_POST['captcha']) != $_SESSION['captcha'])
+			{
+				$notify .= $language->get('captcha_header_error');
+			}
+		}
+		$theme = $template->tplget('com_usercontrol_login', 'components/');
+		$captcha = $hook->get('captcha');
+		$theme = $template->assign('captcha', $captcha, $theme);
+		$page->setContentPosition('body', $theme);
 	}
 	
 	private function regComponent()
 	{
-	
+		
 	}
 	
 	private function recoveryComponent()

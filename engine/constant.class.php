@@ -18,6 +18,9 @@ class constant
 	
 	// время жизни токена авторизации, дефолт = 1 сутки
 	public $token_time = 86400;
+	
+	// язык
+	public $lang = 'ru';
     
     function __construct() 
     {

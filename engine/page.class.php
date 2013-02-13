@@ -45,7 +45,7 @@ class page
 				{
 					$class_com_name = "com_{$com_dir}";
 					$init_class = new $class_com_name;
-					$result_body = $init_class->load();
+					$init_class->load();
 					// вхождение в путь найдено, дальнейшая обработка не нужна.
 					$isComponent = true;
 				}
@@ -57,15 +57,14 @@ class page
 			// может быть это главная страничка?
 			if(sizeof($this->pathway) == 0 || $system->contains('index.', $this->pathway[0]))
 			{
-				$result_body = "This is main page example";
+				$this->content_body[] = "This is main page example";
 			}
 			// Нет? Не главная? Скомпилим 404
 			else
 			{
-				$result_body = $template->compile404();
+				$this->content_body[] = $template->compile404();
 			}
 		}
-		$this->content_body[] = $result_body;
 		// билдим модули
 		$this->buildmodules();
 		// инициация шаблонизатора, нужно сделать умней!

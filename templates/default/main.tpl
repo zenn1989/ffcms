@@ -43,33 +43,17 @@
 	<!-- /second navi menu -->
 	<div style="padding-top: 15px;"></div>
 	<div class="row">
-		<div class="span3" id="lnav">
-			<div class="well">
-				<ul class="nav nav-list">
-				<li class="nav-header"> Block example</li>
-				<li><a href="#">Link #1</a></li>
-				<li><a href="#">Link #2</a></li>
-				<li><a href="#">Link #3</a></li>
-				<li><a href="#">Link #4</a></li>
-				<li>
-					<ul>
-						<li><a href="#">Link new</a></li>
-						<li><a href="#">Link new</a></li>
-						<li><a href="#">Link new</a></li>
-						
-					</ul>
-				</li>
-				</ul>
-			</div>
-		</div>
+		{$left}
 		<div class="span9" id="body">
 			{$body}
 		</div>
+		{$right}
 	</div>
 </div>
+{$bottom}
 <hr class="soften" />
 
-<footer style="text-align: center;padding-bottom: 15px;">Powered by ffcms</footer>
+{$footer}
 <script src="{$url}/{$tpl_dir}/js/jquery-1.9.1.min.js" type="text/javascript"></script>
 <script src="{$url}/{$tpl_dir}/js/bootstrap.js" type="text/javascript"></script>
 
