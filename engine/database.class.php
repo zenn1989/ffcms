@@ -14,10 +14,13 @@ class database
 		try
 		{
 			$this->con = new PDO("mysql:host={$constant->db['host']};dbname={$constant->db['db']}", $constant->db['user'], $constant->db['pass']);
+			// отключаем эмуляцию, т.к. мы не фильтруем INPUT данные, ведь это умеет PDO
+			$this->con->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+			$this->con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		}
-		catch(Exception $e)
+		catch(PDOException $e)
 		{
-			exit("Database connection error".$e);
+			exit("Database connection error ".$e);
 		}
 	}
 	

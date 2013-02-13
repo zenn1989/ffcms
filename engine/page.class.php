@@ -57,6 +57,7 @@ class page
 			// может быть это главная страничка?
 			if(sizeof($this->pathway) == 0 || $system->contains('index.', $this->pathway[0]))
 			{
+				// на сейчас нет конструктора модулей, поэтому главная увы пустая с таким вот приветствием
 				$this->content_body[] = "This is main page example";
 			}
 			// Нет? Не главная? Скомпилим 404

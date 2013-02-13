@@ -6,21 +6,22 @@
   <li><a href="{$url}/register">{$lang::usercontrol_reg_header}</a></li>
   <li><a href="{$url}/recovery">{$lang::usercontrol_recovery_header}</a></li>
 </ul>
-<form class="form-horizontal">
+{$notify}
+<form class="form-horizontal" method="post" action="">
   <div class="control-group">
-    <label class="control-label" for="inputEmail">Почта</label>
+    <label class="control-label" for="inputEmail">{$lang::usercontrol_auth_email}</label>
     <div class="controls">
       <input name="email" type="text" placeholder="ivan.petrov@gmail.com">
     </div>
   </div>
   <div class="control-group">
-    <label class="control-label" for="inputPassword">Пароль</label>
+    <label class="control-label" for="inputPassword">{$lang::usercontrol_auth_pass}</label>
     <div class="controls">
-      <input type="password" placeholder="Password">
+      <input type="password" name="password" placeholder="Password">
     </div>
   </div>
   <div class="control-group">
-    <label class="control-label" for="inputPassword">АнтиРобот</label>
+    <label class="control-label" for="inputPassword">{$lang::usercontrol_auth_captcha}</label>
     <div class="controls">
 	  <img src="{$captcha}" id="captcha" /><a href="#" onclick="document.getElementById('captcha').src='{$captcha}?'+Math.random();"><i class="icon-refresh"></i></a><br />
       <input type="text" name="captcha">
@@ -28,7 +29,7 @@
   </div>
   <div class="control-group">
     <div class="controls">
-      <button type="submit" name="submit" class="btn btn-inverse">Войти</button>
+      <input type="submit" name="submit" class="btn btn-inverse" value="Войти" />
     </div>
   </div>
 </form>

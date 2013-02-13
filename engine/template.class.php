@@ -159,6 +159,16 @@ class template
 	}
 	
 	/**
+	* Функция для строчных уведомлений
+	* $type - error, warning, success
+	*/
+	public function stringNotify($type, $content)
+	{
+		$theme = $this->tplget("notify_string_{$type}");
+		return $this->assign('content', $content, $theme);
+	}
+	
+	/**
 	* Ошибка 404 для пользователей
 	*/
 	public function compile404()

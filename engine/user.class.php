@@ -23,12 +23,13 @@ class user
 		global $database, $constant;
 		// необходимая пара для анализа авторизован ли пользователь
 		$token = $_COOKIE['token'];
-		$userid = (int)$_COOKIE['userid'];
-		if(strlen($token) == 32 || $userid > 0)
+		$email = $_COOKIE['email'];
+		// данные удовлетворяют шаблон
+		if(strlen($token) == 32 && filter_var($email, FILTER_VALIDATE_EMAIL))
 		{
-			$query = "SELECT * FROM {$constant->db['prefix']}_user WHERE id = ? AND token = ?";
+			$query = "SELECT * FROM {$constant->db['prefix']}_user WHERE email = ? AND token = ?";
 			$stmt = $database->con()->prepare($query);
-			$stmt->bindParam(1, $userid, PDO::PARAM_INT);
+			$stmt->bindParam(1, $email, PDO::PARAM_STR);
 			$stmt->bindParam(2, $token, PDO::PARAM_STR, 32);
 			$stmt->execute();
 			if($stmt->rowCount() == 1)
@@ -36,9 +37,9 @@ class user
 				$result = $stmt->fetch();
 				if((time() - $result['token_start']) < $constant->token_time)
 				{
-					$this->userid = $userid;
+					$this->userid = $result['id'];
 					$this->token = $token;
-					$this->usermail = $result['email'];
+					$this->usermail = $email;
 					$this->userpassmd5 = $result['pass'];
 				}
 			}
@@ -51,6 +52,15 @@ class user
 	public function getUserId()
 	{
 		return $this->userid;
+	}
+	
+	/**
+	* Возвращает email авторизованного пользователя
+	* если не авторизован - null
+	*/
+	public function getUserMail()
+	{
+		return $this->usermail;
 	}
     
 }

@@ -46,6 +46,57 @@ class system
 		$unsafe_attributes = array('onabort', 'onactivate', 'onafterprint', 'onafterupdate', 'onbeforeactivate', 'onbeforecopy', 'onbeforecut', 'onbeforedeactivate', 'onbeforeeditfocus', 'onbeforepaste', 'onbeforeprint', 'onbeforeunload', 'onbeforeupdate', 'onblur', 'onbounce', 'oncellchange', 'onchange', 'onclick', 'oncontextmenu', 'oncontrolselect', 'oncopy', 'oncut', 'ondataavaible', 'ondatasetchanged', 'ondatasetcomplete', 'ondblclick', 'ondeactivate', 'ondrag', 'ondragdrop', 'ondragend', 'ondragenter', 'ondragleave', 'ondragover', 'ondragstart', 'ondrop', 'onerror', 'onerrorupdate', 'onfilterupdate', 'onfinish', 'onfocus', 'onfocusin', 'onfocusout', 'onhelp', 'onkeydown', 'onkeypress', 'onkeyup', 'onlayoutcomplete', 'onload', 'onlosecapture', 'onmousedown', 'onmouseenter', 'onmouseleave', 'onmousemove', 'onmoveout', 'onmouseover', 'onmouseup', 'onmousewheel', 'onmove', 'onmoveend', 'onmovestart', 'onpaste', 'onpropertychange', 'onreadystatechange', 'onreset', 'onresize', 'onresizeend', 'onresizestart', 'onrowexit', 'onrowsdelete', 'onrowsinserted', 'onscroll', 'onselect', 'onselectionchange', 'onselectstart', 'onstart', 'onstop', 'onsubmit', 'onunload');
 		return preg_replace('/<(.*?)>/ie', "'<' . preg_replace(array('/javascript:[^\"\']*/i', '/(" . implode('|', $unsafe_attributes) . ")[ \\t\\n]*=[ \\t\\n]*[\"\'][^\"\']*[\"\']/i', '/\s+/'), array('', '', ' '), stripslashes('\\1')) . '>'", strip_tags($data, $allowed));
 	}
+	
+	/**
+	* Псевдо-случайная A-Za-z-9 строка с заданной длиной
+	* Алгоритм достаточно устойчив к бруту, если его длина не менее 16 символов
+	* Однако, для токенов или подобных алгоритмов, рекомендуем функцию md5random()
+	*/
+	public function randomString($length)
+	{
+		$ret = 97;
+		$out = null;
+		for($i=0;$i<$length;$i++)
+		{
+			$offset = rand(0,15);
+			$char = chr($ret+$offset);
+			$posibility = rand(0,2);
+			if($posibility == 0)
+			{
+				// 33% - подмешиваем случайное число
+				$out .= rand(0,9);
+			}
+			elseif($posibility == 1)
+			{
+				// 33% - поднимаем в верхний регистр из offset+ret
+				$out .= strtoupper($char);
+			}
+			else
+			{
+				$out .= $char;
+			}
+		}
+		return $out;	
+	}
+	
+	/**
+	* Случайный md5-хеш на основе функции randomString
+	* $min и $max - показатели для выборки случайного размера исходной строки
+	*/
+	public function md5random($min = 16, $max = 20)
+	{
+		return md5($this->randomString(rand($min,$max)));
+	}
+	
+	/**
+	* Перенаправление пользователей, обязателен корень /
+	*/
+	public function redirect($uri = null)
+	{
+		global $constant;
+		header("Location: {$constant->url}{$uri}"); 
+	}
+	
 }
 
 ?>

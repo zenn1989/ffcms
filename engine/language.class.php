@@ -35,6 +35,11 @@ private $lang = array();
 		}
 		return $data;
 	}
+	
+	public function get($data)
+	{
+		return $this->lang[$data];	
+	}
 
 }
 ?>

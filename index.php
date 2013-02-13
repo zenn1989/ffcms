@@ -16,7 +16,6 @@ require_once(root."/load.php");
 // вывод страницы, вторая весрия :D
 echo $page->printload();
 $template->cleanafterprint();
-
 // таймер окончания загрузки.
 $debug_endtime = microtime(true);
 
