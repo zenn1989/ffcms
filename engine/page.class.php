@@ -17,6 +17,9 @@ class page
 	private $content_right = array();
 	private $content_bottom = array();
 	private $content_footer = array();
+	
+	private $moduleList = array();
+	private $notifyModuleAfter = array();
 
 	function __construct()
 	{
@@ -66,8 +69,6 @@ class page
 				$this->content_body[] = $template->compile404();
 			}
 		}
-		// билдим модули
-		$this->buildmodules();
 		// инициация шаблонизатора, нужно сделать умней!
 		$template->init();
 		return $template->compile();	
@@ -96,9 +97,9 @@ class page
 	}
 	
 	/**
-	* Сборка модулей страницы
+	* Сборка модулей страницы, до сборки всех позиций.
 	*/
-	private function buildmodules()
+	public function modules_before_load()
 	{
 		global $constant,$database;
 		$stmt = $database->con()->query("SELECT * FROM {$constant->db['prefix']}_modules WHERE enabled = 1");
@@ -110,9 +111,9 @@ class page
 			$work_on_this_path = false;
 			if($result['path_choice'] == 1)
 			{
-				// 	 { component/aaa/ddd.html
-				//	<   						=> ok
-				//	 { component/*
+				// 	 { $this->stringPathway: component/aaa/ddd.html
+				//	<   											=> ok
+				//	 { module_rule: component/*
 				$allowed_array = explode(';', $result['path_allow']);
 				foreach($allowed_array as $allowed)
 				{
@@ -140,6 +141,8 @@ class page
 				}
 				$work_on_this_path = !$find_deny;
 			}
+			// если модуль работает в данной позиции, инициируем загрузку before() 
+			// которая работает до определения глобальной $template->content суперпозиции
 			if($work_on_this_path)
 			{
 				$file = $constant->root.'/extensions/modules/'.$result['dir'].'/front.php';
@@ -152,9 +155,29 @@ class page
 				require_once($file);
 				$mod_class = "mod_{$result['dir']}";
 				$load_module = new $mod_class;
-				$load_module->load();
+				// делаем маркер на модуль, который необходимо подгрузить в позиции after()
+				$this->notifyModuleAfter[] = $load_module;
+				// если функция before определена, вызываем его
+				if(method_exists($load_module, 'before'))
+				{
+					$load_module->before();
+				}
 			}
-		}		
+		}
+	}
+	
+	/**
+	* Пост-загрузка метода after() модулей. Оперируют с полной страницей по template::content
+	*/
+	public function moduleAfterLoad()
+	{
+		foreach($this->notifyModuleAfter as $module)
+		{
+			if(method_exists($module, 'after'))
+			{
+				$module->after();
+			}
+		}
 	}
 	
 	/**

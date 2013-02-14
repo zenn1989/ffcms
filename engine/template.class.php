@@ -30,6 +30,7 @@ class template
 	public function init()
 	{
 		global $page;
+		$page->modules_before_load();
 		$this->header = $page->getContentPosition('header');
 		$this->left = $page->getContentPosition('left');
 		$this->right = $page->getContentPosition('right');
@@ -43,7 +44,7 @@ class template
 	*/
 	public function compile()
 	{
-		global $cache;
+		global $cache,$page;
 		$this->fortpl('header');
 		$this->fortpl('left');
 		$this->fortpl('right');
@@ -51,6 +52,7 @@ class template
 		$this->fortpl('footer');
 		$this->fortpl('body');
 		$this->language();
+		$page->moduleAfterLoad();
 		$this->cleanvar();
 		$cache->save($this->content);
 		return $this->content;

@@ -4,7 +4,7 @@
 // Отображение статичных блоков.
 class mod_static_includes
 {
-	public function load()
+	public function before()
 	{
 		global $database,$page,$constant;
 		$stmt = $database->con()->query("SELECT * FROM {$constant->db['prefix']}_mod_static_includes");

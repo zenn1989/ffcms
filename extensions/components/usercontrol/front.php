@@ -11,7 +11,12 @@ class com_usercontrol
 {
 	public function load()
 	{
-		global $page,$template;
+		global $page,$template,$user;
+		if($user->getUserId() != 0)
+		{
+			$page->setContentPosition('body', $template->compile404());
+			return;
+		}
 		$way = $page->getPathway();
 		switch($way[0])
 		{

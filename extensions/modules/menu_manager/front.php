@@ -6,11 +6,12 @@
 
 class mod_menu_manager
 {
-	// загрузка
-	public function load()
+	// загрузка, метод after, по глобальному шаблону
+	public function after()
 	{
 		return $this->loadSql();
 	}
+	
 	// выбираем из sql нужные даные
 	// имена шаблонов, вложенный массив с неограниченным количеством уровней
 	private function loadSql()

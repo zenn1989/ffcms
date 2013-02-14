@@ -6,6 +6,7 @@
 class user
 {
 	private $userid = 0;
+	private $username = null;
 	private $token = null;
 	private $usermail = null;
 	private $userpassmd5 = null;
@@ -40,6 +41,7 @@ class user
 					$this->userid = $result['id'];
 					$this->token = $token;
 					$this->usermail = $email;
+					$this->username = $result['nick'];
 					$this->userpassmd5 = $result['pass'];
 				}
 			}
@@ -62,7 +64,14 @@ class user
 	{
 		return $this->usermail;
 	}
-    
+	
+	/**
+	* Возвращает псевдоним пользователя
+	*/
+    public function getUserName()
+	{
+		return $this->username;
+	}
 }
 
 ?>
