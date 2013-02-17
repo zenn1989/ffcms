@@ -13,7 +13,7 @@
 <![endif]-->
 </head>
 <body>
-<!-- {header} menu, position: $template->header[0] = parrent; -->
+<!-- {header} menu -->
 {$header}
 <!-- / {header} -->
 
@@ -22,7 +22,7 @@
 	<!-- Logotype -->
 		<div class="span7">
 			<a href="/">
-			<img src="{$url}/{$tpl_dir}/img/PageData-Banner.png" />
+			<img src="{$url}/{$tpl_dir}/img/logo.png" />
 			</a>
 		</div>
 	<!-- /Logotype -->

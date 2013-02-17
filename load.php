@@ -9,6 +9,7 @@ require_once(root."/engine/user.class.php");
 require_once(root."/engine/system.class.php");
 require_once(root."/engine/cache.class.php");
 require_once(root."/engine/hook.class.php");
+require_once(root."/engine/mail.class.php");
 
 $constant = new constant;
 $system = new system;
@@ -19,5 +20,6 @@ $user = new user;
 $cache = new cache;
 $language = new language();
 $hook = new hook;
+$mail = new mail;
 
 ?>

@@ -48,6 +48,14 @@ class system
 	}
 	
 	/**
+	* Удаление html тегов
+	*/
+	public function nohtml($data)
+	{
+		return strip_tags($data);
+	}
+	
+	/**
 	* Псевдо-случайная A-Za-z-9 строка с заданной длиной
 	* Алгоритм достаточно устойчив к бруту, если его длина не менее 16 символов
 	* Однако, для токенов или подобных алгоритмов, рекомендуем функцию md5random()
@@ -86,6 +94,28 @@ class system
 	public function md5random($min = 16, $max = 20)
 	{
 		return md5($this->randomString(rand($min,$max)));
+	}
+	
+	/**
+	* Случайная величина отталкиваясь от уникального значения $data
+	*/
+	public function randomWithUnique($data, $min = 16, $max = 30)
+	{
+		$offset_min = $min-strlen($data);
+		$offset_max = $max-strlen($data);
+		if($offset_max < 0)
+		{
+			return $this->md5random();
+		}
+		elseif($offset_min < 0)
+		{
+			$data .= $this->randomString(rand(1, $offset_max));
+		}
+		else
+		{
+			$data .= $this->randomString(rand($offset_min, $offset_max));
+		}
+		return md5($data);
 	}
 	
 	/**

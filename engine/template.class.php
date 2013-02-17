@@ -51,8 +51,8 @@ class template
 		$this->fortpl('bottom');
 		$this->fortpl('footer');
 		$this->fortpl('body');
-		$this->language();
 		$page->moduleAfterLoad();
+		$this->language();
 		$this->cleanvar();
 		$cache->save($this->content);
 		return $this->content;

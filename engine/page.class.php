@@ -18,7 +18,6 @@ class page
 	private $content_bottom = array();
 	private $content_footer = array();
 	
-	private $moduleList = array();
 	private $notifyModuleAfter = array();
 
 	function __construct()

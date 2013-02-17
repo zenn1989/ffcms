@@ -28,7 +28,7 @@ class user
 		// данные удовлетворяют шаблон
 		if(strlen($token) == 32 && filter_var($email, FILTER_VALIDATE_EMAIL))
 		{
-			$query = "SELECT * FROM {$constant->db['prefix']}_user WHERE email = ? AND token = ?";
+			$query = "SELECT * FROM {$constant->db['prefix']}_user WHERE email = ? AND token = ? AND aprove = 0";
 			$stmt = $database->con()->prepare($query);
 			$stmt->bindParam(1, $email, PDO::PARAM_STR);
 			$stmt->bindParam(2, $token, PDO::PARAM_STR, 32);

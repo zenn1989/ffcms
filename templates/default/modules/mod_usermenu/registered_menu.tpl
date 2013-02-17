@@ -4,6 +4,6 @@
                   <li><a href="#">К профилю</a></li>
                   <li><a href="#">Сообщения(0)</a></li>
                   <li class="divider"></li>
-                  <li><a href="#">Выйти</a></li>
+                  <li><a href="{$url}/logout">{$lang::usercontrol_menu_exit}</a></li>
                 </ul>
 </li>
