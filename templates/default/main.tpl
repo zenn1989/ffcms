@@ -1,10 +1,12 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>FFCms page example</title>
+<title>{$title}</title>
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-<meta name="keywords" content="" />
-<meta content="" name="author" />
+<meta name="keywords" content="{$keywords}" />
+<meta name="description" content="{$description}" />
+<meta content="ffcms" name="author" />
 <link href="{$url}/{$tpl_dir}/css/bootstrap.css" rel="stylesheet" />
 <link href="{$url}/{$tpl_dir}/css/bootstrap-responsive.css" rel="stylesheet" />
 <link href="{$url}/{$tpl_dir}/css/docs.css" rel="stylesheet" />
@@ -44,8 +46,10 @@
 	<div style="padding-top: 15px;"></div>
 	<div class="row">
 		{$left}
-		<div class="span9" id="body">
-			{$body}
+		<div class="span9">
+			<div class="well">
+				{$body}
+			</div>
 		</div>
 		{$right}
 	</div>

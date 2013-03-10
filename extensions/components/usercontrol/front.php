@@ -171,7 +171,61 @@ class com_usercontrol
 	
 	private function recoveryComponent()
 	{
-
+		global $template,$hook,$page,$system,$database,$constant,$language;
+		$pathway = $page->getPathway();
+		if($pathway[1] != null && $pathway[2] != null)
+		{
+			// todo
+		}
+		else
+		{
+			$notify = null;
+			if($_POST['submit'])
+			{
+				if(strlen($_POST['captcha']) < 1 || strtolower($_POST['captcha']) != $_SESSION['captcha'])
+				{
+					$notify .= $template->stringNotify('error', $language->get('usercontrol_captcha_form_error'));
+				}
+				if(!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
+				{
+					$notify .= $template->stringNotify('error', $language->get('usercontrol_invalid_email_error'));
+				}
+				if($notify == null)
+				{
+					$new_password = $system->randomString(rand(8,12));
+					$hash = $system->md5random();
+					$stmt = $database->con()->prepare("SELECT id FROM {$constant->db['prefix']}_user WHERE email = ?");
+					$stmt->bindParam(1, $_POST['email']);
+					$stmt->execute();
+					if($stmt->rowCount() != 1)
+					{
+						$notify .= $template->stringNotify('error', $language->get('usercontrol_recovery_mail_unknown'));
+					}
+					else
+					{
+						// Учетка есть, делаем запись в бд для восстановления
+						$res_stmt = $stmt->fetch();
+						$userid = $res_stmt['id'];
+						$stmt2 = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user_recovery (`password`, `hash`, `userid`) VALUES (?, ?, ?)");
+						$stmt2->bindParam(1, $new_password);
+						$stmt2->bindParam(2, $hash);
+						$stmt2->bindParam(3, $userid);
+						$stmt2->execute();
+						$request_id = $database->con()->lastInsertId();
+						$recovery_link = $template->assign('recovery_url', $constant->url.'/recovery/'.$request_id.'/'.$hash, $language->get("usercontrol_mail_link_text"));
+						
+						$mail_body = $template->tplget('mail');
+						$mail_body = $template->assign(array('title', 'description', 'text', 'footer'), array($language->get('usercontrol_reg_mail_title'), $language->get('usercontrol_reg_mail_description'), $link, $language->get('usercontrol_reg_mail_footer')), $mail_body);
+						$mail->send($_POST['email'], $language->get('usercontrol_reg_mail_title'), $mail_body, $nickname);
+						//echo $recovery_link;
+					}
+				}
+			}
+			$theme = $template->tplget('com_usercontrol_recovery', 'components/');
+			$captcha = $hook->get('captcha');
+			$theme = $template->assign(array('captcha', 'notify'), array($captcha, $notify), $theme);
+			$page->setContentPosition('body', $theme);
+		}
 	}
 	
 	private function doLogOut()

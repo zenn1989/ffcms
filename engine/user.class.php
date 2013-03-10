@@ -10,6 +10,8 @@ class user
 	private $token = null;
 	private $usermail = null;
 	private $userpassmd5 = null;
+	private $accesslevel = 0;
+	private $access_to_admin = false;
 	
 	function __construct()
 	{
@@ -28,7 +30,7 @@ class user
 		// данные удовлетворяют шаблон
 		if(strlen($token) == 32 && filter_var($email, FILTER_VALIDATE_EMAIL))
 		{
-			$query = "SELECT * FROM {$constant->db['prefix']}_user WHERE email = ? AND token = ? AND aprove = 0";
+			$query = "SELECT * FROM {$constant->db['prefix']}_user a, {$constant->db['prefix']}_user_access_level b WHERE a.email = ? AND a.token = ? AND a.aprove = 0 AND a.access_level = b.group_id";
 			$stmt = $database->con()->prepare($query);
 			$stmt->bindParam(1, $email, PDO::PARAM_STR);
 			$stmt->bindParam(2, $token, PDO::PARAM_STR, 32);
@@ -43,6 +45,8 @@ class user
 					$this->usermail = $email;
 					$this->username = $result['nick'];
 					$this->userpassmd5 = $result['pass'];
+					$this->accesslevel = $result['access_level'];
+					$this->access_to_admin = $result['access_to_admin'];
 				}
 			}
 		}
@@ -71,6 +75,22 @@ class user
     public function getUserName()
 	{
 		return $this->username;
+	}
+	
+	/**
+	 * Возвращает уровень доступа
+	 */
+	public function getAccessLevel()
+	{
+		return $this->accesslevel;
+	}
+	
+	/**
+	 * Доступ к админ панели
+	 */
+	public function CanAccessToAdmin()
+	{
+		return $this->access_to_admin;
 	}
 }
 

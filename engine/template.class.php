@@ -17,10 +17,12 @@ class template
 	private $content = null;
 	private $debug_readcount = 0;
 	
+	private $precompile_tag = array();
+	
 	
 	function __construct()
 	{
-		$this->content = $this->getCarcase();
+		$this->content = $this->getCarcase(isadmin);
 	}
 
 	/**
@@ -30,7 +32,10 @@ class template
 	public function init()
 	{
 		global $page;
-		$page->modules_before_load();
+		if(!isadmin)
+		{
+			$page->modules_before_load();
+		}
 		$this->header = $page->getContentPosition('header');
 		$this->left = $page->getContentPosition('left');
 		$this->right = $page->getContentPosition('right');
@@ -51,11 +56,39 @@ class template
 		$this->fortpl('bottom');
 		$this->fortpl('footer');
 		$this->fortpl('body');
-		$page->moduleAfterLoad();
+		if(!isadmin)
+		{
+			$page->moduleAfterLoad();
+		}
+		$this->postcompile();
 		$this->language();
 		$this->cleanvar();
-		$cache->save($this->content);
+		if(!isadmin)
+		{
+			$cache->save($this->content);
+		}
 		return $this->content;
+	}
+	
+	/**
+	 * Пост-компиляция массива заданных тегов
+	 */
+	private function postcompile()
+	{
+		foreach($this->precompile_tag as $tag=>$value)
+		{
+			$this->set($tag, $value);
+		}
+	}
+	
+	/**
+	 * Пост компиляция тегов, после сборки шаблона
+	 * @param String $tag
+	 * @param String $value
+	 */
+	public function postsetTag($tag, $value)
+	{
+		$this->precompile_tag[$tag] = $value;
 	}
 	
 	private function removeUseLessTags()
@@ -92,14 +125,29 @@ class template
 	/**
 	* Загрузка основного каркаса шаблона, main.tpl
 	*/
-	private function getCarcase()
+	private function getCarcase($isadmin = FALSE)
 	{
-		return $this->tplget('main');
+		return $this->tplget('main', null, $isadmin);
 	}
 	
+	/**
+	 * Назначение переменной в супер-позиции $content
+	 * @param unknown_type $var
+	 * @param unknown_type $value
+	 */
 	public function set($var, $value)
 	{
-		$this->content = str_replace('{$'.$var.'}', $value, $this->content);
+		if(is_array($var))
+		{
+			for($i=0;$i<=sizeof($var);$i++)
+			{
+				$this->content = str_replace('{$'.$var[$i].'}', $value[$i], $this->content);
+			}
+		}
+		else
+		{
+			$this->content = str_replace('{$'.$var.'}', $value, $this->content);
+		}
 	}
 	
 	/**
@@ -114,26 +162,42 @@ class template
 	/**
 	* Установка стандартных шаблоных переменных. Пример: {$url} => http://blabla
 	*/
-	private function setDefaults($theme)
+	private function setDefaults($theme, $isadmin)
 	{
 		global $constant;
-		$template_path = $constant->tpl_dir.$this->separator.$constant->tpl_name;
+		if($isadmin)
+		{
+			$template_path = $constant->tpl_dir.$this->separator.$constant->admin_tpl;
+		}
+		else 
+		{
+			$template_path = $constant->tpl_dir.$this->separator.$constant->tpl_name;
+		}
 		return str_replace(array('{$url}', '{$tpl_dir}'), array($constant->url, $template_path), $theme);
 	}
 	
 	
 	/**
 	* Загрузка файла шаблона. 
-	* Содержит 2 аргумента - имя шаблона, и возможный - отдельная директория с бекслешем на конце или $this->separator
+	* @param STRING $tplname Имя файла шаблона
+	* @param STRING $customdirectory Вложение в директорию внутри шаблона. Может быть пустым.
+	* @param BOOLEAN $isadmin Для использования в админ панели
 	*/
-	public function tplget($tplname, $customdirectory = null)
+	public function tplget($tplname, $customdirectory = null, $isadmin = false)
 	{
 		global $constant;
-		$file = $constant->root.$this->separator.$constant->tpl_dir.$this->separator.$constant->tpl_name.$this->separator.$customdirectory.$tplname.".tpl";
+		if($isadmin)
+		{
+			$file = $constant->root.$this->separator.$constant->tpl_dir.$this->separator.$constant->admin_tpl.$this->separator.$customdirectory.$tplname.".tpl";
+		}
+		else
+		{
+			$file = $constant->root.$this->separator.$constant->tpl_dir.$this->separator.$constant->tpl_name.$this->separator.$customdirectory.$tplname.".tpl";
+		}
 		if(file_exists($file))
 		{
 			$this->debug_readcount++;
-			return $this->setDefaults(file_get_contents($file));
+			return $this->setDefaults(file_get_contents($file), $isadmin);
 		}
 		return $this->tplException($tplname);
 	}

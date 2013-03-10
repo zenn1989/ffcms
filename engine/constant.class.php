@@ -21,6 +21,8 @@ class constant
 	
 	public $mail = array();
 	
+	public $admin_tpl = 'admin';
+	
 	// язык
 	public $lang = 'ru';
     

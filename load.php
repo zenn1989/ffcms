@@ -10,6 +10,9 @@ require_once(root."/engine/system.class.php");
 require_once(root."/engine/cache.class.php");
 require_once(root."/engine/hook.class.php");
 require_once(root."/engine/mail.class.php");
+require_once(root."/engine/admin.class.php");
+require_once(root."/engine/meta.class.php");
+require_once(root."/engine/robot.class.php");
 
 $constant = new constant;
 $system = new system;
@@ -18,8 +21,11 @@ $page = new page;
 $template = new template;
 $user = new user;
 $cache = new cache;
-$language = new language();
+$language = new language;
 $hook = new hook;
 $mail = new mail;
+$admin = new admin;
+$meta = new meta;
+$robot = new robot;
 
 ?>

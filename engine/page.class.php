@@ -19,6 +19,8 @@ class page
 	private $content_footer = array();
 	
 	private $notifyModuleAfter = array();
+	
+	private $isMainPage = false;
 
 	function __construct()
 	{
@@ -29,9 +31,9 @@ class page
 	/**
 	* Обработка и вывод страницы. 
 	*/
-	public function printload()
+	public function doload()
 	{
-		global $template,$system,$cache,$user;
+		global $template,$system,$cache,$user,$admin;
 		$isComponent = false;
 		// если пользователь не авторизован и есть полный кеш страницы
 		if($user->getUserId() == 0 && $cache->check())
@@ -59,6 +61,7 @@ class page
 			// может быть это главная страничка?
 			if(sizeof($this->pathway) == 0 || $system->contains('index.', $this->pathway[0]))
 			{
+				$this->isMainPage = true;
 				// на сейчас нет конструктора модулей, поэтому главная увы пустая с таким вот приветствием
 				$this->content_body[] = "This is main page example";
 			}
@@ -69,8 +72,7 @@ class page
 			}
 		}
 		// инициация шаблонизатора, нужно сделать умней!
-		$template->init();
-		return $template->compile();	
+		$template->init();	
 	}
 	
 	/**
@@ -177,6 +179,14 @@ class page
 				$module->after();
 			}
 		}
+	}
+	
+	/**
+	 * Boolean функция, отвечающая за то является ли данная страница главной
+	 */
+	public function isMain()
+	{
+		return $this->isMainPage;
 	}
 	
 	/**

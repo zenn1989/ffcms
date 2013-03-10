@@ -1,0 +1,1 @@
+<li><a href="{$list_href}">{$list_text}</a></li>
