@@ -1,0 +1,1 @@
+<a href="{$ext_config_link}"><i class="icon-cog icon-large"></i></a> &nbsp; <a href="{$ext_turn_link}"><i class="icon-minus-sign icon-large"></i></a>

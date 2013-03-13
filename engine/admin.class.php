@@ -39,9 +39,10 @@ class admin
 		}
 		else
 		{
-			switch($object)
+			switch($this->object)
 			{
 				case "components":
+					$page->setContentPosition('body', $this->loadComponents());
 					break;
 				case "modules":
 					break;
@@ -57,6 +58,79 @@ class admin
 		$page->setContentPosition('header', $header);
 		$template->init();
 		return $template->compile();
+	}
+	
+	private function loadComponents()
+	{
+		global $template,$language,$database,$constant;
+		if($this->component_exists())
+		{
+			// компонент существует!
+		}
+		else
+		{
+			// такого компонента нет, отображаем списки
+			$theme = $template->assign(array('title', 'word_all', 'word_active', 'word_noactive', 'word_toinstall'), 
+					array($language->get('admin_components_title'), $language->get('admin_components_tab_all'), $language->get('admin_components_tab_enabled'), $language->get('admin_components_tab_dissabled'), $language->get('admin_components_tab_toinstall')), 
+					$template->tplget('extension_list', null, true));
+			$thead = $template->assign(array('ext_th_1', 'ext_th_2', 'ext_th_3', 'ext_th_4'),
+					array($language->get('admin_components_table_th_1'), $language->get('admin_components_table_th_2'), $language->get('admin_components_table_th_3'), $language->get('admin_components_table_th_4'),),
+					$template->tplget('extension_thead', null, true));
+			$tbody = $template->tplget('extension_tbody', null, true);
+			$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_components");
+			$stmt->execute();
+			$allbody = null;
+			$activebody = null;
+			$noactivebody = null;
+			$toinstallbody = null;
+			while($result = $stmt->fetch())
+			{
+				
+				// вносим в список отключенных
+				if($result['enabled'] == 0)
+				{
+					
+				}
+				// иначе вносим в список включенных
+				else
+				{
+					
+				}
+				// вносим в список не установленных
+				if($result['installed'] == 0)
+				{
+					
+				}
+				// иначе вносим в список "всех доступных"
+				else
+				{
+					$iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=components&id='.$result['id'], '?object=components&id='.$result['id'].'&action=turn'), $template->tplget('manage_all', null, true));
+					$allbody .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
+							array($result['id'], $result['name'], $result['description'], $iconset),
+							$tbody);
+				}
+			}
+			$alllist = $template->assign('extension_tbody', $allbody, $thead);
+			$theme = $template->assign(array('all_list'), array($alllist), $theme);
+			return $theme;
+		}
+	}
+	
+	private function component_exists()
+	{
+		global $database,$constant;
+		if($this->id < 1)
+		{
+			return false;
+		}
+		$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_components WHERE id = ?");
+		$stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+		$stmt->execute();
+		if($stmt->rowCount() == 1)
+		{
+			return true;
+		}
+		return false;
 	}
 	
 	private function foreachMenuPositions()
@@ -121,20 +195,20 @@ class admin
 		$res3 = $stmt3->fetch();
 		$unique_registered = $res3[0];
 		$body = $template->tplget('index_page', null, true);
-		$template->postsetTag('view_count', $views_count);
-		$template->postsetTag('user_unique', $unique_user);
-		$template->postsetTag('unique_registered', $unique_registered);
-		$template->postsetTag('unique_unregistered', $unique_user-$unique_registered);
-		$template->postsetTag('date_today', date('d-m-y'));
-		$template->postsetTag('server_os_type', php_uname('s'));
-		$template->postsetTag('server_php_ver', phpversion());
-		$template->postsetTag('server_mysql_ver', $database->con()->getAttribute(PDO::ATTR_SERVER_VERSION));
-		$template->postsetTag('server_load_avg', $this->get_server_load());
+		$template->globalset('view_count', $views_count);
+		$template->globalset('user_unique', $unique_user);
+		$template->globalset('unique_registered', $unique_registered);
+		$template->globalset('unique_unregistered', $unique_user-$unique_registered);
+		$template->globalset('date_today', date('d-m-y'));
+		$template->globalset('server_os_type', php_uname('s'));
+		$template->globalset('server_php_ver', phpversion());
+		$template->globalset('server_mysql_ver', $database->con()->getAttribute(PDO::ATTR_SERVER_VERSION));
+		$template->globalset('server_load_avg', $this->get_server_load());
 		$this->showWeekChart();
-		$template->postsetTag('folder_uploads_access', $this->analiseAccess("/upload/", "rw"));
-		$template->postsetTag('folder_language_access', $this->analiseAccess("/language/", "rw"));
-		$template->postsetTag('folder_cache_access', $this->analiseAccess("/cache/", "rw"));
-		$template->postsetTag('file_config_access', $this->analiseAccess("/config.php", "rw"));
+		$template->globalset('folder_uploads_access', $this->analiseAccess("/upload/", "rw"));
+		$template->globalset('folder_language_access', $this->analiseAccess("/language/", "rw"));
+		$template->globalset('folder_cache_access', $this->analiseAccess("/cache/", "rw"));
+		$template->globalset('file_config_access', $this->analiseAccess("/config.php", "rw"));
 		return $body;
 	}
 
@@ -162,7 +236,7 @@ class admin
 			$object_date = date('d.m.Y', $fromtime);
 			$json_result .= "['{$object_date}', {$view_users}, {$unique_users}],\n";
 		}
-		$template->postsetTag('json_chart_result', $json_result);
+		$template->globalset('json_chart_result', $json_result);
 	}
 	
 	private function analiseAccess($data, $rule = 'rw')

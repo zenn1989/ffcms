@@ -1,0 +1,1 @@
+<a href="{$ext_config_link}" title="{$lang::admin_tab_th_configure}"><i class="icon-cog icon-large"></i></a>

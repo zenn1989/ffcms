@@ -86,7 +86,7 @@ class template
 	 * @param String $tag
 	 * @param String $value
 	 */
-	public function postsetTag($tag, $value)
+	public function globalset($tag, $value)
 	{
 		$this->precompile_tag[$tag] = $value;
 	}
