@@ -1,2 +1,5 @@
 /nbproject/
 /cache/
+.project
+.settings/
+.*

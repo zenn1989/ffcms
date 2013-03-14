@@ -52,7 +52,7 @@ class cache
 	{
 		global $page,$user;
 		// не сохраняем для авторизованных пользователей
-		if($user->getUserId() != 0)
+		if($user->get('id') != NULL)
 		{
 			return;
 		}

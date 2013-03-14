@@ -39,7 +39,7 @@ class com_usercontrol
 	private function loginComponent()
 	{
 		global $page,$template,$hook,$language,$database,$system,$constant,$user;
-		if($user->getUserId() != 0)
+		if($user->get('id') != NULL)
 		{
 			$page->setContentPosition('body', $template->compile404());
 			return;
@@ -117,7 +117,7 @@ class com_usercontrol
 	private function regComponent()
 	{
 		global $user,$template,$hook,$page,$language,$database,$constant,$system,$mail;
-		if($user->getUserId() != 0)
+		if($user->get('id') != NULL)
 		{
 			$page->setContentPosition('body', $template->compile404());
 			return;
@@ -231,7 +231,7 @@ class com_usercontrol
 	private function doLogOut()
 	{
 		global $system,$user;
-		if($user->getUserId() == 0)
+		if($user->get('id') == NULL)
 		{
 			$page->setContentPosition('body', $template->compile404());
 			return;

@@ -27,12 +27,12 @@ class admin
 	public function doload()
 	{
 		global $page,$user,$template,$system;
-		if($user->getUserId() == 0)
+		if($user->get('id') == NULL)
 		{
 			$system->redirect('/login');
 			exit();
 		}
-		elseif(!$user->CanAccessToAdmin())
+		elseif($user->get('access_to_admin') != 1)
 		{
 			$system->redirect();
 			exit();
@@ -52,7 +52,7 @@ class admin
 					$page->setContentPosition('body', $this->loadMainPage());
 					break;
 			}
-			$template->set('username', $user->getUserName());
+			$template->set('username', $user->get('nick'));
 		}
 		$header = $this->foreachMenuPositions();
 		$page->setContentPosition('header', $header);

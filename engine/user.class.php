@@ -1,10 +1,11 @@
 <?php
 
 /**
- * Класс отвечающий за пользовательские данные 
+ * Класс отвечающий за пользовательские данные
  */
 class user
 {
+	private $userpamar = array();
 	private $userid = 0;
 	private $username = null;
 	private $token = null;
@@ -12,15 +13,15 @@ class user
 	private $userpassmd5 = null;
 	private $accesslevel = 0;
 	private $access_to_admin = false;
-	
+
 	function __construct()
 	{
 		$this->analiseToken();
 	}
-	
+
 	/**
-	* Анализ токена из кук.
-	*/
+	 * Анализ пользовательских данных, установка параметров если пользователь авторизован.
+	 */
 	private function analiseToken()
 	{
 		global $database, $constant;
@@ -37,60 +38,27 @@ class user
 			$stmt->execute();
 			if($stmt->rowCount() == 1)
 			{
-				$result = $stmt->fetch();
-				if((time() - $result['token_start']) < $constant->token_time)
+				$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				if((time() - $result[0]['token_start']) < $constant->token_time)
 				{
-					$this->userid = $result['id'];
-					$this->token = $token;
-					$this->usermail = $email;
-					$this->username = $result['nick'];
-					$this->userpassmd5 = $result['pass'];
-					$this->accesslevel = $result['access_level'];
-					$this->access_to_admin = $result['access_to_admin'];
+					foreach($result[0] as $column_index=>$column_data)
+					{
+						//echo $column."=>".$data."<br />";
+						$this->userpamar[$column_index] = $column_data;
+					}
 				}
 			}
 		}
 	}
-	
+
 	/**
-	* Возвращает ID пользователя. 0 = не авторизован
-	*/
-	public function getUserId()
-	{
-		return $this->userid;
-	}
-	
-	/**
-	* Возвращает email авторизованного пользователя
-	* если не авторизован - null
-	*/
-	public function getUserMail()
-	{
-		return $this->usermail;
-	}
-	
-	/**
-	* Возвращает псевдоним пользователя
-	*/
-    public function getUserName()
-	{
-		return $this->username;
-	}
-	
-	/**
-	 * Возвращает уровень доступа
+	 * Получение определенных пользовательских данных - аналогично названию в таблицах _user / user_access_level
+	 * @param String $param
+	 * @return multitype: String or INT or NULL
 	 */
-	public function getAccessLevel()
+	public function get($param)
 	{
-		return $this->accesslevel;
-	}
-	
-	/**
-	 * Доступ к админ панели
-	 */
-	public function CanAccessToAdmin()
-	{
-		return $this->access_to_admin;
+		return $this->userpamar[$param];
 	}
 }
 

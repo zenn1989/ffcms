@@ -36,7 +36,7 @@ class page
 		global $template,$system,$cache,$user,$admin;
 		$isComponent = false;
 		// если пользователь не авторизован и есть полный кеш страницы
-		if($user->getUserId() == 0 && $cache->check())
+		if($user->get('id') == NULL && $cache->check())
 		{
 			return $cache->get();
 		}

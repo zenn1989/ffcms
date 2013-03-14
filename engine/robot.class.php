@@ -16,7 +16,7 @@ class robot
 		$browser = $this->user_browser($_SERVER['HTTP_USER_AGENT']);
 		$os = $this->user_os($_SERVER['HTTP_USER_AGENT']);
 		$cookie = $_COOKIE['source'];
-		$isreg = $user->getUserId() == 0 ? 0 : 1;
+		$isreg = $user->get('id') == NULL ? 0 : 1;
 		if($cookie == null)
 		{
 			$settime=$visittime+(365*24*60*60);

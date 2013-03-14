@@ -10,7 +10,7 @@ class hook_captcha
 	public function load()
 	{
 		global $constant;
-		return $constant->url.'/public/ccaptcha/captcha.php';
+		return $constant->url.'/resource/ccaptcha/captcha.php';
 	}
 
 }
