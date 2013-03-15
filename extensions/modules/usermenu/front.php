@@ -7,7 +7,6 @@ class mod_usermenu
 		global $template,$user;
 		if($user->get('id') == NULL)
 		{
-			echo "PWNZ?".$user->get('id');
 			$usermenu = $template->tplget('unregistered_menu', 'modules/mod_usermenu/');
 		}
 		else

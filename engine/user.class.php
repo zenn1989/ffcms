@@ -6,23 +6,16 @@
 class user
 {
 	private $userpamar = array();
-	private $userid = 0;
-	private $username = null;
-	private $token = null;
-	private $usermail = null;
-	private $userpassmd5 = null;
-	private $accesslevel = 0;
-	private $access_to_admin = false;
 
 	function __construct()
 	{
-		$this->analiseToken();
+		$this->set();
 	}
 
 	/**
 	 * Анализ пользовательских данных, установка параметров если пользователь авторизован.
 	 */
-	private function analiseToken()
+	private function set()
 	{
 		global $database, $constant;
 		// необходимая пара для анализа авторизован ли пользователь
@@ -43,7 +36,6 @@ class user
 				{
 					foreach($result[0] as $column_index=>$column_data)
 					{
-						//echo $column."=>".$data."<br />";
 						$this->userpamar[$column_index] = $column_data;
 					}
 				}

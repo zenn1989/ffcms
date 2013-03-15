@@ -31,10 +31,11 @@ class template
 	*/
 	public function init()
 	{
-		global $page;
+		global $page,$extension;
 		if(!isadmin)
 		{
-			$page->modules_before_load();
+			// инициация пре-загружаемых модулей с возможностью $page::setContentPosition(pos, data, index)
+			$extension->modules_before_load();
 		}
 		$this->header = $page->getContentPosition('header');
 		$this->left = $page->getContentPosition('left');
@@ -49,7 +50,7 @@ class template
 	*/
 	public function compile()
 	{
-		global $cache,$page;
+		global $cache,$extension;
 		$this->fortpl('header');
 		$this->fortpl('left');
 		$this->fortpl('right');
@@ -58,7 +59,8 @@ class template
 		$this->fortpl('body');
 		if(!isadmin)
 		{
-			$page->moduleAfterLoad();
+			// инициация пост-загружаемых модулей
+			$extension->moduleAfterLoad();
 		}
 		$this->postcompile();
 		$this->language();

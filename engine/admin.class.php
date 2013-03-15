@@ -45,8 +45,10 @@ class admin
 					$page->setContentPosition('body', $this->loadComponents());
 					break;
 				case "modules":
+					$page->setContentPosition('body', $this->loadModules());
 					break;
 				case "hooks":
+					$page->setContentPosition('body', $this->loadHooks());
 					break;
 				default:
 					$page->setContentPosition('body', $this->loadMainPage());
@@ -58,6 +60,169 @@ class admin
 		$page->setContentPosition('header', $header);
 		$template->init();
 		return $template->compile();
+	}
+	
+	private function loadHooks()
+	{
+		global $template,$language,$database,$constant;
+		if($this->hook_exists())
+		{
+			// хук существует, обращаемся к настройке
+		}
+		else
+		{
+			$theme = $template->assign(array('title', 'word_all', 'word_active', 'word_noactive', 'word_toinstall'),
+					array($language->get('admin_hooks_title'), $language->get('admin_hooks_tab_all'), $language->get('admin_hooks_tab_enabled'), $language->get('admin_hooks_tab_dissabled'), $language->get('admin_hooks_tab_toinstall')),
+					$template->tplget('extension_list', null, true));
+			$thead = $template->assign(array('ext_th_1', 'ext_th_2', 'ext_th_3', 'ext_th_4'),
+					array($language->get('admin_hooks_table_th_1'), $language->get('admin_hooks_table_th_2'), $language->get('admin_hooks_table_th_3'), $language->get('admin_hooks_table_th_4'),),
+					$template->tplget('extension_thead', null, true));
+			$tbody = $template->tplget('extension_tbody', null, true);
+			$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_hooks");
+			$stmt->execute();
+			$prepare_theme = array();
+			while($result = $stmt->fetch())
+			{
+				$config_link = "?object=hooks&id=".$result['id'];
+				// вносим в список отключенных
+				if($result['enabled'] == 0)
+				{
+					$iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array($config_link, '?object=hooks&id='.$result['id'].'&action=turn'), $template->tplget('manage_noactive', null, true));
+					$prepare_theme['dissabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
+							array($result['id'], $result['name'], $result['description'], $iconset, $config_link),
+							$tbody);
+				}
+				// иначе вносим в список включенных
+				else
+				{
+					$iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=hooks&id='.$result['id'], '?object=hooks&id='.$result['id'].'&action=turn'), $template->tplget('manage_active', null, true));
+					$prepare_theme['enabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
+							array($result['id'], $result['name'], $result['description'], $iconset, $config_link),
+							$tbody);
+				}
+				// вносим в список не установленных
+				if($result['installed'] == 0)
+				{
+					$iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=hooks&id='.$result['id'], '?object=hooks&id='.$result['id'].'&action=install'), $template->tplget('manage_install', null, true));
+					$prepare_theme['toinstall'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
+							array($result['id'], $result['name'], $result['description'], $iconset),
+							$tbody);
+				}
+				$iconset = $template->assign('ext_config_link', '?object=hooks&id='.$result['id'], $template->tplget('manage_all', null, true));
+				$prepare_theme['all'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
+						array($result['id'], $result['name'], $result['description'], $iconset, $config_link),
+						$tbody);
+			}
+			$alllist = $template->assign('extension_tbody', $prepare_theme['all'], $thead);
+			$toinstalllist = $template->assign('extension_tbody', $prepare_theme['toinstall'], $thead);
+			$activelist = $template->assign('extension_tbody', $prepare_theme['enabled'], $thead);
+			$noactivelist = $template->assign('extension_tbody', $prepare_theme['dissabled'], $thead);
+			$theme = $template->assign(
+					array('all_list', 'toinstall_list', 'active_list', 'notactive_list'),
+					array($alllist, $toinstalllist, $activelist, $noactivelist),
+					$theme
+			);
+			return $theme;
+			
+		}
+	}
+	
+	private function hook_exists()
+	{
+		global $database,$constant;
+		if($this->id < 1)
+		{
+			return false;
+		}
+		$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_hooks WHERE id = ?");
+		$stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+		$stmt->execute();
+		if($stmt->rowCount() == 1)
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	private function loadModules()
+	{
+		global $template,$language,$database,$constant;
+		if($this->module_exits())
+		{
+			// модуль существует, выгружаем backend
+		}
+		else
+		{
+			$theme = $template->assign(array('title', 'word_all', 'word_active', 'word_noactive', 'word_toinstall'),
+					array($language->get('admin_modules_title'), $language->get('admin_modules_tab_all'), $language->get('admin_modules_tab_enabled'), $language->get('admin_modules_tab_dissabled'), $language->get('admin_modules_tab_toinstall')),
+					$template->tplget('extension_list', null, true));
+			$thead = $template->assign(array('ext_th_1', 'ext_th_2', 'ext_th_3', 'ext_th_4'),
+					array($language->get('admin_modules_table_th_1'), $language->get('admin_modules_table_th_2'), $language->get('admin_modules_table_th_3'), $language->get('admin_modules_table_th_4'),),
+					$template->tplget('extension_thead', null, true));
+			$tbody = $template->tplget('extension_tbody', null, true);
+			$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_modules");
+			$stmt->execute();
+			$prepare_theme = array();
+			while($result = $stmt->fetch())
+			{
+				$config_link = "?object=modules&id=".$result['id'];
+				// вносим в список отключенных
+				if($result['enabled'] == 0)
+				{
+					$iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array($config_link, '?object=modules&id='.$result['id'].'&action=turn'), $template->tplget('manage_noactive', null, true));
+					$prepare_theme['dissabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
+							array($result['id'], $result['name'], $result['description'], $iconset, $config_link),
+							$tbody);
+				}
+				// иначе вносим в список включенных
+				else
+				{
+					$iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=modules&id='.$result['id'], '?object=modules&id='.$result['id'].'&action=turn'), $template->tplget('manage_active', null, true));
+					$prepare_theme['enabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
+							array($result['id'], $result['name'], $result['description'], $iconset, $config_link),
+							$tbody);
+				}
+				// вносим в список не установленных
+				if($result['installed'] == 0)
+				{
+					$iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=modules&id='.$result['id'], '?object=modules&id='.$result['id'].'&action=install'), $template->tplget('manage_install', null, true));
+					$prepare_theme['toinstall'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
+							array($result['id'], $result['name'], $result['description'], $iconset),
+							$tbody);
+				}
+				$iconset = $template->assign('ext_config_link', '?object=modules&id='.$result['id'], $template->tplget('manage_all', null, true));
+				$prepare_theme['all'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
+						array($result['id'], $result['name'], $result['description'], $iconset, $config_link),
+						$tbody);
+			}
+			$alllist = $template->assign('extension_tbody', $prepare_theme['all'], $thead);
+			$toinstalllist = $template->assign('extension_tbody', $prepare_theme['toinstall'], $thead);
+			$activelist = $template->assign('extension_tbody', $prepare_theme['enabled'], $thead);
+			$noactivelist = $template->assign('extension_tbody', $prepare_theme['dissabled'], $thead);
+			$theme = $template->assign(
+					array('all_list', 'toinstall_list', 'active_list', 'notactive_list'),
+					array($alllist, $toinstalllist, $activelist, $noactivelist),
+					$theme
+			);
+			return $theme;
+		}
+	}
+	
+	private function module_exits()
+	{
+		global $database,$constant;
+		if($this->id < 1)
+		{
+			return false;
+		}
+		$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_modules WHERE id = ?");
+		$stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+		$stmt->execute();
+		if($stmt->rowCount() == 1)
+		{
+			return true;
+		}
+		return false;
 	}
 	
 	private function loadComponents()
@@ -79,39 +244,48 @@ class admin
 			$tbody = $template->tplget('extension_tbody', null, true);
 			$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_components");
 			$stmt->execute();
-			$allbody = null;
-			$activebody = null;
-			$noactivebody = null;
-			$toinstallbody = null;
+			$prepare_theme = array();
 			while($result = $stmt->fetch())
 			{
-				
+				$config_link = "?object=components&id=".$result['id'];
 				// вносим в список отключенных
 				if($result['enabled'] == 0)
 				{
-					
+					$iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=components&id='.$result['id'], '?object=components&id='.$result['id'].'&action=turn'), $template->tplget('manage_noactive', null, true));
+					$prepare_theme['dissabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
+							array($result['id'], $result['name'], $result['description'], $iconset),
+							$tbody);
 				}
 				// иначе вносим в список включенных
 				else
 				{
-					
+					$iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=components&id='.$result['id'], '?object=components&id='.$result['id'].'&action=turn'), $template->tplget('manage_active', null, true));
+					$prepare_theme['enabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
+							array($result['id'], $result['name'], $result['description'], $iconset, $config_link),
+							$tbody);
 				}
 				// вносим в список не установленных
 				if($result['installed'] == 0)
 				{
-					
-				}
-				// иначе вносим в список "всех доступных"
-				else
-				{
-					$iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=components&id='.$result['id'], '?object=components&id='.$result['id'].'&action=turn'), $template->tplget('manage_all', null, true));
-					$allbody .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
+					$iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=components&id='.$result['id'], '?object=components&id='.$result['id'].'&action=install'), $template->tplget('manage_install', null, true));
+					$prepare_theme['toinstall'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
 							array($result['id'], $result['name'], $result['description'], $iconset),
 							$tbody);
 				}
+				$iconset = $template->assign('ext_config_link', '?object=components&id='.$result['id'], $template->tplget('manage_all', null, true));
+				$prepare_theme['all'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
+						array($result['id'], $result['name'], $result['description'], $iconset),
+						$tbody);
 			}
-			$alllist = $template->assign('extension_tbody', $allbody, $thead);
-			$theme = $template->assign(array('all_list'), array($alllist), $theme);
+			$alllist = $template->assign('extension_tbody', $prepare_theme['all'], $thead);
+			$toinstalllist = $template->assign('extension_tbody', $prepare_theme['toinstall'], $thead);
+			$activelist = $template->assign('extension_tbody', $prepare_theme['enabled'], $thead);
+			$noactivelist = $template->assign('extension_tbody', $prepare_theme['dissabled'], $thead);
+			$theme = $template->assign(
+					array('all_list', 'toinstall_list', 'active_list', 'notactive_list'), 
+					array($alllist, $toinstalllist, $activelist, $noactivelist), 
+					$theme
+					);
 			return $theme;
 		}
 	}

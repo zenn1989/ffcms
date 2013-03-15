@@ -20,16 +20,10 @@
 			  	{$notactive_list}
 			  </div>
 			  <div class="tab-pane" id="toinstall">
+			    <p class="pull-right"><i class="icon-refresh"></i><a href="?object=components&action=checkinstall">{$lang::admin_com_check_new_text}</a></p>
 			  	{$toinstall_list}
 			  </div>
 			</div>
 		</div>
 	</div>
 </div>
-<script>
-$(document).ready(function () {
-    if ($("[rel=tooltip]").length) {
-        $("[rel=tooltip]").tooltip();
-    }
-});
-</script>

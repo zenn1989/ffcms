@@ -1,1 +1,1 @@
-<a href="{$ext_config_link}"><i class="icon-cog icon-large"></i></a> &nbsp; <a href="{$ext_turn_link}"><i class="icon-wrench icon-large"></i></a>
+<a title="{$lang::admin_tab_th_configure}" href="{$ext_config_link}"><i class="icon-cog icon-large"></i></a> &nbsp; <a title="{$lang::admin_tab_th_install}" href="{$ext_turn_link}"><i class="icon-wrench icon-large"></i></a>

@@ -8,7 +8,7 @@
 * регистрация области uri компонента
 * Первый параметр - uri, второй - директория компонента
 */
-if(!page::registerPathWay('static', 'static')) { exit("Component static cannot be registered!"); }
+if(!extension::registerPathWay('static', 'static')) { exit("Component static cannot be registered!"); }
 
 /**
 * Главный класс компонента. Имя = com_ + имя директории компонента.

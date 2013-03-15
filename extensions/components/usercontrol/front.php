@@ -1,12 +1,10 @@
 <?php
 // регистрируем компонент
-if(!page::registerPathWay(array('login', 'register', 'recovery', 'logout', 'aprove'), 'usercontrol')) { exit("Component usercontrol cannot be registered!"); }
-// запрещаем кеширование компонента
+if(!extension::registerPathWay(array('login', 'register', 'recovery', 'logout', 'aprove'), 'usercontrol')) { exit("Component usercontrol cannot be registered!"); }
 page::setNoCache('login');
 page::setNoCache('register');
 page::setNoCache('recovery');
 page::setNoCache('logout');
-
 
 class com_usercontrol
 {
