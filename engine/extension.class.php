@@ -124,7 +124,7 @@ class extension
 				if(file_exists($file))
 				{
 					require_once($file);
-					$mod_class = "mod_{$result['dir']}";
+					$mod_class = "mod_{$result['dir']}_front";
 					$load_module = new $mod_class;
 					// делаем маркер на модуль, который необходимо подгрузить в позиции after()
 					$this->notifyModuleAfter[] = $load_module;
@@ -177,7 +177,7 @@ class extension
 		{
 			if($pathway[0] == $com_path)
 			{
-				$class_com_name = "com_{$com_dir}";
+				$class_com_name = "com_{$com_dir}_front";
 				$init_class = new $class_com_name;
 				$init_class->load();
 				// вхождение в путь найдено, дальнейшая обработка не нужна.
@@ -187,6 +187,21 @@ class extension
 		return false;
 	}
 	
+}
+
+// зачатки интерфейсов для наследования расширениями
+interface com_front
+{
+	public function load();
+}
+interface mod_front
+{
+	public function before();
+	public function after();
+}
+interface hook_front
+{
+	public function load();
 }
 
 

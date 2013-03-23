@@ -50,7 +50,7 @@
 				</li>
 				
 				<li class="dropdown">					
-					<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 						<i class="icon-external-link"></i>
 						<span>{$lang::admin_nav_hooks}</span> 
 						<b class="caret"></b>

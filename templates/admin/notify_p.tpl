@@ -1,0 +1,1 @@
+<div class="alert alert-{$notify_class}"><button type="button" class="close" data-dismiss="alert">&times;</button>{$notify_text}</div>

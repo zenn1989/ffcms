@@ -1,6 +1,6 @@
 <?php
 
-class mod_usermenu
+class mod_usermenu_front implements mod_front
 {
 	public function after()
 	{
@@ -17,6 +17,8 @@ class mod_usermenu
 		$template->set('mod_usermenu', $usermenu);
 	
 	}
+	
+	public function before() { }
 
 }
 

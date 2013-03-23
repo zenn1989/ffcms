@@ -3,7 +3,7 @@
 * Хук отвечающий за капчу
 */
 
-class hook_captcha
+class hook_captcha_front implements hook_front
 {
 
 	// обязательно возвращение полного URL

@@ -11,6 +11,9 @@ class admin
 	private $action = null;
 	private $add = null;
 	private $id = 0;
+	private $page = 0;
+	
+	private $object_name = null;
 
 	function __construct()
 	{
@@ -18,6 +21,7 @@ class admin
 		$this->action = $_GET['action'];
 		$this->add = $_GET['add'];
 		$this->id = (int)$_GET['id'];
+		$this->page = (int)$_GET['page'];
 	}
 
 
@@ -134,10 +138,11 @@ class admin
 		{
 			return false;
 		}
-		$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_hooks WHERE id = ?");
+		$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_hooks WHERE id = ?");
 		$stmt->bindParam(1, $this->id, PDO::PARAM_INT);
 		$stmt->execute();
-		if($stmt->rowCount() == 1)
+		$result = $stmt->fetch();
+		if($result[0] == 1)
 		{
 			return true;
 		}
@@ -215,10 +220,11 @@ class admin
 		{
 			return false;
 		}
-		$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_modules WHERE id = ?");
+		$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_modules WHERE id = ?");
 		$stmt->bindParam(1, $this->id, PDO::PARAM_INT);
 		$stmt->execute();
-		if($stmt->rowCount() == 1)
+		$result = $stmt->fetch();
+		if($result[0] == 1)
 		{
 			return true;
 		}
@@ -230,7 +236,25 @@ class admin
 		global $template,$language,$database,$constant;
 		if($this->component_exists())
 		{
-			// компонент существует!
+			$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_components WHERE id = ?");
+			$stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+			$stmt->execute();
+			$result = $stmt->fetch();
+			$component_back = $constant->root.'/extensions/components/'.$result['dir'].'/back.php';
+			$backend_config = null;
+			if(file_exists($component_back))
+			{
+				$this->object_name = $result['name'];
+				require_once($component_back);
+				$class = "com_{$result['dir']}_back";
+				$init = new $class;
+				$backend_config = $init->load();
+			}
+			if($backend_config == null || strlen($backend_config) < 1)
+			{
+				$backend_config = $this->showNull();
+			}
+			return $backend_config;
 		}
 		else
 		{
@@ -273,8 +297,8 @@ class admin
 							$tbody);
 				}
 				$iconset = $template->assign('ext_config_link', '?object=components&id='.$result['id'], $template->tplget('manage_all', null, true));
-				$prepare_theme['all'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
-						array($result['id'], $result['name'], $result['description'], $iconset),
+				$prepare_theme['all'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
+						array($result['id'], $result['name'], $result['description'], $iconset, $config_link),
 						$tbody);
 			}
 			$alllist = $template->assign('extension_tbody', $prepare_theme['all'], $thead);
@@ -290,6 +314,12 @@ class admin
 		}
 	}
 	
+	private function showNull()
+	{
+		global $template;
+		return $template->tplget('nullcontent', null, true);
+	}
+	
 	private function component_exists()
 	{
 		global $database,$constant;
@@ -297,10 +327,11 @@ class admin
 		{
 			return false;
 		}
-		$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_components WHERE id = ?");
+		$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_components WHERE id = ?");
 		$stmt->bindParam(1, $this->id, PDO::PARAM_INT);
 		$stmt->execute();
-		if($stmt->rowCount() == 1)
+		$result = $stmt->fetch();
+		if($result[0] == 1)
 		{
 			return true;
 		}
@@ -439,6 +470,25 @@ class admin
 			return "Ok";
 		}
 	}
+	
+	/**
+	 * Подгрузка блока конфигураций с определенным типом.
+	 * @param String $variable_name
+	 * @param String $variable_value
+	 * @param String $variable_pseudo_name
+	 * @param String $variable_desc
+	 * @return mixed
+	 */
+	public function tplSettings($variable_name, $variable_value, $variable_pseudo_name = null, $variable_desc = null)
+	{
+		global $template;
+		if($variable_pseudo_name == null)
+			$variable_pseudo_name = $variable_name;
+		$theme = $template->assign(array('ext_config_name', 'ext_config_value', 'ext_label', 'ext_description'),
+				array($variable_name, $variable_value, $variable_pseudo_name, $variable_desc), 
+				$template->tplget('config_block', null, true));
+		return $theme;
+	}
 
 	private function get_server_load() {
 
@@ -453,6 +503,26 @@ class admin
 			$load = $sys_load[0];
 		}
 		return $load;
+	}
+	
+	public function getID()
+	{
+		return $this->id;
+	}
+	
+	public function getAction()
+	{
+		return $this->action;
+	}
+	
+	public function getPage()
+	{
+		return $this->page;
+	}
+	
+	public function getExtName()
+	{
+		return $this->object_name;
 	}
 
 }

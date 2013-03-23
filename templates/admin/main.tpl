@@ -19,11 +19,9 @@
 	<link rel="stylesheet" href="{$url}/{$tpl_dir}/css/bootstrap-responsive.css">
 
 	<link rel="stylesheet" href="{$url}/{$tpl_dir}/css/ui-lightness/jquery-ui-1.8.21.custom.css">	
-	
+	<link rel="stylesheet" type="text/css" href="{$url}/{$tpl_dir}/css/bootstrap-wysihtml5.css"></link>
 	<link rel="stylesheet" href="{$url}/{$tpl_dir}/css/application.css">
 	<link rel="stylesheet" href="{$url}/{$tpl_dir}/css/pages/dashboard.css">
-
-	<script src="{$url}/{$tpl_dir}/js/libs/modernizr-2.5.3.min.js"></script>
 
 </head>
 
@@ -84,8 +82,6 @@
 </div> <!-- /#wrapper -->
 
 
-
-
 <div id="footer">
 		
 	<div class="container">
@@ -102,14 +98,14 @@
 	
 </div> <!-- /#footer -->
 
+<script src="{$url}/{$tpl_dir}/js/wysihtml5-0.3.0.min.js"></script>
+<script src="{$url}/{$tpl_dir}/js/jquery.min.js"></script>
+<script src="{$url}/{$tpl_dir}/js/bootstrap.min.js"></script>
+<script src="{$url}/{$tpl_dir}/js/underscore-min.js"></script>
 
-
-
-
-<script src="{$url}/{$tpl_dir}/js/libs/jquery-1.7.2.min.js"></script>
-<script src="{$url}/{$tpl_dir}/js/libs/jquery-ui-1.8.21.custom.min.js"></script>
-
-<script src="{$url}/{$tpl_dir}/js/libs/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="{$url}/{$tpl_dir}/js/bootstrap-wysihtml5-0.0.2.js"></script>
+<script type="text/javascript" src="{$url}/api.php?u=1&action=wysijs"></script>
+<script type="text/javascript" src="{$url}/{$tpl_dir}/js/jqueryupload.js"></script>
 
 </body>
 </html>

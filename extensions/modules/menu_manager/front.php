@@ -4,13 +4,15 @@
 * Динамические пользовательские многоуровневые меню управления и навигации на сайте. Видимая часть для пользователя.
 */
 
-class mod_menu_manager
+class mod_menu_manager_front implements mod_front
 {
 	// загрузка, метод after, по глобальному шаблону
 	public function after()
 	{
 		return $this->loadSql();
 	}
+	
+	public function before() {  }
 	
 	// выбираем из sql нужные даные
 	// имена шаблонов, вложенный массив с неограниченным количеством уровней

@@ -10,7 +10,7 @@ require_once(root."/config.php");
 
 // подключаем и инициируем все используемые классы движка
 require_once(root."/load.php");
-
+date_default_timezone_set($constant->time_zone);
 // загрузка интерфейса админ панели
 $admin->doload();
 echo $template->compile();

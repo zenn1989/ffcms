@@ -2,7 +2,7 @@
 
 
 // Отображение статичных блоков.
-class mod_static_includes
+class mod_static_includes_front implements mod_front
 {
 	public function before()
 	{
@@ -14,6 +14,7 @@ class mod_static_includes
 			$page->setContentPosition($result['tag'], $result['template'], $result['index']);
 		}
 	}
+	public function after() { }
 }
 
 ?>

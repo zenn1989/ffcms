@@ -15,6 +15,8 @@ require_once(root."/config.php");
 
 // подключаем и инициируем все используемые классы движка
 require_once(root."/load.php");
+// выставляем стандарт времени
+date_default_timezone_set($constant->time_zone);
 
 // сборщик статистики бдит
 $robot->collect();

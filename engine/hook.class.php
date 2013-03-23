@@ -30,7 +30,7 @@ class hook
 			return null;
 		}
 		require_once($file);
-		$class = "hook_{$this->hook_list[$type]}";
+		$class = "hook_{$this->hook_list[$type]}_front";
 		$init = new $class;
 		return $init->load();
 	}

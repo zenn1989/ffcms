@@ -13,7 +13,7 @@ if(!extension::registerPathWay('static', 'static')) { exit("Component static can
 /**
 * Главный класс компонента. Имя = com_ + имя директории компонента.
 */
-class com_static
+class com_static_front implements com_front
 {
 	/**
 	* Одноименный метод. Должен возвращать результат обработки.

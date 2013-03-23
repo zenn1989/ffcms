@@ -25,6 +25,11 @@ class constant
 	
 	// язык
 	public $lang = 'ru';
+    // временная зона
+    public $time_zone = "Europe/Kiev";
+    
+    // максимальный размер изображения (kb)
+    public $upload_img_max_size = 500;
     
     function __construct() 
     {

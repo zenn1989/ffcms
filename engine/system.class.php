@@ -3,6 +3,25 @@
 class system
 {
 	
+	public $post_data = array();
+	public $get_data = array();
+	
+	function __construct()
+	{
+		$this->post_data = $_POST;
+		$this->get_data = $_GET;
+	}
+	
+	public function post($key)
+	{
+		return $this->post_data[$key];
+	}
+	
+	public function get($key)
+	{
+		return $this->get_data[$key];
+	}
+	
 	/**
 	* Boolean функция, отвечающая true если $what обнаружено в $where
 	*/
@@ -28,7 +47,7 @@ class system
 		if(sizeof($split) > 1)
 		{
 			$return = null;
-			for($i=0;$i<sizeof($split);$i++)
+			for($i=0;$i<(sizeof($split)-1);$i++)
 			{
 				$return .= $split[$i];
 			}
@@ -56,7 +75,7 @@ class system
 	}
 	
 	/**
-	* Псевдо-случайная A-Za-z-9 строка с заданной длиной
+	* Псевдо-случайная A-Za-z0-9 строка с заданной длиной
 	* Алгоритм достаточно устойчив к бруту, если его длина не менее 16 символов
 	* Однако, для токенов или подобных алгоритмов, рекомендуем функцию md5random()
 	*/
@@ -85,6 +104,18 @@ class system
 			}
 		}
 		return $out;	
+	}
+	
+	/**
+	 * Случайный Integer
+	 * @param Integer $sequence - показатель длины случайного числа
+	 * @return number
+	 */
+	public function randomInt($sequence)
+	{
+		$start = pow(10, $sequence-1);
+		$end = pow(10, $sequence);
+		return rand($start, $end);
 	}
 	
 	/**
@@ -125,6 +156,16 @@ class system
 	{
 		global $constant;
 		header("Location: {$constant->url}{$uri}"); 
+	}
+	
+	/**
+	 * Длина строки с корректной обработкой UTF-8
+	 * @param unknown_type $data
+	 * @return number
+	 */
+	public function length($data)
+	{
+		return mb_strlen($data, "UTF-8");
 	}
 	
 }

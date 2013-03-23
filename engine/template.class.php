@@ -247,6 +247,19 @@ class template
 	}
 	
 	/**
+	 * Возвращает блок уведомлений
+	 * @param ENUM('error', 'info', 'success') $type
+	 * @param String $message
+	 * @param Boolean $isadmin
+	 * @return mixed
+	 */
+	public function compileNotify($type, $text, $isadmin = false)
+	{
+		return $this->assign(array('notify_class', 'notify_text'), 
+				array($type, $text), 
+				$this->tplget('notify_p', null, $isadmin));
+	}
+	/**
 	* Отладочная информация о кол-ве считанных шаблонов
 	*/
 	public function getReadCount()

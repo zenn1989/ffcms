@@ -6,7 +6,7 @@ page::setNoCache('register');
 page::setNoCache('recovery');
 page::setNoCache('logout');
 
-class com_usercontrol
+class com_usercontrol_front
 {
 	public function load()
 	{
