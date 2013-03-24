@@ -15,11 +15,13 @@ require_once(root."/engine/database.class.php");
 require_once(root."/engine/language.class.php");
 require_once(root."/engine/system.class.php");
 require_once(root."/engine/api.class.php");
+require_once(root."/engine/image.class.php");
 
 $constant = new constant;
 $system = new system;
 $database = new database;
 $system = new system;
+$image = new image;
 
 $api = new api;
 // если необходима работа с правами доступа и проверкой пользовательских данных

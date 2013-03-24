@@ -69,21 +69,28 @@ bootWysiOverrides = {
       
       if (!activeButton) {
         insertImageModal.modal('show');
-         
-         $('#file1').change(function() {
-            $(this).uploadimage('{$url}/api.php?u=1&action=uploadimg', function(res) {
-                //$(res).insertAfter(this);
-                if(res.status)
-                {
-					 chooser.append(optionTemplate({"file":res.file,"caption":res.caption,"foreground":res.forground,"background":res.background}));
-					 $('#uploadresult').html('Upload successful').addClass('alert alert-success');
-				}
-				else
-				{
-					$('#uploadresult').html('Upload failed').addClass('alert alert-error');
-				}		
-            }, 'json');
-        });
+	         $('#file1').change(function() {
+	        	var image_custom_caption = $('#img_caption').val();
+	        	if(image_custom_caption.length < 1)
+	        	{
+	        		$('#uploadresult').html('Set image title and choise file again!').addClass('alert alert-error');
+	        	}
+	        	else
+	        	{
+		            $(this).uploadimage('{$url}/api.php?u=1&action=uploadimg&seo_title='+image_custom_caption, function(res) {
+		                //$(res).insertAfter(this);
+		                if(res.status)
+		                {
+							 chooser.append(optionTemplate({"file":res.file,"caption":image_custom_caption,"foreground":res.forground,"background":res.background}));
+							 $('#uploadresult').html('Upload successful').addClass('alert alert-success');
+						}
+						else
+						{
+							$('#uploadresult').html('Upload failed').addClass('alert alert-error');
+						}		
+		            }, 'json');
+	        	}
+	        });
         
         insertImageModal.on('click.dismiss.modal', '[data-dismiss="modal"]', function(e) {
           e.stopPropagation();
@@ -127,8 +134,14 @@ $(function() {
           "</div>" +
           "<div class='modal-body'>" +
           "<div class='chooser_wrapper'>" +
-          "<table class='image_chooser images'></table>" +
-          "<input name=\"file\" id=\"file1\" type=\"file\"><br>" +
+          "<table class='image_chooser images'></table><hr />" +
+          "<table width=\"100%\">"+
+          "<tr><td>Choice File</td><td>Set title</td></tr>"+
+          "<tr>"+
+          "<td><input name=\"file\" id=\"file1\" type=\"file\"></td>" +
+          "<td><input name=\"img_caption\" id=\"img_caption\" type=\"text\" value=\"Untitled\"></td>" +
+          "</tr>"+
+          "</table>"+
           "<div id=\"uploadresult\"></div>" +
           "</div>" +
           "" +

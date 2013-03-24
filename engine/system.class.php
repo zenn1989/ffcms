@@ -19,7 +19,7 @@ class system
 	
 	public function get($key)
 	{
-		return $this->get_data[$key];
+		return urldecode($this->get_data[$key]);
 	}
 	
 	/**
