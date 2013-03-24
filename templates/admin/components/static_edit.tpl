@@ -137,9 +137,12 @@ function JSTranslit()
 		A["я"]="ya";A["ч"]="ch";A["с"]="s";A["м"]="m";A["и"]="i";A["т"]="t";A["ь"]="";A["б"]="b";A["ю"]="yu";A[" "]="_";
 		if(default_out_length < 1)
 		{
-			new_el.value = el.value.replace(/([\u0410-\u0451 ])/g,
+			new_el.value = el.value.replace(/[^A-Za-z0-9\u0410-\u0451_ ]/g, '').replace(/([\u0410-\u0451 ])/g,
 				function (str,p1,offset,s) {
-					if (A[str] != 'undefined'){return A[str].toLowerCase();}
+					if (A[str] != 'undefined')
+					{
+						return A[str].toLowerCase();
+					}
 				}
 			);
 		}
