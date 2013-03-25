@@ -22,7 +22,6 @@
 	<link rel="stylesheet" type="text/css" href="{$url}/{$tpl_dir}/css/bootstrap-wysihtml5.css"></link>
 	<link rel="stylesheet" href="{$url}/{$tpl_dir}/css/application.css">
 	<link rel="stylesheet" href="{$url}/{$tpl_dir}/css/pages/dashboard.css">
-
 </head>
 
 <body>

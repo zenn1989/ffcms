@@ -14,12 +14,28 @@ class system
 	
 	public function post($key)
 	{
-		return $this->post_data[$key];
+		return $this->noParam($this->post_data[$key]);
 	}
 	
 	public function get($key)
 	{
 		return urldecode($this->get_data[$key]);
+	}
+	
+	/**
+	 * Замена глобальных переменных на сущности ANSI там, где они не нужны(USER INPUT данные). Т.к. сущесвуют методы, позволяющие работать
+	 * в суперпозиции - необходимо очистить вводимый пользователем контент от {$vars} в целях безопасности.
+	 * @param unknown_type $data
+	 * @return mixed
+	 */
+	public function noParam($data)
+	{
+		preg_match_all('/{\$(.*?)}/i', $data, $matches, PREG_PATTERN_ORDER);
+		foreach($matches[1] as $clear)
+		{
+			$data = preg_replace('/{\$(.*?)}/i', "&#123;&#036;$clear&#125;", $data, 1);
+		}
+		return $data;
 	}
 	
 	/**
@@ -156,6 +172,13 @@ class system
 	{
 		global $constant;
 		header("Location: {$constant->url}{$uri}"); 
+	}
+	
+	public function isLatinOrNumeric($data)
+	{
+		if(preg_match('/[^A-Za-z0-9_]/i', $data))
+			return false;
+		return true;
 	}
 	
 	/**

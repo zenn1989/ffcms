@@ -9,7 +9,7 @@
 {$notify}
 <form class="form-horizontal" method="post" action="">
   <div class="control-group">
-    <label class="control-label" for="inputEmail">{$lang::usercontrol_auth_email}</label>
+    <label class="control-label" for="inputEmail">{$lang::usercontrol_auth_email_or_login}</label>
     <div class="controls">
       <input name="email" type="text" placeholder="ivan.petrov@gmail.com">
     </div>

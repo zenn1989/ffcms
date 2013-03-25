@@ -205,7 +205,7 @@ class com_static_back
 	private function check_pageway($way, $id = 0)
 	{
 		global $database,$constant;
-		if(preg_match('/[\'\/~`\!@#\$%\^&\*\(\)+=\{\}\[\]\|;:"\<\>,\?\\\]/', $way))
+		if(preg_match('/[\'~`\!@#\$%\^&\*\(\)+=\{\}\[\]\|;:"\<\>,\?\\\]/', $way))
 		{
 			return false;
 		}

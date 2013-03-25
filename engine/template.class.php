@@ -93,11 +93,6 @@ class template
 		$this->precompile_tag[$tag] = $value;
 	}
 	
-	private function removeUseLessTags()
-	{
-		$this->content = str_replace($this->registered_vars, '', $this->content);
-	}
-	
 	/**
 	* Установка всех значений 1 блока по имени блока.
 	*/
@@ -158,7 +153,7 @@ class template
 	*/
 	private function cleanvar()
 	{
-		$this->content = preg_replace('/{\$(.*)}/', '', $this->content);
+		$this->content = preg_replace('/{\$(.*?)}/', '', $this->content);
 	}
 	
 	/**
