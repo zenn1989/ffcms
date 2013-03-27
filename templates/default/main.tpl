@@ -48,6 +48,9 @@
 		{$left}
 		<div class="span9">
 			<div class="well">
+			{$if !user.auth}
+			SHOW ME TITS!
+			{$/if}
 				{$body}
 			</div>
 		</div>

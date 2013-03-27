@@ -489,6 +489,44 @@ class admin
 				$template->tplget('config_block', null, true));
 		return $theme;
 	}
+	/**
+	 * Быстрая отрисовка таблицы. Параметры должны быть равноценными по сайзу массивами. 
+	 * @param array $columns - названия столбцов, массив. ['Column 1', 'Column 2' ... 'Column n']
+	 * @param array $tbody - содержимое строк с столбцами array[0] = array(column 1, column 2 ... column n);array[1] = (); ...
+	 */
+	public function tplRawTable($columns, $tbody)
+	{
+		global $template,$language;
+		if(is_array($columns) && is_array($tbody))
+		{
+			$thead = $template->tplget('rawtable_thead', null, true);
+			$th_column = $template->tplget('rawtable_thcolumn', null, true);
+			$tbody_tr = $template->tplget('rawtable_tbody', null, true);
+			$td_raw_data = $template->tplget('rawtable_tdcolumn', null, true);
+			$th_raw_result = null;
+			foreach($columns as $th_data)
+			{
+				$th_raw_result .= $template->assign('raw_column', $th_data, $th_column);
+			}
+			// разбивка всего массива на строки tr
+			$full_body_result = null;
+			foreach($tbody as $tr_data)
+			{
+				$tr_contains = null;
+				// Разбивка 1 строки tr на единичные колонки td
+				foreach($tr_data as $td_data)
+				{
+					$tr_contains .= $template->assign('this_td', $td_data, $td_raw_data); 
+				}
+				$full_body_result .= $template->assign('raw_td', $tr_contains, $tbody_tr);
+			}
+			return $template->assign(array('raw_th', 'raw_tbody'), array($th_raw_result, $full_body_result), $thead);
+		}
+		else
+		{
+			return;
+		}
+	}
 
 	private function get_server_load() {
 

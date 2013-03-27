@@ -31,6 +31,8 @@ class constant
     // максимальный размер изображения (kb)
     public $upload_img_max_size = 500;
     
+    public $do_compress_html = true;
+    
     function __construct() 
     {
         global $config;

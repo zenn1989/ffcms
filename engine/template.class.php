@@ -50,7 +50,7 @@ class template
 	*/
 	public function compile()
 	{
-		global $cache,$extension;
+		global $cache,$extension,$constant;
 		$this->fortpl('header');
 		$this->fortpl('left');
 		$this->fortpl('right');
@@ -64,7 +64,12 @@ class template
 		}
 		$this->postcompile();
 		$this->language();
+		$this->ruleCheck();
 		$this->cleanvar();
+		if($constant->do_compress_html)
+		{
+			$this->compress();
+		}
 		if(!isadmin)
 		{
 			$cache->save($this->content);
@@ -157,6 +162,35 @@ class template
 	}
 	
 	/**
+	 * Сжатие страницы путем удаления пробелов и переносов строк. Для HTML это не помеха.
+	 */
+	private function compress()
+	{
+		$this->content = preg_replace('/[\s]{2,}/', ' ', str_replace(array("\n", "\r", "\t", "\r\n"), '', $this->content));
+	}
+	
+	/**
+	 * Функция для обработки условий {$if условие}содержимое{/$if} в шаблонах
+	 */
+	private function ruleCheck()
+	{
+		global $rule;
+		preg_match_all('/{\$if (.+?)}(.*?){\$\/if}/s', $this->content, $matches);
+		// $matches[0][$i] - все
+		// $matches[1][$i] - условие
+		// $matches[2][$i] - содержимое
+		for($i=0;$i<sizeof($matches[1]);$i++)
+		{
+			$theme_result = null;
+			if($rule->getInstance()->check($matches[1][$i]))
+			{
+				$theme_result = $matches[2][$i];
+			}
+			$this->content = str_replace($matches[0][$i], $theme_result, $this->content);
+		}
+	}
+	
+	/**
 	* Установка стандартных шаблоных переменных. Пример: {$url} => http://blabla
 	*/
 	private function setDefaults($theme, $isadmin)
@@ -199,6 +233,13 @@ class template
 		return $this->tplException($tplname);
 	}
 	
+	/**
+	 * Назначение тегу значения (краткий аналог str_replace)
+	 * @param unknown_type $tag
+	 * @param unknown_type $data
+	 * @param unknown_type $where
+	 * @return mixed
+	 */
 	public function assign($tag, $data, $where)
 	{
 		if(is_array($tag))

@@ -32,17 +32,20 @@ class com_static_back
 				$stmt->bindParam(2, $this->list_count, PDO::PARAM_INT);
 				$stmt->execute();
 			}
-			$thead_theme = $template->tplget('static_list_thead', 'components/', true);
-			$tbody_theme = $template->tplget('static_list_tbody', 'components/', true);
+			$static_theme = $template->tplget('static_list', 'components/', true);
+			$static_manage = $template->tplget('static_list_manage', 'components/', true);
 			$tbody = null;
+			$static_array_data = array();
 			while($res = $stmt->fetch())
 			{
 				$edit_link = "?object=components&id=".$admin->getID()."&action=edit&page=".$res['id'];
 				$delete_link = "?object=components&id=".$admin->getID()."&action=delete&page=".$res['id'];
-				$tbody .= $template->assign(array('page_id', 'page_title', 'page_path', 'page_edit', 'com_pathway', 'page_delete'),
-						array($res['id'], $res['title'], $res['pathway'], $edit_link, $this->com_pathway, $delete_link),
-						$tbody_theme);
+				$manage_link = $template->assign(array('page_edit', 'page_delete'), array($edit_link, $delete_link), $static_manage);
+				$title_with_edit = '<a href="'.$edit_link.'">'.$res['title'].'</a>';
+				$path_with_view = '<a href="'.$constant->url.'/'.$this->com_pathway.'/'.$res['pathway'].'" target="_blank">'.$res['pathway'].'</a>';
+				$static_array_data[] = array($res['id'], $title_with_edit, $path_with_view, $manage_link);
 			}
+			$tbody =  $admin->tplrawTable(array($language->get('admin_component_static_th_id'), $language->get('admin_component_static_th_title'), $language->get('admin_component_static_th_path'), $language->get('admin_component_static_th_edit')), $static_array_data);
 			$pagination_list_theme = $template->tplget('static_list_pagination', 'components/', true);
 			$pagination_page_count = $this->getPageCount();
 			$ret_position = intval($admin->getPage()/$this->list_count);
@@ -91,7 +94,7 @@ class com_static_back
 					}
 				
 			}
-			$work_body = $template->assign(array('ext_body_result', 'ext_search_value', 'ext_pagination_list'), array($tbody, $system->post('search'), $pagination_list), $thead_theme);
+			$work_body = $template->assign(array('ext_table', 'ext_search_value', 'ext_pagination_list'), array($tbody, $system->post('search'), $pagination_list), $static_theme);
 		}
 		elseif($admin->getAction() == "edit")
 		{
@@ -184,6 +187,37 @@ class com_static_back
 				$work_body = $template->assign(array('static_date'),
 						array(date('Y-m-d')),
 						$template->tplget('static_edit', 'components/', true));
+			}
+		}
+		elseif($admin->getAction() == "delete" && $admin->getPage() > 0)
+		{
+			$action_page_title .= $language->get('admin_component_static_delete');
+			$page_id = $admin->getPage();
+			if($system->post('submit'))
+			{
+				$stmt = $database->con()->prepare("DELETE FROM {$constant->db['prefix']}_com_static WHERE id = ?");
+				$stmt->bindParam(1, $page_id, PDO::PARAM_INT);
+				$stmt->execute();
+				$work_body = $language->get('admin_component_static_delete_success_msg');
+			}
+			else
+			{
+				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_static WHERE id = ?");
+				$stmt->bindParam(1, $page_id, PDO::PARAM_INT);
+				$stmt->execute();
+				if($stmt->rowCount() > 0)
+				{
+					$res = $stmt->fetch();
+					$array_data[] = array($res['id'], $res['title'], $res['pathway']);
+					$tbody =  $admin->tplrawTable(
+							array($language->get('admin_component_static_th_id'), $language->get('admin_component_static_th_title'), $language->get('admin_component_static_th_path')), 
+							$array_data);
+					
+				}
+				$theme_delete = $template->assign(array('static_delete_info', 'cancel_link'),
+						array($tbody, '?object=components&id='.$admin->getId()),
+						$template->tplget('static_delete', 'components/', true));
+				$work_body = $theme_delete;
 			}
 		}
 		$menu_theme = $template->tplget('config_menu', null, true);

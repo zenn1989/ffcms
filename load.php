@@ -14,6 +14,7 @@ require_once(root."/engine/mail.class.php");
 require_once(root."/engine/admin.class.php");
 require_once(root."/engine/meta.class.php");
 require_once(root."/engine/robot.class.php");
+require_once(root."/engine/rule.class.php");
 
 $constant = new constant;
 $system = new system;
@@ -29,5 +30,6 @@ $mail = new mail;
 $admin = new admin;
 $meta = new meta;
 $robot = new robot;
+$rule = new rule;
 
 ?>

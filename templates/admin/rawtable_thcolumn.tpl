@@ -1,0 +1,1 @@
+<th>{$raw_column}</th>
