@@ -12,7 +12,7 @@ class admin
 	private $add = null;
 	private $id = 0;
 	private $page = 0;
-	
+
 	private $object_name = null;
 
 	function __construct()
@@ -65,7 +65,7 @@ class admin
 		$template->init();
 		return $template->compile();
 	}
-	
+
 	private function loadHooks()
 	{
 		global $template,$language,$database,$constant;
@@ -127,10 +127,10 @@ class admin
 					$theme
 			);
 			return $theme;
-			
+				
 		}
 	}
-	
+
 	private function hook_exists()
 	{
 		global $database,$constant;
@@ -148,7 +148,7 @@ class admin
 		}
 		return false;
 	}
-	
+
 	private function loadModules()
 	{
 		global $template,$language,$database,$constant;
@@ -212,7 +212,7 @@ class admin
 			return $theme;
 		}
 	}
-	
+
 	private function module_exits()
 	{
 		global $database,$constant;
@@ -230,7 +230,7 @@ class admin
 		}
 		return false;
 	}
-	
+
 	private function loadComponents()
 	{
 		global $template,$language,$database,$constant;
@@ -259,8 +259,8 @@ class admin
 		else
 		{
 			// такого компонента нет, отображаем списки
-			$theme = $template->assign(array('title', 'word_all', 'word_active', 'word_noactive', 'word_toinstall'), 
-					array($language->get('admin_components_title'), $language->get('admin_components_tab_all'), $language->get('admin_components_tab_enabled'), $language->get('admin_components_tab_dissabled'), $language->get('admin_components_tab_toinstall')), 
+			$theme = $template->assign(array('title', 'word_all', 'word_active', 'word_noactive', 'word_toinstall'),
+					array($language->get('admin_components_title'), $language->get('admin_components_tab_all'), $language->get('admin_components_tab_enabled'), $language->get('admin_components_tab_dissabled'), $language->get('admin_components_tab_toinstall')),
 					$template->tplget('extension_list', null, true));
 			$thead = $template->assign(array('ext_th_1', 'ext_th_2', 'ext_th_3', 'ext_th_4'),
 					array($language->get('admin_components_table_th_1'), $language->get('admin_components_table_th_2'), $language->get('admin_components_table_th_3'), $language->get('admin_components_table_th_4'),),
@@ -306,20 +306,20 @@ class admin
 			$activelist = $template->assign('extension_tbody', $prepare_theme['enabled'], $thead);
 			$noactivelist = $template->assign('extension_tbody', $prepare_theme['dissabled'], $thead);
 			$theme = $template->assign(
-					array('all_list', 'toinstall_list', 'active_list', 'notactive_list'), 
-					array($alllist, $toinstalllist, $activelist, $noactivelist), 
+					array('all_list', 'toinstall_list', 'active_list', 'notactive_list'),
+					array($alllist, $toinstalllist, $activelist, $noactivelist),
 					$theme
-					);
+			);
 			return $theme;
 		}
 	}
-	
+
 	private function showNull()
 	{
 		global $template;
 		return $template->tplget('nullcontent', null, true);
 	}
-	
+
 	private function component_exists()
 	{
 		global $database,$constant;
@@ -337,7 +337,7 @@ class admin
 		}
 		return false;
 	}
-	
+
 	private function foreachMenuPositions()
 	{
 		global $template,$database,$constant,$language;
@@ -443,7 +443,7 @@ class admin
 		}
 		$template->globalset('json_chart_result', $json_result);
 	}
-	
+
 	private function analiseAccess($data, $rule = 'rw')
 	{
 		global $constant;
@@ -470,27 +470,47 @@ class admin
 			return "Ok";
 		}
 	}
+
+	public function tplSettingsSelectYorN($variable_name, $variable_pseudo_name = null, $variable_desc = null, $selected = false)
+	{
+		global $template;
+		if($variable_pseudo_name == null)
+			$variable_pseudo_name = $variable_name;
+		$selected_yes = null;
+		$selected_no = null;
+		$selected ? $selected_yes = "selected" : $selected_no = "selected";
+		$theme = $template->assign(array('ext_config_name', 'ext_label', 'ext_description', 'selected_yes', 'selected_no'),
+				array($variable_name, $variable_pseudo_name, $variable_desc, $selected_yes, $selected_no),
+				$template->tplget('config_block_select_yorn', null, true));
+		return $theme;
+	}
 	
+	public function tplSettingsDirectory($data)
+	{
+		global $template;
+		return $template->assign('config_directory', $data, $template->tplget('config_block_spacer', null, true));
+	}
+
 	/**
-	 * Подгрузка блока конфигураций с определенным типом.
+	 * Подгрузка блока конфигураций с определенным типом - input.text
 	 * @param String $variable_name
 	 * @param String $variable_value
 	 * @param String $variable_pseudo_name
 	 * @param String $variable_desc
 	 * @return mixed
 	 */
-	public function tplSettings($variable_name, $variable_value, $variable_pseudo_name = null, $variable_desc = null)
+	public function tplSettingsInputText($variable_name, $variable_value = null, $variable_pseudo_name = null, $variable_desc = null)
 	{
 		global $template;
 		if($variable_pseudo_name == null)
 			$variable_pseudo_name = $variable_name;
 		$theme = $template->assign(array('ext_config_name', 'ext_config_value', 'ext_label', 'ext_description'),
-				array($variable_name, $variable_value, $variable_pseudo_name, $variable_desc), 
-				$template->tplget('config_block', null, true));
+				array($variable_name, $variable_value, $variable_pseudo_name, $variable_desc),
+				$template->tplget('config_block_input_text', null, true));
 		return $theme;
 	}
 	/**
-	 * Быстрая отрисовка таблицы. Параметры должны быть равноценными по сайзу массивами. 
+	 * Быстрая отрисовка таблицы. Параметры должны быть равноценными по сайзу массивами.
 	 * @param array $columns - названия столбцов, массив. ['Column 1', 'Column 2' ... 'Column n']
 	 * @param array $tbody - содержимое строк с столбцами array[0] = array(column 1, column 2 ... column n);array[1] = (); ...
 	 */
@@ -516,7 +536,7 @@ class admin
 				// Разбивка 1 строки tr на единичные колонки td
 				foreach($tr_data as $td_data)
 				{
-					$tr_contains .= $template->assign('this_td', $td_data, $td_raw_data); 
+					$tr_contains .= $template->assign('this_td', $td_data, $td_raw_data);
 				}
 				$full_body_result .= $template->assign('raw_td', $tr_contains, $tbody_tr);
 			}
@@ -528,36 +548,146 @@ class admin
 		}
 	}
 
+	/**
+	 * Отрисовка быстрой пагинации на страницах админки где она необходима
+	 * @param unknown_type $list_count
+	 * @param unknown_type $pagination_page_count
+	 * @param unknown_type $uri_object
+	 * @return NULL
+	 */
+	public function tplRawPagination($list_count, $pagination_page_count, $uri_object = "components")
+	{
+		global $template;
+		$pagination_list_theme = $template->tplget('list_pagination', 'components/', true);
+		$ret_position = intval($this->page/$list_count);
+		$pagination_list = null;
+		if($pagination_page_count <= 10 || $ret_position < 5)
+		{
+			for($i=0;$i<=$pagination_page_count;$i++)
+			{
+				$link_page = $i*$list_count;
+				$pagination_list .= $template->assign(
+						array('ext_pagination_href', 'ext_pagination_index'),
+						array('?object='.$uri_object.'&id='.$this->id.'&action=list&page='.$link_page, $i),
+						$pagination_list_theme);
+			}
+		}
+		else
+		{
+			// Наркомания дикая, но работает
+			// алгоритм: ----1 ---2 --3 -4 <ret_position> +6 ++7 +++8 ++++9
+			$start_ret = $ret_position-4;
+			$end_ret = $ret_position+4;
+			// -3>0
+			for(;$start_ret<$ret_position;$start_ret++)
+			{
+				$pagination_list .= $template->assign(
+						array('ext_pagination_href', 'ext_pagination_index'),
+						array('?object='.$uri_object.'&id='.$this->id.'&action=list&page='.$start_ret*$list_count, $start_ret),
+						$pagination_list_theme);
+			}
+			// 0
+			$pagination_list .= $template->assign(
+					array('ext_pagination_href', 'ext_pagination_index'),
+					array('?object='.$uri_object.'&id='.$this->id.'&action=list&page='.$ret_position*$list_count, $ret_position),
+					$pagination_list_theme);
+			$ret_position++;
+			// 0>+3
+			for(;$ret_position<=$end_ret;$ret_position++)
+			{
+				if($ret_position <= $pagination_page_count)
+				{
+					$pagination_list .= $template->assign(
+							array('ext_pagination_href', 'ext_pagination_index'),
+							array('?object='.$uri_object.'&id='.$this->id.'&action=list&page='.$ret_position*$list_count, $ret_position),
+							$pagination_list_theme);
+				}
+			}
+				
+		}
+		return $pagination_list;
+	}
+
+	/**
+	 * Сохранение конфигов расширения. Обязателен формат: config:name_of_config
+	 */
+	public function trySaveConfigs()
+	{
+		global $system,$database,$constant;
+		// увы, но PHP::PDO не хочет в prepared указывать аргумент имени таблицы :( поэтому ручками
+		$table_name = $constant->db['prefix']."_";
+		switch($this->object)
+		{
+			case "components":
+			case "hooks":
+			case "modules":
+				$table_name .= $this->object;
+				break;
+		}
+		$config_array = array();
+		foreach($system->post(null) as $key => $data)
+		{
+			list($config_extension, $config_name) = explode(":", $key);
+			if($config_extension == "config" && strlen($config_name) > 0)
+			{
+				$config_array[$config_name] = $data;
+			}
+		}
+		$config_sql = serialize($config_array);
+		try
+		{
+			$stmt = $database->con()->prepare("UPDATE $table_name SET configs = ? WHERE id = ?");
+			$stmt->bindParam(1, $config_sql, PDO::PARAM_STR);
+			$stmt->bindParam(2, $this->id, PDO::PARAM_INT);
+			$stmt->execute();
+		}
+		catch(Exception $s)
+		{
+			return FALSE;
+		}
+		return true;
+	}
+
+	/**
+	 * Обвертка для выгрузки конфига из расширений
+	 * @param unknown_type $name
+	 */
+	public function getConfig($name, $var_type = null)
+	{
+		global $extension;
+		return $extension->getConfig($name, $this->id, $this->object, $var_type);
+	}
+
 	private function get_server_load() {
 
-		if (stristr(PHP_OS, 'win')) 
+		if (stristr(PHP_OS, 'win'))
 		{
 			return "WIN ERROR";
 
-		} 
-		else 
+		}
+		else
 		{
 			$sys_load = sys_getloadavg();
 			$load = $sys_load[0];
 		}
 		return $load;
 	}
-	
+
 	public function getID()
 	{
 		return $this->id;
 	}
-	
+
 	public function getAction()
 	{
 		return $this->action;
 	}
-	
+
 	public function getPage()
 	{
 		return $this->page;
 	}
-	
+
 	public function getExtName()
 	{
 		return $this->object_name;

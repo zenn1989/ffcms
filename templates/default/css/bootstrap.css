@@ -1246,6 +1246,10 @@ table .span24 {
   -moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);
   box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);
 }
+.well-500px
+{
+	min-height: 500px!important;
+}
 .well blockquote {
   border-color:#dddddd;
   border-color:rgba(0,0,0,0.15);
@@ -2946,3 +2950,5 @@ a.label:hover, a.badge:hover {
 .hide { display:none; }
 .show { display:block; }
 .invisible { visibility:hidden; }
+.centered { text-align:center; }
+.white{ background-color:#ffffff; }

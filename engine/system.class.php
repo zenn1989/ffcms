@@ -12,9 +12,9 @@ class system
 		$this->get_data = $_GET;
 	}
 	
-	public function post($key)
-	{
-		return $this->noParam($this->post_data[$key]);
+	public function post($key = null)
+	{	
+		return $key == null ? $this->post_data : $this->noParam($this->post_data[$key]);
 	}
 	
 	public function get($key)
@@ -176,9 +176,7 @@ class system
 	
 	public function isLatinOrNumeric($data)
 	{
-		if(preg_match('/[^A-Za-z0-9_]/i', $data))
-			return false;
-		return true;
+		return !preg_match('/[^A-Za-z0-9_]/s', $data) && $this->length($data) > 0;
 	}
 	
 	/**
@@ -189,6 +187,101 @@ class system
 	public function length($data)
 	{
 		return mb_strlen($data, "UTF-8");
+	}
+	
+	/**
+	 * Приведение $data к Integer 
+	 * @param unknown_type $data
+	 * @return mixed
+	 */
+	public function toInt($data)
+	{
+		return preg_replace('/[^0-9]/s', '', $data);
+	}
+	
+	/**
+	 * Проверка $data на принадлежность к диапазону 0-9
+	 * @param unknown_type $data
+	 * @return boolean
+	 */
+	public function isInt($data)
+	{
+		return !preg_match('/[^0-9]/s', $data) && $this->length($data) > 0;
+	}
+	
+	/**
+	 * Специфическая проверка на принадлежность $data к "integer string list", к примеру - 1,2,3,8,25,91,105
+	 * @param unknown_type $data
+	 */
+	public function isIntList($data)
+	{
+		return !preg_match('/[^0-9,]/s', $data) && $this->length($data) > 0;
+	}
+	
+	/**
+	 * Удаляет из массива $array значение $value (не ключ!)
+	 * @param unknown_type $value
+	 * @param unknown_type $array
+	 * @return multitype:
+	 */
+	public function valueUnsetInArray($value, $array)
+	{
+		return array_values(array_diff($array, array($value)));
+	}
+	
+	/**
+	 * Функция альтернативного имплода массива в адекватную строку (без $decimal в конце или первым элементом, отброс null елементов)
+	 * @param unknown_type $decimal
+	 * @param unknown_type $array
+	 * @return NULL|unknown
+	 */
+	public function altimplode($decimal, $array)
+	{
+		$array = $this->nullArrayClean($array);
+		if(!is_array($array))
+		{
+			return null;
+		}
+		$output = null;
+		// перебираем исключая последний элемент
+		for($i=0;$i<sizeof($array)-1;$i++)
+		{
+			$output .= $array[$i].$decimal;
+		}
+		$output .= $array[sizeof($array)-1];
+		return $output;
+	}
+	
+	/**
+	 * Отбрасывание null-элементов из массива. Индекс массива не сохраняется.
+	 * @param unknown_type $array
+	 * @return multitype:unknown
+	 */
+	public function nullArrayClean($array)
+	{
+		$outarray = array();
+		foreach($array as $values)
+		{
+			if($values != null && $values != '')
+			{
+				$outarray[] = $values;
+			}
+		}
+		return $outarray;
+	}
+	
+	/**
+	 * Добавление элемента в массив если такой элемент уже НЕ содержиться в массиве.
+	 * @param unknown_type $item
+	 * @param unknown_type $array
+	 */
+	public function arrayAdd($item, $array)
+	{
+		if(!in_array($item, $array))
+		{
+			$array[] = $item;
+		}
+		return $array;
 	}
 	
 }

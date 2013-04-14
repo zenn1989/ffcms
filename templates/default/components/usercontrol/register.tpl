@@ -30,6 +30,7 @@
       <input type="password" name="password" placeholder="Password" autocomplete="off">
     </div>
   </div>
+  {$if com.usercontrol.register_captcha}
   <div class="control-group">
     <label class="control-label" for="inputPassword">{$lang::usercontrol_auth_captcha}</label>
     <div class="controls">
@@ -37,6 +38,7 @@
       <input type="text" name="captcha">
     </div>
   </div>
+  {$/if}
   <div class="control-group">
     <div class="controls">
       <input type="submit" name="submit" class="btn btn-inverse" value="{$lang::usercontrol_reg_button}" />

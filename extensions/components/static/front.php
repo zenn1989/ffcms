@@ -57,7 +57,7 @@ class com_static_front implements com_front
 		{
 			return $template->compile404();
 		}
-		$com_theme = $template->tplget("com_static", "components/");
+		$com_theme = $template->tplget("page", "components/static/");
 		return $template->assign(array('title', 'text', 'date'), array($result['title'], $result['text'], $result['date']), $com_theme);
 		
 	}

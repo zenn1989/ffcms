@@ -10,6 +10,7 @@ class extension
 	
 	private $registeredway = array();
 	private $notifyModuleAfter = array();
+	private $config_loaded = null;
 	
 	function __construct()
 	{
@@ -185,6 +186,51 @@ class extension
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Получение значения конфигурации
+	 * @param unknown_type $name
+	 */
+	public function getConfig($name, $ext_id_or_dir, $object, $var_type = null)
+	{
+		global $system;
+		$configs = unserialize($this->loadConfigs($ext_id_or_dir, $object));
+		if($var_type == "boolean")
+		{
+			return $configs[$name] == "0" ? false : true;
+		}
+		elseif($var_type == "int")
+		{
+			return $system->toInt($configs[$name]);
+		}
+		return $configs[$name];
+	}
+	
+	private function loadConfigs($id_dir, $object)
+	{
+		global $database,$constant;
+		if($this->config_loaded == null || $this->config[$object][$id_dir] == null)
+		{
+			$table_name = $constant->db['prefix']."_";
+			switch($object)
+			{
+				case "components":
+				case "hooks":
+				case "modules":
+					$table_name .= $object;
+					break;
+				default:
+					return;
+			}
+			$stmt = $database->con()->prepare("SELECT configs FROM $table_name WHERE id = ? OR dir = ?");
+			$stmt->bindParam(1, $id_dir, PDO::PARAM_STR);
+			$stmt->bindParam(2, $id_dir, PDO::PARAM_STR);
+			$stmt->execute();
+			$result = $stmt->fetch();
+			$this->config[$object][$id_dir] = $result['configs'];
+		}
+		return $this->config[$object][$id_dir];
 	}
 	
 }

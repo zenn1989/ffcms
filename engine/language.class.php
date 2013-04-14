@@ -10,7 +10,15 @@ private $lang = array();
 	function __construct()
 	{
 		global $constant;
-		$file = $constant->root.'/language/'.$constant->lang.'.lang';
+		if(isadmin)
+		{
+			$file = $file = $constant->root.'/language/back_'.$constant->lang.'.lang';
+		}
+		else
+		{
+			$file = $constant->root.'/language/front_'.$constant->lang.'.lang';
+		}
+		
 		if(file_exists($file))
 		{
 			$con = file_get_contents($file);

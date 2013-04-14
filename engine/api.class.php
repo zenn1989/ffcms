@@ -20,6 +20,9 @@ class api
 				header('Content-type: application/json');
 				return json_encode($image->upload($_FILES['file'], '/upload/images/', $system->get('seo_title'), true, true));
 				break;
+			case "readwall":
+				return "PWNZ OLOLO";
+				break;
 			default:
 				break;
 		}
@@ -27,7 +30,7 @@ class api
 	
 	public function standalone()
 	{
-		return "no";
+		return "";
 	}
 	
 	private function tpl($tplname, $customdirectory, $isadmin, $property = ".tpl")

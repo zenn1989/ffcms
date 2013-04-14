@@ -66,7 +66,7 @@ class template
 		$this->language();
 		$this->ruleCheck();
 		$this->cleanvar();
-		if($constant->do_compress_html)
+		if($constant->do_compress_html && !isadmin)
 		{
 			$this->compress();
 		}
@@ -193,9 +193,9 @@ class template
 	/**
 	* Установка стандартных шаблоных переменных. Пример: {$url} => http://blabla
 	*/
-	private function setDefaults($theme, $isadmin)
+	public function setDefaults($theme, $isadmin = false)
 	{
-		global $constant;
+		global $constant,$user;
 		if($isadmin)
 		{
 			$template_path = $constant->tpl_dir.$this->separator.$constant->admin_tpl;
@@ -204,7 +204,10 @@ class template
 		{
 			$template_path = $constant->tpl_dir.$this->separator.$constant->tpl_name;
 		}
-		return str_replace(array('{$url}', '{$tpl_dir}'), array($constant->url, $template_path), $theme);
+		return str_replace(
+				array('{$url}', '{$tpl_dir}', '{$user_id}', '{$user_nick}'), 
+				array($constant->url, $template_path, $user->get('id'), $user->get('nick')), 
+				$theme);
 	}
 	
 	

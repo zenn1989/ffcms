@@ -46,54 +46,7 @@ class com_static_back
 				$static_array_data[] = array($res['id'], $title_with_edit, $path_with_view, $manage_link);
 			}
 			$tbody =  $admin->tplrawTable(array($language->get('admin_component_static_th_id'), $language->get('admin_component_static_th_title'), $language->get('admin_component_static_th_path'), $language->get('admin_component_static_th_edit')), $static_array_data);
-			$pagination_list_theme = $template->tplget('static_list_pagination', 'components/', true);
-			$pagination_page_count = $this->getPageCount();
-			$ret_position = intval($admin->getPage()/$this->list_count);
-			$pagination_list = null;
-			if($pagination_page_count <= 10 || $ret_position < 5)
-			{
-				for($i=0;$i<=$pagination_page_count;$i++)
-				{
-					$link_page = $i*$this->list_count;
-					$pagination_list .= $template->assign(
-							array('ext_pagination_href', 'ext_pagination_index'), 
-							array('?object=components&id='.$admin->getID().'&action=list&page='.$link_page, $i), 
-							$pagination_list_theme);
-				}
-			}
-			else
-			{
-					// Наркомания дикая, но работает
-					// алгоритм: ----1 ---2 --3 -4 <ret_position> +6 ++7 +++8 ++++9
-					$start_ret = $ret_position-4;
-					$end_ret = $ret_position+4;
-					// -3>0
-					for(;$start_ret<$ret_position;$start_ret++)
-					{
-						$pagination_list .= $template->assign(
-							array('ext_pagination_href', 'ext_pagination_index'), 
-							array('?object=components&id='.$admin->getID().'&action=list&page='.$start_ret*$this->list_count, $start_ret), 
-							$pagination_list_theme);
-					}
-					// 0
-					$pagination_list .= $template->assign(
-							array('ext_pagination_href', 'ext_pagination_index'),
-							array('?object=components&id='.$admin->getID().'&action=list&page='.$ret_position*$this->list_count, $ret_position),
-							$pagination_list_theme);
-					$ret_position++;
-					// 0>+3
-					for(;$ret_position<=$end_ret;$ret_position++)
-					{
-						if($ret_position <= $pagination_page_count)
-						{
-							$pagination_list .= $template->assign(
-									array('ext_pagination_href', 'ext_pagination_index'),
-									array('?object=components&id='.$admin->getID().'&action=list&page='.$ret_position*$this->list_count, $ret_position),
-									$pagination_list_theme);
-						}
-					}
-				
-			}
+			$pagination_list = $admin->tplRawPagination($this->list_count, $this->getPageCount(), 'components');
 			$work_body = $template->assign(array('ext_table', 'ext_search_value', 'ext_pagination_list'), array($tbody, $system->post('search'), $pagination_list), $static_theme);
 		}
 		elseif($admin->getAction() == "edit")
