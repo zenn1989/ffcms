@@ -18,10 +18,23 @@
 	<link rel="stylesheet" href="{$url}/{$tpl_dir}/css/bootstrap.css">
 	<link rel="stylesheet" href="{$url}/{$tpl_dir}/css/bootstrap-responsive.css">
 
-	<link rel="stylesheet" href="{$url}/{$tpl_dir}/css/ui-lightness/jquery-ui-1.8.21.custom.css">	
-	<link rel="stylesheet" type="text/css" href="{$url}/{$tpl_dir}/css/bootstrap-wysihtml5.css"></link>
 	<link rel="stylesheet" href="{$url}/{$tpl_dir}/css/application.css">
-	<link rel="stylesheet" href="{$url}/{$tpl_dir}/css/pages/dashboard.css">
+	
+	<link rel="stylesheet" href="{$url}/resource/elrte/css/elrte.min.css" type="text/css" media="screen">
+	<link rel="stylesheet" href="{$url}/resource/elrte/css/smoothness/jquery-ui-1.8.13.custom.css" type="text/css" media="screen">
+	
+
+	<link rel="stylesheet" type="text/css" media="screen" href="{$url}/resource/elfinder/css/elfinder.min.css">
+	<link rel="stylesheet" type="text/css" media="screen" href="{$url}/resource/elfinder/css/theme.css">
+	
+	<script src="{$url}/{$tpl_dir}/js/jquery.min.js"></script>
+	<script src="{$url}/resource/elrte/js/jquery-ui.min.js" type="text/javascript"></script>
+	<script src="{$url}/{$tpl_dir}/js/bootstrap.min.js"></script>
+	
+	<script src="{$url}/resource/elrte/js/elrte.min.js" type="text/javascript"></script>
+	<script src="{$url}/resource/elrte/js/i18n/elrte.ru.js" type="text/javascript"></script>
+	<script type="text/javascript" src="{$url}/resource/elfinder/js/elfinder.min.js"></script>
+	<script type="text/javascript" src="{$url}/resource/elfinder/js/i18n/elfinder.ru.js"></script>
 </head>
 
 <body>
@@ -96,15 +109,28 @@
 	</div> <!-- /container -->
 	
 </div> <!-- /#footer -->
-
-<script src="{$url}/{$tpl_dir}/js/wysihtml5-0.3.0.min.js"></script>
-<script src="{$url}/{$tpl_dir}/js/jquery.min.js"></script>
-<script src="{$url}/{$tpl_dir}/js/bootstrap.min.js"></script>
-<script src="{$url}/{$tpl_dir}/js/underscore-min.js"></script>
-
-<script type="text/javascript" src="{$url}/{$tpl_dir}/js/bootstrap-wysihtml5-0.0.2.js"></script>
-<script type="text/javascript" src="{$url}/api.php?u=1&action=wysijs"></script>
-<script type="text/javascript" src="{$url}/{$tpl_dir}/js/jqueryupload.js"></script>
-
+<script type="text/javascript" charset="utf-8">
+	$().ready(function() {
+		var opts = {
+			cssClass : 'el-rte',
+			lang     : 'en',
+			height   : 350,
+			fmOpen : function(callback) {
+			      $('<div/>').dialogelfinder({
+			        url : '{$url}/api.php?u=1&action=elfinder', // connector URL (REQUIRED)
+			        // lang: 'ru', // elFinder language (OPTIONAL)
+			        commandsOptions: {
+			          getfile: {
+			            oncomplete: 'destroy' // destroy elFinder after file selection
+			          }
+			        },
+			        getFileCallback: callback // pass callback to editor
+			      });
+			    },
+			cssfiles : ['{$url}/resource/elrte/css/elrte-inner.css']
+		}
+		$('.wysi').elrte(opts);
+		})
+</script>
 </body>
 </html>

@@ -127,7 +127,7 @@ class admin
 					$theme
 			);
 			return $theme;
-				
+
 		}
 	}
 
@@ -484,7 +484,7 @@ class admin
 				$template->tplget('config_block_select_yorn', null, true));
 		return $theme;
 	}
-	
+
 	public function tplSettingsDirectory($data)
 	{
 		global $template;
@@ -603,7 +603,7 @@ class admin
 							$pagination_list_theme);
 				}
 			}
-				
+
 		}
 		return $pagination_list;
 	}

@@ -1,12 +1,16 @@
 <?php
 // регистрируем компонент
-if(!extension::registerPathWay(array('login', 'register', 'recovery', 'logout', 'aprove', 'user'), 'usercontrol')) { exit("Component usercontrol cannot be registered!"); }
+if(!extension::registerPathWay(array('login', 'register', 'recovery', 'logout', 'aprove', 'user', 'message', 'settings'), 'usercontrol')) {
+	exit("Component usercontrol cannot be registered!");
+}
 page::setNoCache('login');
 page::setNoCache('register');
 page::setNoCache('recovery');
 page::setNoCache('logout');
 page::setNoCache('aprove');
 page::setNoCache('user');
+page::setNoCache('message');
+page::setNoCache('settings');
 
 class com_usercontrol_front
 {
@@ -36,18 +40,184 @@ class com_usercontrol_front
 			case "user":
 				$this->profileComponent();
 				break;
+			case "message":
+				$this->userPersonalMessage();
+				break;
 			default:
 				break;
 		}
 	}
 	
+	private function userPersonalMessage()
+	{
+		global $user,$page,$template,$rule,$database,$constant,$system,$language;
+		$userid = $user->get('id');
+		$way = $page->getPathway();
+		if($userid < 1)
+		{
+			$page->setContentPosition('body', $template->compile404());
+			return;
+		}
+		$rule->add('com.usercontrol.self_profile', true);
+		$rule->add('com.usercontrol.in_friends', true);
+		$rule->add('com.usercontrol.in_friends_request', false);
+		$compiled_messages = null;
+		if($way[1] == "write")
+		{
+			if($system->post('sendmessage'))
+			{
+				$to_user_id = $system->post('accepterid');
+				$message_text = $system->nohtml($system->post('message'));
+				if($system->isInt($to_user_id) && $this->inFriendsWith($to_user_id) && strlen($message_text) > 0)
+				{
+					$time = time();
+					$stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user_messages(`from`, `to`, `message`, `timeupdate`) VALUES(?, ?, ?, ?)");
+					$stmt->bindParam(1, $userid, PDO::PARAM_INT);
+					$stmt->bindParam(2, $to_user_id, PDO::PARAM_INT);
+					$stmt->bindParam(3, $message_text, PDO::PARAM_STR);
+					$stmt->bindParam(4, $time, PDO::PARAM_INT);
+					$stmt->execute();
+					$system->redirect('/message');
+				}
+			}
+			
+			$toid = $system->toInt($way[2]);
+			$theme_main = $template->tplget('profile_message_write', 'components/usercontrol/');
+			$theme_option_inactive = $template->tplget('profile_message_write_option', 'components/usercontrol/');
+			$theme_option_active = $template->tplget('profile_message_write_option_active', 'components/usercontrol/');
+			$result_option_select = null;
+			
+			$friendlist = $user->customget('friend_list');
+			$friendarray = $system->altexplode(',', $friendlist);
+			// Это сообщение с известным адресатом и данный адрессат есть в списке друзей и это не сам отправитель
+			if($toid > 0 && $this->inFriendsWith($toid) && $toid != $userid)
+			{
+				$friendarray = $system->valueUnsetInArray($toid, $friendarray);
+				$result_option_select .= $template->assign(array('target_user_id', 'target_user_name'), array($toid, $user->get('nick', $toid)), $theme_option_active);
+			}
+			// мультизагрузка, далее нужен $user->get('nick')
+			$user->listload($friendlist);
+			foreach($friendarray as $item)
+			{
+				$result_option_select .= $template->assign(array('target_user_id', 'target_user_name'), array($item, $user->get('nick', $item)), $theme_option_inactive);
+			}
+			
+			$compiled_messages = $template->assign('option_names', $result_option_select, $theme_main);
+		}
+		elseif($way[1] == null || $way[1] == "all" || $way[1] == "in" || $way[1] == "out")
+		{
+			$theme_body = $template->tplget('profile_message_body', 'components/usercontrol/');
+			$theme_head = $template->tplget('profile_message_head', 'components/usercontrol/');
+			if($way[1] == "in")
+			{
+				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_messages WHERE `to` = ? ORDER BY timeupdate DESC");
+				$stmt->bindParam(1, $userid, PDO::PARAM_INT);
+				$stmt->execute();
+			}
+			elseif($way[1] == "out")
+			{
+				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_messages WHERE `from` = ? ORDER BY timeupdate DESC");
+				$stmt->bindParam(1, $userid, PDO::PARAM_INT);
+				$stmt->execute();
+			}
+			else
+			{
+				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_messages WHERE `to` = ? OR `from` = ? ORDER BY timeupdate DESC");
+				$stmt->bindParam(1, $userid, PDO::PARAM_INT);
+				$stmt->bindParam(2, $userid, PDO::PARAM_INT);
+				$stmt->execute();
+			}
+			$resultAssoc = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			// подготавливаем пользовательские данные к загрузке в 1 запрос
+			$user_to_dataload = $system->extractFromMultyArray('from', $resultAssoc);
+			$user->listload($user_to_dataload);
+			foreach($resultAssoc as $result)
+			{
+				$compiled_messages .= $template->assign(array('message_from_id', 'from_nick', 'user_avatar', 'user_message', 'message_topic_id'),
+						array($result['from'], $user->get('nick', $result['from']), $user->customget('avatar', $result['from']), $result['message'], $result['id']),
+						$theme_body);
+			}
+			$compiled_messages = $template->assign('message_body', $compiled_messages, $theme_head);
+		}
+		// отображаем всю ветку переписки
+		elseif($way[1] == "topic" && $system->isInt($way[2]))
+		{
+			$topicId = $system->toInt($way[2]);
+			if($system->post('newanswer'))
+			{
+				$message_new = $system->nohtml($system->post('topicanswer'));
+				// Добавление сообщения в базу и обновление таймера апдейта
+				if(strlen($message_new) > 0)
+				{
+					// является ли постер участником личной переписки? 
+					$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user_messages WHERE id = ? AND (`from` = ? OR `to` = ?)");
+					$stmt->bindParam(1, $topicId, PDO::PARAM_INT);
+					$stmt->bindParam(2, $userid, PDO::PARAM_INT);
+					$stmt->bindParam(3, $userid, PDO::PARAM_INT);
+					$stmt->execute();
+					$res = $stmt->fetch();
+					$stmt = null;
+					// постер или адресат или отправитель, вносим данные
+					if($res[0] == "1")
+					{
+						$time = time();
+						$stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user_messages_answer(`topic`, `from`, `message`, `time`) VALUES(?, ?, ?, ?)");
+						$stmt->bindParam(1, $topicId, PDO::PARAM_INT);
+						$stmt->bindParam(2, $userid, PDO::PARAM_INT);
+						$stmt->bindParam(3, $message_new, PDO::PARAM_STR);
+						$stmt->bindParam(4, $time, PDO::PARAM_INT);
+						$stmt->execute();
+						$stmt = null;
+						$stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_user_messages SET timeupdate = ? WHERE id = ?");
+						$stmt->bindParam(1, $time, PDO::PARAM_INT);
+						$stmt->bindParam(2, $topicId, PDO::PARAM_INT);
+						$stmt->execute();
+					}
+				}
+			}
+			$theme_head = $template->tplget('profile_topic_head', 'components/usercontrol/');
+			$theme_body = $template->tplget('profile_topic_body', 'components/usercontrol/');
+			$topics_first = null;
+			$topics_body = null;
+			// выбираем первое сообщение
+			$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_messages WHERE id = ? AND (`from` = ? or `to` = ?)");
+			$stmt->bindParam(1, $topicId, PDO::PARAM_INT);
+			$stmt->bindParam(2, $userid, PDO::PARAM_INT);
+			$stmt->bindParam(3, $userid, PDO::PARAM_INT);
+			$stmt->execute();
+			// корневой топик он 1, если нет - топика или нет или реквестер не участвовал в переписке
+			if($stmt->rowCount() == 1)
+			{
+				$result = $stmt->fetch();
+				$topics_first = $template->assign(array('message_from_id', 'from_nick', 'user_avatar', 'user_message'), array($result['from'], $user->get('nick', $result['from']), $user->customget('avatar', $result['from']), $result['message']), $theme_body);
+				$stmt = null;
+				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_messages_answer where topic = ? ORDER BY id DESC");
+				$stmt->bindParam(1, $topicId, PDO::PARAM_INT);
+				$stmt->execute();
+				while($single_msg = $stmt->fetch())
+				{
+					$topics_body .= $template->assign(array('message_from_id', 'from_nick', 'user_avatar', 'user_message', 'answer_date'), array($single_msg['from'], $user->get('nick', $single_msg['from']), $user->customget('avatar', $single_msg['from']), $single_msg['message'], $system->UnixToDate($single_msg['time'], 'h')), $theme_body);
+				}
+				$compiled_messages = $template->assign(array('topic_main_message', 'topic_answers'), array($topics_first, $topics_body), $theme_head);
+			}
+			else
+			{
+				$compiled_messages = $language->get('usercontrol_profile_view_null_info');
+			}
+		}
+		$compiled_theme = $template->assign(array('user_photo_control', 'user_header', 'user_menu', 'user_main_block'),
+				array($this->userProfilePhotoSettings($userid), $this->userProfileHeaders($userid), $this->showUserMenu($userid) , $compiled_messages),
+				$template->tplget('profile_main', 'components/usercontrol/'));
+		$page->setContentPosition('body', $compiled_theme);
+	}
+
 	private function profileComponent()
 	{
 		global $page,$system,$template,$page,$user,$extension,$rule;
 		$way = $page->getPathway();
 		$userid = substr($way[1], 2);
 		$content = null;
-		
+
 		if(!$extension->getConfig('profile_view', 'usercontrol', 'components', 'boolean') && $user->get('id') < 1)
 		{
 			$content = $template->tplget('guest_message', 'components/usercontrol/');
@@ -86,14 +256,14 @@ class com_usercontrol_front
 		$page->setContentPosition('body', $content);
 		// можно добавить и обработчик по login / etc данным
 	}
-	
+
 	// обработка сквозных запросов для профиля: инвайты в друзья, обновление аваров, статуса и прочее
 	private function dynamicRequests($userid)
 	{
 		global $system,$user,$database,$constant;
 		if($system->post('requestfriend'))
 		{
-			// еще не было запроса, вдруг пост-фейкинг 
+			// еще не было запроса, вдруг пост-фейкинг
 			if(!$this->inFriendRequestWith($userid))
 			{
 				$current_friendrequest_list = $user->customget('friend_request', $userid);
@@ -113,7 +283,7 @@ class com_usercontrol_front
 			}
 		}
 	}
-	
+
 	private function showUserList()
 	{
 		global $database,$constant,$template,$user;
@@ -132,7 +302,7 @@ class com_usercontrol_front
 		}
 		return $template->assign('userlist', $compiled_body, $theme_head);
 	}
-	
+
 	private function showFriends($userid)
 	{
 		global $user,$template,$page,$system,$rule,$database,$constant,$language,$extension;
@@ -140,7 +310,7 @@ class com_usercontrol_front
 		$body_compiled = null;
 		$theme_head = $template->tplget('friendlist_head', 'components/usercontrol/');
 		$way = $page->getPathway();
-		
+
 		switch($way[3])
 		{
 			case "request":
@@ -203,15 +373,15 @@ class com_usercontrol_front
 		{
 			$body_compiled = $language->get('usercontrol_profile_view_null_info');
 		}
-		
+
 		$container_compiled = $template->assign(array('target_user_id', 'friend_body'), array($userid, $body_compiled), $theme_head);
-		
+
 		$compiled_theme = $template->assign(array('user_photo_control', 'user_header', 'user_menu', 'user_main_block'),
 				array($this->userProfilePhotoSettings($userid), $this->userProfileHeaders($userid), $this->showUserMenu($userid) , $container_compiled),
 				$template->tplget('profile_main', 'components/usercontrol/'));
 		return $compiled_theme;
 	}
-	
+
 	private function acceptFriend($id)
 	{
 		global $user,$system,$database,$constant;
@@ -256,9 +426,9 @@ class com_usercontrol_front
 			}
 			$user->customoverload($ownerid);
 		}
-		
+
 	}
-	
+
 	private function rejectFriend($id)
 	{
 		global $user,$system,$database,$constant;
@@ -274,7 +444,7 @@ class com_usercontrol_front
 			$user->customoverload($ownerid);
 		}
 	}
-	
+
 	private function showBookmarks($userid)
 	{
 		global $user,$rule,$page,$template,$database,$constant,$extension;
@@ -295,8 +465,8 @@ class com_usercontrol_front
 		$stmt->execute();
 		while($result = $stmt->fetch())
 		{
-			$user_marks_list .= $template->assign(array('mark_title', 'mark_link'), 
-					array($result['title'], $constant->url.$result['href']), 
+			$user_marks_list .= $template->assign(array('mark_title', 'mark_link'),
+					array($result['title'], $constant->url.$result['href']),
 					$user_marks_body);
 		}
 		$user_marks = $template->assign(array('marks_body', 'target_user_id', 'mark_prev', 'mark_next'), array($user_marks_list, $userid, $marks_marker-1, $marks_marker+1), $user_marks_header);
@@ -327,28 +497,36 @@ class com_usercontrol_front
 	{
 		global $template,$rule,$page;
 		$way = $page->getPathway();
-		switch($way[2])
+		if($way[0] == "message")
 		{
-			case "marks":
-				$rule->add('com.usercontrol.menu_mark', true);
-				break;
-			case "wall":
-			case "":
-				$rule->add('com.usercontrol.menu_wall', true);
-				break;
-			case "friends":
-				$rule->add('com.usercontrol.menu_friends', true);
-				break;
-			default:
-				$rule->add('com.usercontrol.menu_dropdown', true);
-				break;
+			$rule->add('com.usercontrol.menu_message', true);
+		}
+		else
+		{
+			switch($way[2])
+			{
+				case "marks":
+					$rule->add('com.usercontrol.menu_mark', true);
+					break;
+				case "wall":
+				case "":
+					$rule->add('com.usercontrol.menu_wall', true);
+					break;
+				case "friends":
+					$rule->add('com.usercontrol.menu_friends', true);
+					break;
+				default:
+					$rule->add('com.usercontrol.menu_dropdown', true);
+					break;
+			}
 		}
 		return $template->assign('target_user_id', $userid, $template->tplget('profile_block_menu', 'components/usercontrol/'));
 	}
-	
+
 	private function showProfileUser($userid)
 	{
-		global $page,$user,$rule,$template,$language,$system,$database,$constant;
+		global $page,$user,$rule,$template,$language,$system,$database,$constant,$extension;
+		$wall_post_limit = false;
 		if($system->post('wall_post'))
 		{
 			$caster = $user->get('id');
@@ -356,12 +534,27 @@ class com_usercontrol_front
 			$message = $system->nohtml($system->post('wall_text'));
 			if($system->length($message) > 1 && $caster > 0 && $this->inFriendsWith($userid))
 			{
-				$stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user_wall (target, caster, message, time) VALUES (?, ?, ?, ?)");
-				$stmt->bindParam(1, $userid, PDO::PARAM_INT);
-				$stmt->bindParam(2, $caster, PDO::PARAM_INT);
-				$stmt->bindParam(3, $message, PDO::PARAM_STR);
-				$stmt->bindParam(4, $time, PDO::PARAM_INT);
+				$stmt = $database->con()->prepare("SELECT time FROM {$constant->db['prefix']}_user_wall WHERE caster = ? AND target = ? ORDER BY id DESC LIMIT 1");
+				$stmt->bindParam(1, $caster, PDO::PARAM_INT);
+				$stmt->bindParam(2, $userid, PDO::PARAM_INT);
 				$stmt->execute();
+				$res = $stmt->fetch();
+				$time_last_message = $res['time'];
+				$stmt = null;
+				
+				if(($time - $time_last_message) >= $extension->getConfig('wall_post_delay', 'usercontrol', 'components', 'int'))
+				{
+					$stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user_wall (target, caster, message, time) VALUES (?, ?, ?, ?)");
+					$stmt->bindParam(1, $userid, PDO::PARAM_INT);
+					$stmt->bindParam(2, $caster, PDO::PARAM_INT);
+					$stmt->bindParam(3, $message, PDO::PARAM_STR);
+					$stmt->bindParam(4, $time, PDO::PARAM_INT);
+					$stmt->execute();
+				}
+				else
+				{
+					$wall_post_limit = true;
+				}
 			}
 		}
 		$way = $page->getPathway();
@@ -391,20 +584,24 @@ class com_usercontrol_front
 			$phone = $language->get('usercontrol_profile_phone_unknown');
 		}
 		$user_compiled_menu = $this->showUserMenu($userid);
-		$profile_compiled_data = $template->assign(array('user_regdate', 'user_birthday', 'user_sex', 'user_phone', 'target_user_id', 'user_wall', 'wall_prev', 'wall_next'), 
-				array($regdate, $birthday, $sex, $phone, $userid, $this->loadUserWall($userid, $wall_marker), $wall_marker-1, $wall_marker+1),
-				 $profile_data_theme);
-		$compiled_theme = $template->assign(array('user_photo_control', 'user_header', 'user_menu', 'user_main_block'), 
-				array($this->userProfilePhotoSettings($userid), $this->userProfileHeaders($userid), $user_compiled_menu , $profile_compiled_data), 
+		$profile_compiled_data = $template->assign(array('user_regdate', 'user_birthday', 'user_sex', 'user_phone', 'target_user_id', 'user_wall', 'wall_prev', 'wall_next'),
+				array($regdate, $birthday, $sex, $phone, $userid, $this->loadUserWall($userid, $wall_marker, $wall_post_limit), $wall_marker-1, $wall_marker+1),
+				$profile_data_theme);
+		$compiled_theme = $template->assign(array('user_photo_control', 'user_header', 'user_menu', 'user_main_block'),
+				array($this->userProfilePhotoSettings($userid), $this->userProfileHeaders($userid), $user_compiled_menu , $profile_compiled_data),
 				$profile_theme);
 		return $compiled_theme;
 	}
-	
-	private function loadUserWall($userid, $marker)
+
+	private function loadUserWall($userid, $marker, $limit = false)
 	{
-		global $template,$database,$constant,$user,$language,$extension,$rule;
+		global $template,$database,$constant,$user,$language,$extension,$rule,$system;
 		$theme = $template->tplget('profile_wall', 'components/usercontrol/');
 		$output = null;
+		if($limit)
+		{
+			$output .= $template->stringNotify('error', $language->get('usercontrol_profile_wall_answer_spamdetect'));
+		}
 		$wall_rows = $extension->getConfig('wall_post_count', 'usercontrol', 'components', 'int');
 		$marker_index = $marker * $wall_rows;
 		$wall_total_rows = $this->getWallTotalRows($userid);
@@ -429,7 +626,9 @@ class com_usercontrol_front
 		$stmt->bindParam(2, $marker_index, PDO::PARAM_INT);
 		$stmt->bindParam(3, $wall_rows, PDO::PARAM_INT);
 		$stmt->execute();
-		while($result = $stmt->fetch())
+		$resultAssoc = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$user->listload($system->extractFromMultyArray('caster', $resultAssoc));
+		foreach($resultAssoc as $result)
 		{
 			$from_name = $user->get('nick', $result['caster']);
 			if(strlen($from_name) < 1)
@@ -437,11 +636,11 @@ class com_usercontrol_front
 				$from_name = $language->get('usercontrol_profile_name_unknown');
 			}
 			$message = $result['message'];
-			$output .= $template->assign(array('wall_from', 'wall_message', 'wall_from_id', 'wall_message_id'), array($from_name, $message, $result['caster'], $result['id']), $theme);
+			$output .= $template->assign(array('wall_from', 'wall_message', 'wall_from_id', 'wall_message_id', 'user_avatar'), array($from_name, $message, $result['caster'], $result['id'], $user->customget('avatar', $result['id'])), $theme);
 		}
 		return $output;
 	}
-	
+
 	private function inFriendsWith($userid)
 	{
 		global $user;
@@ -453,7 +652,7 @@ class com_usercontrol_front
 		}
 		return false;
 	}
-	
+
 	private function inFriendRequestWith($userid)
 	{
 		global $user;
@@ -465,7 +664,7 @@ class com_usercontrol_front
 		}
 		return false;
 	}
-	
+
 	private function getWallTotalRows($userid)
 	{
 		global $database,$constant;
@@ -475,7 +674,7 @@ class com_usercontrol_front
 		$result = $stmt->fetch();
 		return $result[0];
 	}
-	
+
 	private function getMarkTotalRows($userid)
 	{
 		global $database,$constant;
@@ -485,16 +684,16 @@ class com_usercontrol_front
 		$res = $stmt->fetch();
 		return $res[0];
 	}
-	
+
 	private function userProfilePhotoSettings($userid)
 	{
 		global $template,$user;
-		$parsed = $template->assign(array('user_avatar', 'target_user_id'), 
-				array($user->customget('avatar', $userid), $userid), 
+		$parsed = $template->assign(array('user_avatar', 'target_user_id'),
+				array($user->customget('avatar', $userid), $userid),
 				$template->tplget('profile_photo', 'components/usercontrol/'));
 		return $parsed;
 	}
-	
+
 	private function userProfileHeaders($userid)
 	{
 		global $user,$language,$template;
@@ -510,7 +709,7 @@ class com_usercontrol_front
 		}
 		return $template->assign(array('user_name', 'user_status'), array($nickname, $status), $template->tplget('profile_header', 'components/usercontrol/'));
 	}
-	
+
 	private function loginComponent()
 	{
 		global $page,$template,$hook,$language,$database,$system,$constant,$user,$extension;
@@ -523,7 +722,7 @@ class com_usercontrol_front
 		if($system->post('submit'))
 		{
 			$loginoremail = $system->post('email');
-			if($extension->getConfig('login_captcha', 'usercontrol', 'components', 'boolean') && (strlen($system->post('captcha')) < 1 || strtolower($system->post('captcha')) != $_SESSION['captcha']))
+			if($extension->getConfig('login_captcha', 'usercontrol', 'components', 'boolean') && !$hook->get('captcha')->validate($system->post('captcha')))
 			{
 				$notify .= $template->stringNotify('error', $language->get('usercontrol_captcha_form_error'));
 			}
@@ -555,7 +754,7 @@ class com_usercontrol_front
 					$stmt2->bindParam(4, $loginoremail);
 					$stmt2->bindParam(5, $md5pwd);
 					$stmt2->execute();
-					
+						
 					setcookie('person', $loginoremail, 0, '/');
 					setcookie('token', $md5token, 0, '/');
 					$system->redirect();
@@ -563,16 +762,16 @@ class com_usercontrol_front
 				}
 				else
 				{
-					$notify .= $template->stringNotify('error', $language->get('usercontrol_incorrent_password_query'));					
+					$notify .= $template->stringNotify('error', $language->get('usercontrol_incorrent_password_query'));
 				}
 			}
 		}
 		$theme = $template->tplget('login', 'components/usercontrol/');
-		$captcha = $hook->get('captcha');
+		$captcha = $hook->get('captcha')->show();
 		$theme = $template->assign(array('captcha', 'notify'), array($captcha, $notify), $theme);
 		$page->setContentPosition('body', $theme);
 	}
-	
+
 	private function doRegisterAprove()
 	{
 		global $page,$database,$constant,$template;
@@ -588,9 +787,9 @@ class com_usercontrol_front
 		else
 		{
 			$page->setContentPosition('body', $template->tplget('aprove', 'components/usercontrol/'));
-		}		
+		}
 	}
-	
+
 	private function regComponent()
 	{
 		global $user,$template,$hook,$page,$language,$database,$constant,$system,$mail,$extension;
@@ -606,7 +805,7 @@ class com_usercontrol_front
 			$login = $system->post('login');
 			$pass = $system->post('password');
 			$md5pwd = md5($pass);
-			if($extension->getConfig('register_captcha', 'usercontrol', 'components', 'boolean') && (strlen($system->post('captcha')) < 1 || strtolower($system->post('captcha')) != $_SESSION['captcha']))
+			if($extension->getConfig('register_captcha', 'usercontrol', 'components', 'boolean') && !$hook->get('captcha')->validate($system->post('captcha')))
 			{
 				$notify .= $template->stringNotify('error', $language->get('usercontrol_captcha_form_error'));
 			}
@@ -660,12 +859,12 @@ class com_usercontrol_front
 			}
 		}
 		$theme = $template->tplget('register', 'components/usercontrol/');
-		$captcha = $hook->get('captcha');
+		$captcha = $hook->get('captcha')->show();
 		$theme = $template->assign(array('captcha', 'notify'), array($captcha, $notify), $theme);
 		$page->setContentPosition('body', $theme);
-		
+
 	}
-	
+
 	private function recoveryComponent()
 	{
 		global $template,$hook,$page,$system,$database,$constant,$language;
@@ -680,7 +879,7 @@ class com_usercontrol_front
 			if($system->post('submit'))
 			{
 				$email = $system->post('email');
-				if(strlen($system->post('captcha')) < 1 || strtolower($system->post('captcha')) != $_SESSION['captcha'])
+				if(strlen($system->post('captcha')) < 1 || !$hook->get('captcha')->validate($system->post('captcha')))
 				{
 					$notify .= $template->stringNotify('error', $language->get('usercontrol_captcha_form_error'));
 				}
@@ -711,7 +910,7 @@ class com_usercontrol_front
 						$stmt2->execute();
 						$request_id = $database->con()->lastInsertId();
 						$recovery_link = $template->assign('recovery_url', $constant->url.'/recovery/'.$request_id.'/'.$hash, $language->get("usercontrol_mail_link_text"));
-						
+
 						$mail_body = $template->tplget('mail');
 						$mail_body = $template->assign(array('title', 'description', 'text', 'footer'), array($language->get('usercontrol_reg_mail_title'), $language->get('usercontrol_reg_mail_description'), $link, $language->get('usercontrol_reg_mail_footer')), $mail_body);
 						$mail->send($email, $language->get('usercontrol_reg_mail_title'), $mail_body, $nickname);
@@ -719,12 +918,12 @@ class com_usercontrol_front
 				}
 			}
 			$theme = $template->tplget('recovery', 'components/usercontrol/');
-			$captcha = $hook->get('captcha');
+			$captcha = $hook->get('captcha')->show();
 			$theme = $template->assign(array('captcha', 'notify'), array($captcha, $notify), $theme);
 			$page->setContentPosition('body', $theme);
 		}
 	}
-	
+
 	private function doLogOut()
 	{
 		global $system,$user,$page;
@@ -737,7 +936,7 @@ class com_usercontrol_front
 		setcookie('token', '', 0, '/');
 		$system->redirect();
 	}
-	
+
 	private function mailExists($mail)
 	{
 		global $database,$constant;
@@ -748,9 +947,9 @@ class com_usercontrol_front
 		{
 			return false;
 		}
-	return true;
+		return true;
 	}
-	
+
 	private function loginIsIncorrent($login)
 	{
 		global $database,$constant,$system;

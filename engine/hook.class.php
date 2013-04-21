@@ -1,7 +1,7 @@
 <?php
 /**
-* Получение хуков
-*/
+ * Получение хуков
+ */
 class hook
 {
 	private $hook_list = array();

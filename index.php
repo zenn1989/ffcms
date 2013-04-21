@@ -7,7 +7,7 @@ define('root', $_SERVER['DOCUMENT_ROOT']);
 // версия системы
 define('version', '0.1');
 // указатель интерфейса
-define('isadmin', false);
+define('loader', 'front');
 
 // подключаем файл конфигураций
 require_once(root."/config.php");

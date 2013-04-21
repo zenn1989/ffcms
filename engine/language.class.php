@@ -1,16 +1,16 @@
 <?php
 /**
-* класс управляющий языками отображения сайта
-*/
+ * класс управляющий языками отображения сайта
+ */
 class language
 {
 
-private $lang = array();
+	private $lang = array();
 
 	function __construct()
 	{
 		global $constant;
-		if(isadmin)
+		if(loader == "back")
 		{
 			$file = $file = $constant->root.'/language/back_'.$constant->lang.'.lang';
 		}
@@ -18,7 +18,7 @@ private $lang = array();
 		{
 			$file = $constant->root.'/language/front_'.$constant->lang.'.lang';
 		}
-		
+
 		if(file_exists($file))
 		{
 			$con = file_get_contents($file);
@@ -30,7 +30,7 @@ private $lang = array();
 				{
 					list($tag,$value) = explode("<=>", $line);
 					$this->lang[$tag] = $value;
-				}	
+				}
 			}
 		}
 	}
@@ -43,10 +43,10 @@ private $lang = array();
 		}
 		return $data;
 	}
-	
+
 	public function get($data)
 	{
-		return $this->lang[$data];	
+		return $this->lang[$data];
 	}
 
 }

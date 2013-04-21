@@ -1,23 +1,25 @@
 <?php
 /**
-* Компонент статических страниц
-*/
+ * Компонент статических страниц
+ */
 
 
 /**
-* регистрация области uri компонента
-* Первый параметр - uri, второй - директория компонента
-*/
-if(!extension::registerPathWay('static', 'static')) { exit("Component static cannot be registered!"); }
+ * регистрация области uri компонента
+ * Первый параметр - uri, второй - директория компонента
+ */
+if(!extension::registerPathWay('static', 'static')) {
+	exit("Component static cannot be registered!");
+}
 
 /**
-* Главный класс компонента. Имя = com_ + имя директории компонента.
-*/
+ * Главный класс компонента. Имя = com_ + имя директории компонента.
+ */
 class com_static_front implements com_front
 {
 	/**
-	* Одноименный метод. Должен возвращать результат обработки.
-	*/
+	 * Одноименный метод. Должен возвращать результат обработки.
+	 */
 	public function load()
 	{
 		global $page,$template,$system;
@@ -41,10 +43,10 @@ class com_static_front implements com_front
 		$page->setContentPosition('body', $this->loadSinglePage($sqllink));
 
 	}
-	
+
 	/**
-	* Отображение статической страницы. Первый компонент (:
-	*/
+	 * Отображение статической страницы. Первый компонент (:
+	 */
 	private function loadSinglePage($pathway)
 	{
 		global $database,$constant,$template;
@@ -59,9 +61,9 @@ class com_static_front implements com_front
 		}
 		$com_theme = $template->tplget("page", "components/static/");
 		return $template->assign(array('title', 'text', 'date'), array($result['title'], $result['text'], $result['date']), $com_theme);
-		
+
 	}
-	
+
 }
 
 ?>

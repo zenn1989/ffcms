@@ -7,16 +7,16 @@
  */
 class extension
 {
-	
+
 	private $registeredway = array();
 	private $notifyModuleAfter = array();
 	private $config_loaded = null;
-	
+
 	function __construct()
 	{
 		$this->rawcomponents();
 	}
-	
+
 	/**
 	 * Вызгрузка списка компонентов и инклюдинг.
 	 */
@@ -38,7 +38,7 @@ class extension
 			}
 		}
 	}
-	
+
 	/**
 	 * Регистрация путей для компонентов
 	 * Для первого параметра(пути) возможен массив путей registerPathWay(array('login', 'registration', 'recovery), 'usercontrol')
@@ -71,7 +71,7 @@ class extension
 			return true;
 		}
 	}
-	
+
 	/**
 	 * Сборка модулей страницы, до сборки всех позиций.
 	 */
@@ -142,7 +142,7 @@ class extension
 			}
 		}
 	}
-	
+
 	/**
 	 * Пост-загрузка метода after() модулей. Оперируют с полной страницей по template::content
 	 */
@@ -156,7 +156,7 @@ class extension
 			}
 		}
 	}
-	
+
 	/**
 	 * Список зарегистрированных URI
 	 * @return multitype: array
@@ -165,7 +165,7 @@ class extension
 	{
 		return $this->registeredway;
 	}
-	
+
 	/**
 	 * Инициация главного метода load компонентов
 	 * @return boolean
@@ -187,7 +187,7 @@ class extension
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Получение значения конфигурации
 	 * @param unknown_type $name
@@ -206,7 +206,7 @@ class extension
 		}
 		return $configs[$name];
 	}
-	
+
 	private function loadConfigs($id_dir, $object)
 	{
 		global $database,$constant;
@@ -232,7 +232,7 @@ class extension
 		}
 		return $this->config[$object][$id_dir];
 	}
-	
+
 }
 
 // зачатки интерфейсов для наследования расширениями

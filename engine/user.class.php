@@ -14,7 +14,7 @@ class user
 	{
 		$this->auth();
 	}
-	
+
 	/**
 	 * Анализ пользовательских данных, установка параметров если пользователь авторизован.
 	 */
@@ -49,7 +49,7 @@ class user
 			}
 		}
 	}
-	
+
 	private function set($id)
 	{
 		global $database,$constant;
@@ -89,7 +89,7 @@ class user
 			return $this->userparam[$this->userindex][$param];
 		}
 	}
-	
+
 	/**
 	 * Получение дополнительных полей пользовательских данных из таблицы ffcms_user_custom
 	 * @param unknown_type $param
@@ -104,7 +104,7 @@ class user
 		$this->customset($id);
 		return $this->customparam[$id][$param];
 	}
-	
+
 	private function customset($id)
 	{
 		global $database,$constant;
@@ -134,9 +134,9 @@ class user
 				$this->customparam[$id][$index] = $data;
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Перезагрузка данных после того как они уже были выгружены и были изменены в процессе работы.
 	 * @param unknown_type $id
@@ -158,7 +158,7 @@ class user
 			$this->customparam[$id][$index] = $data;
 		}
 	}
-	
+
 	/**
 	 * Если необходимо в дальнейшем использовать данные большого числа пользователей
 	 * мы рекомендуем выгрузить их с помощью данного метода, дабы не выгружать каждого пользователя отдельным SQL запросом
@@ -167,36 +167,41 @@ class user
 	public function listload($list)
 	{
 		global $database,$constant,$system;
-		if($system->isIntList($list))
+		if(is_array($list))
 		{
-			// это запросто делается и 1 запросом, однако разграничить как-либо дефалт и кустом параметры - невозможно, а делать жесткую привязку к колонкам еще больший дебилизм
-			$stmt1 = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user WHERE id in($list)");
-			$stmt2 = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_custom WHERE id in($list)");
-			$stmt1->execute();
-			$stmt2->execute();
-			$result_list_standart = $stmt1->fetchAll(PDO::FETCH_ASSOC);
-			$result_list_custom = $stmt2->fetchAll(PDO::FETCH_ASSOC);
-			
-			//var_dump($result_list_standart);
-			foreach($result_list_standart as $array_data)
+			$list = $system->altimplode(',', $list);
+		}
+		if(!$system->isIntList($list) || strlen($list) < 1)
+		{
+			return;
+		}
+		// это запросто делается и 1 запросом, однако разграничить как-либо дефалт и кустом параметры - невозможно, а делать жесткую привязку к колонкам еще больший дебилизм
+		$stmt1 = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user WHERE id in($list)");
+		$stmt2 = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_custom WHERE id in($list)");
+		$stmt1->execute();
+		$stmt2->execute();
+		$result_list_standart = $stmt1->fetchAll(PDO::FETCH_ASSOC);
+		$result_list_custom = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+				
+		//var_dump($result_list_standart);
+		foreach($result_list_standart as $array_data)
+		{
+			foreach($array_data as $key=>$data)
 			{
-				foreach($array_data as $key=>$data)
-				{
-					$this->userparam[$array_data['id']][$key] = $data;
-				}
+				$this->userparam[$array_data['id']][$key] = $data;
 			}
-			foreach($result_list_custom as $array_data)
+		}
+		foreach($result_list_custom as $array_data)
+		{
+			foreach($array_data as $key=>$data)
 			{
-				foreach($array_data as $key=>$data)
-				{
-					$this->customparam[$array_data['id']][$key] = $data;
-				}
+				$this->customparam[$array_data['id']][$key] = $data;
 			}
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public function exists($userid)
 	{

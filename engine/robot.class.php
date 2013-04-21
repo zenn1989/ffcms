@@ -36,9 +36,9 @@ class robot
 		$stmt->bindParam(7, $path, PDO::PARAM_STR);
 		$stmt->bindParam(8, $isreg, PDO::PARAM_INT);
 		$stmt->execute();
-		
+
 	}
-	
+
 	// Функция определения Браузера+версии
 	// Взята из публичного доступа. (c) Гельтищева Нина.
 	private function user_browser($agent) {
@@ -50,7 +50,7 @@ class robot
 			if ($ie) return $ie[1].' '.$version;
 			return 'IE '.$version;
 		}
-	    if ($browser == 'Firefox') {
+		if ($browser == 'Firefox') {
 			preg_match("/(Flock|Navigator|Epiphany)\/([0-9.]+)/", $agent, $ff);
 			if ($ff) return $ff[1].' '.$ff[2];
 		}
@@ -59,7 +59,7 @@ class robot
 		if (!$browser && strpos($agent, 'Gecko')) return 'Gecko';
 		return $browser.' '.$version;
 	}
-	
+
 	private function user_os($agent)
 	{
 		if(preg_match('/windows|win32/i', $agent))
@@ -79,6 +79,6 @@ class robot
 			return "unknown";
 		}
 	}
-	
+
 }
 ?>

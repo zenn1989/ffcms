@@ -3,7 +3,7 @@ class com_static_back
 {
 	private $list_count = 10;
 	private $com_pathway = "static";
-	
+
 	public function load()
 	{
 		global $template,$admin,$language,$database,$constant,$system,$user;
@@ -54,7 +54,7 @@ class com_static_back
 			$notify = null;
 			if($system->post('save'))
 			{
-				
+
 				$page_id = $admin->getPage();
 				$page_title = $system->nohtml($system->post('title'));
 				$page_way = $system->nohtml($system->post('pathway').".html");
@@ -163,9 +163,9 @@ class com_static_back
 					$res = $stmt->fetch();
 					$array_data[] = array($res['id'], $res['title'], $res['pathway']);
 					$tbody =  $admin->tplrawTable(
-							array($language->get('admin_component_static_th_id'), $language->get('admin_component_static_th_title'), $language->get('admin_component_static_th_path')), 
+							array($language->get('admin_component_static_th_id'), $language->get('admin_component_static_th_title'), $language->get('admin_component_static_th_path')),
 							$array_data);
-					
+						
 				}
 				$theme_delete = $template->assign(array('static_delete_info', 'cancel_link'),
 						array($tbody, '?object=components&id='.$admin->getId()),
@@ -176,10 +176,10 @@ class com_static_back
 		$menu_theme = $template->tplget('config_menu', null, true);
 		$menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id='.$admin->getID().'&action=list', $language->get('admin_component_static_control')), $menu_theme);
 		$menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id='.$admin->getID().'&action=add', $language->get('admin_component_static_add')), $menu_theme);
-		$body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));	
+		$body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
 		return $body_form;
 	}
-	
+
 	private function getPageCount()
 	{
 		global $database,$constant;
@@ -188,7 +188,7 @@ class com_static_back
 		$result = $stmt->fetch();
 		return intval($result[0]/$this->list_count);
 	}
-	
+
 	private function check_pageway($way, $id = 0)
 	{
 		global $database,$constant;

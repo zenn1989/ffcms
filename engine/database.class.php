@@ -5,9 +5,9 @@
  */
 class database
 {
-    private $con = null;
+	private $con = null;
 	private $queries = 0;
-	
+
 	function __construct()
 	{
 		global $constant;
@@ -25,18 +25,18 @@ class database
 			exit("Database connection error ".$e);
 		}
 	}
-	
+
 	public function con()
 	{
 		$this->queries++;
 		return $this->con;
 	}
-	
+
 	public function totalQueryCount()
 	{
 		return $this->queries;
 	}
-	
+
 	function __destruct()
 	{
 		$this->con = null;

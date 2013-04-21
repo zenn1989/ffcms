@@ -18,11 +18,21 @@
 			</form>
 			</div>
 			<li><a href="#changeavatar" data-toggle="modal">{$lang::usercontrol_profile_mymenu_avachange}</a></li>
-			<li><a href="#">{$lang::usercontrol_profile_mymenu_personalmsg}</a></li>
-			<li><a href="#">{$lang::usercontrol_profile_mymenu_settings}</a></li> 
+			{$/if}
+			{$if user.auth && com.usercontrol.self_profile && com.usercontrol.menu_message}
+			<li class="active"><a href="{$url}/message">{$lang::usercontrol_profile_mymenu_personalmsg}</a></li>
+			{$/if}
+			{$if user.auth && com.usercontrol.self_profile && !com.usercontrol.menu_message}
+			<li><a href="{$url}/message">{$lang::usercontrol_profile_mymenu_personalmsg}</a></li>
+			{$/if}
+			{$if user.auth && com.usercontrol.self_profile && com.usercontrol.menu_settings}
+			<li class="active"><a href="{$url}/settings">{$lang::usercontrol_profile_mymenu_settings}</a></li> 
+			{$/if}
+			{$if user.auth && com.usercontrol.self_profile && !com.usercontrol.menu_settings}
+			<li><a href="{$url}/settings">{$lang::usercontrol_profile_mymenu_settings}</a></li> 
 			{$/if}
 			{$if user.auth && !com.usercontrol.self_profile && com.usercontrol.in_friends}
-			<li><a href="#">{$lang::usercontrol_profile_mymenu_writemsg}</a></li> 
+			<li><a href="{$url}/message/write/{$target_user_id}">{$lang::usercontrol_profile_mymenu_writemsg}</a></li> 
 			{$/if} 
 			{$if user.auth && !com.usercontrol.self_profile && !com.usercontrol.in_friends && !com.usercontrol.in_friends_request}
 			<form class="hidden" id="friendget" action="" method="post"><input type="hidden" name="requestfriend" value="1" /></form>

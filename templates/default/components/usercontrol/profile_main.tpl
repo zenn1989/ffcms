@@ -17,17 +17,35 @@
 		<h3>{$lang::usercontrol_profile_wall_answer_head}</h3>
 	</div>
 	<div class="modal-body">
+		{$if user.auth}
+		<div id="requestpost">
+		<textarea class="input-block-level" id="answer"></textarea>
+		<div class="pull-right"><a href="#" id="addanswer" class="btn btn-success">Написать</a></div><br />
+		</div>
+		{$/if}
+		<hr />
 		<div id="wall-jquery">{$lang::usercontrol_profile_wall_answer_load}</div>
 	</div>
 </div>
 <script>
 	$(document).ready(function() {
+		var subject_id;
 		$('.answershow').click(function(e) {
-			var subject_id = e.target.id;
+			subject_id = e.target.id;
 			// загружаем сообщение + ответы на него по ajax отсылая get на api.php
-			$.get('http://ffcms/api.php?u=1&action=readwall&id='+subject_id, function(data) {
+			$.get('{$url}/api.php?u=1&action=readwall&id='+subject_id, function(data) {
 				$('#wall-jquery').html(data);
 			});
-		})
+		});
+		$('#addanswer').click(function(e){
+			var answer_text = $('#answer').val();
+			if(answer_text.length > 0)
+			{
+				$.post('{$url}/api.php?u=1&action=postwall&id='+subject_id, { message : answer_text}, function(data) {
+					$('#wall-jquery').html(data);
+				});
+				$('#answer').val(null);
+			}
+		});
 	});
 </script>

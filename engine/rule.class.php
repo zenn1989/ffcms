@@ -9,7 +9,7 @@ class rule
 {
 	public $rule_data = array();
 	private $init = false;
-	
+
 	// реализация нативных правил
 	public function getInstance()
 	{
@@ -24,7 +24,7 @@ class rule
 		}
 		return $this;
 	}
-	
+
 	/**
 	 * Проверка условия.
 	 * @param unknown_type $rule
@@ -55,7 +55,7 @@ class rule
 		}
 		return $result_check;
 	}
-	
+
 	/**
 	 * Добавление правил для расширений и пользовательских наработок.
 	 * @param unknown_type $rule

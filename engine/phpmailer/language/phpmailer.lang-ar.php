@@ -1,9 +1,9 @@
 <?php
 /**
-* PHPMailer language file: refer to English translation for definitive list
-* Arabic Version, UTF-8
-* by : bahjat al mostafa <bahjat983@hotmail.com>
-*/
+ * PHPMailer language file: refer to English translation for definitive list
+ * Arabic Version, UTF-8
+ * by : bahjat al mostafa <bahjat983@hotmail.com>
+ */
 
 $PHPMAILER_LANG['authenticate']         = 'SMTP Error: لم نستطع تأكيد الهوية.';
 $PHPMAILER_LANG['connect_host']         = 'SMTP Error: لم نستطع الاتصال بمخدم SMTP.';
@@ -19,7 +19,7 @@ $PHPMAILER_LANG['instantiate']          = 'لم نستطع توفير خدمة �
 $PHPMAILER_LANG['mailer_not_supported'] = ' mailer غير مدعوم.';
 //$PHPMAILER_LANG['provide_address']      = 'You must provide at least one recipient email address.';
 $PHPMAILER_LANG['recipients_failed']    = 'SMTP Error: الأخطاء التالية ' .
-                                          'فشل في الارسال لكل من : ';
+		'فشل في الارسال لكل من : ';
 $PHPMAILER_LANG['signing']              = 'خطأ في التوقيع: ';
 //$PHPMAILER_LANG['smtp_connect_failed']  = 'SMTP Connect() failed.';
 //$PHPMAILER_LANG['smtp_error']           = 'SMTP server error: ';

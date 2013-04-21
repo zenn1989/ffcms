@@ -107,8 +107,8 @@ ul.list li {
   margin-bottom: 1em;
   font-size: 24px;
 }
-[class^="icon-"]:not(.ui-icon),
-[class*="icon-"]:not(.ui-icon) {
+[class^="icon-"]:not(.ui-icon, .elfinder*),
+[class*="icon-"]:not(.ui-icon, .elfinder*) {
   background: none;
 }
 .icon-white,
@@ -1739,7 +1739,6 @@ Layout: Topbar
 
 ------------------------------------------------------------------- */
 #topbar {
-  position: relative;
   z-index: 101;
   padding: 8px;
   background: #16283a;
@@ -1835,7 +1834,6 @@ Layout: Header
 
 ------------------------------------------------------------------- */
 #header {
-  position: relative;
   z-index: 91;
   height: 80px;
   background: #1d354d;

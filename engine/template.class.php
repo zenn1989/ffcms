@@ -6,33 +6,36 @@
 class template
 {
 	private $separator = "/";
-	
+
 	private $header = array();
 	private $left = array();
 	private $body = array();
 	private $right = array();
 	private $bottom = array();
 	private $footer = array();
-	
+
 	private $content = null;
 	private $debug_readcount = 0;
-	
+
 	private $precompile_tag = array();
-	
-	
+
+
 	function __construct()
 	{
-		$this->content = $this->getCarcase(isadmin);
+		if(loader != 'api')
+		{
+			$this->content = $this->getCarcase();
+		}
 	}
 
 	/**
-	* Инициация шаблонизатора. Загрузка стандартных блоков.
-	* Данные по каждой позиции расположены в page.class.php
-	*/
+	 * Инициация шаблонизатора. Загрузка стандартных блоков.
+	 * Данные по каждой позиции расположены в page.class.php
+	 */
 	public function init()
 	{
 		global $page,$extension;
-		if(!isadmin)
+		if(loader == 'front')
 		{
 			// инициация пре-загружаемых модулей с возможностью $page::setContentPosition(pos, data, index)
 			$extension->modules_before_load();
@@ -46,8 +49,8 @@ class template
 	}
 
 	/**
-	* Сборка и отображение шаблона
-	*/
+	 * Сборка и отображение шаблона
+	 */
 	public function compile()
 	{
 		global $cache,$extension,$constant;
@@ -57,7 +60,7 @@ class template
 		$this->fortpl('bottom');
 		$this->fortpl('footer');
 		$this->fortpl('body');
-		if(!isadmin)
+		if(loader == 'front')
 		{
 			// инициация пост-загружаемых модулей
 			$extension->moduleAfterLoad();
@@ -66,17 +69,17 @@ class template
 		$this->language();
 		$this->ruleCheck();
 		$this->cleanvar();
-		if($constant->do_compress_html && !isadmin)
+		if($constant->do_compress_html && loader == 'front')
 		{
 			$this->compress();
 		}
-		if(!isadmin)
+		if(loader == 'back')
 		{
 			$cache->save($this->content);
 		}
 		return $this->content;
 	}
-	
+
 	/**
 	 * Пост-компиляция массива заданных тегов
 	 */
@@ -87,7 +90,7 @@ class template
 			$this->set($tag, $value);
 		}
 	}
-	
+
 	/**
 	 * Пост компиляция тегов, после сборки шаблона
 	 * @param String $tag
@@ -97,10 +100,10 @@ class template
 	{
 		$this->precompile_tag[$tag] = $value;
 	}
-	
+
 	/**
-	* Установка всех значений 1 блока по имени блока.
-	*/
+	 * Установка всех значений 1 блока по имени блока.
+	 */
 	private function fortpl($position_name)
 	{
 		$result = null;
@@ -114,24 +117,25 @@ class template
 		}
 		$this->set($position_name, $result);
 	}
-	
+
 	/**
-	* Установка языковых переменных
-	*/
+	 * Установка языковых переменных
+	 */
 	private function language()
 	{
 		global $language;
 		$this->content = $language->set($this->content);
 	}
-	
+
 	/**
-	* Загрузка основного каркаса шаблона, main.tpl
-	*/
-	private function getCarcase($isadmin = FALSE)
+	 * Загрузка основного каркаса шаблона, main.tpl
+	 */
+	private function getCarcase()
 	{
+		$isadmin = (loader == 'back') ? true : false;
 		return $this->tplget('main', null, $isadmin);
 	}
-	
+
 	/**
 	 * Назначение переменной в супер-позиции $content
 	 * @param unknown_type $var
@@ -151,16 +155,16 @@ class template
 			$this->content = str_replace('{$'.$var.'}', $value, $this->content);
 		}
 	}
-	
+
 	/**
-	* Очистка от {$__?___} в результате.
-	* Для контента, обязательно использовать эквивалент -> $ = &#36;
-	*/
+	 * Очистка от {$__?___} в результате.
+	 * Для контента, обязательно использовать эквивалент -> $ = &#36;
+	 */
 	private function cleanvar()
 	{
 		$this->content = preg_replace('/{\$(.*?)}/', '', $this->content);
 	}
-	
+
 	/**
 	 * Сжатие страницы путем удаления пробелов и переносов строк. Для HTML это не помеха.
 	 */
@@ -168,7 +172,7 @@ class template
 	{
 		$this->content = preg_replace('/[\s]{2,}/', ' ', str_replace(array("\n", "\r", "\t", "\r\n"), '', $this->content));
 	}
-	
+
 	/**
 	 * Функция для обработки условий {$if условие}содержимое{/$if} в шаблонах
 	 */
@@ -189,10 +193,10 @@ class template
 			$this->content = str_replace($matches[0][$i], $theme_result, $this->content);
 		}
 	}
-	
+
 	/**
-	* Установка стандартных шаблоных переменных. Пример: {$url} => http://blabla
-	*/
+	 * Установка стандартных шаблоных переменных. Пример: {$url} => http://blabla
+	 */
 	public function setDefaults($theme, $isadmin = false)
 	{
 		global $constant,$user;
@@ -200,23 +204,23 @@ class template
 		{
 			$template_path = $constant->tpl_dir.$this->separator.$constant->admin_tpl;
 		}
-		else 
+		else
 		{
 			$template_path = $constant->tpl_dir.$this->separator.$constant->tpl_name;
 		}
 		return str_replace(
-				array('{$url}', '{$tpl_dir}', '{$user_id}', '{$user_nick}'), 
-				array($constant->url, $template_path, $user->get('id'), $user->get('nick')), 
+				array('{$url}', '{$tpl_dir}', '{$user_id}', '{$user_nick}'),
+				array($constant->url, $template_path, $user->get('id'), $user->get('nick')),
 				$theme);
 	}
-	
-	
+
+
 	/**
-	* Загрузка файла шаблона. 
-	* @param STRING $tplname Имя файла шаблона
-	* @param STRING $customdirectory Вложение в директорию внутри шаблона. Может быть пустым.
-	* @param BOOLEAN $isadmin Для использования в админ панели
-	*/
+	 * Загрузка файла шаблона.
+	 * @param STRING $tplname Имя файла шаблона
+	 * @param STRING $customdirectory Вложение в директорию внутри шаблона. Может быть пустым.
+	 * @param BOOLEAN $isadmin Для использования в админ панели
+	 */
 	public function tplget($tplname, $customdirectory = null, $isadmin = false)
 	{
 		global $constant;
@@ -235,7 +239,7 @@ class template
 		}
 		return $this->tplException($tplname);
 	}
-	
+
 	/**
 	 * Назначение тегу значения (краткий аналог str_replace)
 	 * @param unknown_type $tag
@@ -256,35 +260,15 @@ class template
 		}
 		return str_replace('{$'.$tag.'}', $data, $where);
 	}
-	
+
 	/**
-	* Выход при отсутствии файлов шаблона
-	*/
+	 * Выход при отсутствии файлов шаблона
+	 */
 	private function tplException($tpl)
 	{
 		exit("Template file not founded: ".$tpl);
 	}
-	
-	/**
-	* Функция для строчных уведомлений
-	* $type - error, warning, success
-	*/
-	public function stringNotify($type, $content)
-	{
-		$theme = $this->tplget("notify_string_{$type}");
-		return $this->assign('content', $content, $theme);
-	}
-	
-	/**
-	* Ошибка 404 для пользователей
-	*/
-	public function compile404()
-	{
-		global $cache;
-		$cache->setNoExist(true);
-		return $this->tplget('404');
-	}
-	
+
 	/**
 	 * Возвращает блок уведомлений
 	 * @param ENUM('error', 'info', 'success') $type
@@ -292,23 +276,41 @@ class template
 	 * @param Boolean $isadmin
 	 * @return mixed
 	 */
+	public function stringNotify($type, $content, $isadmin = false)
+	{
+		$theme = $this->tplget("notify_string_{$type}");
+		return $this->assign('content', $content, $theme);
+	}
+
+	/**
+	 * Ошибка 404 для пользователей
+	 */
+	public function compile404()
+	{
+		global $cache;
+		$cache->setNoExist(true);
+		return $this->tplget('404');
+	}
+
+	/**
+	 * USE template::stringNotify()
+	 * @deprecated
+	 */
 	public function compileNotify($type, $text, $isadmin = false)
 	{
-		return $this->assign(array('notify_class', 'notify_text'), 
-				array($type, $text), 
-				$this->tplget('notify_p', null, $isadmin));
+		return $this->stringNotify($type, $text, $isadmin);
 	}
 	/**
-	* Отладочная информация о кол-ве считанных шаблонов
-	*/
+	 * Отладочная информация о кол-ве считанных шаблонов
+	 */
 	public function getReadCount()
 	{
 		return $this->debug_readcount;
 	}
-	
+
 	/**
-	* Очистка всех позиций. Возможна повторная выгрузка другого шаблона.
-	*/	
+	 * Очистка всех позиций. Возможна повторная выгрузка другого шаблона.
+	 */
 	public function cleanafterprint()
 	{
 		unset($this->content);

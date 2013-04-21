@@ -65,4 +65,14 @@ usercontrol_profile_mymenu_writemsg<=>Написать сообщение
 usercontrol_profile_mymenu_addfriend<=>Запрос в друзья
 usercontrol_profile_mymenu_requestsended<=>Запрос в друзья отправлен
 usercontrol_profile_wall_answers<=>Ответы
-
+usercontrol_profile_wall_noanswer<=>Нет ответов на данное сообщение, возможно ваш ответ будет первым
+usercontrol_profile_wall_answer_spamdetect<=>Вы слишком часто отправляете сообщения, подождите...
+usercontrol_profile_pm_readmore<=>Читать переписку
+usercontrol_profile_pm_writenew<=>Новое сообщение
+usercontrol_profile_pm_answermsg<=>Ответить
+usercontrol_profile_pm_menuall<=>Все
+usercontrol_profile_pm_menuin<=>Входящие
+usercontrol_profile_pm_menuout<=>Исходящие
+usercontrol_profile_pm_write_header<=>Новое сообщение
+usercontrol_profile_pm_write_touser<=>Адресат
+usercontrol_profile_pm_write_text<=>Текст сообщения

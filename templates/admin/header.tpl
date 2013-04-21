@@ -19,7 +19,7 @@
 				
 					<ul class="dropdown-menu">							
 						<li><a href="?object=settings">{$lang::admin_nav_li_settings}</a></li>
-						<li><a href="?object=clear">{$lang::admin_nav_li_imgmanager}</a></li>
+						<li><a href="?object=filecontrol">{$lang::admin_nav_li_imgmanager}</a></li>
 						<li><a href="?object=clear">{$lang::admin_nav_li_clear}</a></li>
 						<li><a href="?object=antivirus">{$lang::admin_nav_li_avir}</a></li>
 						<li><a href="?object=dump">{$lang::admin_nav_li_backup}</a></li>

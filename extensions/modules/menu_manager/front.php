@@ -1,8 +1,8 @@
 <?php
 
 /**
-* Динамические пользовательские многоуровневые меню управления и навигации на сайте. Видимая часть для пользователя.
-*/
+ * Динамические пользовательские многоуровневые меню управления и навигации на сайте. Видимая часть для пользователя.
+ */
 
 class mod_menu_manager_front implements mod_front
 {
@@ -11,9 +11,10 @@ class mod_menu_manager_front implements mod_front
 	{
 		return $this->loadSql();
 	}
-	
-	public function before() {  }
-	
+
+	public function before() {
+	}
+
 	// выбираем из sql нужные даные
 	// имена шаблонов, вложенный массив с неограниченным количеством уровней
 	private function loadSql()
@@ -45,10 +46,10 @@ class mod_menu_manager_front implements mod_front
 		$res .= $template->tplget($tpl[1], 'modules/mod_menu_manager/');
 		return $res;
 	}
-	
+
 	/**
-	* Рекурсивный метод парсинга массива в Ul>li список. Осторожно, злой код!
-	*/
+	 * Рекурсивный метод парсинга массива в Ul>li список. Осторожно, злой код!
+	 */
 	private function pharse($array, $tpl, $sub = false)
 	{
 		global $template;
@@ -74,7 +75,7 @@ class mod_menu_manager_front implements mod_front
 		}
 		return $result;
 	}
-	
+
 
 }
 

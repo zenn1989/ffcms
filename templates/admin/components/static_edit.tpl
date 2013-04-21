@@ -1,4 +1,4 @@
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 var keywords1, keywords2 = new Array(), keywords3 =  new Array();
 function strip_tags(str, allow) {
 	  // making sure the allow arg is a string containing only tags in lowercase (<a><b><c>)
@@ -20,7 +20,7 @@ function getKeywords(s) {
 	return tmp.split(" "); // returns Array of words
 }
 function countKeywords () {
-	var s = document.getElementById('textobject').value;
+	var s = $('#textobject').elrte('val');
 	var minLengthKeyword = 3;
 	var minRepeatKeyword = 3;
 	var coincidence = parseFloat(0.7);
@@ -97,7 +97,7 @@ Array.prototype.grep = grep;
 <div class="row">
 <div class="span9">
 <h5>{$lang::admin_component_static_edit_page_textarea_title}</h5>
-<textarea name="text" id="textobject" class="input-block-level wysi" rows="20">{$static_text}</textarea>
+<textarea name="text" id="textobject" class="wysi">{$static_text}</textarea>
 </div>
 </div>
 <div class="row">
