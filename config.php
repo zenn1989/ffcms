@@ -9,6 +9,10 @@ $config['tpl_dir'] = 'templates';
 $config['tpl_name'] = 'default';
 $config['debug'] = true;
 
+$config['seo_title'] = "Очередной сайт на ffcms";
+$config['seo_description'] = "Данный сайт - обычный сайт построенный с использованием FFCMS";
+$config['seo_keywords'] = "Сайт, ffcms, страница";
+
 $config['db_host'] = "localhost";
 $config['db_user'] = "mysql";
 $config['db_pass'] = "mysql";

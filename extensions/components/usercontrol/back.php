@@ -71,6 +71,7 @@ class com_usercontrol_back
 			$config_set .= $admin->tplSettingsInputText('config:marks_post_count', $admin->getConfig('marks_post_count', 'int'), $language->get('admin_component_usercontrol_config_marks_name'), $language->get('admin_component_usercontrol_config_marks_desc'));
 			$config_set .= $admin->tplSettingsInputText('config:friend_page_count', $admin->getConfig('friend_page_count', 'int'), $language->get('admin_component_usercontrol_config_friend_page_count_name'), $language->get('admin_component_usercontrol_config_friend_page_count_desc'));
 			$config_set .= $admin->tplSettingsInputText('config:wall_post_delay', $admin->getConfig('wall_post_delay', 'int'), $language->get('admin_component_usercontrol_config_wall_post_delay_name'), $language->get('admin_component_usercontrol_config_wall_post_delay_desc'));
+			$config_set .= $admin->tplSettingsInputText('config:pm_count', $admin->getConfig('pm_count', 'int'), $language->get('admin_component_usercontrol_config_pm_count_name'), $language->get('admin_component_usercontrol_config_pm_count_desc'));
 			
 			$work_body .= $template->assign('ext_form', $config_set, $config_form);
 				

@@ -30,6 +30,29 @@ class system
 	 */
 	public function noParam($data)
 	{
+		// если это multiarray $_POST['key1']['key2']['keyN']
+		if(is_array($data))
+		{
+			$output_data = array();
+			foreach($data as $key=>$value)
+			{
+				// это еще 1 уровень вложенности, используем рекурсию
+				if(is_array($value))
+				{
+					$output_data[$key] = $this->noParam($value);
+				}
+				else
+				{
+					$output_data[$key] = $this->stringNoParam($value);
+				}
+			}
+			return $output_data;
+		}
+		return $this->stringNoParam($data);
+	}
+	
+	private function stringNoParam($data)
+	{
 		preg_match_all('/{\$(.*?)}/i', $data, $matches, PREG_PATTERN_ORDER);
 		foreach($matches[1] as $clear)
 		{
@@ -318,27 +341,93 @@ class system
 	}
 	
 	/**
-	 * Преобразование функции time() в дату. Формат - d = d.m.Y, h = d.m.y hh:mm, s = d.m.Y hh:mm:ss
-	 * @param unknown_type $time
-	 * @param unknown_type $format
-	 * @return string
+	 * Преобразование популярных форматов даты в 1 формат отображения. Формат - d = d.m.Y, h = d.m.y hh:mm, s = d.m.Y hh:mm:ss.
+	 * Так же принимаются значения unix time.
+	 * @param unknown_type $object
+	 * @param unknown_type $out_format
+	 * @return Ambigous <NULL, string>
 	 */
-	public function UnixToDate($time, $format = 'd')
+	public function toDate($object, $out_format)
 	{
 		$result = null;
-		switch($format)
+		if($this->isInt($object))
+		{
+			$object = date('d.m.Y H:i:s', $object);
+		}
+		$date_object = new DateTime($object);
+		switch($out_format)
 		{
 			case "h":
-				$result = date('d.m.Y H:i', $time);
+				$result = $date_object->format('d.m.Y H:i');
 				break;
 			case "s":
-				$result = date('d.m.Y H:i:s', $time);
+				$result = $date_object->format('d.m.Y H:i:s');
 				break;
 			default:
-				$result = date('d.m.Y', $time);
+				$result = $date_object->format('d.m.Y');
 				break;
 		}
 		return $result;
+	}
+	
+	public function generateIntRangeArray($start, $end)
+	{
+		$output = array();
+		for($start;$start<=$end;$start++)
+		{
+			$output[] = $start;
+		}
+		return $output;
+	}
+	
+	/**
+	 * Проверка формата строки на пренадлежность к телефонному номеру. 
+	 * @param unknown_type $phone
+	 * @return boolean
+	 */
+	public function validPhone($phone)
+	{
+		return preg_match('/^[+]?([\d]{0,3})?[\(\.\-\s]?([\d]{3})[\)\.\-\s]*([\d]{3})[\.\-\s]?([\d]{4})$/', $phone) ? true : false;
+	}
+	
+	/**
+	 * Валидность длины пароля. В дальнейшем вынести в конфиг.
+	 * @param string|array $password
+	 * @return boolean
+	 */
+	public function validPasswordLength($password)
+	{
+		if(is_array($password))
+		{
+			foreach($password as $item)
+			{
+				if(strlen($item) < 4 || strlen($item) > 32)
+					return false;
+			}
+			return true;
+		}
+		else
+		{
+			return (strlen($password) >= 4 && strlen($password) <= 32) ? true : false;
+		}
+	}
+	
+	public function getRealIp()
+	{
+		$ip = $_SERVER['REMOTE_ADDR'];
+		// адаптация для cloudflare
+		if(isset($_SERVER["HTTP_CF_CONNECTING_IP"]))
+		{
+			// переопределяем
+			$ip = $_SERVER["HTTP_CF_CONNECTING_IP"];
+		}
+		return $ip;
+	}
+	
+	public function doublemd5($string)
+	{
+		global $constant;
+		return md5(md5($string).$constant->password_salt);
 	}
 
 }

@@ -31,7 +31,7 @@ class page
 	 */
 	public function doload()
 	{
-		global $template,$system,$cache,$user,$admin,$extension;
+		global $template,$system,$cache,$user,$admin,$extension,$meta,$constant;
 		$isComponent = false;
 		// если пользователь не авторизован и есть полный кеш страницы
 		if($user->get('id') == NULL && $cache->check())
@@ -49,6 +49,7 @@ class page
 			// может быть это главная страничка?
 			if(sizeof($this->pathway) == 0 || $system->contains('index.', $this->pathway[0]))
 			{
+				$meta->set('title', $constant->seo_meta['title']);
 				$this->isMainPage = true;
 				// на сейчас нет конструктора модулей, поэтому главная увы пустая с таким вот приветствием
 				$this->content_body[] = "This is main page example";
@@ -59,6 +60,7 @@ class page
 				$this->content_body[] = $template->compile404();
 			}
 		}
+		$meta->compile();
 		$template->init();
 	}
 

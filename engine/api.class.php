@@ -88,7 +88,7 @@ class api
 			{
 				$from_id = $result['poster'];
 				$compiled .= $template->assign(array('wall_from_id', 'wall_from', 'user_avatar', 'wall_message'), 
-						array($from_id, $user->get('nick', $from_id), $user->customget('avatar', $from_id), $result['message']), 
+						array($from_id, $user->get('nick', $from_id), $user->buildAvatar('small', $from_id), $result['message']), 
 						$theme);
 			}
 			if($compiled == null)

@@ -43,14 +43,172 @@ class com_usercontrol_front
 			case "message":
 				$this->userPersonalMessage();
 				break;
+			case "settings":
+				$this->userPersonalSettings();
+				break;
 			default:
 				break;
 		}
 	}
 	
+	private function userPersonalSettings()
+	{
+		global $page,$template,$user,$rule,$system,$file,$language,$database,$constant;
+		$userid = $user->get('id');
+		if($userid < 1)
+		{
+			$page->setContentPosition('body', $template->compile404());
+			return;
+		}
+		$rule->add('com.usercontrol.self_profile', true);
+		$rule->add('com.usercontrol.in_friends', true);
+		$rule->add('com.usercontrol.in_friends_request', false);
+		$way = $page->getPathway();
+		$compiled_body = null;
+		if($way[1] == "avatar")
+		{
+			$notify = null;
+			if($system->post('loadavatar'))
+			{
+				$image_upload = $_FILES['avatarupload'];
+				if($image_upload['size'] > 0)
+				{
+					$upload_result = $file->useravatarupload($image_upload);
+					if($upload_result)
+					{
+						$notify = $template->stringNotify('success', $language->get('usercontrol_profile_photochange_success'));
+					}
+				}
+				if($notify == null)
+				{
+					$notify = $template->stringNotify('error', $language->get('usercontrol_profile_photochange_fail'));
+				}
+			}
+			$photo_theme = $template->tplget('profile_settings_photo', 'components/usercontrol/');
+			$compiled_body = $template->assign('notify_message', $notify, $photo_theme);
+		}
+		elseif($way[1] == "status")
+		{
+			
+		}
+		else
+		{
+			$notify = null;
+			if($system->post('saveprofile'))
+			{
+				$birthday_array = $system->post('bitrhday');
+				// Y-m-d
+				$birthday_string = "0000-00-00";
+				$nick = $system->nohtml($system->post('nickname'));
+				$phone = $system->post('phone');
+				$sex = $system->post('sex');
+				// old, new, repeat new
+				$password_array = array($system->post('oldpwd'), $system->post('newpwd'), $system->post('renewpwd'));
+				$password = $user->get('pass');
+				// анализируем то, что запостил пользователь на корректность данных
+				if($birthday_array['year'] >= 1920 && $birthday_array['year'] <= date('Y') && checkdate($birthday_array['month'], $birthday_array['day'], $birthday_array['year']))
+				{
+					$birthday_string = $birthday_array['year']."-".$birthday_array['month']."-".$birthday_array['day'];
+				}
+				if(strlen($nick) < 1)
+				{
+					
+					$nick = $user->get('nick');
+				}
+				if(!$system->validPhone($phone))
+				{
+					$phone = $user->customget('phone');
+				}
+				if(!$system->isInt($sex) || $sex < 0 || $sex > 2)
+				{
+					$sex = $user->customget('sex');
+				}
+				// новый пароль был назначен, новые пароли совпали а так же старый пароль введен верно
+				if($system->validPasswordLength($password_array) && $system->doublemd5($password_array[0]) == $password && $password_array[1] == $password_array[2] && $password_array[0] != $password_array[1])
+				{
+					$password = $system->doublemd5($password_array[1]);
+					$notify .= $template->stringNotify('error', $language->get('usercontrol_profile_settings_notify_passchange'));
+				}
+				$stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_user a INNER JOIN {$constant->db['prefix']}_user_custom b USING(id) SET a.nick = ?, a.pass = ?, b.birthday = ?, b.sex = ?, b.phone = ? WHERE a.id = ?");
+				$stmt->bindParam(1, $nick, PDO::PARAM_STR);
+				$stmt->bindParam(2, $password, PDO::PARAM_STR, 32);
+				$stmt->bindParam(3, $birthday_string, PDO::PARAM_STR);
+				$stmt->bindParam(4, $sex, PDO::PARAM_INT);
+				$stmt->bindParam(5, $phone, PDO::PARAM_STR);
+				$stmt->bindParam(6, $userid, PDO::PARAM_INT);
+				$stmt->execute();
+				$user->fulluseroverload($userid);
+				$notify .= $template->stringNotify('success', $language->get('usercontrol_profile_settings_notify_updated'));
+			}
+			$theme_option_inactive = $template->tplget('form_select_option_inactive', 'components/usercontrol/');
+			$theme_option_active = $template->tplget('form_select_option_active', 'components/usercontrol/');
+			list($birth_year, $birth_month, $birth_day) = explode("-", $user->customget('birthday'));
+			$day_range = $system->generateIntRangeArray(1, 31);
+			$month_range = $system->generateIntRangeArray(1, 12);
+			$year_range = $system->generateIntRangeArray(1920, date('Y'));
+			$day_option_list = null;
+			$month_option_list = null;
+			$year_option_list = null;
+			$sex_list = null;
+			$sex_int = $user->customget('sex');
+			// генерируем список для даты рождения
+			foreach($day_range as $s_day)
+			{
+				if($s_day == $birth_day)
+				{
+					$day_option_list .= $template->assign(array('option_value', 'option_name'), array($s_day, $s_day), $theme_option_active);
+				}
+				else
+				{
+					$day_option_list .= $template->assign(array('option_value', 'option_name'), array($s_day, $s_day), $theme_option_inactive);
+				}
+			}
+			foreach($month_range as $s_month)
+			{
+				if($s_month == $birth_month)
+				{
+					$month_option_list .= $template->assign(array('option_value', 'option_name'), array($s_month, $s_month), $theme_option_active);
+				}
+				else
+				{
+					$month_option_list .= $template->assign(array('option_value', 'option_name'), array($s_month, $s_month), $theme_option_inactive);
+				}
+			}
+			foreach($year_range as $s_year)
+			{
+				if($s_year == $birth_year)
+				{
+					$year_option_list .= $template->assign(array('option_value', 'option_name'), array($s_year, $s_year), $theme_option_active);
+				}
+				else
+				{
+					$year_option_list .= $template->assign(array('option_value', 'option_name'), array($s_year, $s_year), $theme_option_inactive);
+				}
+			}
+			for($i=0;$i<=2;$i++)
+			{
+				if($i == $sex_int)
+				{
+					$sex_list .= $template->assign(array('option_value', 'option_name'), array($i, $this->sexLang($i)), $theme_option_active);
+				}
+				else
+				{
+					$sex_list .= $template->assign(array('option_value', 'option_name'), array($i, $this->sexLang($i)), $theme_option_inactive);
+				}
+			}
+			$compiled_body = $template->assign(array('option_day', 'option_month', 'option_year', 'user_nickname', 'option_sex', 'user_phone', 'notify_messages'),
+					array($day_option_list, $month_option_list, $year_option_list, $user->get('nick'), $sex_list, $user->customget('phone'), $notify),
+					$template->tplget('profile_settings_main', 'components/usercontrol/'));
+		}
+		$compiled_theme = $template->assign(array('user_photo_control', 'user_header', 'user_menu', 'user_main_block'),
+				array($this->userProfilePhotoSettings($userid), $this->userProfileHeaders($userid), $this->showUserMenu($userid) , $compiled_body),
+				$template->tplget('profile_main', 'components/usercontrol/'));
+		$page->setContentPosition('body', $compiled_theme);
+	}
+	
 	private function userPersonalMessage()
 	{
-		global $user,$page,$template,$rule,$database,$constant,$system,$language;
+		global $user,$page,$template,$rule,$database,$constant,$system,$language,$extension;
 		$userid = $user->get('id');
 		$way = $page->getPathway();
 		if($userid < 1)
@@ -83,8 +241,8 @@ class com_usercontrol_front
 			
 			$toid = $system->toInt($way[2]);
 			$theme_main = $template->tplget('profile_message_write', 'components/usercontrol/');
-			$theme_option_inactive = $template->tplget('profile_message_write_option', 'components/usercontrol/');
-			$theme_option_active = $template->tplget('profile_message_write_option_active', 'components/usercontrol/');
+			$theme_option_inactive = $template->tplget('form_select_option_inactive', 'components/usercontrol/');
+			$theme_option_active = $template->tplget('form_select_option_active', 'components/usercontrol/');
 			$result_option_select = null;
 			
 			$friendlist = $user->customget('friend_list');
@@ -93,38 +251,58 @@ class com_usercontrol_front
 			if($toid > 0 && $this->inFriendsWith($toid) && $toid != $userid)
 			{
 				$friendarray = $system->valueUnsetInArray($toid, $friendarray);
-				$result_option_select .= $template->assign(array('target_user_id', 'target_user_name'), array($toid, $user->get('nick', $toid)), $theme_option_active);
+				$result_option_select .= $template->assign(array('option_value', 'option_name'), array($toid, $user->get('nick', $toid)), $theme_option_active);
 			}
 			// мультизагрузка, далее нужен $user->get('nick')
 			$user->listload($friendlist);
 			foreach($friendarray as $item)
 			{
-				$result_option_select .= $template->assign(array('target_user_id', 'target_user_name'), array($item, $user->get('nick', $item)), $theme_option_inactive);
+				$result_option_select .= $template->assign(array('option_value', 'option_name'), array($item, $user->get('nick', $item)), $theme_option_inactive);
 			}
 			
 			$compiled_messages = $template->assign('option_names', $result_option_select, $theme_main);
 		}
 		elseif($way[1] == null || $way[1] == "all" || $way[1] == "in" || $way[1] == "out")
 		{
+			if($way[1] == null)
+				$way[1] = "all";
+			$page_id = (int)$way[2];
+			$pm_on_page = $extension->getConfig('pm_count', 'usercontrol', 'components', 'int');
+			$current_marker = $page_id * $pm_on_page;
+			$total_pm_count = $this->getMessageTotalRows($userid, $way[1]);
+			if($page_id > 0)
+			{
+				$rule->add('com.usercontrol.have_previous', true);
+			}
+			if($current_marker+$pm_on_page < $total_pm_count)
+			{
+				$rule->add('com.usercontrol.have_next', true);
+			}
 			$theme_body = $template->tplget('profile_message_body', 'components/usercontrol/');
 			$theme_head = $template->tplget('profile_message_head', 'components/usercontrol/');
 			if($way[1] == "in")
 			{
-				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_messages WHERE `to` = ? ORDER BY timeupdate DESC");
+				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_messages WHERE `to` = ? ORDER BY timeupdate DESC LIMIT ?, ?");
 				$stmt->bindParam(1, $userid, PDO::PARAM_INT);
+				$stmt->bindParam(2, $current_marker, PDO::PARAM_INT);
+				$stmt->bindParam(3, $pm_on_page, PDO::PARAM_INT);
 				$stmt->execute();
 			}
 			elseif($way[1] == "out")
 			{
-				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_messages WHERE `from` = ? ORDER BY timeupdate DESC");
+				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_messages WHERE `from` = ? ORDER BY timeupdate DESC LIMIT ?, ?");
 				$stmt->bindParam(1, $userid, PDO::PARAM_INT);
+				$stmt->bindParam(2, $current_marker, PDO::PARAM_INT);
+				$stmt->bindParam(3, $pm_on_page, PDO::PARAM_INT);
 				$stmt->execute();
 			}
 			else
 			{
-				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_messages WHERE `to` = ? OR `from` = ? ORDER BY timeupdate DESC");
+				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_messages WHERE `to` = ? OR `from` = ? ORDER BY timeupdate DESC LIMIT ?, ?");
 				$stmt->bindParam(1, $userid, PDO::PARAM_INT);
 				$stmt->bindParam(2, $userid, PDO::PARAM_INT);
+				$stmt->bindParam(3, $current_marker, PDO::PARAM_INT);
+				$stmt->bindParam(4, $pm_on_page, PDO::PARAM_INT);
 				$stmt->execute();
 			}
 			$resultAssoc = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -134,10 +312,12 @@ class com_usercontrol_front
 			foreach($resultAssoc as $result)
 			{
 				$compiled_messages .= $template->assign(array('message_from_id', 'from_nick', 'user_avatar', 'user_message', 'message_topic_id'),
-						array($result['from'], $user->get('nick', $result['from']), $user->customget('avatar', $result['from']), $result['message'], $result['id']),
+						array($result['from'], $user->get('nick', $result['from']), $user->buildAvatar('small', $result['from']), $result['message'], $result['id']),
 						$theme_body);
 			}
-			$compiled_messages = $template->assign('message_body', $compiled_messages, $theme_head);
+			$compiled_messages = $template->assign(array('message_body', 'message_type', 'message_prev', 'message_next'), 
+					array($compiled_messages, $way[1], $page_id-1, $page_id+1), 
+					$theme_head);
 		}
 		// отображаем всю ветку переписки
 		elseif($way[1] == "topic" && $system->isInt($way[2]))
@@ -189,14 +369,14 @@ class com_usercontrol_front
 			if($stmt->rowCount() == 1)
 			{
 				$result = $stmt->fetch();
-				$topics_first = $template->assign(array('message_from_id', 'from_nick', 'user_avatar', 'user_message'), array($result['from'], $user->get('nick', $result['from']), $user->customget('avatar', $result['from']), $result['message']), $theme_body);
+				$topics_first = $template->assign(array('message_from_id', 'from_nick', 'user_avatar', 'user_message'), array($result['from'], $user->get('nick', $result['from']), $user->buildAvatar('small', $result['from']), $result['message']), $theme_body);
 				$stmt = null;
 				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_messages_answer where topic = ? ORDER BY id DESC");
 				$stmt->bindParam(1, $topicId, PDO::PARAM_INT);
 				$stmt->execute();
 				while($single_msg = $stmt->fetch())
 				{
-					$topics_body .= $template->assign(array('message_from_id', 'from_nick', 'user_avatar', 'user_message', 'answer_date'), array($single_msg['from'], $user->get('nick', $single_msg['from']), $user->customget('avatar', $single_msg['from']), $single_msg['message'], $system->UnixToDate($single_msg['time'], 'h')), $theme_body);
+					$topics_body .= $template->assign(array('message_from_id', 'from_nick', 'user_avatar', 'user_message', 'answer_date'), array($single_msg['from'], $user->get('nick', $single_msg['from']), $user->buildAvatar('small', $single_msg['from']), $single_msg['message'], $system->toDate($single_msg['time'], 'h')), $theme_body);
 				}
 				$compiled_messages = $template->assign(array('topic_main_message', 'topic_answers'), array($topics_first, $topics_body), $theme_head);
 			}
@@ -257,7 +437,7 @@ class com_usercontrol_front
 		// можно добавить и обработчик по login / etc данным
 	}
 
-	// обработка сквозных запросов для профиля: инвайты в друзья, обновление аваров, статуса и прочее
+	// обработка сквозных запросов для профиля: инвайты в друзья, возможна дальнейшая доработка для хуков обновления через pop-up диалоги статуса, фото и прочее
 	private function dynamicRequests($userid)
 	{
 		global $system,$user,$database,$constant;
@@ -286,19 +466,19 @@ class com_usercontrol_front
 
 	private function showUserList()
 	{
-		global $database,$constant,$template,$user;
+		global $database,$constant,$template,$user,$system;
 		$theme_head = $template->tplget('userlist_head', 'components/usercontrol/');
 		$theme_body = $template->tplget('userlist_body', 'components/usercontrol/');
 		$compiled_body = null;
 		$current_user_id = $user->get('id');
 		if($current_user_id == null)
 			$current_user_id = 0;
-		$stmt = $database->con()->prepare("SELECT a.id, a.nick, b.avatar, b.regdate FROM {$constant->db['prefix']}_user a, {$constant->db['prefix']}_user_custom b WHERE a.id != ? AND a.id = b.id AND a.aprove = 0 ORDER BY a.id DESC");
+		$stmt = $database->con()->prepare("SELECT a.id, a.nick, b.regdate FROM {$constant->db['prefix']}_user a, {$constant->db['prefix']}_user_custom b WHERE a.id != ? AND a.id = b.id AND a.aprove = 0 ORDER BY a.id DESC");
 		$stmt->bindParam(1, $current_user_id, PDO::PARAM_INT);
 		$stmt->execute();
 		while($result = $stmt->fetch())
 		{
-			$compiled_body .= $template->assign(array('target_user_id', 'target_user_name', 'target_user_avatar', 'target_reg_date'), array($result['id'], $result['nick'], $result['avatar'], $result['regdate']), $theme_body);
+			$compiled_body .= $template->assign(array('target_user_id', 'target_user_name', 'target_user_avatar', 'target_reg_date'), array($result['id'], $result['nick'], $user->buildAvatar('small', $result['id']), $system->toDate($result['regdate'], 'd')), $theme_body);
 		}
 		return $template->assign('userlist', $compiled_body, $theme_head);
 	}
@@ -335,7 +515,7 @@ class com_usercontrol_front
 						foreach($request_array as $requester_id)
 						{
 							$user_nick = $user->get('nick', $requester_id);
-							$user_avatar = $user->customget('avatar', $requester_id);
+							$user_avatar = $user->buildAvatar('small', $requester_id);
 							$body_compiled .= $template->assign(array('nick', 'avatar', 'target_user_id'), array($user_nick, $user_avatar, $requester_id), $theme_body);
 						}
 					}
@@ -361,7 +541,7 @@ class com_usercontrol_front
 						foreach($friend_current_page as $friend_id)
 						{
 							$user_nick = $user->get('nick', $friend_id);
-							$user_avatar = $user->customget('avatar', $friend_id);
+							$user_avatar = $user->buildAvatar('small', $friend_id);
 							$body_compiled .= $template->assign(array('nick', 'avatar', 'target_user_id'), array($user_nick, $user_avatar, $friend_id), $theme_body);
 						}
 					}
@@ -495,11 +675,27 @@ class com_usercontrol_front
 
 	private function showUserMenu($userid)
 	{
-		global $template,$rule,$page;
+		global $template,$rule,$page,$hook;
+		$hook_implements = $hook->get('profile');
+		if($hook_implements != null)
+		{
+			$addition_menu = $hook_implements->menuShow();
+		}
 		$way = $page->getPathway();
 		if($way[0] == "message")
 		{
 			$rule->add('com.usercontrol.menu_message', true);
+		}
+		elseif($way[0] == "settings")
+		{
+			if($way[1] == "avatar")
+			{
+				$rule->add('com.usercontrol.menu_avatar', true);
+			}
+			else
+			{
+				$rule->add('com.usercontrol.menu_settings', true);
+			}
 		}
 		else
 		{
@@ -562,22 +758,10 @@ class com_usercontrol_front
 		$profile_theme = $template->tplget('profile_main', 'components/usercontrol/');
 		$profile_data_theme = $template->tplget('profile_block_data', 'components/usercontrol/');
 		// пользовательские данные
-		$regdate = new DateTime($user->customget('regdate', $userid));
-		$regdate = $regdate->format('Y.m.d');
-		$birthday = $user->customget('birthday', $userid);
+		$regdate = $system->toDate($user->customget('regdate', $userid), 'd');
+		$birthday = $system->toDate($user->customget('birthday', $userid), 'd');
 		$sex_int = $user->customget('sex', $userid);
-		if($sex_int == "1")
-		{
-			$sex = $language->get('usercontrol_profile_sex_man');
-		}
-		elseif($sex_int == "2")
-		{
-			$sex = $language->get('usercontrol_profile_sex_woman');
-		}
-		else
-		{
-			$sex = $language->get('usercontrol_profile_sex_unknown');
-		}
+		$sex = $this->sexLang($sex_int);
 		$phone = $user->customget('phone', $userid);
 		if(strlen($phone) < 4)
 		{
@@ -591,6 +775,23 @@ class com_usercontrol_front
 				array($this->userProfilePhotoSettings($userid), $this->userProfileHeaders($userid), $user_compiled_menu , $profile_compiled_data),
 				$profile_theme);
 		return $compiled_theme;
+	}
+	
+	private function sexLang($int)
+	{
+		global $language;
+		if($int == 1)
+		{
+			return $language->get('usercontrol_profile_sex_man');
+		}
+		elseif($int == 2)
+		{
+			return $language->get('usercontrol_profile_sex_woman');
+		}
+		else
+		{
+			return $language->get('usercontrol_profile_sex_unknown');
+		}
 	}
 
 	private function loadUserWall($userid, $marker, $limit = false)
@@ -636,7 +837,7 @@ class com_usercontrol_front
 				$from_name = $language->get('usercontrol_profile_name_unknown');
 			}
 			$message = $result['message'];
-			$output .= $template->assign(array('wall_from', 'wall_message', 'wall_from_id', 'wall_message_id', 'user_avatar'), array($from_name, $message, $result['caster'], $result['id'], $user->customget('avatar', $result['id'])), $theme);
+			$output .= $template->assign(array('wall_from', 'wall_message', 'wall_from_id', 'wall_message_id', 'user_avatar'), array($from_name, $message, $result['caster'], $result['id'], $user->buildAvatar('small', $result['caster'])), $theme);
 		}
 		return $output;
 	}
@@ -684,12 +885,36 @@ class com_usercontrol_front
 		$res = $stmt->fetch();
 		return $res[0];
 	}
+	
+	private function getMessageTotalRows($userid, $type)
+	{
+		global $database,$constant;
+		if($type == "in")
+		{
+			$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user_messages WHERE `to` = ?");
+			$stmt->bindParam(1, $userid, PDO::PARAM_INT);
+		}
+		elseif($type == "out")
+		{
+			$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user_messages WHERE `from` = ?");
+			$stmt->bindParam(1, $userid, PDO::PARAM_INT);
+		}
+		else
+		{
+			$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user_messages WHERE `to` = ? OR `from` = ?");
+			$stmt->bindParam(1, $userid, PDO::PARAM_INT);
+			$stmt->bindParam(2, $userid, PDO::PARAM_INT);
+		}
+		$stmt->execute();
+		$res = $stmt->fetch();
+		return $res[0];
+	}
 
 	private function userProfilePhotoSettings($userid)
 	{
 		global $template,$user;
 		$parsed = $template->assign(array('user_avatar', 'target_user_id'),
-				array($user->customget('avatar', $userid), $userid),
+				array($user->buildAvatar('big', $userid), $userid),
 				$template->tplget('profile_photo', 'components/usercontrol/'));
 		return $parsed;
 	}
@@ -737,7 +962,7 @@ class com_usercontrol_front
 			// все хорошо, ошибок нет, можно идти к SQL запросу
 			if($notify == null)
 			{
-				$md5pwd = md5($system->post('password'));
+				$md5pwd = $system->doublemd5($system->post('password'));
 				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user WHERE (email = ? OR login = ?) AND pass = ?");
 				$stmt->bindParam(1, $loginoremail, PDO::PARAM_STR);
 				$stmt->bindParam(2, $loginoremail, PDO::PARAM_STR);
@@ -804,7 +1029,7 @@ class com_usercontrol_front
 			$email = $system->post('email');
 			$login = $system->post('login');
 			$pass = $system->post('password');
-			$md5pwd = md5($pass);
+			$md5pwd = $system->doublemd5($pass);
 			if($extension->getConfig('register_captcha', 'usercontrol', 'components', 'boolean') && !$hook->get('captcha')->validate($system->post('captcha')))
 			{
 				$notify .= $template->stringNotify('error', $language->get('usercontrol_captcha_form_error'));
@@ -813,7 +1038,7 @@ class com_usercontrol_front
 			{
 				$notify .= $template->stringNotify('error', $language->get('usercontrol_invalid_email_error'));
 			}
-			if(strlen($pass) < 4 || strlen($pass) > 32)
+			if(!$system->validPasswordLength($pass))
 			{
 				$notify .= $template->stringNotify('error', $language->get('usercontrol_incorrent_password_error'));
 			}

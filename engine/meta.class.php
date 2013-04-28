@@ -16,7 +16,7 @@ class meta
 	 * @param String $data - присваиваемое содержимое
 	 * @param ENUM $metaname - имя мета-тега
 	 */
-	public function set($data, $metaname)
+	public function set($metaname, $data)
 	{
 		$this->{$metaname} = $data;
 	}
@@ -35,9 +35,17 @@ class meta
 	 * @param String $data
 	 * @param ENUM $metaname
 	 */
-	public function add($data, $metaname)
+	public function add($metaname, $data)
 	{
 		$this->{$metaname} .= $data;
+	}
+	
+	public function compile()
+	{
+		global $template;
+		$template->globalset('keywords', $this->keywords);
+		$template->globalset('description', $this->description);
+		$template->globalset('title', $this->title);
 	}
 
 }

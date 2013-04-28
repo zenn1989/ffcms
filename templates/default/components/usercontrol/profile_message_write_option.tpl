@@ -1,1 +1,0 @@
-<option value="{$target_user_id}">{$target_user_name}</option>

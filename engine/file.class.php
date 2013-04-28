@@ -39,79 +39,108 @@ class file
 		$connector = new elFinderConnector(new elFinder($opts));
 		$connector->run();
 	}
-
+	
+	
 	/**
-	 * Загрузка изображения в указанную директорию на сайте.
+	 * Загрузка аватара текущего пользователя. Обязательна авторизация.
 	 * @param unknown_type $file
-	 * @param unknown_type $dir
-	 * @param unknown_type $seo_title
-	 * @param unknown_type $check_exist
-	 * @param unknown_type $response_array
-	 * @return multitype:number
+	 * @param unknown_type $userid
 	 */
-	public function imageupload($file, $dir = "/upload/images/", $seo_title = '', $check_exist = false, $response_array = false)
+	public function useravatarupload($file)
 	{
-		global $constant,$database,$system;
-		$mime_type = array("image/gif", "image/jpeg", "image/jpg", "image/png", "image/bmp");
-		$file_infofunction = getimagesize($file);
-		if(in_array($file['type'], $mime_type) && in_array($file_infofunction['mime'], $mime_type) && $file['size'] > 0 && $file['size'] < $constant->upload_img_max_size*1024)
+		global $constant,$user;
+		$userid = $user->get('id');
+		if(!$this->validImage($file) || $userid < 1)
 		{
-			$object_pharse = explode(".", $file['name']);
-			$image_extension = array_pop($object_pharse);
-			$image_save_name = $this->analiseImageName(implode('', $object_pharse), $image_extension, $dir);
-			// возможно, изображение было загружено недавно?
-			if(!$check_exist || $this->imageNeverExist($image_save_name, $file['size']))
-			{
-				$stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_images (name, extension, title, size, pathway) VALUES (?, ?, ?, ?, ?)");
-				$stmt->bindParam(1, $image_save_name, PDO::PARAM_STR);
-				$stmt->bindParam(2, $image_extension, PDO::PARAM_STR);
-				$stmt->bindParam(3, $seo_title, PDO::PARAM_STR);
-				$stmt->bindParam(4, $file['size'], PDO::PARAM_INT);
-				$stmt->bindParam(5, $dir, PDO::PARAM_STR);
-				$stmt->execute();
-				move_uploaded_file($file['tmp_name'], $constant->root.$dir.$image_save_name.".".$image_extension);
-				if($response_array)
-				{
-					return array('status' => 1, 'file' => $constant->url.$dir.$image_save_name.".".$image_extension, 'caption' => $seo_title);
-				}
-			}
+			return false;
 		}
-		if($response_array)
-			return array('status' => 0);
-	}
+		$dir_original = $constant->root."/upload/user/avatar/original/";
+		$tmp_arr = explode(".", $file['name']);
+		$image_extension = array_pop($tmp_arr);
+		$file_save_original = "avatar_$userid.$image_extension";
+		$file_original_fullpath = $dir_original.$file_save_original;
+		if(!file_exists($dir_original))
+		{
+			mkdir($dir_original, 0777, true);
+		}
+		move_uploaded_file($file['tmp_name'], $file_original_fullpath);
+		$file_infofunction = getimagesize($file_original_fullpath);
+		$image_buffer = null;
+		if($file_infofunction['mine'] == "image/jpg" || $file_infofunction['mime'] == "image/jpeg")
+		{
+			$image_buffer = imagecreatefromjpeg($file_original_fullpath);
+		}
+		elseif($file_infofunction['mime'] == "image/gif")
+		{
+			$image_buffer = imagecreatefromgif($file_original_fullpath);
+		}
+		elseif($file_infofunction['mime'] == "image/png")
+		{
+			$image_buffer = imagecreatefrompng($file_original_fullpath);
+		}
+		else
+		{
+			return false;
+		}
+		$image_ox = imagesx($image_buffer);
+		$image_oy = imagesy($image_buffer);
+		
+		$image_big_dx = 400;
+		$image_medium_dx = 200;
+		$image_small_dx = 100;
+		
+		$image_big_dy = floor($image_oy * ($image_big_dx / $image_ox));
+		$image_medium_dy = floor($image_oy * ($image_medium_dx / $image_ox));
+		$image_small_dy = floor($image_oy * ($image_small_dx / $image_ox));
+		
+		$image_big_truecolor = imagecreatetruecolor($image_big_dx, $image_big_dy);
+		$image_medium_truecolor = imagecreatetruecolor($image_medium_dx, $image_medium_dy);
+		$image_small_truecolor = imagecreatetruecolor($image_small_dx, $image_small_dy);
+		
+		imagecopyresized($image_big_truecolor, $image_buffer, 0,0,0,0,$image_big_dx,$image_big_dy,$image_ox,$image_oy);
+		imagecopyresized($image_medium_truecolor, $image_buffer, 0,0,0,0,$image_medium_dx,$image_medium_dy,$image_ox,$image_oy);
+		imagecopyresized($image_small_truecolor, $image_buffer, 0,0,0,0,$image_small_dx,$image_small_dy,$image_ox,$image_oy);
+		
+		imagejpeg($image_big_truecolor, $constant->root."/upload/user/avatar/big/$file_save_original");
+		imagejpeg($image_medium_truecolor, $constant->root."/upload/user/avatar/medium/$file_save_original");
+		imagejpeg($image_small_truecolor, $constant->root."/upload/user/avatar/small/$file_save_original");
 
-	private function imageNeverExist($name, $size)
+		imagedestroy($image_big_truecolor);
+		imagedestroy($image_medium_truecolor);
+		imagedestroy($image_small_truecolor);
+		return true;
+	}
+	
+	private function validImage($file)
 	{
-		global $constant,$database;
-		$clear_name = explode("_", $name);
-		unset($clear_name[0]);
-		$new_name = implode("", $clear_name);
-		$name_rule = '%'.$new_name.'%';
-		$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_images WHERE name like ? AND size = ? ORDER BY id DESC LIMIT 10");
-		$stmt->bindParam(1, $name_rule, PDO::PARAM_STR);
-		$stmt->bindParam(2, $size, PDO::PARAM_INT);
-		$stmt->execute();
-		$result = $stmt->fetch();
-		if($result[0] == 0)
+		global $constant;
+		$mime_type = array("image/gif", "image/jpeg", "image/jpg", "image/png", "image/bmp");
+		$file_infofunction = getimagesize($file['tmp_name']);
+		$image_name_split = explode('.', $file['name']);
+		$image_extension = array_pop($image_name_split);
+		if(in_array($file['type'], $mime_type) && in_array($file_infofunction['mime'], $mime_type) && $file['size'] > 0 && $file['size'] < $constant->upload_img_max_size*1024 && $this->validImageExtension($image_extension))
 		{
 			return true;
 		}
 		return false;
 	}
 
-	public function showLastImagesList($dir = "/upload/images/", $limit = 10)
+	/**
+	 * Загрузка изображения в указанную директорию на сайте.
+	 * @param unknown_type $file
+	 * @param unknown_type $dir
+	 * @return multitype:number
+	 */
+	public function imageupload($file, $dir = "/upload/images/")
 	{
-		global $constant,$database;
-		$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_images WHERE pathway = ? ORDER by id DESC LIMIT ?");
-		$stmt->bindParam(1, $dir, PDO::PARAM_STR);
-		$stmt->bindParam(2, $limit, PDO::PARAM_INT);
-		$stmt->execute();
-		$result_array = array();
-		while($result = $stmt->fetch())
+		global $constant,$system;
+		if($this->validImage($file))
 		{
-			$result_array[] = array('file' => $constant->url.$dir.$result['name'].".".$result['extension'], 'caption' => $result['title']);
+			$object_pharse = explode(".", $file['name']);
+			$image_extension = array_pop($object_pharse);
+			$image_save_name = $this->analiseImageName(implode('', $object_pharse), $image_extension, $dir);
+			move_uploaded_file($file['tmp_name'], $constant->root.$dir.$image_save_name.".".$image_extension);
 		}
-		return $result_array;
 	}
 
 	private function analiseImageName($name, $xt, $dir, $recursive = false)
@@ -135,17 +164,10 @@ class file
 		return $result_file;
 	}
 
-	private function validImageExtension($image)
+	private function validImageExtension($image_extension)
 	{
-		$valid_extensions = array('.jpg', '.jpeg', '.png', '.bmp', '.gif');
-		foreach($valid_extensions as $ret)
-		{
-			if(substr($image, -strlen($ret)) == $ret)
-			{
-				return true;
-			}
-		}
-		return false;
+		$valid_extensions = array('jpg', 'jpeg', 'png', 'bmp', 'gif');
+		return in_array($image_extension, $valid_extensions);
 	}
 }
 

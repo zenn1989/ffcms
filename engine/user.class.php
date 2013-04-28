@@ -136,9 +136,38 @@ class user
 		}
 
 	}
+	
+	/**
+	 * Перезагрузка всех пользовательских данных
+	 * @param unknown_type $id
+	 */
+	public function fulluseroverload($id)
+	{
+		$this->useroverload($id);
+		$this->customoverload($id);
+	}
+	
+	/**
+	 * Перезагрузка основных пользовательских данных если они были изменены в процессе обработки
+	 * @param unknown_type $id
+	 */
+	public function useroverload($id)
+	{
+		global $database,$constant;
+		if($id < 1 || !$this->userparam[$id])
+			return;
+		$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user WHERE id = ?");
+		$stmt->bindParam(1, $id, PDO::PARAM_INT);
+		$stmt->execute();
+		$res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		foreach($res[0] as $index=>$data)
+		{
+			$this->userparam[$id][$index] = $data;
+		}
+	}
 
 	/**
-	 * Перезагрузка данных после того как они уже были выгружены и были изменены в процессе работы.
+	 * Перезагрузка кастомных данных после того как они уже были выгружены и были изменены в процессе работы.
 	 * @param unknown_type $id
 	 */
 	public function customoverload($id)
@@ -201,7 +230,7 @@ class user
 	}
 
 	/**
-	 *
+	 * Существует ли пользователь, по ID
 	 */
 	public function exists($userid)
 	{
@@ -211,6 +240,25 @@ class user
 		$stmt->execute();
 		$result = $stmt->fetch();
 		return $result[0];
+	}
+	
+	/**
+	 * Построение имени аватара пользователя. Вернет noavatar.jpg в случае отсутствия.
+	 * @param unknown_type $type
+	 * @param unknown_type $userid
+	 * @return string
+	 */
+	public function buildAvatar($type = "small", $userid)
+	{
+		global $constant;
+		$filepath = $constant->root."/upload/user/avatar/$type/avatar_$userid.jpg";
+		if(!file_exists($filepath))
+		{
+			return "noavatar.jpg";
+		}
+		// делаем динамический ?mtime=время чтобы кеширование браузера работало верно для измененных аватаров
+		$filetime = filemtime($filepath);
+		return "avatar_$userid.jpg?mtime=$filetime";
 	}
 }
 

@@ -17,6 +17,7 @@ class hook
 			$this->hook_list[$row['type']] = $row['dir'];
 		}
 	}
+	
 	public function get($type)
 	{
 		global $constant;

@@ -15,6 +15,8 @@ class constant
 
 	public $cache_interval = 60;
 	public $debug_no_cache = true;
+	
+	public $seo_meta = array();
 
 	// время жизни токена авторизации, дефолт = 1 сутки
 	public $token_time = 86400;
@@ -32,6 +34,8 @@ class constant
 	public $upload_img_max_size = 500;
 
 	public $do_compress_html = false;
+	
+	public $password_salt = "TjE3#81A@j9^am1@";
 
 	function __construct()
 	{
@@ -46,6 +50,10 @@ class constant
 		$this->db['pass'] = $config['db_pass'];
 		$this->db['db'] = $config['db_name'];
 		$this->db['prefix'] = $config['db_prefix'];
+		
+		$this->seo_meta['title'] = $config['seo_title'];
+		$this->seo_meta['keywords'] = $config['seo_keywords'];
+		$this->seo_meta['description'] = $config['seo_description'];
 
 		$this->cache_interval = $config['cache_interval'];
 		$this->token_time = $config['token_time'];

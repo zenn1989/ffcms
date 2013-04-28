@@ -20,7 +20,7 @@
 		{$if user.auth}
 		<div id="requestpost">
 		<textarea class="input-block-level" id="answer"></textarea>
-		<div class="pull-right"><a href="#" id="addanswer" class="btn btn-success">Написать</a></div><br />
+		<div class="pull-right"><a href="#" id="addanswer" class="btn btn-success">{$lang::global_send_button}</a></div><br />
 		</div>
 		{$/if}
 		<hr />
