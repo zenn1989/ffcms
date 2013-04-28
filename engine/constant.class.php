@@ -6,6 +6,7 @@
  */
 class constant
 {
+	public $ds = DIRECTORY_SEPARATOR;
 	public $root = null;
 	public $tpl_dir = null;
 	public $tpl_name = null;
@@ -33,7 +34,7 @@ class constant
 	// максимальный размер изображения (kb)
 	public $upload_img_max_size = 500;
 
-	public $do_compress_html = false;
+	public $do_compress_html = true;
 	
 	public $password_salt = "TjE3#81A@j9^am1@";
 

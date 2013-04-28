@@ -89,7 +89,17 @@ class com_usercontrol_front
 		}
 		elseif($way[1] == "status")
 		{
-			
+			if($system->post('updatestatus'))
+			{
+				$new_status = $system->nohtml($system->post('newstatus'));
+				$stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_user_custom SET status = ? WHERE id = ?");
+				$stmt->bindParam(1, $new_status, PDO::PARAM_STR);
+				$stmt->bindParam(2, $userid, PDO::PARAM_INT);
+				$stmt->execute();
+				$user->customoverload($userid);
+			}
+			$theme_status = $template->tplget('profile_settings_status', 'components/usercontrol/');
+			$compiled_body = $template->assign('user_status', $user->customget('status'), $theme_status);
 		}
 		else
 		{

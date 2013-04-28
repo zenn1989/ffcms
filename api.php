@@ -19,29 +19,20 @@ require_once(root."/engine/extension.class.php");
 require_once(root."/engine/system.class.php");
 require_once(root."/engine/api.class.php");
 require_once(root."/engine/file.class.php");
+require_once(root."/engine/user.class.php");
 
 $constant = new constant;
 $system = new system;
 $database = new database;
 $language = new language;
 $template = new template;
+$user = new user;
 $system = new system;
 $file = new file;
 $page = new page;
 $extension = new extension;
 
 $api = new api;
-// если необходима работа с правами доступа и проверкой пользовательских данных
-if($system->get('u') == 1)
-{
-	require_once(root."/engine/user.class.php");
-	$user = new user;
-	echo $api->userinterface();
-}
-else
-{
-	echo $api->standalone();
-}
-
+echo $api->load();
 
 ?>

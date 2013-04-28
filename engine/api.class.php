@@ -2,19 +2,12 @@
 class api
 {
 	public $separator = "/";
-	public function userinterface()
+	
+	public function load()
 	{
-		global $system,$user,$file;
+		global $system;
 		switch($system->get('action'))
 		{
-			case "lastimglist":
-				header('Content-type: application/json');
-				return json_encode($file->showLastImagesList('/upload/images/', 10));
-				break;
-			case "uploadimg":
-				header('Content-type: application/json');
-				return json_encode($file->imageupload($_FILES['file'], '/upload/images/', $system->get('seo_title'), true, true));
-				break;
 			case "readwall":
 				return $this->loadUserWall();
 				break;
@@ -24,14 +17,18 @@ class api
 			case "elfinder":
 				$file->elfinder();
 				break;
+			case "redirect":
+				return $this->userLeaveRedirect();
+				break;
 			default:
 				break;
 		}
 	}
-
-	public function standalone()
+	
+	private function userLeaveRedirect()
 	{
-		return "";
+		global $system,$template;
+		return $template->assign('target_url', $system->get('url'), $template->tplget('redirect'));
 	}
 	
 	public function doPostWall()

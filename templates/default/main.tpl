@@ -7,11 +7,12 @@
 <meta name="keywords" content="{$keywords}" />
 <meta name="description" content="{$description}" />
 <meta content="ffcms" name="author" />
-<link href="{$url}/{$tpl_dir}/css/bootstrap.css" rel="stylesheet" />
-<link href="{$url}/{$tpl_dir}/css/bootstrap-responsive.css" rel="stylesheet" />
-<link href="{$url}/{$tpl_dir}/css/docs.css" rel="stylesheet" />
-<script src="{$url}/{$tpl_dir}/js/jquery-1.9.1.min.js" type="text/javascript"></script>
-<script src="{$url}/{$tpl_dir}/js/bootstrap.js" type="text/javascript"></script>
+{$head_addons}
+{$cssfile css/bootstrap.css}
+{$cssfile css/bootstrap-responsive.css}
+{$cssfile css/docs.css}
+{$jsfile js/jquery-1.9.1.min.js}
+{$jsfile js/bootstrap.js}
 <!--[if lt IE 9]>
 <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->

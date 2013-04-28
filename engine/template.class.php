@@ -68,6 +68,7 @@ class template
 		$this->postcompile();
 		$this->language();
 		$this->ruleCheck();
+		$this->htmlhead();
 		$this->cleanvar();
 		if($constant->do_compress_html && loader == 'front')
 		{
@@ -162,15 +163,22 @@ class template
 	 */
 	private function cleanvar()
 	{
-		$this->content = preg_replace('/{\$(.*?)}/', '', $this->content);
+		$this->content = preg_replace('/{\$(.*?)}/s', '', $this->content);
 	}
 
 	/**
-	 * Сжатие страницы путем удаления пробелов и переносов строк. Для HTML это не помеха.
+	 * Сжатие страницы путем удаления излишних переносов строк. Алгоритм героинский, но работает исправно и не бьет юзерский JS в коде шаблонов.
 	 */
 	private function compress()
 	{
-		$this->content = preg_replace('/[\s]{2,}/', ' ', str_replace(array("\n", "\r", "\t", "\r\n"), '', $this->content));
+		$compressed = null;
+		preg_match_all('/(.*?)\n/s', $this->content, $matches);
+		foreach($matches[0] as $string)
+		{
+			if(preg_match('/[^\s]/s', $string))
+				$compressed .= $string;
+		}
+		$this->content = $compressed;
 	}
 
 	/**
@@ -193,6 +201,31 @@ class template
 			$this->content = str_replace($matches[0][$i], $theme_result, $this->content);
 		}
 	}
+	
+	private function htmlhead()
+	{
+		global $constant,$system;
+		$compiled_header = null;
+		// сборка подключения файлов javascript в шапку, к примеру из тела компонента, когда непосредственного доступа к тегу <head></head> нет.
+		// пр: {$jsfile lib/js/script.js} уйдет в <head><script src="url/tpl_dir/tpl_name/lib/js/script.js
+		preg_match_all('/{\$jsfile (.*?)}/s', $this->content, $jsfile_matches);
+		$jsfile_array = $system->nullArrayClean(array_unique($jsfile_matches[1]));
+		foreach($jsfile_array as $jsfile)
+		{
+			if(file_exists($constant->root.$constant->ds.$constant->tpl_dir.$constant->ds.$constant->tpl_name.$constant->ds.$jsfile))
+				$compiled_header .= "<script type=\"text/javascript\" src=\"{$constant->url}/{$constant->tpl_dir}/{$constant->tpl_name}/{$jsfile}\"></script>\r\n";
+		}
+		// сборка подключения CSS файлов в шапку, аналогично JS
+		preg_match_all('/{\$cssfile (.*?)}/s', $this->content, $cssfile_matches);
+		$cssfile_array = $system->nullArrayClean($cssfile_matches[1]);
+		foreach($cssfile_array as $cssfile)
+		{
+			if(file_exists($constant->root.$constant->ds.$constant->tpl_dir.$constant->ds.$constant->tpl_name.$constant->ds.$cssfile))
+				$compiled_header .= "<link href=\"{$constant->url}/{$constant->tpl_dir}/{$constant->tpl_name}/{$cssfile}\" rel=\"stylesheet\" />\r\n";
+		}
+		
+		$this->content = str_replace('{$head_addons}', $compiled_header, $this->content);
+	}
 
 	/**
 	 * Установка стандартных шаблоных переменных. Пример: {$url} => http://blabla
@@ -208,8 +241,7 @@ class template
 		{
 			$template_path = $constant->tpl_dir.$this->separator.$constant->tpl_name;
 		}
-		return str_replace(
-				array('{$url}', '{$tpl_dir}', '{$user_id}', '{$user_nick}'),
+		return str_replace(array('{$url}', '{$tpl_dir}', '{$user_id}', '{$user_nick}'),
 				array($constant->url, $template_path, $user->get('id'), $user->get('nick')),
 				$theme);
 	}

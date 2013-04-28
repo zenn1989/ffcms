@@ -2,6 +2,6 @@
 <i class="pull-right">
 {$user_status}
 {$if com.usercontrol.self_profile}
-<i class="icon-refresh"></i>
+<a href="{$url}/settings/status"><i class="icon-refresh"></i></a>
 {$/if}
 </i>
