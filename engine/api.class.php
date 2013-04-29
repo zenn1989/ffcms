@@ -20,8 +20,23 @@ class api
 			case "redirect":
 				return $this->userLeaveRedirect();
 				break;
+			case "js":
+				return $this->showRequestJs();
+				break;
 			default:
 				break;
+		}
+	}
+	
+	private function showRequestJs()
+	{
+		global $system,$constant,$template;
+		header('Content-Type: text/javascript');
+		$dir = $system->get('dir');
+		$file = $system->get('name');
+		if(file_exists($constant->root.$constant->ds.$constant->tpl_dir.$constant->ds.$constant->tpl_name.$constant->ds.$dir.$constant->ds.$file.".tpl"))
+		{
+			return $template->tplget($file, $dir.$constant->ds);
 		}
 	}
 	

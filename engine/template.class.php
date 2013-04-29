@@ -223,8 +223,15 @@ class template
 			if(file_exists($constant->root.$constant->ds.$constant->tpl_dir.$constant->ds.$constant->tpl_name.$constant->ds.$cssfile))
 				$compiled_header .= "<link href=\"{$constant->url}/{$constant->tpl_dir}/{$constant->tpl_name}/{$cssfile}\" rel=\"stylesheet\" />\r\n";
 		}
-		
-		$this->content = str_replace('{$head_addons}', $compiled_header, $this->content);
+		// сборка подключения JS на api.php, в которых используется преобразование переменных.
+		preg_match_all('/{\$jsapi (.*?)}/s', $this->content, $jsapi_matches);
+		$jsapi_array = $system->nullArrayClean(array_unique($jsapi_matches[1]));
+		foreach($jsapi_array as $jsapi)
+		{
+			$compiled_header .= "<script type=\"text/javascript\" src=\"{$constant->url}/{$jsapi}\"></script>\r\n";
+		}
+		$compiled_header .= "</head>";
+		$this->content = str_replace('</head>', $compiled_header, $this->content);
 	}
 
 	/**

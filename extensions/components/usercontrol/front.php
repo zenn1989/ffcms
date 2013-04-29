@@ -14,10 +14,15 @@ page::setNoCache('settings');
 
 class com_usercontrol_front
 {
+	public $hook_item_menu;
+	public $hook_item_url;
+	public $hook_item_settings;
+	
 	public function load()
 	{
-		global $page,$template,$rule,$extension;
+		global $page,$template,$rule,$extension,$hook;
 		$way = $page->getPathway();
+		$hook->before();
 		$rule->add('com.usercontrol.login_captcha', $extension->getConfig('login_captcha', 'usercontrol', 'components', 'boolean'));
 		$rule->add('com.usercontrol.register_captcha', $extension->getConfig('register_captcha', 'usercontrol', 'components', 'boolean'));
 		switch($way[0])
@@ -685,12 +690,7 @@ class com_usercontrol_front
 
 	private function showUserMenu($userid)
 	{
-		global $template,$rule,$page,$hook;
-		$hook_implements = $hook->get('profile');
-		if($hook_implements != null)
-		{
-			$addition_menu = $hook_implements->menuShow();
-		}
+		global $template,$rule,$page;
 		$way = $page->getPathway();
 		if($way[0] == "message")
 		{
@@ -771,15 +771,20 @@ class com_usercontrol_front
 		$regdate = $system->toDate($user->customget('regdate', $userid), 'd');
 		$birthday = $system->toDate($user->customget('birthday', $userid), 'd');
 		$sex_int = $user->customget('sex', $userid);
+		$website = $user->customget('webpage', $userid);
+		if(strlen($website) > 0)
+		{
+			$rule->add('com.usercontrol.have_webpage', true);
+		}
 		$sex = $this->sexLang($sex_int);
 		$phone = $user->customget('phone', $userid);
-		if(strlen($phone) < 4)
+		if(strlen($phone) > 0)
 		{
-			$phone = $language->get('usercontrol_profile_phone_unknown');
+			$rule->add('com.usercontrol.have_phone', true);
 		}
 		$user_compiled_menu = $this->showUserMenu($userid);
-		$profile_compiled_data = $template->assign(array('user_regdate', 'user_birthday', 'user_sex', 'user_phone', 'target_user_id', 'user_wall', 'wall_prev', 'wall_next'),
-				array($regdate, $birthday, $sex, $phone, $userid, $this->loadUserWall($userid, $wall_marker, $wall_post_limit), $wall_marker-1, $wall_marker+1),
+		$profile_compiled_data = $template->assign(array('user_regdate', 'user_birthday', 'user_sex', 'user_phone', 'target_user_id', 'user_wall', 'wall_prev', 'wall_next', 'user_website'),
+				array($regdate, $birthday, $sex, $phone, $userid, $this->loadUserWall($userid, $wall_marker, $wall_post_limit), $wall_marker-1, $wall_marker+1, $website),
 				$profile_data_theme);
 		$compiled_theme = $template->assign(array('user_photo_control', 'user_header', 'user_menu', 'user_main_block'),
 				array($this->userProfilePhotoSettings($userid), $this->userProfileHeaders($userid), $user_compiled_menu , $profile_compiled_data),

@@ -15,10 +15,18 @@
 								<td>{$lang::usercontrol_profile_pers_sex}</td>
 								<td>{$user_sex}</td>
 							</tr>
+							{$if com.usercontrol.have_phone}
 							<tr>
 								<td>{$lang::usercontrol_profile_pers_phone}</td>
 								<td>{$user_phone}</td>
 							</tr>
+							{$/if}
+							{$if com.usercontrol.have_webpage}
+							<tr>
+								<td>{$lang::usercontrol_profile_pers_website}</td>
+								<td><a href="{$url}/api.php?action=redirect&url={$user_website}" target="_blank">{$user_website}</a></td>
+							</tr>
+							{$/if}
 						</table>
 						
 						<h3 class="centered">{$lang::usercontrol_profile_pers_wall}</h3>

@@ -35,5 +35,49 @@ class hook
 		$init = new $class;
 		return $init->load();
 	}
+	
+	public function after()
+	{
+		global $constant;
+		foreach($this->hook_list as $key=>$index)
+		{
+			$file = $constant->root.'/extensions/hooks/'.$index.'/front.php';
+			if(file_exists($file))
+			{
+				require_once($file);
+				$class = "hook_{$index}_front";
+				if(class_exists($class))
+				{
+					$int = new $class;
+					if(method_exists($int, 'after') && method_exists($int, 'load'))
+					{
+						$int->load()->after();
+					}
+				}
+			}
+		}
+	}
+	
+	public function before()
+	{
+		global $constant;
+		foreach($this->hook_list as $key=>$index)
+		{
+			$file = $constant->root.'/extensions/hooks/'.$index.'/front.php';
+			if(file_exists($file))
+			{
+				require_once($file);
+				$class = "hook_{$index}_front";
+				if(class_exists($class))
+				{
+					$int = new $class;
+					if(method_exists($int, 'before') && method_exists($int, 'load'))
+					{
+						$int->load()->before();
+					}
+				}
+			}
+		}
+	}
 }
 ?>

@@ -7,7 +7,6 @@
 <meta name="keywords" content="{$keywords}" />
 <meta name="description" content="{$description}" />
 <meta content="ffcms" name="author" />
-{$head_addons}
 {$cssfile css/bootstrap.css}
 {$cssfile css/bootstrap-responsive.css}
 {$cssfile css/docs.css}
