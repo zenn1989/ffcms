@@ -17,15 +17,20 @@
 	{$if !com.usercontrol.menu_friends}
 	<li><a href="{$url}/user/id{$target_user_id}/friends"><i class="icon-user"></i> {$lang::usercontrol_profile_menu_friends}</a></li>
 	{$/if}
-	{$if com.usercontrol.menu_dropdown}
+	{$if com.usercontrol.menu_dropdown && com.usercontrol.menu_dropdown_notempty}
 	<li class="dropdown active">
-	{$/if}
-	{$if !com.usercontrol.menu_dropdown}
-	<li class="dropdown">
-	{$/if}
 	<a href="#" data-toggle="dropdown"><i class="icon-share-alt"></i> {$lang::usercontrol_profile_menu_more}<b class="caret"></b></a>
 		<ul class="dropdown-menu">
-			<li><a href="#">text</a></li>
+			{$additional_hook_list}
 		</ul>
 	</li>
+	{$/if}
+	{$if !com.usercontrol.menu_dropdown && com.usercontrol.menu_dropdown_notempty}
+	<li class="dropdown">
+	<a href="#" data-toggle="dropdown"><i class="icon-share-alt"></i> {$lang::usercontrol_profile_menu_more}<b class="caret"></b></a>
+		<ul class="dropdown-menu">
+			{$additional_hook_list}
+		</ul>
+	</li>
+	{$/if}
 </ul>

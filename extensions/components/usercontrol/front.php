@@ -117,6 +117,7 @@ class com_usercontrol_front
 				$nick = $system->nohtml($system->post('nickname'));
 				$phone = $system->post('phone');
 				$sex = $system->post('sex');
+				$webpage = $system->post('website');
 				// old, new, repeat new
 				$password_array = array($system->post('oldpwd'), $system->post('newpwd'), $system->post('renewpwd'));
 				$password = $user->get('pass');
@@ -138,19 +139,24 @@ class com_usercontrol_front
 				{
 					$sex = $user->customget('sex');
 				}
+				if(!filter_var($webpage, FILTER_VALIDATE_URL))
+				{
+					$webpage = $user->customget('webpage');
+				}
 				// новый пароль был назначен, новые пароли совпали а так же старый пароль введен верно
 				if($system->validPasswordLength($password_array) && $system->doublemd5($password_array[0]) == $password && $password_array[1] == $password_array[2] && $password_array[0] != $password_array[1])
 				{
 					$password = $system->doublemd5($password_array[1]);
 					$notify .= $template->stringNotify('error', $language->get('usercontrol_profile_settings_notify_passchange'));
 				}
-				$stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_user a INNER JOIN {$constant->db['prefix']}_user_custom b USING(id) SET a.nick = ?, a.pass = ?, b.birthday = ?, b.sex = ?, b.phone = ? WHERE a.id = ?");
+				$stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_user a INNER JOIN {$constant->db['prefix']}_user_custom b USING(id) SET a.nick = ?, a.pass = ?, b.birthday = ?, b.sex = ?, b.phone = ?, b.webpage = ? WHERE a.id = ?");
 				$stmt->bindParam(1, $nick, PDO::PARAM_STR);
 				$stmt->bindParam(2, $password, PDO::PARAM_STR, 32);
 				$stmt->bindParam(3, $birthday_string, PDO::PARAM_STR);
 				$stmt->bindParam(4, $sex, PDO::PARAM_INT);
 				$stmt->bindParam(5, $phone, PDO::PARAM_STR);
-				$stmt->bindParam(6, $userid, PDO::PARAM_INT);
+				$stmt->bindParam(6, $webpage, PDO::PARAM_STR);
+				$stmt->bindParam(7, $userid, PDO::PARAM_INT);
 				$stmt->execute();
 				$user->fulluseroverload($userid);
 				$notify .= $template->stringNotify('success', $language->get('usercontrol_profile_settings_notify_updated'));
@@ -165,6 +171,7 @@ class com_usercontrol_front
 			$month_option_list = null;
 			$year_option_list = null;
 			$sex_list = null;
+			
 			$sex_int = $user->customget('sex');
 			// генерируем список для даты рождения
 			foreach($day_range as $s_day)
@@ -211,8 +218,8 @@ class com_usercontrol_front
 					$sex_list .= $template->assign(array('option_value', 'option_name'), array($i, $this->sexLang($i)), $theme_option_inactive);
 				}
 			}
-			$compiled_body = $template->assign(array('option_day', 'option_month', 'option_year', 'user_nickname', 'option_sex', 'user_phone', 'notify_messages'),
-					array($day_option_list, $month_option_list, $year_option_list, $user->get('nick'), $sex_list, $user->customget('phone'), $notify),
+			$compiled_body = $template->assign(array('option_day', 'option_month', 'option_year', 'user_nickname', 'option_sex', 'user_phone', 'notify_messages', 'user_website'),
+					array($day_option_list, $month_option_list, $year_option_list, $user->get('nick'), $sex_list, $user->customget('phone'), $notify, $user->customget('webpage')),
 					$template->tplget('profile_settings_main', 'components/usercontrol/'));
 		}
 		$compiled_theme = $template->assign(array('user_photo_control', 'user_header', 'user_menu', 'user_main_block'),
@@ -431,6 +438,7 @@ class com_usercontrol_front
 					$user->get('id') == $userid ? $rule->add('com.usercontrol.self_profile', true) : $rule->add('com.usercontrol.self_profile', false);
 					$this->inFriendsWith($userid) ? $rule->add('com.usercontrol.in_friends', true) : $rule->add('com.usercontrol.in_friends', false);
 					$this->inFriendRequestWith($userid) ? $rule->add('com.usercontrol.in_friends_request', true) : $rule->add('com.usercontrol.in_friends_request', false);
+					
 					switch($way[2])
 					{
 						case "marks":
@@ -440,7 +448,14 @@ class com_usercontrol_front
 							$content = $this->showFriends($userid);
 							break;
 						default:
-							$content = $this->showProfileUser($userid);
+							if($this->hook_item_url[$way[2]] != null)
+							{
+								$content = $this->hook_item_url[$way[2]];
+							}
+							else
+							{
+								$content = $this->showProfileUser($userid);
+							}
 							break;
 					}
 				}
@@ -593,7 +608,6 @@ class com_usercontrol_front
 				$new_request_list = $system->altimplode(",", $new_request_array);
 				$new_friend_array = $system->arrayAdd($id, $friend_array);
 				$new_friend_list = $system->altimplode(",", $new_friend_array);
-				echo $new_friend_list;
 				$stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_user_custom SET friend_list = ?, friend_request = ? WHERE id = ?");
 				$stmt->bindParam(1, $new_friend_list, PDO::PARAM_STR);
 				$stmt->bindParam(2, $new_request_list, PDO::PARAM_STR);
@@ -726,7 +740,11 @@ class com_usercontrol_front
 					break;
 			}
 		}
-		return $template->assign('target_user_id', $userid, $template->tplget('profile_block_menu', 'components/usercontrol/'));
+		if($this->hook_item_menu != null)
+		{
+			$rule->add('com.usercontrol.menu_dropdown_notempty', true);
+		}
+		return $template->assign(array('target_user_id', 'additional_hook_list'), array($userid, $this->hook_item_menu), $template->tplget('profile_block_menu', 'components/usercontrol/'));
 	}
 
 	private function showProfileUser($userid)

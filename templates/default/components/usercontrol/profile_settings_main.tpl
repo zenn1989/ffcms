@@ -40,6 +40,13 @@
 			<p class="help-block">{$lang::usercontrol_profile_settings_label_sex_desc}</p>
 		</div>
 	</div>
+	<div class="control-group">
+		<label class="control-label">{$lang::usercontrol_profile_settings_label_website_title}</label>
+		<div class="controls">
+			<input type="text" name="website" value="{$user_website}" />
+			<p class="help-block">{$lang::usercontrol_profile_settings_label_website_desc}</p>
+		</div>
+	</div>
 <h3>{$lang::usercontrol_profile_settings_title_password}</h3>
 <p>{$lang::usercontrol_profile_settings_desc_password}</p>
 <hr />

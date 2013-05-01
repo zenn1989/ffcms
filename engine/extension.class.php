@@ -11,6 +11,8 @@ class extension
 	private $registeredway = array();
 	private $notifyModuleAfter = array();
 	private $config_loaded = null;
+	
+	public $object = array();
 
 	function __construct()
 	{
@@ -180,6 +182,7 @@ class extension
 			{
 				$class_com_name = "com_{$com_dir}_front";
 				$init_class = new $class_com_name;
+				$this->object['com'][$com_dir] = $init_class;
 				$init_class->load();
 				// вхождение в путь найдено, дальнейшая обработка не нужна.
 				return true;
