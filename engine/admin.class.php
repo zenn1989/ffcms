@@ -393,7 +393,7 @@ class admin
 		$stmt2->execute();
 		$res2 = $stmt2->fetch();
 		$unique_user = $res2[0];
-		$stmt3 = $database->con()->prepare("SELECT COUNT(DISTINCT ip,cookie) FROM {$constant->db['prefix']}_statistic WHERE time >= ? and time <= ? AND isreg = 1");
+		$stmt3 = $database->con()->prepare("SELECT COUNT(DISTINCT ip,cookie) FROM {$constant->db['prefix']}_statistic WHERE time >= ? and time <= ? AND reg_id > 0");
 		$stmt3->bindParam(1, $start);
 		$stmt3->bindParam(2, $end);
 		$stmt3->execute();

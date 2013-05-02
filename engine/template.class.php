@@ -360,5 +360,94 @@ class template
 		unset($this->bottom);
 		unset($this->footer);
 	}
+	
+	public function drowNumericPagination($index, $count, $total, $link)
+	{
+		$theme_head = $this->tplget('pagination_head');
+		$theme_active = $this->tplget('pagination_active_item');
+		$theme_inactive = $this->tplget('pagination_inactive_item');
+		$theme_spliter = $this->tplget('pagination_split_item');
+		
+		$compiled_items = null;
+		$last_page = (int)$total/$count;
+		// если всего планируется более 10 страничек с итемами
+		if($total/$count > 10)
+		{
+			// если это начало списка
+			if($index < 5)
+			{
+				for($i=0;$i<=8;$i++)
+				{
+					if($i == $index)
+					{
+						$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$i, $i+1), $theme_active);
+					}
+					else
+					{
+						$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$i, $i+1), $theme_inactive);
+					}
+				}
+				$compiled_items .= $theme_spliter;
+				$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$last_page, $last_page+1), $theme_inactive);
+			}
+			// это конец списка
+			elseif($last_page - $index < 5)
+			{
+				$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.'0', 1), $theme_inactive);
+				$compiled_items .= $theme_spliter;
+				for($i=$last_page-8;$i<=$last_page;$i++)
+				{
+					if($i == $index)
+					{
+						$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$i, $i+1), $theme_active);
+					}
+					else
+					{
+						$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$i, $i+1), $theme_inactive);
+					}
+				}
+			}
+			// это середина списка
+			else
+			{
+				$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.'0', 1), $theme_inactive);
+				$compiled_items .= $theme_spliter;
+				for($i=$index-3;$i<=$index;$i++)
+				{
+					if($i == $index)
+					{
+						$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$i, $i+1), $theme_active);
+					}
+					else
+					{
+						$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$i, $i+1), $theme_inactive);
+					}
+				}
+				for($i=$index+1;$i<=$index+3;$i++)
+				{
+					$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$i, $i+1), $theme_inactive);
+				}
+				$compiled_items .= $theme_spliter;
+				$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$last_page, $last_page+1), $theme_inactive);
+			}
+		}
+		// иначе все просто, генерируем до предела
+		else
+		{
+			// от 0 до прогнозируемого кол-ва страниц
+			for($i=0;$i<$total/$count;$i++)
+			{
+				if($i == $index)
+				{
+					$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$i, $i+1), $theme_active);
+				}
+				else
+				{
+					$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$i, $i+1), $theme_inactive);
+				}
+			}
+		}
+		return $this->assign('li_items', $compiled_items, $theme_head);
+	}
 }
 ?>

@@ -15,3 +15,5 @@
 <p style="padding-left: 10%;">{$user_online_list}</p>
 </div>
 </div>
+<hr />
+{$userlist_pagination}

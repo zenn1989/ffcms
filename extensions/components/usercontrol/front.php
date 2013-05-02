@@ -426,7 +426,7 @@ class com_usercontrol_front
 		}
 		else
 		{
-			if($way[1] == null)
+			if($way[1] == null || $system->isInt($way[1]))
 			{
 				$content = $this->showUserList();;
 			}
@@ -496,7 +496,9 @@ class com_usercontrol_front
 
 	private function showUserList()
 	{
-		global $database,$constant,$template,$user,$system;
+		global $database,$constant,$template,$user,$system,$page,$extension;
+		$usercount_on_page = $extension->getConfig('userlist_count', 'usercontrol', 'components', 'int');
+		$way = $page->getPathway();
 		$theme_head = $template->tplget('userlist_head', 'components/usercontrol/');
 		$theme_body = $template->tplget('userlist_body', 'components/usercontrol/');
 		$compiled_body = null;
@@ -504,7 +506,7 @@ class com_usercontrol_front
 		$current_user_id = $user->get('id');
 		if($current_user_id == null)
 			$current_user_id = 0;
-		$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user WHERE aprove = 0");
+		$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user a, {$constant->db['prefix']}_user_custom b WHERE a.aprove = 0 AND a.id = b.id");
 		$stmt->execute();
 		$rowRegisteredFetch = $stmt->fetch();
 		$allRegisteredCount = $rowRegisteredFetch[0];
@@ -528,14 +530,19 @@ class com_usercontrol_front
 			$currentOnline .= "<a href=\"{$constant->url}/user/id{$onlineUser['id']}\">{$onlineUser['nick']}</a> ";
 		}
 		$stmt = null;
-		$stmt = $database->con()->prepare("SELECT a.id, a.nick, b.regdate FROM {$constant->db['prefix']}_user a, {$constant->db['prefix']}_user_custom b WHERE a.id != ? AND a.id = b.id AND a.aprove = 0 ORDER BY a.id DESC");
+		$limit_start = $way[1] * $usercount_on_page;
+		$stmt = $database->con()->prepare("SELECT a.id, a.nick, b.regdate FROM {$constant->db['prefix']}_user a, {$constant->db['prefix']}_user_custom b WHERE a.id != ? AND a.id = b.id AND a.aprove = 0 ORDER BY a.id DESC LIMIT ?, ?");
 		$stmt->bindParam(1, $current_user_id, PDO::PARAM_INT);
+		$stmt->bindParam(2, $limit_start, PDO::PARAM_INT);
+		$stmt->bindParam(3, $usercount_on_page, PDO::PARAM_INT);
 		$stmt->execute();
 		while($result = $stmt->fetch())
 		{
 			$compiled_body .= $template->assign(array('target_user_id', 'target_user_name', 'target_user_avatar', 'target_reg_date'), array($result['id'], $result['nick'], $user->buildAvatar('small', $result['id']), $system->toDate($result['regdate'], 'd')), $theme_body);
 		}
-		return $template->assign(array('userlist', 'reg_all_count', 'reg_male_count', 'reg_female_count', 'reg_unknown_count', 'user_online_list'), array($compiled_body, $allRegisteredCount, $maleRegisteredCount, $femaleRegisteredCount, $allRegisteredCount-($maleRegisteredCount+$femaleRegisteredCount), $currentOnline), $theme_head);
+		//echo $way[1];
+		$pagination_tpl = $template->drowNumericPagination($way[1], $usercount_on_page, $allRegisteredCount, 'user/');
+		return $template->assign(array('userlist', 'reg_all_count', 'reg_male_count', 'reg_female_count', 'reg_unknown_count', 'user_online_list', 'userlist_pagination'), array($compiled_body, $allRegisteredCount, $maleRegisteredCount, $femaleRegisteredCount, $allRegisteredCount-($maleRegisteredCount+$femaleRegisteredCount), $currentOnline, $pagination_tpl), $theme_head);
 	}
 
 	private function showFriends($userid)

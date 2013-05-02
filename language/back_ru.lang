@@ -125,3 +125,6 @@ admin_component_usercontrol_th_id<=>ID
 admin_component_usercontrol_th_login<=>Логин
 admin_component_usercontrol_th_email<=>Почта
 admin_component_usercontrol_th_edit<=>Управление
+admin_component_usercontrol_thred_data<=>Список пользователей
+admin_component_usercontrol_config_userlist_count_name<=>Пользователей на странице
+admin_component_usercontrol_config_userlist_count_desc<=>Количество пользователей отображаемых на 1 странице в списке пользователей
