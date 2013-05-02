@@ -103,4 +103,11 @@ usercontrol_profile_settings_label_website_title<=>Ваша страница
 usercontrol_profile_settings_label_website_desc<=>Укажите ваш сайт или персональную страничку в социальной сети
 usercontrol_profile_settings_status_title<=>Настройка статуса
 usercontrol_profile_settings_status_desc<=>В данном разделе вы можете обновить ваш пользовательский статус
-
+usercontrol_listuser_header_text<=>Список пользователей
+usercontrol_listuser_info_text<=>Информация
+usercontrol_listuser_item_many<=>Сколько нас?
+usercontrol_listuser_people<=>человек
+usercontrol_listuser_male<=>Мужчин
+usercontrol_listuser_female<=>Женщин
+usercontrol_listuser_unknown<=>Неопределились
+usercontrol_listuser_nowactive<=>Сейчас активны

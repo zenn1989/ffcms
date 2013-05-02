@@ -17,6 +17,7 @@ class robot
 		$os = $this->user_os($_SERVER['HTTP_USER_AGENT']);
 		$cookie = $_COOKIE['source'];
 		$isreg = $user->get('id') < 1 ? 0 : 1;
+		$userid = $user->get('id') < 1 ? 0 : $user->get('id');
 		if($cookie == null)
 		{
 			$settime=$visittime+(365*24*60*60);
@@ -25,7 +26,7 @@ class robot
 		}
 		$referer = $_SERVER['HTTP_REFERER'] == null ? '' : $_SERVER['HTTP_REFERER'];
 		$path = $_SERVER['REQUEST_URI'];
-		$query = "INSERT INTO {$constant->db['prefix']}_statistic (ip, cookie, browser, os, time, referer, path, isreg) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+		$query = "INSERT INTO {$constant->db['prefix']}_statistic (ip, cookie, browser, os, time, referer, path, reg_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
 		$stmt = $database->con()->prepare($query);
 		$stmt->bindParam(1, $realip, PDO::PARAM_STR);
 		$stmt->bindParam(2, $cookie, PDO::PARAM_STR, 32);
@@ -34,7 +35,7 @@ class robot
 		$stmt->bindParam(5, $visittime, PDO::PARAM_INT);
 		$stmt->bindParam(6, $referer, PDO::PARAM_STR);
 		$stmt->bindParam(7, $path, PDO::PARAM_STR);
-		$stmt->bindParam(8, $isreg, PDO::PARAM_INT);
+		$stmt->bindParam(8, $userid, PDO::PARAM_INT);
 		$stmt->execute();
 
 	}

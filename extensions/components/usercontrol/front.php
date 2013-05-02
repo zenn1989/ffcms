@@ -500,9 +500,34 @@ class com_usercontrol_front
 		$theme_head = $template->tplget('userlist_head', 'components/usercontrol/');
 		$theme_body = $template->tplget('userlist_body', 'components/usercontrol/');
 		$compiled_body = null;
+		$currentOnline = null;
 		$current_user_id = $user->get('id');
 		if($current_user_id == null)
 			$current_user_id = 0;
+		$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user WHERE aprove = 0");
+		$stmt->execute();
+		$rowRegisteredFetch = $stmt->fetch();
+		$allRegisteredCount = $rowRegisteredFetch[0];
+		$stmt = null;
+		$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user a, {$constant->db['prefix']}_user_custom b WHERE a.aprove = 0 AND a.id = b.id AND sex = 1");
+		$stmt->execute();
+		$rowMaleFetch = $stmt->fetch();
+		$maleRegisteredCount = $rowMaleFetch[0];
+		$stmt = null;
+		$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user a, {$constant->db['prefix']}_user_custom b WHERE a.aprove = 0 AND a.id = b.id AND sex = 2");
+		$stmt->execute();
+		$rowFemaleFetch = $stmt->fetch();
+		$femaleRegisteredCount = $rowFemaleFetch[0];
+		$stmt = null;
+		$time_difference = time() - 15 * 60;
+		$stmt = $database->con()->prepare("SELECT a.reg_id, a.cookie, b.* FROM {$constant->db['prefix']}_statistic a, {$constant->db['prefix']}_user b WHERE a.`time` >= $time_difference AND a.reg_id > 0 AND a.reg_id = b.id GROUP BY a.reg_id, a.cookie");
+		$stmt->execute();
+		$rowOnlineUser = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		foreach($rowOnlineUser as $onlineUser)
+		{
+			$currentOnline .= "<a href=\"{$constant->url}/user/id{$onlineUser['id']}\">{$onlineUser['nick']}</a> ";
+		}
+		$stmt = null;
 		$stmt = $database->con()->prepare("SELECT a.id, a.nick, b.regdate FROM {$constant->db['prefix']}_user a, {$constant->db['prefix']}_user_custom b WHERE a.id != ? AND a.id = b.id AND a.aprove = 0 ORDER BY a.id DESC");
 		$stmt->bindParam(1, $current_user_id, PDO::PARAM_INT);
 		$stmt->execute();
@@ -510,15 +535,14 @@ class com_usercontrol_front
 		{
 			$compiled_body .= $template->assign(array('target_user_id', 'target_user_name', 'target_user_avatar', 'target_reg_date'), array($result['id'], $result['nick'], $user->buildAvatar('small', $result['id']), $system->toDate($result['regdate'], 'd')), $theme_body);
 		}
-		return $template->assign('userlist', $compiled_body, $theme_head);
+		return $template->assign(array('userlist', 'reg_all_count', 'reg_male_count', 'reg_female_count', 'reg_unknown_count', 'user_online_list'), array($compiled_body, $allRegisteredCount, $maleRegisteredCount, $femaleRegisteredCount, $allRegisteredCount-($maleRegisteredCount+$femaleRegisteredCount), $currentOnline), $theme_head);
 	}
 
 	private function showFriends($userid)
 	{
 		global $user,$template,$page,$system,$rule,$database,$constant,$language,$extension;
-		//$theme_body = $template->tplget('friendlist_body', 'components/usercontrol/');
 		$body_compiled = null;
-		$theme_head = $template->tplget('friendlist_head', 'components/usercontrol/');
+		$theme_head = $template->tplget('profile_friendlist_head', 'components/usercontrol/');
 		$way = $page->getPathway();
 
 		switch($way[3])
@@ -538,7 +562,7 @@ class com_usercontrol_front
 					$request_list = $user->customget('friend_request');
 					if(strlen($request_list) > 0)
 					{
-						$theme_body = $template->tplget('friendrequest_body', 'components/usercontrol/');
+						$theme_body = $template->tplget('profile_friendrequest_body', 'components/usercontrol/');
 						// загружаем данные о пользователях 1 запросом
 						$user->listload($request_list);
 						$request_array = explode(",", $request_list);
@@ -563,7 +587,7 @@ class com_usercontrol_front
 					}
 					$rows_count = $extension->getConfig('friend_page_count', 'usercontrol', 'components', 'int');
 					$page_start = $page_index * $rows_count;
-					$theme_body = $template->tplget('friendlist_body', 'components/usercontrol/');
+					$theme_body = $template->tplget('profile_friendlist_body', 'components/usercontrol/');
 					$friend_current_page = array_slice($friend_array, $page_start, $page_start+$rows_count);
 					if(sizeof($friend_current_page) > 0)
 					{

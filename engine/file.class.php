@@ -58,6 +58,7 @@ class file
 		$tmp_arr = explode(".", $file['name']);
 		$image_extension = array_pop($tmp_arr);
 		$file_save_original = "avatar_$userid.$image_extension";
+		$file_save_min_jpg = "avatar_$userid.jpg";
 		$file_original_fullpath = $dir_original.$file_save_original;
 		if(!file_exists($dir_original))
 		{
@@ -101,9 +102,9 @@ class file
 		imagecopyresized($image_medium_truecolor, $image_buffer, 0,0,0,0,$image_medium_dx,$image_medium_dy,$image_ox,$image_oy);
 		imagecopyresized($image_small_truecolor, $image_buffer, 0,0,0,0,$image_small_dx,$image_small_dy,$image_ox,$image_oy);
 		
-		imagejpeg($image_big_truecolor, $constant->root."/upload/user/avatar/big/$file_save_original");
-		imagejpeg($image_medium_truecolor, $constant->root."/upload/user/avatar/medium/$file_save_original");
-		imagejpeg($image_small_truecolor, $constant->root."/upload/user/avatar/small/$file_save_original");
+		imagejpeg($image_big_truecolor, $constant->root."/upload/user/avatar/big/$file_save_min_jpg");
+		imagejpeg($image_medium_truecolor, $constant->root."/upload/user/avatar/medium/$file_save_min_jpg");
+		imagejpeg($image_small_truecolor, $constant->root."/upload/user/avatar/small/$file_save_min_jpg");
 
 		imagedestroy($image_big_truecolor);
 		imagedestroy($image_medium_truecolor);
