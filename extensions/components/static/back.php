@@ -18,7 +18,7 @@ class com_static_back
 			if($system->post('dosearch') && strlen($system->post('search')) > 0)
 			{
 				$search_string = "%{$system->post('search')}%";
-				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_static WHERE title like ? OR text like ? LIMIT ?,?");
+				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_static WHERE title like ? OR text like ? ORDER BY id DESC LIMIT ?,?");
 				$stmt->bindParam(1, $search_string, PDO::PARAM_STR);
 				$stmt->bindParam(2, $search_string, PDO::PARAM_STR);
 				$stmt->bindParam(3, $index_start, PDO::PARAM_INT);
@@ -27,7 +27,7 @@ class com_static_back
 			}
 			else
 			{
-				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_static LIMIT ?,?");
+				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_static ORDER BY id DESC LIMIT ?,?");
 				$stmt->bindParam(1, $index_start, PDO::PARAM_INT);
 				$stmt->bindParam(2, $this->list_count, PDO::PARAM_INT);
 				$stmt->execute();
@@ -42,7 +42,7 @@ class com_static_back
 				$delete_link = "?object=components&id=".$admin->getID()."&action=delete&page=".$res['id'];
 				$manage_link = $template->assign(array('page_edit', 'page_delete'), array($edit_link, $delete_link), $static_manage);
 				$title_with_edit = '<a href="'.$edit_link.'">'.$res['title'].'</a>';
-				$path_with_view = '<a href="'.$constant->url.'/'.$this->com_pathway.'/'.$res['pathway'].'" target="_blank">'.$res['pathway'].'</a>';
+				$path_with_view = '<a href="'.$constant->url.'/'.$this->com_pathway.'/'.$res['pathway'].'" target="_blank">/'.$this->com_pathway.'/'.$res['pathway'].'</a>';
 				$static_array_data[] = array($res['id'], $title_with_edit, $path_with_view, $manage_link);
 			}
 			$tbody =  $admin->tplrawTable(array($language->get('admin_component_static_th_id'), $language->get('admin_component_static_th_title'), $language->get('admin_component_static_th_path'), $language->get('admin_component_static_th_edit')), $static_array_data);

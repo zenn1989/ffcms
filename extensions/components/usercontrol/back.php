@@ -21,7 +21,7 @@ class com_usercontrol_back
 			if($system->post('dosearch') && strlen($system->post('search')) > 0)
 			{
 				$search_string = "%{$system->post('search')}%";
-				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user WHERE login like ? OR email like ? OR nick like ? LIMIT ?,?");
+				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user WHERE login like ? OR email like ? OR nick like ? ORDER BY id DESC LIMIT ?,?");
 				$stmt->bindParam(1, $search_string, PDO::PARAM_STR);
 				$stmt->bindParam(2, $search_string, PDO::PARAM_STR);
 				$stmt->bindParam(3, $search_string, PDO::PARAM_STR);
@@ -31,7 +31,7 @@ class com_usercontrol_back
 			}
 			else
 			{
-				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user LIMIT ?,?");
+				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user ORDER BY id DESC LIMIT ?,?");
 				$stmt->bindParam(1, $index_start, PDO::PARAM_INT);
 				$stmt->bindParam(2, $this->list_count, PDO::PARAM_INT);
 				$stmt->execute();
