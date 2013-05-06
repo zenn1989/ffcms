@@ -412,6 +412,10 @@ class system
 		}
 	}
 	
+	/**
+	 * Получение IP-адресса пользователя с учетом возможных проксей и CDN
+	 * @return unknown
+	 */
 	public function getRealIp()
 	{
 		$ip = $_SERVER['REMOTE_ADDR'];
@@ -424,12 +428,22 @@ class system
 		return $ip;
 	}
 	
+	/**
+	 * Получение двойного MD5 хеша от строки $string с использованием неслучайной уникальной соли.
+	 * @param unknown_type $string
+	 * @return string
+	 */
 	public function doublemd5($string)
 	{
 		global $constant;
 		return md5(md5($string).$constant->password_salt);
 	}
 	
+	/**
+	 * Генерация строки для SQL запроса. Пример: array('length' => '15', 'color' => 'red') будет приобразовано в: `length` = '15', `color` = 'red'
+	 * @param unknown_type $keyArray
+	 * @return Ambigous <NULL, string>
+	 */
 	public function prepareKeyDataToDbUpdate($keyArray)
 	{
 		$outstring = null;

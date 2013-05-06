@@ -179,7 +179,33 @@ class com_usercontrol_back
 		}
 		elseif($admin->getAction() == "group")
 		{
-			if($system->post('acesssave'))
+			if($system->post('addgroup'))
+			{
+				$stmt = $database->con()->prepare("SELECT MAX(group_id) FROM {$constant->db['prefix']}_user_access_level");
+				$stmt->execute();
+				$resTemp = $stmt->fetch();
+				$lastGroupId = $resTemp[0];
+				$stmt = null;
+				$lastGroupId++;
+				$new_group_name = "New Group";
+				$stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user_access_level (`group_id`, `group_name`) VALUES(?, ?)");
+				$stmt->bindParam(1, $lastGroupId, PDO::PARAM_INT);
+				$stmt->bindParam(2, $new_group_name, PDO::PARAM_STR);
+				$stmt->execute();
+				$stmt = null;
+			}
+			elseif($system->post('remove'))
+			{
+				$key_for_delete = array_keys($system->post('remove'));
+				$delete_group_id = $key_for_delete[0];
+				if($system->isInt($delete_group_id))
+				{
+					$stmt = $database->con()->prepare("DELETE FROM {$constant->db['prefix']}_user_access_level WHERE group_id = ?");
+					$stmt->bindParam(1, $delete_group_id, PDO::PARAM_INT);
+					$stmt->execute();
+				}
+			}
+			elseif($system->post('acesssave'))
 			{
 				$post_access_table = $system->post('access');
 				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_access_level");
@@ -249,11 +275,13 @@ class com_usercontrol_back
 						$rowItems[] = "<input type=\"text\" class=\"input input-small\" value=\"$columnData\" name=\"access[{$group_id}][{$columnName}]\" />";
 					}
 				}
+				$rowItems[] = "<input type=\"submit\" name=\"remove[{$group_id}]\" class=\"btn btn-danger\" value=\"Remove\" /> ";
 				$isFirstRun = false;
 				$rowContainer[] = $rowItems;
 			}
+			$columnNames[] = "Delete";
 			$edit_table = $admin->tplRawTable($columnNames, $rowContainer);
-			$work_body = $template->assign('edit_table', $edit_table, $group_theme);
+			$work_body = $template->assign(array('edit_table', 'component_id'), array($edit_table, $admin->getID()), $group_theme);
 		}
 		$body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
 		return $body_form;

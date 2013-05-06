@@ -17,11 +17,12 @@ class admin
 
 	function __construct()
 	{
-		$this->object = $_GET['object'];
-		$this->action = $_GET['action'];
-		$this->add = $_GET['add'];
-		$this->id = (int)$_GET['id'];
-		$this->page = (int)$_GET['page'];
+		global $system;
+		$this->object = $system->get('object');
+		$this->action = $system->get('action');
+		$this->add = $system->get('add');
+		$this->id = (int)$system->get('id');
+		$this->page = (int)$system->get('page');
 	}
 
 
