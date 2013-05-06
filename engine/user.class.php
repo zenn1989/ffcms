@@ -156,7 +156,7 @@ class user
 		global $database,$constant;
 		if($id < 1 || !$this->userparam[$id])
 			return;
-		$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user WHERE id = ?");
+		$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user a, {$constant->db['prefix']}_user_access_level b WHERE a.id = ? AND a.access_level = b.group_id");
 		$stmt->bindParam(1, $id, PDO::PARAM_INT);
 		$stmt->execute();
 		$res = $stmt->fetchAll(PDO::FETCH_ASSOC);

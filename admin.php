@@ -4,6 +4,8 @@ define('root', $_SERVER['DOCUMENT_ROOT']);
 define('version', '0.1');
 // указатель на админ-интерфейс
 define('loader', 'back');
+// указатель позволяющий изменить имя скрипта
+define('file_name', $_SERVER['SCRIPT_NAME']);
 // подключаем файл конфигураций
 require_once(root."/config.php");
 

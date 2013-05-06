@@ -4,12 +4,12 @@ class com_usercontrol_back
 	private $list_count = 10;
 	public function load()
 	{
-		global $admin,$template,$language,$constant,$database,$system;
+		global $admin,$template,$language,$constant,$database,$system,$user;
 		$action_page_title = $admin->getExtName()." : ";
 		$menu_theme = $template->tplget('config_menu', null, true);
 		$menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id='.$admin->getID().'&action=list', $language->get('admin_component_usercontrol_manage')), $menu_theme);
 		$menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id='.$admin->getID().'&action=group', $language->get('admin_component_usercontrol_group')), $menu_theme);
-		$menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id='.$admin->getID().'&action=ban', $language->get('admin_component_usercontrol_ban')), $menu_theme);
+		$menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id='.$admin->getID().'&action=ban', $language->get('admin_component_usercontrol_serviceban')), $menu_theme);
 		$menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id='.$admin->getID().'&action=settings', $language->get('admin_component_usercontrol_settings')), $menu_theme);
 		$work_body = null;
 		if($admin->getAction() == "list" || $admin->getAction() == NULL)
@@ -80,7 +80,107 @@ class com_usercontrol_back
 		}
 		elseif($admin->getAction() == "edit")
 		{
-			$action_page_title .= "Сисечки";
+			$action_page_title .= $language->get('admin_component_usercontrol_edit');
+			$object_user_id = $admin->getPage();
+			$notify = null;
+			if($user->exists($object_user_id))
+			{
+				if($system->post('submit'))
+				{
+					$new_nick = $system->post('nick');
+					$new_sex = $system->post('sex');
+					$new_phone = $system->post('phone');
+					$new_webpage = $system->post('webpage');
+					$new_birthday = $system->post('birthday');
+					$new_status = $system->post('status');
+					$new_groupid = $system->post('groupid');
+					$new_pass = strlen($system->post('newpass')) > 3 ? $system->doublemd5($system->post('newpass')) : $user->get('pass', $object_user_id);
+					$stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_user a INNER JOIN {$constant->db['prefix']}_user_custom b USING(id) SET a.nick = ?, a.pass = ?, b.birthday = ?, b.sex = ?, b.phone = ?, b.webpage = ?, b.status = ?, a.access_level = ? WHERE a.id = ?");
+					$stmt->bindParam(1, $new_nick, PDO::PARAM_STR);
+					$stmt->bindParam(2, $new_pass, PDO::PARAM_STR, 32);
+					$stmt->bindParam(3, $new_birthday, PDO::PARAM_STR);
+					$stmt->bindParam(4, $new_sex, PDO::PARAM_INT);
+					$stmt->bindParam(5, $new_phone, PDO::PARAM_STR);
+					$stmt->bindParam(6, $new_webpage, PDO::PARAM_STR);
+					$stmt->bindParam(7, $new_status, PDO::PARAM_STR);
+					$stmt->bindParam(8, $new_groupid, PDO::PARAM_INT);
+					$stmt->bindParam(9, $object_user_id, PDO::PARAM_INT);
+					$stmt->execute();
+					$user->fulluseroverload($object_user_id);
+					$notify .= $template->stringNotify('success', $language->get('admin_component_usercontrol_edit_notify_success'), true);
+				}
+				$theme_option_active = $template->tplget('form_option_item_active', null, true);
+				$theme_option_inactive = $template->tplget('form_option_item_inactive', null, true);
+				$prepared_option = null;
+				$stmt = $database->con()->prepare("SELECT group_id, group_name FROM {$constant->db['prefix']}_user_access_level");
+				$stmt->execute();
+				$resFetch = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				foreach($resFetch as $item_access)
+				{
+					if($item_access['group_id'] == $user->get('group_id', $object_user_id))
+					{
+						$prepared_option .= $template->assign(array('option_value', 'option_name'), array($item_access['group_id'], $item_access['group_name']), $theme_option_active);
+					}
+					else
+					{
+						$prepared_option .= $template->assign(array('option_value', 'option_name'), array($item_access['group_id'], $item_access['group_name']), $theme_option_inactive);
+					}
+				}
+				$theme_edit = $template->tplget('usercontrol_user_edit', 'components/', true);
+				$work_body .= $template->assign(array('target_user_id', 'target_user_login', 'target_user_nick', 'target_user_phone', 'target_user_sex', 'target_user_webpage', 'target_user_birthday', 'target_user_status', 'option_group_prepare', 'notify'), 
+						array($object_user_id, $user->get('login', $object_user_id), $user->get('nick', $object_user_id), $user->customget('phone', $object_user_id), $user->customget('sex', $object_user_id), $user->customget('webpage', $object_user_id), $user->customget('birthday', $object_user_id), $user->customget('status', $object_user_id), $prepared_option, $notify), 
+						$theme_edit);
+			}
+		}
+		elseif($admin->getAction() == "delete")
+		{
+			$target_user_id = $admin->getPage();
+			$action_page_title .= $language->get('admin_component_usercontrol_delete');
+			$target_user_id = $admin->getPage();
+			if($system->isInt($target_user_id) && $user->exists($target_user_id))
+			{
+				$notify = null;
+				if($system->post('deleteuser'))
+				{
+					// защита от дибилов
+					if($target_user_id == $system->post('target_user_id'))
+					{
+						if($user->get('access_level', $target_user_id) == 3)
+						{
+							$notify .= $template->stringNotify('error', $language->get('admin_component_usercontrol_delete_admin_fail', true));
+						}
+						else
+						{
+							// Логика работы PDO в данный момент наступила на грабли и убила его создателя (:
+							// выполнить в 1 мультикверь данное невозможно по непонятной причине.
+							// Удаление через DELETE [params] FROM table AS hot INNER JOIN table2 AS hot2 ON table.id = table2.id WHERE table.id = ?
+							// не приносит результата вовсе при выключенном INNODB (а это не есть базовым тербованием к цмс)
+							// поэтому код ниже может вызвать у вас приступ паники или боли в 5ой точке
+							// если у вас есть лучший вариант - присылайте на github.
+							$stmt = $database->con()->prepare("DELETE FROM {$constant->db['prefix']}_user WHERE id = ?");
+							$stmt->bindParam(1, $target_user_id, PDO::PARAM_INT);
+							$stmt->execute();
+							$stmt = null;
+							$stmt = $database->con()->prepare("DELETE FROM {$constant->db['prefix']}_user_custom WHERE id = ?");
+							$stmt->bindParam(1, $target_user_id, PDO::PARAM_INT);
+							$stmt->execute();
+							$stmt = null;
+							$system->redirect(file_name."?object=components&id=".$admin->getID());
+							// TODO: удаление из фриендлиста
+							exit();
+						}
+					}
+				}
+				$theme_delete = $template->tplget('usercontrol_user_delete', 'components/', true);
+				$work_body = $template->assign(array('target_user_id', 'target_user_login', 'target_user_email', 'notify'), 
+						array($target_user_id, $user->get('login', $target_user_id), $user->get('email', $target_user_id), $notify), 
+						$theme_delete);
+			}
+		}
+		elseif($admin->getAction() == "group")
+		{
+			$group_theme = $template->tplget('usercontrol_group_manage', 'components/', true);
+			$work_body = $group_theme;
 		}
 		$body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
 		return $body_form;

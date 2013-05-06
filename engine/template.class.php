@@ -317,7 +317,7 @@ class template
 	 */
 	public function stringNotify($type, $content, $isadmin = false)
 	{
-		$theme = $this->tplget("notify_string_{$type}");
+		$theme = $this->tplget("notify_string_{$type}", null, $isadmin);
 		return $this->assign('content', $content, $theme);
 	}
 
@@ -329,6 +329,13 @@ class template
 		global $cache;
 		$cache->setNoExist(true);
 		return $this->tplget('404');
+	}
+	
+	public function compileBan()
+	{
+		global $cache;
+		$cache->setNoExist(true);
+		return $this->tplget('ban');
 	}
 
 	/**

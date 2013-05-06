@@ -11,13 +11,13 @@
   <div class="control-group">
     <label class="control-label">{$lang::usercontrol_auth_email_or_login}</label>
     <div class="controls">
-      <input name="email" type="text" placeholder="ivan.petrov@gmail.com">
+      <input name="email" type="text" placeholder="ivan.petrov@gmail.com" required>
     </div>
   </div>
   <div class="control-group">
     <label class="control-label">{$lang::usercontrol_auth_pass}</label>
     <div class="controls">
-      <input type="password" name="password" placeholder="Password">
+      <input type="password" name="password" placeholder="Password" required>
     </div>
   </div>
   {$if com.usercontrol.login_captcha}
@@ -25,7 +25,7 @@
     <label class="control-label">{$lang::usercontrol_auth_captcha}</label>
     <div class="controls">
 	  <img src="{$captcha}" id="captcha" /><a href="#" onclick="document.getElementById('captcha').src='{$captcha}?'+Math.random();"><i class="icon-refresh"></i></a><br />
-      <input type="text" name="captcha">
+      <input type="text" name="captcha" required>
     </div>
   </div>
   {$/if}

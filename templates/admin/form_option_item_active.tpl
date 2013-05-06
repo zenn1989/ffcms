@@ -1,0 +1,1 @@
+<option value="{$option_value}" selected>{$option_name}</option>

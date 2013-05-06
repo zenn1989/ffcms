@@ -238,6 +238,11 @@ class com_usercontrol_front
 			$page->setContentPosition('body', $template->compile404());
 			return;
 		}
+		if($user->get('content_view', $userid) < 1)
+		{
+			$page->setContentPosition('body', $template->compileBan());
+			return;
+		}
 		$rule->add('com.usercontrol.self_profile', true);
 		$rule->add('com.usercontrol.in_friends', true);
 		$rule->add('com.usercontrol.in_friends_request', false);
@@ -434,29 +439,36 @@ class com_usercontrol_front
 			{
 				if($system->isInt($userid) && $userid > 0 && $user->exists($userid))
 				{
-					$this->dynamicRequests($userid);
-					$user->get('id') == $userid ? $rule->add('com.usercontrol.self_profile', true) : $rule->add('com.usercontrol.self_profile', false);
-					$this->inFriendsWith($userid) ? $rule->add('com.usercontrol.in_friends', true) : $rule->add('com.usercontrol.in_friends', false);
-					$this->inFriendRequestWith($userid) ? $rule->add('com.usercontrol.in_friends_request', true) : $rule->add('com.usercontrol.in_friends_request', false);
-					
-					switch($way[2])
+					if($user->get('content_view', $userid) < 1)
 					{
-						case "marks":
-							$content = $this->showBookmarks($userid);
-							break;
-						case "friends":
-							$content = $this->showFriends($userid);
-							break;
-						default:
-							if($this->hook_item_url[$way[2]] != null)
-							{
-								$content = $this->hook_item_url[$way[2]];
-							}
-							else
-							{
-								$content = $this->showProfileUser($userid);
-							}
-							break;
+						$content = $template->compileBan();
+					}
+					else
+					{
+						$this->dynamicRequests($userid);
+						$user->get('id') == $userid ? $rule->add('com.usercontrol.self_profile', true) : $rule->add('com.usercontrol.self_profile', false);
+						$this->inFriendsWith($userid) ? $rule->add('com.usercontrol.in_friends', true) : $rule->add('com.usercontrol.in_friends', false);
+						$this->inFriendRequestWith($userid) ? $rule->add('com.usercontrol.in_friends_request', true) : $rule->add('com.usercontrol.in_friends_request', false);
+						
+						switch($way[2])
+						{
+							case "marks":
+								$content = $this->showBookmarks($userid);
+								break;
+							case "friends":
+								$content = $this->showFriends($userid);
+								break;
+							default:
+								if($this->hook_item_url[$way[2]] != null)
+								{
+									$content = $this->hook_item_url[$way[2]];
+								}
+								else
+								{
+									$content = $this->showProfileUser($userid);
+								}
+								break;
+						}
 					}
 				}
 			}
@@ -1133,6 +1145,12 @@ class com_usercontrol_front
 				$stmt->bindParam(4, $md5pwd, PDO::PARAM_STR, 32);
 				$stmt->bindParam(5, $validate, PDO::PARAM_STR, 32);
 				$stmt->execute();
+				$user_obtained_id = $database->con()->lastInsertId();
+				$stmt = null;
+				$stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user_custom (`id`) VALUES (?)");
+				$stmt->bindParam(1, $user_obtained_id, PDO::PARAM_INT);
+				$stmt->execute();
+				$stmt = null;
 				if($aprove_reg_from_email)
 				{
 					$notify .= $template->stringNotify('success', $language->get('usercontrol_register_success_aprove'));

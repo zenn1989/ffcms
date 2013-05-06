@@ -9,25 +9,25 @@
  <div class="control-group">
     <label class="control-label" for="inputEmail">{$lang::usercontrol_auth_login}</label>
     <div class="controls">
-      <input name="login" type="text" placeholder="ivan2013" autocomplete="off">
+      <input name="login" type="text" placeholder="ivan2013" autocomplete="off" required>
     </div>
   </div>
   <div class="control-group">
     <label class="control-label" for="inputEmail">{$lang::usercontrol_auth_email}</label>
     <div class="controls">
-      <input name="email" type="text" placeholder="ivan.petrov@gmail.com" autocomplete="off">
+      <input name="email" type="text" placeholder="ivan.petrov@gmail.com" autocomplete="off" required>
     </div>
   </div>
   <div class="control-group">
     <label class="control-label" for="inputEmail">{$lang::usercontrol_auth_pseudoname}</label>
     <div class="controls">
-      <input name="nick" type="text" placeholder="Kurt Cobain" autocomplete="off">
+      <input name="nick" type="text" placeholder="Kurt Cobain" autocomplete="off" required>
     </div>
   </div>
   <div class="control-group">
     <label class="control-label" for="inputPassword">{$lang::usercontrol_auth_pass}</label>
     <div class="controls">
-      <input type="password" name="password" placeholder="Password" autocomplete="off">
+      <input type="password" name="password" placeholder="Password" autocomplete="off" required>
     </div>
   </div>
   {$if com.usercontrol.register_captcha}
@@ -35,7 +35,7 @@
     <label class="control-label" for="inputPassword">{$lang::usercontrol_auth_captcha}</label>
     <div class="controls">
 	  <img src="{$captcha}" id="captcha" /><a href="#" onclick="document.getElementById('captcha').src='{$captcha}?'+Math.random();"><i class="icon-refresh"></i></a><br />
-      <input type="text" name="captcha">
+      <input type="text" name="captcha" required>
     </div>
   </div>
   {$/if}
