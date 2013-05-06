@@ -130,7 +130,11 @@
 			cssfiles : ['{$url}/resource/elrte/css/elrte-inner.css']
 		}
 		$('.wysi').elrte(opts);
+		if ($("[rel=tooltip]").length) {
+	        $("[rel=tooltip]").tooltip();
+	    }
 		})
+	
 </script>
 </body>
 </html>

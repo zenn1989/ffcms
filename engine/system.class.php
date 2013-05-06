@@ -429,6 +429,22 @@ class system
 		global $constant;
 		return md5(md5($string).$constant->password_salt);
 	}
+	
+	public function prepareKeyDataToDbUpdate($keyArray)
+	{
+		$outstring = null;
+		$index = 1;
+		foreach($keyArray as $column=>$data)
+		{
+			$outstring .= "`$column` = '$data'";
+			if($index != sizeof($keyArray))
+			{
+				$outstring .= ", ";
+			}
+			$index++;
+		}
+		return $outstring;
+	}
 
 }
 

@@ -179,8 +179,81 @@ class com_usercontrol_back
 		}
 		elseif($admin->getAction() == "group")
 		{
+			if($system->post('acesssave'))
+			{
+				$post_access_table = $system->post('access');
+				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_access_level");
+				$stmt->execute();
+				$fetchRow = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				$stmt = null;
+				foreach($fetchRow as $access_single)
+				{
+					$current_gid = $access_single['group_id'];
+					$current_access = $post_access_table[$current_gid];
+					$update_column_data = array();
+					foreach($access_single as $column=>$value)
+					{
+						if($current_access[$column] == null)
+						{
+							$update_column_data[$column] = "0";
+						}
+						elseif($current_access[$column] == "on")
+						{
+							$update_column_data[$column] = "1";
+						}
+						else
+						{
+							$update_column_data[$column] = $current_access[$column];
+						}
+					}
+					$query_prepared_setter = $system->prepareKeyDataToDbUpdate($update_column_data);
+					$stmt = $database->con()->prepare("UPDATE `{$constant->db['prefix']}_user_access_level` SET $query_prepared_setter WHERE `group_id` = ?");
+					$stmt->bindParam(1, $current_gid, PDO::PARAM_INT);
+					$stmt->execute();
+					$stmt = null;
+				}
+			}
+			$action_page_title .= $language->get('admin_component_usercontrol_group');
 			$group_theme = $template->tplget('usercontrol_group_manage', 'components/', true);
-			$work_body = $group_theme;
+			$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_access_level");
+			$stmt->execute();
+			$resultFetch = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			$columnNames = array();
+			$rowContainer = array();
+			$isFirstRun = true;
+			foreach($resultFetch as $values)
+			{
+				$rowItems = array();
+				$group_id = 0;
+				foreach($values as $columnName=>$columnData)
+				{
+					if($columnName == "group_id")
+					{
+						$group_id = $columnData;
+					}
+					if($isFirstRun)
+					{
+						$columnNames[] = "<a href=\"#\" rel=\"tooltip\" title=\"".$language->get('admin_component_usercontrol_group_column_'.$columnName)."\">$columnName</a>";
+					}
+					if(($columnData == "0" || $columnData == "1") && $columnName != "group_id")
+					{
+						$checked = null;
+						if($columnData == "1")
+						{
+							$checked = "checked";
+						}
+						$rowItems[] = "<input type=\"checkbox\" name=\"access[{$group_id}][{$columnName}]\" $checked />\n\r";
+					}
+					else
+					{
+						$rowItems[] = "<input type=\"text\" class=\"input input-small\" value=\"$columnData\" name=\"access[{$group_id}][{$columnName}]\" />";
+					}
+				}
+				$isFirstRun = false;
+				$rowContainer[] = $rowItems;
+			}
+			$edit_table = $admin->tplRawTable($columnNames, $rowContainer);
+			$work_body = $template->assign('edit_table', $edit_table, $group_theme);
 		}
 		$body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
 		return $body_form;
