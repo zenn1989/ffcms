@@ -23,8 +23,8 @@ class com_usercontrol_front
 		global $page,$template,$rule,$extension,$hook;
 		$way = $page->getPathway();
 		$hook->before();
-		$rule->add('com.usercontrol.login_captcha', $extension->getConfig('login_captcha', 'usercontrol', 'components', 'boolean'));
-		$rule->add('com.usercontrol.register_captcha', $extension->getConfig('register_captcha', 'usercontrol', 'components', 'boolean'));
+		$rule->getInstance()->add('com.usercontrol.login_captcha', $extension->getConfig('login_captcha', 'usercontrol', 'components', 'boolean'));
+		$rule->getInstance()->add('com.usercontrol.register_captcha', $extension->getConfig('register_captcha', 'usercontrol', 'components', 'boolean'));
 		switch($way[0])
 		{
 			case "login":
@@ -65,9 +65,9 @@ class com_usercontrol_front
 			$page->setContentPosition('body', $template->compile404());
 			return;
 		}
-		$rule->add('com.usercontrol.self_profile', true);
-		$rule->add('com.usercontrol.in_friends', true);
-		$rule->add('com.usercontrol.in_friends_request', false);
+		$rule->getInstance()->add('com.usercontrol.self_profile', true);
+		$rule->getInstance()->add('com.usercontrol.in_friends', true);
+		$rule->getInstance()->add('com.usercontrol.in_friends_request', false);
 		$way = $page->getPathway();
 		$compiled_body = null;
 		if($way[1] == "avatar")
@@ -243,9 +243,9 @@ class com_usercontrol_front
 			$page->setContentPosition('body', $template->compileBan());
 			return;
 		}
-		$rule->add('com.usercontrol.self_profile', true);
-		$rule->add('com.usercontrol.in_friends', true);
-		$rule->add('com.usercontrol.in_friends_request', false);
+		$rule->getInstance()->add('com.usercontrol.self_profile', true);
+		$rule->getInstance()->add('com.usercontrol.in_friends', true);
+		$rule->getInstance()->add('com.usercontrol.in_friends_request', false);
 		$compiled_messages = null;
 		if($way[1] == "write")
 		{
@@ -299,11 +299,11 @@ class com_usercontrol_front
 			$total_pm_count = $this->getMessageTotalRows($userid, $way[1]);
 			if($page_id > 0)
 			{
-				$rule->add('com.usercontrol.have_previous', true);
+				$rule->getInstance()->add('com.usercontrol.have_previous', true);
 			}
 			if($current_marker+$pm_on_page < $total_pm_count)
 			{
-				$rule->add('com.usercontrol.have_next', true);
+				$rule->getInstance()->add('com.usercontrol.have_next', true);
 			}
 			$theme_body = $template->tplget('profile_message_body', 'components/usercontrol/');
 			$theme_head = $template->tplget('profile_message_head', 'components/usercontrol/');
@@ -446,9 +446,9 @@ class com_usercontrol_front
 					else
 					{
 						$this->dynamicRequests($userid);
-						$user->get('id') == $userid ? $rule->add('com.usercontrol.self_profile', true) : $rule->add('com.usercontrol.self_profile', false);
-						$this->inFriendsWith($userid) ? $rule->add('com.usercontrol.in_friends', true) : $rule->add('com.usercontrol.in_friends', false);
-						$this->inFriendRequestWith($userid) ? $rule->add('com.usercontrol.in_friends_request', true) : $rule->add('com.usercontrol.in_friends_request', false);
+						$user->get('id') == $userid ? $rule->getInstance()->add('com.usercontrol.self_profile', true) : $rule->getInstance()->add('com.usercontrol.self_profile', false);
+						$this->inFriendsWith($userid) ? $rule->getInstance()->add('com.usercontrol.in_friends', true) : $rule->getInstance()->add('com.usercontrol.in_friends', false);
+						$this->inFriendRequestWith($userid) ? $rule->getInstance()->add('com.usercontrol.in_friends_request', true) : $rule->getInstance()->add('com.usercontrol.in_friends_request', false);
 						
 						switch($way[2])
 						{
@@ -577,7 +577,7 @@ class com_usercontrol_front
 					{
 						$this->rejectFriend($system->post('target_id'));
 					}
-					$rule->add('com.usercontrol.profile_friend_request', true);
+					$rule->getInstance()->add('com.usercontrol.profile_friend_request', true);
 					$request_list = $user->customget('friend_request');
 					if(strlen($request_list) > 0)
 					{
@@ -725,19 +725,19 @@ class com_usercontrol_front
 		// позиция коретки > 0 дает понять о наличии предидущих элементов
 		if($marks_marker > 0)
 		{
-			$rule->add('com.usercontrol.have_previous', true);
+			$rule->getInstance()->add('com.usercontrol.have_previous', true);
 		}
 		else
 		{
-			$rule->add('com.usercontrol.have_previous', false);
+			$rule->getInstance()->add('com.usercontrol.have_previous', false);
 		}
 		if($total_marks_row > $marks_index+$marks_config_rows)
 		{
-			$rule->add('com.usercontrol.have_next', true);
+			$rule->getInstance()->add('com.usercontrol.have_next', true);
 		}
 		else
 		{
-			$rule->add('com.usercontrol.have_next', false);
+			$rule->getInstance()->add('com.usercontrol.have_next', false);
 		}
 		$compiled_theme = $template->assign(array('user_photo_control', 'user_header', 'user_menu', 'user_main_block'),
 				array($this->userProfilePhotoSettings($userid), $this->userProfileHeaders($userid), $user_compiled_menu , $user_marks),
@@ -751,17 +751,17 @@ class com_usercontrol_front
 		$way = $page->getPathway();
 		if($way[0] == "message")
 		{
-			$rule->add('com.usercontrol.menu_message', true);
+			$rule->getInstance()->add('com.usercontrol.menu_message', true);
 		}
 		elseif($way[0] == "settings")
 		{
 			if($way[1] == "avatar")
 			{
-				$rule->add('com.usercontrol.menu_avatar', true);
+				$rule->getInstance()->add('com.usercontrol.menu_avatar', true);
 			}
 			else
 			{
-				$rule->add('com.usercontrol.menu_settings', true);
+				$rule->getInstance()->add('com.usercontrol.menu_settings', true);
 			}
 		}
 		else
@@ -769,23 +769,23 @@ class com_usercontrol_front
 			switch($way[2])
 			{
 				case "marks":
-					$rule->add('com.usercontrol.menu_mark', true);
+					$rule->getInstance()->add('com.usercontrol.menu_mark', true);
 					break;
 				case "wall":
 				case "":
-					$rule->add('com.usercontrol.menu_wall', true);
+					$rule->getInstance()->add('com.usercontrol.menu_wall', true);
 					break;
 				case "friends":
-					$rule->add('com.usercontrol.menu_friends', true);
+					$rule->getInstance()->add('com.usercontrol.menu_friends', true);
 					break;
 				default:
-					$rule->add('com.usercontrol.menu_dropdown', true);
+					$rule->getInstance()->add('com.usercontrol.menu_dropdown', true);
 					break;
 			}
 		}
 		if($this->hook_item_menu != null)
 		{
-			$rule->add('com.usercontrol.menu_dropdown_notempty', true);
+			$rule->getInstance()->add('com.usercontrol.menu_dropdown_notempty', true);
 		}
 		return $template->assign(array('target_user_id', 'additional_hook_list'), array($userid, $this->hook_item_menu), $template->tplget('profile_block_menu', 'components/usercontrol/'));
 	}
@@ -835,13 +835,13 @@ class com_usercontrol_front
 		$website = $user->customget('webpage', $userid);
 		if(strlen($website) > 0)
 		{
-			$rule->add('com.usercontrol.have_webpage', true);
+			$rule->getInstance()->add('com.usercontrol.have_webpage', true);
 		}
 		$sex = $this->sexLang($sex_int);
 		$phone = $user->customget('phone', $userid);
 		if(strlen($phone) > 0)
 		{
-			$rule->add('com.usercontrol.have_phone', true);
+			$rule->getInstance()->add('com.usercontrol.have_phone', true);
 		}
 		$user_compiled_menu = $this->showUserMenu($userid);
 		$profile_compiled_data = $template->assign(array('user_regdate', 'user_birthday', 'user_sex', 'user_phone', 'target_user_id', 'user_wall', 'wall_prev', 'wall_next', 'user_website'),
@@ -884,19 +884,19 @@ class com_usercontrol_front
 		$wall_total_rows = $this->getWallTotalRows($userid);
 		if($marker > 0)
 		{
-			$rule->add('com.usercontrol.have_previous', true);
+			$rule->getInstance()->add('com.usercontrol.have_previous', true);
 		}
 		else
 		{
-			$rule->add('com.usercontrol.have_previous', false);
+			$rule->getInstance()->add('com.usercontrol.have_previous', false);
 		}
 		if($wall_total_rows > $marker_index+$wall_rows)
 		{
-			$rule->add('com.usercontrol.have_next', true);
+			$rule->getInstance()->add('com.usercontrol.have_next', true);
 		}
 		else
 		{
-			$rule->add('com.usercontrol.have_next', false);
+			$rule->getInstance()->add('com.usercontrol.have_next', false);
 		}
 		$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_wall WHERE target = ? ORDER by time DESC LIMIT ?, ?");
 		$stmt->bindParam(1, $userid, PDO::PARAM_INT);

@@ -241,6 +241,10 @@ class com_usercontrol_back
 			}
 			$action_page_title .= $language->get('admin_component_usercontrol_group');
 			$group_theme = $template->tplget('usercontrol_group_manage', 'components/', true);
+			$column_theme = $template->tplget('usercontrol_group_manage_th', 'components/', true);
+			$checkbox_theme = $template->tplget('usercontrol_group_manage_checkbox', 'components/', true);
+			$input_theme = $template->tplget('usercontrol_group_manage_input', 'components/', true);
+			$delete_theme = $template->tplget('usercontrol_group_manage_delete', 'components/', true);
 			$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_access_level");
 			$stmt->execute();
 			$resultFetch = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -249,8 +253,8 @@ class com_usercontrol_back
 			$isFirstRun = true;
 			foreach($resultFetch as $values)
 			{
-				$rowItems = array();
 				$group_id = 0;
+				$rowItems = array();
 				foreach($values as $columnName=>$columnData)
 				{
 					if($columnName == "group_id")
@@ -259,7 +263,7 @@ class com_usercontrol_back
 					}
 					if($isFirstRun)
 					{
-						$columnNames[] = "<a href=\"#\" rel=\"tooltip\" title=\"".$language->get('admin_component_usercontrol_group_column_'.$columnName)."\">$columnName</a>";
+						$columnNames[] = $template->assign(array('group_column_helptext', 'group_column_name'), array($language->get('admin_component_usercontrol_group_column_'.$columnName), $columnName), $column_theme);
 					}
 					if(($columnData == "0" || $columnData == "1") && $columnName != "group_id")
 					{
@@ -268,20 +272,101 @@ class com_usercontrol_back
 						{
 							$checked = "checked";
 						}
-						$rowItems[] = "<input type=\"checkbox\" name=\"access[{$group_id}][{$columnName}]\" $checked />\n\r";
+						$rowItems[] = $template->assign(array('checkbox_name', 'is_checked'), array("access[{$group_id}][{$columnName}]", $checked), $checkbox_theme);
 					}
 					else
 					{
-						$rowItems[] = "<input type=\"text\" class=\"input input-small\" value=\"$columnData\" name=\"access[{$group_id}][{$columnName}]\" />";
+						$rowItems[] = $template->assign(array('input_value', 'input_name'), array($columnData, "access[{$group_id}][{$columnName}]"), $input_theme);
 					}
 				}
-				$rowItems[] = "<input type=\"submit\" name=\"remove[{$group_id}]\" class=\"btn btn-danger\" value=\"Remove\" /> ";
+				$rowItems[] = $template->assign('group_id', $group_id, $delete_theme);
 				$isFirstRun = false;
 				$rowContainer[] = $rowItems;
 			}
-			$columnNames[] = "Delete";
+			$columnNames[] = $language->get('admin_component_usercontrol_group_column_th_action');
 			$edit_table = $admin->tplRawTable($columnNames, $rowContainer);
 			$work_body = $template->assign(array('edit_table', 'component_id'), array($edit_table, $admin->getID()), $group_theme);
+		}
+		elseif($admin->getAction() == "ban")
+		{
+			$notify = null;
+			$continue_block = null;
+			if($system->post('ipblock'))
+			{
+				$userip = $system->validIP($system->post('userip'));
+				if($userip)
+				{
+					$except_time = strtotime($system->post('enddate'));
+					// проверяем, возможно данный ip уже заблокирован, зачем нам дубли и попаболь?
+					$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user_block WHERE ip = ?");
+					$stmt->bindParam(1, $userip, PDO::PARAM_STR);
+					$stmt->execute();
+					$resIpFetch = $stmt->fetch();
+					$stmt = null;
+					// запись уже есть
+					if($resIpFetch[0] > 0)
+					{
+						$stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_user_block SET express = ? WHERE ip = ?");
+						$stmt->bindParam(1, $except_time, PDO::PARAM_INT);
+						$stmt->bindParam(2, $userip, PDO::PARAM_STR);
+						$stmt->execute();
+						$stmt = null;
+						$notify .= $template->stringNotify('success', $language->get('admin_component_usercontrol_ban_ip_refreshed'));
+					}
+					// иначе это новый бан
+					else
+					{
+						$stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user_block (`ip`, `express`) VALUES (?, ?)");
+						$stmt->bindParam(1, $userip, PDO::PARAM_STR);
+						$stmt->bindParam(2, $except_time, PDO::PARAM_INT);
+						$stmt->execute();
+						$notify .= $template->stringNotify('success', $language->get('admin_component_usercontrol_ban_ip_setted'));
+					}
+				}
+				else
+				{
+					$notify .= $template->stringNotify('error', $language->get('admin_component_usercontrol_ban_wrong_data'), true);
+				}
+			}
+			elseif($system->post('idorloginblock'))
+			{
+				$idorlogin = $system->post('userdata');
+				$stmt = $database->con()->prepare("SELECT id FROM {$constant->db['prefix']}_user WHERE id = ? or login = ?");
+				$stmt->bindParam(1, $idorlogin, PDO::PARAM_STR);
+				$stmt->bindParam(2, $idorlogin, PDO::PARAM_STR);
+				$stmt->execute();
+				if($rowUser = $stmt->fetch())
+				{
+					$target_id = $rowUser['id'];
+					$continue_block = $template->assign('block_user_id', $target_id, $template->tplget('usercontrol_ban_pers', 'components/', true));
+				}
+				else
+				{
+					$notify .= $template->stringNotify('error', $language->get('admin_component_usercontrol_ban_wrong_data'), true);
+				}
+			}
+			elseif($system->post('banuserid'))
+			{
+				// 2ая стадия блокировки
+				$ban_user_id = $system->post('blockuserid');
+				$ban_execpt_time = strtotime($system->post('enddate'));
+				$stmt = $database->con()->prepare("SELECT DISTINCT ip FROM {$constant->db['prefix']}_statistic WHERE reg_id = ?");
+				$stmt->bindParam(1, $ban_user_id, PDO::PARAM_INT);
+				$stmt->execute();
+				while($result = $stmt->fetch())
+				{
+					$bstmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user_block(user_id, ip, express) VALUES (?, ?, ?)");
+					$bstmt->bindParam(1, $ban_user_id, PDO::PARAM_INT);
+					$bstmt->bindParam(2, $result['ip'], PDO::PARAM_STR);
+					$bstmt->bindParam(3, $ban_execpt_time, PDO::PARAM_INT);
+					$bstmt->execute();
+					$bstmt = null;
+				}
+				$notify .= $template->stringNotify('success', $language->get('admin_component_usercontrol_ban_ip_setted'));
+			}
+			$action_page_title .= $language->get('admin_component_usercontrol_serviceban');
+			$ban_theme = $template->tplget('usercontrol_ban', 'components/', true);
+			$work_body .= $template->assign(array('notify', 'continue_block'), array($notify, $continue_block), $ban_theme);
 		}
 		$body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
 		return $body_form;

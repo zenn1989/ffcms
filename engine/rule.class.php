@@ -20,6 +20,10 @@ class rule
 			{
 				$this->rule_data['user.auth'] = true;
 			}
+			if($user->get('access_to_admin') > 0)
+			{
+				$this->rule_data['user.admin'] = true;
+			}
 			$this->init = true;
 		}
 		return $this;
