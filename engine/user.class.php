@@ -260,6 +260,33 @@ class user
 		$filetime = filemtime($filepath);
 		return "avatar_$userid.jpg?mtime=$filetime";
 	}
+	
+	public function isPermaBan()
+	{
+		global $database,$constant,$system;
+		$stmt = null;;
+		$ip = $system->getRealIp();
+		$time = time();
+		$userid = $this->get('id');
+		if($userid > 0)
+		{
+			$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user_block WHERE (user_id = ? or ip = ?) AND express > ?");
+			$stmt->bindParam(1, $userid, PDO::PARAM_INT);
+			$stmt->bindParam(2, $ip, PDO::PARAM_STR);
+			$stmt->bindParam(3, $time, PDO::PARAM_INT);
+			$stmt->execute();
+		}
+		else
+		{
+			$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user_block WHERE ip = ? AND express > ?");
+			$stmt->bindParam(1, $ip, PDO::PARAM_STR);
+			$stmt->bindParam(2, $time, PDO::PARAM_INT);
+			$stmt->execute();
+		}
+		$rowFetch = $stmt->fetch();
+		$count = $rowFetch[0];
+		return $count > 0 ? true : false;
+	}
 }
 
 ?>

@@ -33,6 +33,13 @@ class page
 	{
 		global $template,$system,$cache,$user,$admin,$extension,$meta,$constant;
 		$isComponent = false;
+		// пользователь пермаментно заблокирован?
+		if($user->isPermaBan())
+		{
+			$template->overloadCarcase('permaban');
+			$template->globalset('admin_email', $constant->mail['from_email']);
+			return;
+		}
 		// если пользователь не авторизован и есть полный кеш страницы
 		if($user->get('id') == NULL && $cache->check())
 		{

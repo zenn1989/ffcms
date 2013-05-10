@@ -111,3 +111,8 @@ usercontrol_listuser_male<=>Мужчин
 usercontrol_listuser_female<=>Женщин
 usercontrol_listuser_unknown<=>Неопределились
 usercontrol_listuser_nowactive<=>Сейчас активны
+permaban_title<=>Доступ заблокирован!
+permaban_desc<=>Администратор сайта заблокировал вам доступ к содержимому. Все вопросы о блокировке вы можете обговорить по email
+ban_title<=>Страница заблокирована
+ban_desc<=>Данная страница изъята из доступа в связи с блокировкой. Обратитесь к администратору для решения данной проблемы.
+

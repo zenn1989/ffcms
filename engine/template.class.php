@@ -136,6 +136,12 @@ class template
 		$isadmin = (loader == 'back') ? true : false;
 		return $this->tplget('main', null, $isadmin);
 	}
+	
+	public function overloadCarcase($theme)
+	{
+		$this->content = null;
+		$this->content = $this->tplget($theme);
+	}
 
 	/**
 	 * Назначение переменной в супер-позиции $content
