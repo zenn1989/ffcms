@@ -12,7 +12,11 @@ class file
 	 */
 	public function elfinder()
 	{
-		global $constant;
+		global $constant,$user;
+		if($user->get('access_to_admin') < 1)
+		{
+			return;
+		}
 		include_once $constant->root.'/resource/elfinder/php/elFinderConnector.class.php';
 		include_once $constant->root.'/resource/elfinder/php/elFinder.class.php';
 		include_once $constant->root.'/resource/elfinder/php/elFinderVolumeDriver.class.php';

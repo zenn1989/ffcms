@@ -264,7 +264,7 @@ class user
 	public function isPermaBan()
 	{
 		global $database,$constant,$system;
-		$stmt = null;;
+		$stmt = null;
 		$ip = $system->getRealIp();
 		$time = time();
 		$userid = $this->get('id');

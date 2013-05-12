@@ -125,6 +125,17 @@ class page
 	{
 		return $this->pathway;
 	}
+	
+	/**
+	 * Разобранный путь реквеста в массив разделяя по / без учета 1го вхождения
+	 * @return mixed
+	 */
+	public function shiftPathway()
+	{
+		$way = $this->pathway;
+		array_shift($way);
+		return $way;
+	}
 
 	/**
 	 * Чистый пачвей для спец. нужд

@@ -5,7 +5,7 @@ class api
 	
 	public function load()
 	{
-		global $system;
+		global $system,$file;
 		switch($system->get('action'))
 		{
 			case "readwall":

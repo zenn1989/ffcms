@@ -178,4 +178,13 @@ admin_component_usercontrol_ban_help_endtime<=>Укажите время око�
 admin_component_usercontrol_ban_button_red<=>Блокировать
 admin_component_usercontrol_ban_uid_notify_text<=>Укажите дату окончания блокировки для
 admin_component_usercontrol_ban_uid_warning_text<=>Обратите внимание, будут заблокированы все известные IP адреса с которых пользователь посещал ваш веб-сайт
+admin_component_news_manage<=>Управление новостями
+admin_component_news_add<=>Добавить новость
+admin_component_news_settings<=>Настройки
+admin_component_news_
+admin_component_news_
+admin_component_news_
+admin_component_news_
+admin_component_news_
+admin_component_news_
 

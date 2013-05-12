@@ -73,6 +73,14 @@ class system
 		}
 		return $answer;
 	}
+	
+	public function suffixEquals($where, $suffix)
+	{
+		if(strlen($suffix) < 1)
+			return false;
+		$pharse_suffix = substr($where, -strlen($suffix));
+		return $pharse_suffix == $suffix ? true : false;
+	}
 
 	/**
 	 * Удаляет расширение у $var (indexxxx.html => index, vasya.exe => vasya)
@@ -210,6 +218,30 @@ class system
 	public function length($data)
 	{
 		return mb_strlen($data, "UTF-8");
+	}
+	
+	/**
+	 * Альтернативный substr с учетом UTF-8 символики
+	 * @param unknown_type $data
+	 * @param unknown_type $start
+	 * @param unknown_type $length
+	 * @return string
+	 */
+	public function altsubstr($data, $start, $length)
+	{
+		return mb_substr($data, $start, $length, "UTF-8");
+	}
+	
+	/**
+	 * Обрезка предложения до плавающей длины $length до вхождения первого пробела
+	 * @param unknown_type $sentence
+	 * @param unknown_type $length
+	 * @return string
+	 */
+	public function sentenceSub($sentence, $length)
+	{
+		$end_point = mb_strpos($sentence, " ", $length, "UTF-8");
+		return $this->altsubstr($sentence, 0, $end_point);
 	}
 
 	/**

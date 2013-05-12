@@ -12,12 +12,13 @@ class com_usercontrol_back
 		$menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id='.$admin->getID().'&action=ban', $language->get('admin_component_usercontrol_serviceban')), $menu_theme);
 		$menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id='.$admin->getID().'&action=settings', $language->get('admin_component_usercontrol_settings')), $menu_theme);
 		$work_body = null;
-		if($admin->getAction() == "list" || $admin->getAction() == NULL)
+		if($admin->getAction() == "list" || $admin->getAction() == null)
 		{
 			$action_page_title .= $language->get('admin_component_usercontrol_manage');
 			$index_start = $admin->getPage();
 			$list_theme = $template->tplget('usercontrol_list', 'components/', true);
 			$manage_theme = $template->tplget('usercontrol_list_manage', 'components/', true);
+			$stmt = null;
 			if($system->post('dosearch') && strlen($system->post('search')) > 0)
 			{
 				$search_string = "%{$system->post('search')}%";
@@ -37,7 +38,7 @@ class com_usercontrol_back
 				$stmt->execute();
 			}
 			$user_data_array = array();
-			while($res = $stmt->fetch())
+			while($stmt != null && $res = $stmt->fetch())
 			{
 				$manage_data = $template->assign(array('ext_id', 'ext_page'), array($admin->getID(), $res['id']), $manage_theme);
 				$user_data_array[] = array($res['id'], $res['login'], $res['email'], $manage_data);
