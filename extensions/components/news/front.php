@@ -73,40 +73,100 @@ class com_news_front implements com_front
 	
 	public function viewCategory()
 	{
-		global $page,$system,$database,$constant,$template,$user,$rule;
-		$cat_link = $system->altimplode("/", $page->shiftPathway());
-		// TODO: добавить выборку по like %cat_link при условии не вхождения в null
-		$cstmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_category WHERE path = ?");
-		$cstmt->bindParam(1, $cat_link, PDO::PARAM_STR);
-		$cstmt->execute();
-		$content = null;
-		$max_preview_length = 200;
-		if($cat_result = $cstmt->fetch())
+		global $page,$system,$database,$constant,$template,$user,$rule,$extension;
+		$way = $page->shiftPathway();
+		$pop_array = $way;
+		$last_item = array_pop($pop_array);
+		$page_index = 0;
+		$page_news_count = $extension->getConfig('count_news_page', 'news', 'components', 'int');
+		if($system->isInt($last_item))
 		{
-			$rule->getInstance()->add('com.news.have_category', true);
+			$page_index = $last_item;
+			$cat_link = $system->altimplode("/", $pop_array);
+		}
+		else
+		{
+			$cat_link = $system->altimplode("/", $way);
+		}
+		$select_coursor_start = $page_index * $page_news_count;
+		
+		$category_select_array = array();
+		$category_list = null;
+		$fstmt = null;
+		if($extension->getConfig('multi_category', 'news', 'components', 'boolean'))
+		{
+			$fstmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_category WHERE path like ?");
+			$path_swarm = "$cat_link%";
+			$fstmt->bindParam(1, $path_swarm, PDO::PARAM_STR);
+			$fstmt->execute();
+		}
+		else
+		{
+			$fstmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_category WHERE path = ?");
+			$fstmt->bindParam(1, $cat_link, PDO::PARAM_STR);
+			$fstmt->execute();
+		}
+		while($fresult = $fstmt->fetch())
+		{
+			$category_select_array[] = $fresult['category_id'];
+		}
+		$category_list = $system->altimplode(',', $category_select_array);
+		$fstmt = null;
+		if($system->isIntList($category_list))
+		{
 			$short_theme = $template->tplget('view_short_news', 'components/news/');
-			$cat_id = $cat_result['category_id'];
+			$max_preview_length = $extension->getConfig('short_news_length', 'news', 'components', 'int');
 			$time = time();
-			$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_entery WHERE category = ? AND date <= ? ORDER BY date DESC");
-			$stmt->bindParam(1, $cat_id, PDO::PARAM_INT);
-			$stmt->bindParam(2, $time, PDO::PARAM_INT);
-			$stmt->execute();
-			while($result = $stmt->fetch())
+			$stmt = null;
+			if($extension->getConfig('delay_news_public', 'news', 'components', 'boolean'))
 			{
-				$news_short_text = $result['text'];
-				if($system->length($news_short_text) > $max_preview_length)
+				// Возможно, это уязвимость в безопасности, однако данная переменная проверена жестким фильтрмо ![^0-9,]{,}
+				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_entery a, 
+												  {$constant->db['prefix']}_com_news_category b
+												  WHERE a.category in ($category_list) AND a.date <= ? 
+												  AND a.category = b.category_id
+												  ORDER BY a.date DESC LIMIT ?,?");
+				$stmt->bindParam(1, $time, PDO::PARAM_INT);
+				$stmt->bindParam(2, $select_coursor_start, PDO::PARAM_INT);
+				$stmt->bindParam(3, $page_news_count, PDO::PARAM_INT);
+				$stmt->execute();
+			}
+			else
+			{
+				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_entery a,
+												  {$constant->db['prefix']}_com_news_category b
+												  WHERE a.category in ($category_list)
+												  AND a.category = b.category_id
+												  ORDER BY a.id DESC LIMIT ?,?");
+				$stmt->bindParam(1, $select_coursor_start, PDO::PARAM_INT);
+				$stmt->bindParam(2, $page_news_count, PDO::PARAM_INT);
+				$stmt->execute();
+			}
+			if(sizeof($category_select_array) > 0)
+			{
+				$rule->getInstance()->add('com.news.have_category', true);
+				while($result = $stmt->fetch())
 				{
-					$news_short_text = $system->sentenceSub($news_short_text, $max_preview_length)."...";
+					$news_short_text = $result['text'];
+					if($system->length($news_short_text) > $max_preview_length)
+					{
+						$news_short_text = $system->sentenceSub($news_short_text, $max_preview_length)."...";
+					}
+					$content .= $template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'news_self_url'),
+							array($result['title'], $news_short_text, $system->toDate($result['date'], 'h'), $result['path'], $result['name'], $result['author'], $user->get('nick', $result['author']), $result['link']),
+							$short_theme);
 				}
-				$content .= $template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'news_self_url'), 
-					array($result['title'], $news_short_text, $system->toDate($result['date'], 'h'), $cat_result['path'], $cat_result['name'], $result['author'], $user->get('nick', $result['author']), $result['link']), 
-					$short_theme);
 			}
 			$stmt = null;
 		}
 		
 		$cstmt = null;
 		return $content;
+	}
+	
+	public function countofNews()
+	{
+		
 	}
 }
 

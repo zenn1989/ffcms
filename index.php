@@ -28,9 +28,9 @@ $template->cleanafterprint();
 $debug_endtime = microtime(true);
 
 // Отладочная информация
-if($config['debug'])
+if($config['debug'] && $user->get('access_to_admin') > 0)
 {
-	$load_time = $debug_endtime-$debug_starttime;
-	echo "<hr />Debug loading: ".$load_time." sec <br />Sql query count: ".$database->totalQueryCount()."<br />Theme files readed count: ".$template->getReadCount()."<br />Memory(peak) :".round(memory_get_peak_usage(true)/1048576,2)."mb";
+	$load_time = round($debug_endtime-$debug_starttime, 3);
+	echo "<hr />Debug loading: ".$load_time." sec <br />Sql query count: ".$database->totalQueryCount()."<br />Theme files readed count: ".$template->getReadCount()."<br />Memory(peak): ".round(memory_get_peak_usage()/(1024*1024), 3)."mb";
 }
 ?>

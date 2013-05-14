@@ -5,7 +5,7 @@ class com_news_back
 	
 	public function load()
 	{
-		global $admin,$template,$language,$database,$constant;
+		global $admin,$template,$language,$database,$constant,$system;
 		$action_page_title = $admin->getExtName()." : ";
 		$work_body = null;
 		$menu_theme = $template->tplget('config_menu', null, true);
@@ -29,8 +29,33 @@ class com_news_back
 				$full_link = "<a href=\"{$constant->url}/news/{$result['path']}/{$result['link']}\" target=\"_blank\">{$result['path']}/{$result['link']}</a>";
 				$news_array[] = array($news_id, $editable_name, $full_link, $result['category']);
 			}
-			$form_table = $admin->tplRawTable(array('id', 'Заголовок', 'Ссылка', 'Управление'), $news_array);
+			$form_table = $admin->tplRawTable(array($language->get('admin_component_news_th_id'), $language->get('admin_component_news_th_title'), $language->get('admin_component_news_th_link'), $language->get('admin_component_news_th_manage')), $news_array);
 			$work_body = $template->assign(array('ext_table_data'), array($form_table), $theme_list);
+		}
+		elseif($admin->getAction() == "settings")
+		{
+			$action_page_title .= $language->get('admin_component_news_settings');
+			
+			if($system->post('submit'))
+			{
+				$save_try = $admin->trySaveConfigs();
+				if($save_try)
+					$work_body .= $template->stringNotify('success', $language->get('admin_extension_config_update_success'), true);
+				else
+					$work_body .= $template->stringNotify('error', $language->get('admin_extension_config_update_fail'), true);;
+			}
+			
+			$config_form = $template->tplget('config_form', null, true);
+			
+			$config_set .= $language->get('admin_component_news_description');
+			$config_set .= $admin->tplSettingsDirectory($language->get('admin_component_news_settings_mainblock'));
+			$config_set .= $admin->tplSettingsSelectYorN('config:delay_news_public', $language->get('admin_component_news_config_newsdelay_title'), $language->get('admin_component_news_config_newsdelay_desc'), $admin->getConfig('delay_news_public', 'boolean'));
+			$config_set .= $admin->tplSettingsInputText('config:count_news_page', $admin->getConfig('count_news_page', 'int'), $language->get('admin_component_news_config_newscount_page_title'), $language->get('admin_component_news_config_newscount_page_desc'));
+			$config_set .= $admin->tplSettingsInputText('config:short_news_length', $admin->getConfig('short_news_length', 'int'), $language->get('admin_component_news_config_newsshort_length_title'), $language->get('admin_component_news_config_newsshort_length_desc'));
+			$config_set .= $admin->tplSettingsDirectory($language->get('admin_component_news_settings_catblock'));
+			$config_set .= $admin->tplSettingsSelectYorN('config:multi_category', $language->get('admin_component_news_config_newscat_multi_title'), $language->get('admin_component_news_config_newscat_multi_desc'), $admin->getConfig('multi_category', 'boolean'));
+			
+			$work_body .= $template->assign('ext_form', $config_set, $config_form);
 		}
 		
 		$body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));

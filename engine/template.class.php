@@ -381,6 +381,12 @@ class template
 		$theme_inactive = $this->tplget('pagination_inactive_item');
 		$theme_spliter = $this->tplget('pagination_split_item');
 		
+		// если все записи вмещены на 1 странице - пагинация не нужна.
+		if($total < $count)
+		{
+			return;
+		}
+		
 		$compiled_items = null;
 		$last_page = (int)$total/$count;
 		// если всего планируется более 10 страничек с итемами

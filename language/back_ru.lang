@@ -181,10 +181,20 @@ admin_component_usercontrol_ban_uid_warning_text<=>Обратите вниман
 admin_component_news_manage<=>Управление новостями
 admin_component_news_add<=>Добавить новость
 admin_component_news_settings<=>Настройки
-admin_component_news_
-admin_component_news_
-admin_component_news_
-admin_component_news_
-admin_component_news_
-admin_component_news_
-
+admin_component_news_th_id<=>ID
+admin_component_news_th_title<=>Заголовок
+admin_component_news_th_link<=>Ссылка
+admin_component_news_th_manage<=>Управление
+admin_component_news_description<=>Конфигурация компонента управления новостями
+admin_component_news_settings_mainblock<=>Основные настройки
+admin_component_news_config_newscount_page_title<=>Новостей на странице
+admin_component_news_config_newscount_page_desc<=>Количество новостей отображаемых на 1 странице категории
+admin_component_news_config_newsshort_length_title<=>Короткая новость
+admin_component_news_config_newsshort_length_desc<=>Количество символов отображаемых в короткой новости в категориях
+admin_component_news_config_newsdelay_title<=>Отложеная публикация
+admin_component_news_config_newsdelay_desc<=>Включить поддержку отложенной публикации новостей, дата которых больше текущей?
+admin_component_news_settings_catblock<=>Настройки категорий
+admin_component_news_config_newscat_multi_title<=>Мултикатегории
+admin_component_news_config_newscat_multi_desc<=>Включить вывод новостей в мульти-категории(короткая новость выводиться так же в иерархически высших категориях)
+admin_component_news_config_
+admin_component_news_config_
