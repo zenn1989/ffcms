@@ -32,6 +32,12 @@ class com_news_back
 			$form_table = $admin->tplRawTable(array($language->get('admin_component_news_th_id'), $language->get('admin_component_news_th_title'), $language->get('admin_component_news_th_link'), $language->get('admin_component_news_th_manage')), $news_array);
 			$work_body = $template->assign(array('ext_table_data'), array($form_table), $theme_list);
 		}
+		elseif($admin->getAction() == "edit" && $this->newsExist())
+		{
+			$action_page_title .= $language->get('admin_component_news_modedit_title');
+			$edit_theme = $template->tplget('news_edit', 'components/', true);
+			$work_body = $edit_theme;
+		}
 		elseif($admin->getAction() == "settings")
 		{
 			$action_page_title .= $language->get('admin_component_news_settings');
@@ -60,6 +66,21 @@ class com_news_back
 		
 		$body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
 		return $body_form;
+	}
+	
+	private function newsExist()
+	{
+		global $database,$constant,$admin,$system;
+		$newsId = $admin->getPage();
+		if($system->isInt($newsId))
+		{
+			$stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_com_news_entery WHERE id = ?");
+			$stmt->bindParam(1, $newsId, PDO::PARAM_INT);
+			$stmt->execute();
+			$result = $stmt->fetch();
+			return $result > 0 ? true : false;
+		}
+		return false;
 	}
 }
 

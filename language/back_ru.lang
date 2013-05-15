@@ -196,5 +196,19 @@ admin_component_news_config_newsdelay_desc<=>Включить поддержку
 admin_component_news_settings_catblock<=>Настройки категорий
 admin_component_news_config_newscat_multi_title<=>Мултикатегории
 admin_component_news_config_newscat_multi_desc<=>Включить вывод новостей в мульти-категории(короткая новость выводиться так же в иерархически высших категориях)
-admin_component_news_config_
-admin_component_news_config_
+admin_component_news_modedit_title<=>Редактирование новости
+admin_component_news_edit_page_title_name<=>Заголовок новости
+admin_component_news_edit_page_title_desc<=>В данном поле указывается заголовок новости отображаемый на странице и заголовке браузера
+admin_component_news_edit_page_pathway_title<=>Физический путь
+admin_component_news_edit_page_pathway_desc<=>Содержимое URL по которому будет доступна данная новость
+admin_component_news_edit_page_textarea_title<=>Содержимое новости
+admin_component_news_edit_page_description<=>Description - описание
+admin_component_news_edit_page_description_desc<=>Параметр мета-тега description для данной новости(seo)
+admin_component_news_edit_page_keywords<=>Keywords - ключи
+admin_component_news_edit_page_keywords_description<=>Параметр мета-тега keywords для данной новости(ключевые слова)
+admin_component_news_edit_page_keybutton_gen<=>Авто
+admin_component_news_edit_page_date_text<=>Дата
+admin_component_news_edit_page_date_desc<=>Дата страницы в формате Y-m-d hh:ss(Год-Месяц-День часы:минуты)
+
+
+

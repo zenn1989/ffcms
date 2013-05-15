@@ -75,10 +75,13 @@ class com_news_front implements com_front
 	{
 		global $page,$system,$database,$constant,$template,$user,$rule,$extension;
 		$way = $page->shiftPathway();
+		$content = null;
 		$pop_array = $way;
 		$last_item = array_pop($pop_array);
 		$page_index = 0;
 		$page_news_count = $extension->getConfig('count_news_page', 'news', 'components', 'int');
+		$total_news_count = 0;
+		$cat_link = null;
 		if($system->isInt($last_item))
 		{
 			$page_index = $last_item;
@@ -118,9 +121,9 @@ class com_news_front implements com_front
 			$max_preview_length = $extension->getConfig('short_news_length', 'news', 'components', 'int');
 			$time = time();
 			$stmt = null;
+			$cstmt = null;
 			if($extension->getConfig('delay_news_public', 'news', 'components', 'boolean'))
 			{
-				// Возможно, это уязвимость в безопасности, однако данная переменная проверена жестким фильтрмо ![^0-9,]{,}
 				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_entery a, 
 												  {$constant->db['prefix']}_com_news_category b
 												  WHERE a.category in ($category_list) AND a.date <= ? 
@@ -130,6 +133,14 @@ class com_news_front implements com_front
 				$stmt->bindParam(2, $select_coursor_start, PDO::PARAM_INT);
 				$stmt->bindParam(3, $page_news_count, PDO::PARAM_INT);
 				$stmt->execute();
+				$cstmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_com_news_entery WHERE category in ($category_list) AND date <= ?");
+				$cstmt->bindParam(1, $time, PDO::PARAM_INT);
+				$cstmt->execute();
+				if($countRows = $cstmt->fetch())
+				{
+					$total_news_count = $countRows[0];
+				}
+				$cstmt = null;
 			}
 			else
 			{
@@ -141,6 +152,14 @@ class com_news_front implements com_front
 				$stmt->bindParam(1, $select_coursor_start, PDO::PARAM_INT);
 				$stmt->bindParam(2, $page_news_count, PDO::PARAM_INT);
 				$stmt->execute();
+				
+				$cstmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_com_news_entery WHERE category in ($category_list)");
+				$cstmt->execute();
+				if($countRows = $cstmt->fetch())
+				{
+				$total_news_count = $countRows[0];
+				}
+				$cstmt = null;
 			}
 			if(sizeof($category_select_array) > 0)
 			{
@@ -159,14 +178,13 @@ class com_news_front implements com_front
 			}
 			$stmt = null;
 		}
-		
 		$cstmt = null;
+		if($content != null)
+		{
+			$category_theme = $template->tplget('view_category', 'components/news/');
+			$content = $template->assign(array('news_body', 'pagination'), array($content, $template->drowNumericPagination($page_index, $page_news_count, $total_news_count, "news/".$cat_link."/")), $category_theme);
+		}
 		return $content;
-	}
-	
-	public function countofNews()
-	{
-		
 	}
 }
 

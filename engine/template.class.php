@@ -382,7 +382,7 @@ class template
 		$theme_spliter = $this->tplget('pagination_split_item');
 		
 		// если все записи вмещены на 1 странице - пагинация не нужна.
-		if($total < $count)
+		if($total <= $count)
 		{
 			return;
 		}
@@ -399,11 +399,13 @@ class template
 				{
 					if($i == $index)
 					{
-						$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$i, $i+1), $theme_active);
+						$di = ($i == 0) ? null : $i;
+						$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$di, $i+1), $theme_active);
 					}
 					else
 					{
-						$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$i, $i+1), $theme_inactive);
+						$di = ($i == 0) ? null : $i;
+						$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$di, $i+1), $theme_inactive);
 					}
 				}
 				$compiled_items .= $theme_spliter;
@@ -458,10 +460,12 @@ class template
 			{
 				if($i == $index)
 				{
+					if($i == 0) $i = null;
 					$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$i, $i+1), $theme_active);
 				}
 				else
 				{
+					if($i == 0) $i = null;
 					$compiled_items .= $this->assign(array('item_link', 'item_name'), array($link.$i, $i+1), $theme_inactive);
 				}
 			}
