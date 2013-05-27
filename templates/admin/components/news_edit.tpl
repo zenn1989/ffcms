@@ -1,4 +1,3 @@
-<script type="text/javascript" src="{$url}/{$tpl_dir}/js/admin.js"></script>
 <form action="" method="post">
 <div class="row">
 <div class="span5">
@@ -23,7 +22,7 @@
 <span class="help-block">{$lang::admin_component_news_edit_page_pathway_desc}</span>
 <h5>Параметры публикации</h5>
 <div>
-<label class="checkbox"><input type="checkbox" name="public_content" checked> Отображать материал на сайте?</label>
+<label class="checkbox"><input type="checkbox" name="public_content"> Не отображать на сайте?</label>
 <label class="checkbox"><input type="checkbox" name="important_content"> Зафиксировать как важный материал?</label>
 </div>
 </div>
@@ -31,7 +30,7 @@
 <div class="row">
 <div class="span9">
 <h5>{$lang::admin_component_news_edit_page_textarea_title}</h5>
-<textarea name="text" id="textobject" class="wysi">{$bews_text}</textarea>
+<textarea name="text" id="textobject" class="wysi">{$news_content}</textarea>
 </div>
 </div>
 <div class="row">
@@ -48,10 +47,13 @@
 </div>
 <div class="row">
 <div class="span5">
-	<label>{$lang::admin_component_news_edit_page_date_text}: <input type="text" name="date" id="datefield" value="{$news_date}"/> <input type="checkbox" name="current_date" id="setcurrentdate" /> Текущая дата?<span class="help-block">{$lang::admin_component_static_edit_page_date_desc}</span></label>
+	<label>{$lang::admin_component_news_edit_page_date_text}: <input type="text" name="date" id="datefield" value="{$news_date}"/> 
+	<input type="checkbox" id="setcurrentdate" name="current_date" /> {$lang::admin_component_news_edit_page_current_date}
+	<span class="help-block">{$lang::admin_component_news_edit_page_date_desc}</span></label>
 </div>
 <div class="span4">
-<input type="submit" name="save" value="{$lang::admin_component_static_edit_page_button_save}" class="btn btn-success btn-large" />
+<input type="submit" name="save" value="{$lang::admin_component_news_edit_page_button_save}" class="btn btn-success btn-large" />
 </div>
 </div>
 </form>
+<script type="text/javascript" src="{$url}/{$tpl_dir}/js/admin.js"></script>

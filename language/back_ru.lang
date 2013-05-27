@@ -208,7 +208,6 @@ admin_component_news_edit_page_keywords<=>Keywords - ключи
 admin_component_news_edit_page_keywords_description<=>Параметр мета-тега keywords для данной новости(ключевые слова)
 admin_component_news_edit_page_keybutton_gen<=>Авто
 admin_component_news_edit_page_date_text<=>Дата
-admin_component_news_edit_page_date_desc<=>Дата страницы в формате Y-m-d hh:ss(Год-Месяц-День часы:минуты)
-
-
-
+admin_component_news_edit_page_date_desc<=>Дата страницы в формате d.m.Y(hh,mm,ss)(день.месяц.год + часы:минуты:секунды)
+admin_component_news_edit_page_current_date<=>Текущая дата?
+admin_component_news_edit_page_button_save<=>Сохранить

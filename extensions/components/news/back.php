@@ -34,9 +34,23 @@ class com_news_back
 		}
 		elseif($admin->getAction() == "edit" && $this->newsExist())
 		{
+			$news_id = $admin->getPage();
 			$action_page_title .= $language->get('admin_component_news_modedit_title');
+			if($system->post('save'))
+			{
+				
+			}
 			$edit_theme = $template->tplget('news_edit', 'components/', true);
-			$work_body = $edit_theme;
+			$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_entery WHERE id = ?");
+			$stmt->bindParam(1, $news_id, PDO::PARAM_INT);
+			$stmt->execute();
+			$news_result = $stmt->fetch();
+			$category_option_list = $this->buildCategoryOptionList($news_id);
+			
+			$work_body = $template->assign(array('news_title', 'news_path', 'news_content', 'news_description', 'news_keywords', 'news_date', 'category_option_list'), 
+					array($news_result['title'], $system->noextention($news_result['link']), $news_result['text'], $news_result['description'], $news_result['keywords'], $system->toDate($news_result['date'], 'h'), $category_option_list), 
+					$edit_theme);
+			$stmt = null;
 		}
 		elseif($admin->getAction() == "settings")
 		{
@@ -81,6 +95,60 @@ class com_news_back
 			return $result > 0 ? true : false;
 		}
 		return false;
+	}
+	
+	private function buildCategoryOptionList($news_id = 0)
+	{
+		global $database,$constant,$system,$template;
+		$theme_option_active = $template->tplget('form_option_item_active', null, true);
+		$theme_option_inactive = $template->tplget('form_option_item_inactive', null, true);
+		$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_category ORDER BY `path` ASC");
+		$stmt->execute();
+		$result_array = array();
+		$result_id = array();
+		$result_name = array();
+		$result_string = null;
+		while($result = $stmt->fetch())
+		{
+			$result_array[] = $result['path'];
+			$result_id[$result['path']] = $result['category_id'];
+			$result_name[$result['path']] = $result['name'];
+		}
+		sort($result_array);
+		$cstmt = $database->con()->prepare("SELECT category FROM {$constant->db['prefix']}_com_news_entery WHERE id = ?");
+		$cstmt->bindParam(1, $news_id, PDO::PARAM_INT);
+		$cstmt->execute();
+		$cRes = $cstmt->fetch();
+		$news_category_id = $cRes['category'];
+		$cstmt = null;
+		foreach($result_array as $path)
+		{
+			$spliter_count = substr_count($path, "/");
+			$add = '';
+			if($path != null)
+			{
+				for($i=-1;$i<=$spliter_count;$i++)
+				{
+					$add .= "-";
+				}
+			}
+			else
+			{
+				$add = "-";
+			}
+			$current_id = $result_id[$path];
+			$current_name = $result_name[$path];
+			if($current_id == $news_category_id)
+			{
+				$result_string .= $template->assign(array('option_value', 'option_name'), array($current_id, $add." ".$current_name), $theme_option_active);
+			}
+			else
+			{
+				$result_string .= $template->assign(array('option_value', 'option_name'), array($current_id, $add." ".$current_name), $theme_option_inactive);
+			}
+		}
+		$stmt = null;
+		return $result_string;
 	}
 }
 

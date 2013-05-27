@@ -373,7 +373,7 @@ class system
 	}
 	
 	/**
-	 * Преобразование популярных форматов даты в 1 формат отображения. Формат - d = d.m.Y, h = d.m.y hh:mm, s = d.m.Y hh:mm:ss.
+	 * Преобразование популярных форматов даты в 1 формат отображения. Формат - d = d.m.Y, h = d.m.Y hh:mm, s = d.m.Y hh:mm:ss.
 	 * Так же принимаются значения unix time.
 	 * @param unknown_type $object
 	 * @param unknown_type $out_format
