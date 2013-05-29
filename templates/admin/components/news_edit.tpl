@@ -1,17 +1,17 @@
+<script type="text/javascript" src="{$url}/{$tpl_dir}/js/admin.js"></script>
 <form action="" method="post">
 <div class="row">
 <div class="span5">
 <h5>{$lang::admin_component_news_edit_page_title_name}</h5>
 <input onkeyup="oJS.strNormalize(this)" type="text" name="title" class="input-block-level" value="{$news_title}" />
 <span class="help-block">{$lang::admin_component_news_edit_page_title_desc}</span>
-<h5>Категория</h5>
+<h5>{$lang::admin_component_news_edit_page_category_name}</h5>
 <div>
 	<select name="category" size="10" style="width:99%;height:100px">
 		{$category_option_list}
 	</select>
 </div>
-<span class="help-block">Выберите категорию в которую необходимо поместить новость</span>
-{$notify_message}
+<span class="help-block">{$lang::admin_component_news_edit_page_category_desc}</span>
 </div>
 <div class="span4">
 <h5>{$lang::admin_component_news_edit_page_pathway_title}</h5>
@@ -22,8 +22,9 @@
 <span class="help-block">{$lang::admin_component_news_edit_page_pathway_desc}</span>
 <h5>Параметры публикации</h5>
 <div>
-<label class="checkbox"><input type="checkbox" name="public_content"> Не отображать на сайте?</label>
-<label class="checkbox"><input type="checkbox" name="important_content"> Зафиксировать как важный материал?</label>
+<label class="checkbox"><input type="checkbox" name="display_content" {$news_display_check}> {$lang::admin_component_news_edit_page_display_ckechbox}</label>
+<label class="checkbox"><input type="checkbox" name="important_content" {$news_important_check}> {$lang::admin_component_news_edit_page_important_ckechbox}</label>
+{$notify_message}
 </div>
 </div>
 </div>
@@ -56,4 +57,3 @@
 </div>
 </div>
 </form>
-<script type="text/javascript" src="{$url}/{$tpl_dir}/js/admin.js"></script>

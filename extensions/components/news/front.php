@@ -128,7 +128,8 @@ class com_news_front implements com_front
 												  {$constant->db['prefix']}_com_news_category b
 												  WHERE a.category in ($category_list) AND a.date <= ? 
 												  AND a.category = b.category_id
-												  ORDER BY a.date DESC LIMIT ?,?");
+												  AND a.display = 1
+												  ORDER BY a.important DESC, a.date DESC LIMIT ?,?");
 				$stmt->bindParam(1, $time, PDO::PARAM_INT);
 				$stmt->bindParam(2, $select_coursor_start, PDO::PARAM_INT);
 				$stmt->bindParam(3, $page_news_count, PDO::PARAM_INT);
@@ -148,7 +149,8 @@ class com_news_front implements com_front
 												  {$constant->db['prefix']}_com_news_category b
 												  WHERE a.category in ($category_list)
 												  AND a.category = b.category_id
-												  ORDER BY a.id DESC LIMIT ?,?");
+												  AND a.display = 1
+												  ORDER BY a.important DESC, a.id DESC LIMIT ?,?");
 				$stmt->bindParam(1, $select_coursor_start, PDO::PARAM_INT);
 				$stmt->bindParam(2, $page_news_count, PDO::PARAM_INT);
 				$stmt->execute();

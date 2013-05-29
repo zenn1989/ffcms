@@ -1,15 +1,16 @@
-$('#setcurrentdate').change(function(){
-	var $event_click = $(this);
-	if ($event_click.is(':checked')) 
-	{
-		$('#datefield').attr("disabled", true).val('');
-	}
-	else
-	{
-		$('#datefield').removeAttr("disabled");
-	}
+$(document).ready(function(){
+	$('#setcurrentdate').change(function(){
+		var $event_click = $(this);
+		if ($event_click.is(':checked')) 
+		{
+			$('#datefield').attr("disabled", true).val('');
+		}
+		else
+		{
+			$('#datefield').removeAttr("disabled");
+		}
+	});
 });
-
 var keywords1, keywords2 = new Array(), keywords3 =  new Array();
 function strip_tags(str, allow) {
 	  // making sure the allow arg is a string containing only tags in lowercase (<a><b><c>)

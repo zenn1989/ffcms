@@ -5,7 +5,7 @@ class com_news_back
 	
 	public function load()
 	{
-		global $admin,$template,$language,$database,$constant,$system;
+		global $admin,$template,$language,$database,$constant,$system,$user;
 		$action_page_title = $admin->getExtName()." : ";
 		$work_body = null;
 		$menu_theme = $template->tplget('config_menu', null, true);
@@ -36,9 +36,78 @@ class com_news_back
 		{
 			$news_id = $admin->getPage();
 			$action_page_title .= $language->get('admin_component_news_modedit_title');
+			$notify = null;
 			if($system->post('save'))
 			{
-				
+				$editor_id = $user->get('id');
+				$title = $system->post('title');
+				$category_id = $system->post('category');
+				$pathway = $system->post('pathway').".html";
+				$display = $system->post('display_content') == "on" ? 1 : 0;
+				$important = $system->post('important_content') == "on" ? 1 : 0;
+				$text = $system->post('text');
+				$description = $system->post('description');
+				$keywords = $system->post('keywords');
+				$date = $system->post('current_date') == "on" ? time() : $system->toUnixTime($system->post('date'));
+				if(strlen($title) < 1)
+				{
+					$notify .= $template->stringNotify('error', $language->get('admin_component_news_edit_notify_title_length'));
+				}
+				if(!$system->isInt($category_id))
+				{
+					$notify .= $template->stringNotify('error', $language->get('admin_component_news_edit_notify_category_wrong'));
+				}
+				if(strlen($pathway) < 1)
+				{
+					$notify .= $template->stringNotify('error', $language->get('admin_component_news_edit_notify_pathway_null'));
+				}
+				if(strlen($text) < 1)
+				{
+					$notify .= $template->stringNotify('error', $language->get('admin_component_news_edit_notify_text_null'));
+				}
+				if($notify == null)
+				{
+					$pstmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_com_news_entery WHERE category = ? AND link = ? AND id != ?");
+					$pstmt->bindParam(1, $category_id, PDO::PARAM_INT);
+					$pstmt->bindParam(2, $pathway, PDO::PARAM_STR);
+					$pstmt->bindParam(3, $news_id, PDO::PARAM_INT);
+					$pstmt->execute();
+					$pRes = $pstmt->fetch();
+					if($pRes[0] == 0)
+					{
+						$stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_com_news_entery SET 
+						title = ?, 
+						text = ?, 
+						link = ?, 
+						category = ?, 
+						date = ?, 
+						author = ?, 
+						description = ?, 
+						keywords = ?, 
+						display = ?, 
+						important = ? 
+						WHERE id = ?");
+						$stmt->bindParam(1, $title, PDO::PARAM_STR);
+						$stmt->bindParam(2, $text, PDO::PARAM_STR);
+						$stmt->bindParam(3, $pathway, PDO::PARAM_STR);
+						$stmt->bindParam(4, $category_id, PDO::PARAM_INT);
+						$stmt->bindParam(5, $date, PDO::PARAM_INT);
+						$stmt->bindParam(6, $editor_id, PDO::PARAM_INT);
+						$stmt->bindParam(7, $description, PDO::PARAM_STR);
+						$stmt->bindParam(8, $keywords, PDO::PARAM_STR);
+						$stmt->bindParam(9, $display, PDO::PARAM_INT);
+						$stmt->bindParam(10, $important, PDO::PARAM_INT);
+						$stmt->bindParam(11, $news_id, PDO::PARAM_INT);
+						$stmt->execute();
+						$notify .= $template->stringNotify('success', $language->get('admin_component_news_edit_notify_success_save'));
+						
+					}
+					else
+					{
+						$notify .= $template->stringNotify('error', $language->get('admin_component_news_edit_notify_pathway_exist'));
+					}
+					$pstmt = null;
+				}
 			}
 			$edit_theme = $template->tplget('news_edit', 'components/', true);
 			$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_entery WHERE id = ?");
@@ -46,9 +115,11 @@ class com_news_back
 			$stmt->execute();
 			$news_result = $stmt->fetch();
 			$category_option_list = $this->buildCategoryOptionList($news_id);
+			$is_display = $news_result['display'] > 0 ? "checked" : null;
+			$is_important = $news_result['important'] > 0 ? "checked" : null;
 			
-			$work_body = $template->assign(array('news_title', 'news_path', 'news_content', 'news_description', 'news_keywords', 'news_date', 'category_option_list'), 
-					array($news_result['title'], $system->noextention($news_result['link']), $news_result['text'], $news_result['description'], $news_result['keywords'], $system->toDate($news_result['date'], 'h'), $category_option_list), 
+			$work_body = $template->assign(array('news_title', 'news_path', 'news_content', 'news_description', 'news_keywords', 'news_date', 'category_option_list', 'notify_message', 'news_display_check', 'news_important_check'), 
+					array($news_result['title'], $system->noextention($news_result['link']), $news_result['text'], $news_result['description'], $news_result['keywords'], $system->toDate($news_result['date'], 'h'), $category_option_list, $notify, $is_display, $is_important), 
 					$edit_theme);
 			$stmt = null;
 		}

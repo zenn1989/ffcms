@@ -402,6 +402,16 @@ class system
 		return $result;
 	}
 	
+	/**
+	 * Приведение форматов дат к представлению Unix Time epoche
+	 * @param unknown_type $object
+	 * @return number
+	 */
+	public function toUnixTime($object)
+	{
+		return strtotime($object);
+	}
+	
 	public function generateIntRangeArray($start, $end)
 	{
 		$output = array();
