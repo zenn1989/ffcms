@@ -20,7 +20,7 @@
   <span class="add-on">.html</span>
 </div>
 <span class="help-block">{$lang::admin_component_news_edit_page_pathway_desc}</span>
-<h5>Параметры публикации</h5>
+<h5>{$lang::admin_component_news_edit_page_params_name}</h5>
 <div>
 <label class="checkbox"><input type="checkbox" name="display_content" {$news_display_check}> {$lang::admin_component_news_edit_page_display_ckechbox}</label>
 <label class="checkbox"><input type="checkbox" name="important_content" {$news_important_check}> {$lang::admin_component_news_edit_page_important_ckechbox}</label>
