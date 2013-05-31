@@ -36,29 +36,27 @@ class com_news_front implements com_front
 		$stmt = null;
 		$category_link = null;
 		$category_text = null;
-		// /cat/cat2/url.html
-		if(sizeof($categories) >= 1)
+		$link_cat = $system->altimplode("/", $categories);
+		$time = time();
+		if($link_cat != null)
 		{
-			$link_cat = $system->altimplode("/", $categories);
-			$catstmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_category WHERE path = ?");
-			$catstmt->bindParam(1, $link_cat, PDO::PARAM_STR);
-			$catstmt->execute();
-			if($catresult = $catstmt->fetch())
-			{
-				$category_link = $catresult['path'];
-				$category_text = $catresult['name'];
-				$rule->getInstance()->add('com.news.have_category', true);
-				$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_entery WHERE link = ? AND category = ?");
-				$stmt->bindParam(1, $url, PDO::PARAM_STR);
-				$stmt->bindParam(2, $catresult['category_id'], PDO::PARAM_INT);
-				$stmt->execute();
-			}
+			$rule->getInstance()->add('com.news.have_category', true);
 		}
-		// /url.html
 		else
 		{
-			$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_entery WHERE link = ? AND category = 0");
+			$rule->getInstance()->add('com.news.have_category', false);
+		}
+		$catstmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_category WHERE path = ?");
+		$catstmt->bindParam(1, $link_cat, PDO::PARAM_STR);
+		$catstmt->execute();
+		if($catresult = $catstmt->fetch())
+		{
+			$category_link = $catresult['path'];
+			$category_text = $catresult['name'];
+			$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_entery WHERE link = ? AND category = ? AND display = 1 AND date <= ?");
 			$stmt->bindParam(1, $url, PDO::PARAM_STR);
+			$stmt->bindParam(2, $catresult['category_id'], PDO::PARAM_INT);
+			$stmt->bindParam(3, $time, PDO::PARAM_INT);
 			$stmt->execute();
 		}
 		if($stmt != null && $result = $stmt->fetch())
@@ -165,7 +163,6 @@ class com_news_front implements com_front
 			}
 			if(sizeof($category_select_array) > 0)
 			{
-				$rule->getInstance()->add('com.news.have_category', true);
 				while($result = $stmt->fetch())
 				{
 					$news_short_text = $result['text'];
@@ -173,8 +170,16 @@ class com_news_front implements com_front
 					{
 						$news_short_text = $system->sentenceSub($news_short_text, $max_preview_length)."...";
 					}
-					$content .= $template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'news_self_url'),
-							array($result['title'], $news_short_text, $system->toDate($result['date'], 'h'), $result['path'], $result['name'], $result['author'], $user->get('nick', $result['author']), $result['link']),
+					if($result['path'] == null)
+					{
+						$news_full_link = $result['link'];
+					}
+					else
+					{
+						$news_full_link = $result['path']."/".$result['link'];
+					}
+					$content .= $template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'news_full_link'),
+							array($result['title'], $news_short_text, $system->toDate($result['date'], 'h'), $result['path'], $result['name'], $result['author'], $user->get('nick', $result['author']), $news_full_link),
 							$short_theme);
 				}
 			}

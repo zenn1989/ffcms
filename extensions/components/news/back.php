@@ -17,6 +17,7 @@ class com_news_back
 		{
 			$action_page_title .= $language->get('admin_component_news_manage');
 			$theme_list = $template->tplget('news_list', 'components/', true);
+			$theme_manage = $template->tplget('news_list_manage', 'components/', true);
 			$index_start = $admin->getPage();
 			$news_array = array();
 			$stmt = $database->con()->prepare("SELECT a.id,a.title,a.category,a.link,b.category_id,b.path FROM {$constant->db['prefix']}_com_news_entery a, {$constant->db['prefix']}_com_news_category b WHERE a.category = b.category_id ORDER BY a.id DESC LIMIT ?, ?");
@@ -26,9 +27,11 @@ class com_news_back
 			while($result = $stmt->fetch())
 			{
 				$news_id = $result['id'];
-				$editable_name = "<a href=\"?object=components&id={$admin->getID()}&action=edit&page={$news_id}\">{$result['title']}</a>";
+				$edit_link = "?object=components&id={$admin->getID()}&action=edit&page={$news_id}";
+				$delete_link = "?object=components&id={$admin->getID()}&action=delete&page={$news_id}";
+				$editable_name = "<a href=\"$edit_link\">{$result['title']}</a>";
 				$full_link = "<a href=\"{$constant->url}/news/{$result['path']}/{$result['link']}\" target=\"_blank\">{$result['path']}/{$result['link']}</a>";
-				$news_array[] = array($news_id, $editable_name, $full_link, $result['category']);
+				$news_array[] = array($news_id, $editable_name, $full_link, $template->assign(array('news_edit', 'news_delete'), array($edit_link, $delete_link), $theme_manage));
 			}
 			$form_table = $admin->tplRawTable(array($language->get('admin_component_news_th_id'), $language->get('admin_component_news_th_title'), $language->get('admin_component_news_th_link'), $language->get('admin_component_news_th_manage')), $news_array);
 			$work_body = $template->assign(array('ext_table_data'), array($form_table), $theme_list);
@@ -174,6 +177,18 @@ class com_news_back
 				$work_body = $template->assign('category_option_list', $this->buildCategoryOptionList(), $theme);
 			}
 		}
+		elseif($admin->getAction() == "category")
+		{
+			$action_page_title .= $language->get('admin_component_news_category');
+			$theme_head = $template->tplget('news_category_head', 'components/', true);
+			$category_selected = $admin->getPage();
+			// еще не была выбрана категория родитель
+			if($category_selected < 1)
+			{
+				
+			}
+			$work_body = $theme_head;
+		}
 		elseif($admin->getAction() == "settings")
 		{
 			$action_page_title .= $language->get('admin_component_news_settings');
@@ -271,6 +286,60 @@ class com_news_back
 		}
 		$stmt = null;
 		return $result_string;
+	}
+	
+	private function categoryListLi($news_id = 0)
+	{
+		global $database,$constant,$system,$template;
+		$theme_option_active = $template->tplget('form_option_item_active', null, true);
+		$theme_option_inactive = $template->tplget('form_option_item_inactive', null, true);
+		$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_category ORDER BY `path` ASC");
+		$stmt->execute();
+		$result_array = array();
+		$result_id = array();
+		$result_name = array();
+		$result_string = null;
+		while($result = $stmt->fetch())
+		{
+			$result_array[] = $result['path'];
+			$result_id[$result['path']] = $result['category_id'];
+			$result_name[$result['path']] = $result['name'];
+		}
+		sort($result_array);
+		$cstmt = $database->con()->prepare("SELECT category FROM {$constant->db['prefix']}_com_news_entery WHERE id = ?");
+		$cstmt->bindParam(1, $news_id, PDO::PARAM_INT);
+		$cstmt->execute();
+		$cRes = $cstmt->fetch();
+		$news_category_id = $cRes['category'];
+		$cstmt = null;
+		foreach($result_array as $path)
+		{
+			$spliter_count = substr_count($path, "/");
+			$add = '';
+			if($path != null)
+			{
+				for($i=-1;$i<=$spliter_count;$i++)
+				{
+				$add .= "-";
+				}
+				}
+				else
+				{
+				$add = "-";
+				}
+				$current_id = $result_id[$path];
+				$current_name = $result_name[$path];
+				if($current_id == $news_category_id)
+				{
+				$result_string .= $template->assign(array('option_value', 'option_name'), array($current_id, $add." ".$current_name), $theme_option_active);
+				}
+				else
+				{
+				$result_string .= $template->assign(array('option_value', 'option_name'), array($current_id, $add." ".$current_name), $theme_option_inactive);
+				}
+				}
+				$stmt = null;
+				return $result_string;
 	}
 	
 	private function check_pageway($way, $id = 0, $cat_id)
