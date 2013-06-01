@@ -234,6 +234,62 @@ class com_news_back
             $theme_add = $template->tplget('news_category_add', 'components/', true);
             $work_body = $template->assign(array('news_category_select', 'notify_message'), array($this->buildCategoryOptionList(0, $selected_category), $notify), $theme_add);
         }
+        elseif($admin->getAction() == "delcategory")
+        {
+            $action_page_title .= $language->get('admin_component_news_category');
+            $theme_delete = $template->tplget('news_category_delete', 'components/', true);
+            $cat_id = $admin->getPage();
+            $cat_name = null;
+            $cat_path = null;
+            if($cat_id > 0)
+            {
+                $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_category WHERE category_id = ?");
+                $stmt->bindParam(1, $cat_id, PDO::PARAM_INT);
+                $stmt->execute();
+                if($res = $stmt->fetch())
+                {
+                    $cat_name = $res['name'];
+                    $cat_path = $res['path'];
+                }
+                $stmt = null;
+                if($cat_path != null)
+                {
+                    $notify = null;
+                    if($system->post('deletecategory'))
+                    {
+                        $move_to_cat = $system->post('move_to_category');
+                        if(!$system->isInt($move_to_cat) || $move_to_cat < 1)
+                        {
+                            $notify .= $template->stringNotify('error', $language->get('admin_component_news_category_delete_nocat'));
+                        }
+                        $like_path = $cat_path."%";
+                        $stmt = $database->con()->prepare("SELECT category_id FROM {$constant->db['prefix']}_com_news_category WHERE path like ?");
+                        $stmt->bindParam(1, $like_path, PDO::PARAM_STR);
+                        $stmt->execute();
+                        $cat_to_remove_array = array();
+                        while($result = $stmt->fetch())
+                        {
+                            $cat_to_remove_array[] = $result['category_id'];
+                        }
+                        $stmt = null;
+                        $cat_remove_list = $system->altimplode(',', $cat_to_remove_array);
+                        $stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_com_news_entery SET category = ? WHERE category in({$cat_remove_list})");
+                        $stmt->bindParam(1, $move_to_cat, PDO::PARAM_INT);
+                        $stmt->execute();
+                        $stmt = null;
+                        $stmt = $database->con()->prepare("DELETE FROM {$constant->db['prefix']}_com_news_category WHERE category_id in ({$cat_remove_list})");
+                        $stmt->execute();
+                        $stmt = null;
+                        $system->redirect($_SERVER['PHP_SELF']."?object=components&id=".$admin->getID()."&action=category");
+                    }
+                    $work_body = $template->assign(array('category_name', 'category_list'), array($cat_name, $this->buildCategoryOptionList()), $theme_delete);
+                }
+                else
+                {
+                    $work_body = $template->stringNotify('error', $language->get('admin_component_news_category_delete_unposible'));
+                }
+            }
+        }
 		elseif($admin->getAction() == "settings")
 		{
 			$action_page_title .= $language->get('admin_component_news_settings');

@@ -61,10 +61,13 @@ class system
 		return $data;
 	}
 
-	/**
-	 * Boolean функция, отвечающая true если $what обнаружено в $where
-	 */
-	public function contains($what, $where)
+    /**
+     * Функция поиска вхождений в $where по ключу $what
+     * @param $what
+     * @param $where
+     * @return bool
+     */
+    public function contains($what, $where)
 	{
 		$answer = false;
 		if(strpos($where, $what)!==false)
