@@ -181,14 +181,59 @@ class com_news_back
 		{
 			$action_page_title .= $language->get('admin_component_news_category');
 			$theme_head = $template->tplget('news_category_head', 'components/', true);
-			$category_selected = $admin->getPage();
-			// еще не была выбрана категория родитель
-			if($category_selected < 1)
-			{
-				
-			}
-			$work_body = $theme_head;
+			$work_body = $template->assign('news_category_list', $this->categoryListLi(), $theme_head);
 		}
+        elseif($admin->getAction() == "addcategory")
+        {
+            $notify = null;
+            if($system->post('submit'))
+            {
+                $cat_id = $system->post('category_owner');
+                $cat_name = $system->post('category_name');
+                $cat_path = $system->post('category_path');
+                if(!$system->isInt($cat_id) || $cat_id < 1)
+                {
+                    $notify .= $template->stringNotify('error', $language->get('admin_component_news_category_notify_noselectcat'));
+                }
+                if(strlen($cat_name) < 1)
+                {
+                    $notify .= $template->stringNotify('error', $language->get('admin_component_news_category_notify_noname'));
+                }
+                if(!$this->check_catway($cat_path, $cat_id))
+                {
+                    $notify .= $template->stringNotify('error', $language->get('admin_component_news_category_notify_pathwrong'));
+                }
+                if($notify == null)
+                {
+                    $stmt = $database->con()->prepare("SELECT path FROM {$constant->db['prefix']}_com_news_category WHERE category_id  = ?");
+                    $stmt->bindParam(1, $cat_id, PDO::PARAM_INT);
+                    $stmt->execute();
+                    if($res = $stmt->fetch())
+                    {
+                        $new_category_path = null;
+                        if($res['path'] == null)
+                        {
+                            $new_category_path = $cat_path;
+                        }
+                        else
+                        {
+                            $new_category_path = $res['path']."/".$cat_path;
+                        }
+                        $stmt = null;
+                        $stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_com_news_category (`name`, `path`) VALUES (?, ?)");
+                        $stmt->bindParam(1, $cat_name, PDO::PARAM_STR);
+                        $stmt->bindParam(2, $new_category_path, PDO::PARAM_STR);
+                        $stmt->execute();
+                        $system->redirect($_SERVER['PHP_SELF']."?object=components&id=".$admin->getID()."&action=category");
+                        return;
+                    }
+                }
+            }
+            $selected_category = $admin->getPage() == 0 ? null : $admin->getPage();
+            $action_page_title .= $language->get('admin_component_news_category');
+            $theme_add = $template->tplget('news_category_add', 'components/', true);
+            $work_body = $template->assign(array('news_category_select', 'notify_message'), array($this->buildCategoryOptionList(0, $selected_category), $notify), $theme_add);
+        }
 		elseif($admin->getAction() == "settings")
 		{
 			$action_page_title .= $language->get('admin_component_news_settings');
@@ -204,7 +249,7 @@ class com_news_back
 			
 			$config_form = $template->tplget('config_form', null, true);
 			
-			$config_set .= $language->get('admin_component_news_description');
+			$config_set = $language->get('admin_component_news_description');
 			$config_set .= $admin->tplSettingsDirectory($language->get('admin_component_news_settings_mainblock'));
 			$config_set .= $admin->tplSettingsSelectYorN('config:delay_news_public', $language->get('admin_component_news_config_newsdelay_title'), $language->get('admin_component_news_config_newsdelay_desc'), $admin->getConfig('delay_news_public', 'boolean'));
 			$config_set .= $admin->tplSettingsInputText('config:count_news_page', $admin->getConfig('count_news_page', 'int'), $language->get('admin_component_news_config_newscount_page_title'), $language->get('admin_component_news_config_newscount_page_desc'));
@@ -234,7 +279,7 @@ class com_news_back
 		return false;
 	}
 	
-	private function buildCategoryOptionList($news_id = 0)
+	private function buildCategoryOptionList($news_id = 0, $active_category = null)
 	{
 		global $database,$constant,$system,$template;
 		$theme_option_active = $template->tplget('form_option_item_active', null, true);
@@ -275,24 +320,38 @@ class com_news_back
 			}
 			$current_id = $result_id[$path];
 			$current_name = $result_name[$path];
-			if($current_id == $news_category_id)
-			{
-				$result_string .= $template->assign(array('option_value', 'option_name'), array($current_id, $add." ".$current_name), $theme_option_active);
-			}
-			else
-			{
-				$result_string .= $template->assign(array('option_value', 'option_name'), array($current_id, $add." ".$current_name), $theme_option_inactive);
-			}
+            if($active_category == null)
+            {
+                if($current_id == $news_category_id)
+                {
+                    $result_string .= $template->assign(array('option_value', 'option_name'), array($current_id, $add." ".$current_name), $theme_option_active);
+                }
+                else
+                {
+                    $result_string .= $template->assign(array('option_value', 'option_name'), array($current_id, $add." ".$current_name), $theme_option_inactive);
+                }
+            }
+            else
+            {
+                if($active_category == $current_id)
+                {
+                    $result_string .= $template->assign(array('option_value', 'option_name'), array($current_id, $add." ".$current_name), $theme_option_active);
+                }
+                else
+                {
+                    $result_string .= $template->assign(array('option_value', 'option_name'), array($current_id, $add." ".$current_name), $theme_option_inactive);
+                }
+            }
 		}
 		$stmt = null;
 		return $result_string;
 	}
 	
-	private function categoryListLi($news_id = 0)
+	private function categoryListLi()
 	{
-		global $database,$constant,$system,$template;
-		$theme_option_active = $template->tplget('form_option_item_active', null, true);
-		$theme_option_inactive = $template->tplget('form_option_item_inactive', null, true);
+		global $database,$constant,$template,$admin;
+		$theme_item = $template->tplget('news_category_item', 'components/', true);
+        $theme_cursor = $template->tplget('news_category_item_cursor', 'components/', true);
 		$stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_category ORDER BY `path` ASC");
 		$stmt->execute();
 		$result_array = array();
@@ -306,12 +365,6 @@ class com_news_back
 			$result_name[$result['path']] = $result['name'];
 		}
 		sort($result_array);
-		$cstmt = $database->con()->prepare("SELECT category FROM {$constant->db['prefix']}_com_news_entery WHERE id = ?");
-		$cstmt->bindParam(1, $news_id, PDO::PARAM_INT);
-		$cstmt->execute();
-		$cRes = $cstmt->fetch();
-		$news_category_id = $cRes['category'];
-		$cstmt = null;
 		foreach($result_array as $path)
 		{
 			$spliter_count = substr_count($path, "/");
@@ -320,26 +373,20 @@ class com_news_back
 			{
 				for($i=-1;$i<=$spliter_count;$i++)
 				{
-				$add .= "-";
+					$add .= $theme_cursor;
 				}
-				}
-				else
-				{
-				$add = "-";
-				}
-				$current_id = $result_id[$path];
-				$current_name = $result_name[$path];
-				if($current_id == $news_category_id)
-				{
-				$result_string .= $template->assign(array('option_value', 'option_name'), array($current_id, $add." ".$current_name), $theme_option_active);
-				}
-				else
-				{
-				$result_string .= $template->assign(array('option_value', 'option_name'), array($current_id, $add." ".$current_name), $theme_option_inactive);
-				}
-				}
-				$stmt = null;
-				return $result_string;
+			}
+			else
+			{
+				$add = $theme_cursor;
+			}
+            $add_link = "?object=components&id=".$admin->getID()."&action=addcategory&page=".$result_id[$path];
+            $delete_link = "?object=components&id=".$admin->getID()."&action=delcategory&page=".$result_id[$path];
+			$current_name = $result_name[$path];
+			$result_string .= $template->assign(array('news_category_path', 'news_category_name', 'news_category_add', 'news_category_delete', 'news_category_cursors'), array($path, $current_name, $add_link, $delete_link, $add), $theme_item);
+		}
+		$stmt = null;
+		return $result_string;
 	}
 	
 	private function check_pageway($way, $id = 0, $cat_id)
@@ -357,6 +404,31 @@ class com_news_back
 		$pRes = $stmt->fetch();
 		return $pRes[0] == 0 ? true : false;
 	}
+
+    private function check_catway($way, $cat_id)
+    {
+        global $database,$constant;
+        if(preg_match('/[\'~`\!@#\$%\^&\*\(\)+=\{\}\[\]\|;:"\<\>,\?\\\]/', $way))
+        {
+            return false;
+        }
+        $stmt = $database->con()->prepare("SELECT path FROM {$constant->db['prefix']}_com_news_category WHERE category_id  = ?");
+        $stmt->bindParam(1, $cat_id, PDO::PARAM_INT);
+        $stmt->execute();
+        if($dx = $stmt->fetch())
+        {
+            $mother_path = $dx['path'];
+            $new_path_query = $dx['path'] == null ? $way."%" : $mother_path."/".$way."%";
+            $stmt_check = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_com_news_category WHERE path like ?");
+            $stmt_check->bindParam(1, $new_path_query, PDO::PARAM_STR);
+            $stmt_check->execute();
+            if($res = $stmt_check->fetch())
+            {
+                return $res[0] == 0 ? true : false;
+            }
+        }
+        return false;
+    }
 }
 
 ?>
