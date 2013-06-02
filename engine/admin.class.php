@@ -732,6 +732,29 @@ class admin
 		return $this->object_name;
 	}
 
+    /**
+     * Метод для переключения состояния расширений - модулей, хуков и компонентов
+     */
+    public function turn()
+    {
+        global $database,$constant,$system;
+        $new_state = 0;
+        $modId = $this->getID();
+        $table_name = $constant->db['prefix']."_".$this->object;
+        $stmt = $database->con()->prepare("SELECT enabled FROM {$table_name} WHERE id = ?");
+        $stmt->bindParam(1, $modId, PDO::PARAM_INT);
+        $stmt->execute();
+        $res = $stmt->fetch();
+        $res['enabled'] == 0 ? $new_state = 1 : $new_state = 0;
+        $stmt = null;
+        $stmt = $database->con()->prepare("UPDATE {$table_name} SET enabled = ? WHERE id = ?");
+        $stmt->bindParam(1, $new_state, PDO::PARAM_INT);
+        $stmt->bindParam(2, $modId, PDO::PARAM_INT);
+        $stmt->execute();
+        $system->redirect($_SERVER['PHP_SELF']."?object=".$this->object);
+        return;
+    }
+
 }
 
 ?>

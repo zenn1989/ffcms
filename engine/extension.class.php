@@ -253,6 +253,11 @@ interface hook_front
 	public function load();
 }
 
+interface backend
+{
+    public function load();
+}
+
 
 
 ?>

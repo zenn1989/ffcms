@@ -9,6 +9,7 @@ class com_news_back
 		$action_page_title = $admin->getExtName()." : ";
 		$work_body = null;
 		$menu_theme = $template->tplget('config_menu', null, true);
+        $menu_link = null;
 		$menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id='.$admin->getID().'&action=list', $language->get('admin_component_news_manage')), $menu_theme);
 		$menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id='.$admin->getID().'&action=add', $language->get('admin_component_news_add')), $menu_theme);
 		$menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id='.$admin->getID().'&action=category', $language->get('admin_component_news_category')), $menu_theme);

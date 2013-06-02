@@ -2,7 +2,8 @@
 
 class mod_news_on_main_front implements mod_front
 {
-    public function before() {
+    public function before()
+    {
         global $page,$database,$constant,$extension,$template,$system,$user;
         $short_theme = $template->tplget('view_short_news', 'components/news/');
         $time = time();
