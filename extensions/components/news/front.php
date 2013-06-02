@@ -166,7 +166,11 @@ class com_news_front implements com_front
 				while($result = $stmt->fetch())
 				{
 					$news_short_text = $result['text'];
-					if($system->length($news_short_text) > $max_preview_length)
+                    if($system->contains('<!-- pagebreak -->', $news_short_text))
+                    {
+                        $news_short_text = strstr($news_short_text, '<!-- pagebreak -->', true);
+                    }
+					elseif($system->length($news_short_text) > $max_preview_length)
 					{
 						$news_short_text = $system->sentenceSub($news_short_text, $max_preview_length)."...";
 					}
@@ -189,7 +193,8 @@ class com_news_front implements com_front
 		if($content != null)
 		{
 			$category_theme = $template->tplget('view_category', 'components/news/');
-			$content = $template->assign(array('news_body', 'pagination'), array($content, $template->drowNumericPagination($page_index, $page_news_count, $total_news_count, "news/".$cat_link."/")), $category_theme);
+            $page_link = $cat_link == null ? "news/" : "news/".$cat_link."/";
+			$content = $template->assign(array('news_body', 'pagination'), array($content, $template->drowNumericPagination($page_index, $page_news_count, $total_news_count, $page_link)), $category_theme);
 		}
 		return $content;
 	}

@@ -73,6 +73,25 @@ class admin
 		if($this->hook_exists())
 		{
 			// хук существует, обращаемся к настройке
+            $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_hooks WHERE id = ?");
+            $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetch();
+            $component_back = $constant->root.'/extensions/hooks/'.$result['dir'].'/back.php';
+            $backend_config = null;
+            if(file_exists($component_back))
+            {
+                $this->object_name = $result['name'];
+                require_once($component_back);
+                $class = "hook_{$result['dir']}_back";
+                $init = new $class;
+                $backend_config = $init->load();
+            }
+            if($backend_config == null || strlen($backend_config) < 1)
+            {
+                $backend_config = $this->showNull();
+            }
+            return $backend_config;
 		}
 		else
 		{
@@ -156,6 +175,25 @@ class admin
 		if($this->module_exits())
 		{
 			// модуль существует, выгружаем backend
+            $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_modules WHERE id = ?");
+            $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetch();
+            $component_back = $constant->root.'/extensions/modules/'.$result['dir'].'/back.php';
+            $backend_config = null;
+            if(file_exists($component_back))
+            {
+                $this->object_name = $result['name'];
+                require_once($component_back);
+                $class = "mod_{$result['dir']}_back";
+                $init = new $class;
+                $backend_config = $init->load();
+            }
+            if($backend_config == null || strlen($backend_config) < 1)
+            {
+                $backend_config = $this->showNull();
+            }
+            return $backend_config;
 		}
 		else
 		{

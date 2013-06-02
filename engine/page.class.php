@@ -58,8 +58,6 @@ class page
 			{
 				$meta->set('title', $constant->seo_meta['title']);
 				$this->isMainPage = true;
-				// на сейчас нет конструктора модулей, поэтому главная увы пустая с таким вот приветствием
-				$this->content_body[] = "This is main page example";
 			}
 			// Нет? Не главная? Скомпилим 404
 			else
@@ -71,10 +69,11 @@ class page
 		$template->init();
 	}
 
-	/**
-	 * Boolean функция, отвечающая за то является ли данная страница главной
-	 */
-	public function isMain()
+    /**
+     * Является ли текущая страница главной?
+     * @return bool
+     */
+    public function isMain()
 	{
 		return $this->isMainPage;
 	}
@@ -97,6 +96,11 @@ class page
 			}
 			else
 			{
+                // это главная страница?
+                if($rule_split[$i] == "index" && $this->isMain())
+                {
+                    return true;
+                }
 				// если уровень правила и пачвея совпали
 				if($rule_split[$i] == $this->pathway[$i])
 				{
