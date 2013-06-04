@@ -20,6 +20,7 @@ class page
 	private $notifyModuleAfter = array();
 
 	private $isMainPage = false;
+    private $isNullPage = false;
 
 	function __construct()
 	{
@@ -62,6 +63,8 @@ class page
 			// Нет? Не главная? Скомпилим 404
 			else
 			{
+                $this->isNullPage = true;
+                $cache->setNoExist(true);
 				$this->content_body[] = $template->compile404();
 			}
 		}
@@ -207,6 +210,41 @@ class page
 			$this->{$var}[$index] = $content;
 		}
 	}
+
+    /**
+     * Функция возвращающая true в случае если текущая страница является системной
+     * @return bool
+     */
+    public function isNullPage()
+    {
+        return $this->isNullPage;
+    }
+
+    /**
+     * Создание HASH-набора символов из текущего pathway. Учитывает вхождение до первого окончания .html без учета pathway[0]
+     * Пример: /news/someother/some_interest_words_1.html/1#com-32
+     * обработается как md5('/someother/some_interest_words_1.html');
+     * Рекомендовано использование для сквозных модулей, которым необходима уникальная строка для каждой страницы
+     * @return string
+     */
+    public function hashFromPathway()
+    {
+        global $system;
+        $string = null;
+        for($i=1;$i<=sizeof($this->pathway);$i++)
+        {
+            if($system->extensionEquals($this->pathway[$i], '.html'))
+            {
+                $string .= $this->pathway[$i];
+                continue;
+            }
+            elseif($this->pathway[$i] != null)
+            {
+                $string .= $this->pathway[$i]."/";
+            }
+        }
+        return $string != null ? md5($string) : null;
+    }
 }
 
 

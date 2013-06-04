@@ -248,3 +248,7 @@ admin_modules_staticonmain_settings_desctext<=>Выберите статичес
 admin_modules_staticonmain_settings_page_label<=>Страница для главной
 admin_modules_staticonmain_settings_page_desc<=>Страница для вывода на главной
 admin_modules_staticonmain_settings_button_save<=>Сохранить
+admin_modules_comment_settings_title<=>Настройки
+admin_modules_comment_manage_title<=>Управление
+admin_modules_comment_config_count_title<=>Количество комментариев
+admin_modules_comment_config_count_desc<=>Количество комментариев загружаемых за 1 раз на страницах

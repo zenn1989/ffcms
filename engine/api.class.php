@@ -1,31 +1,37 @@
 <?php
 class api
 {
-	public $separator = "/";
-	
 	public function load()
 	{
-		global $system,$file;
+		global $system,$file,$language;
+        $apiresult = null;
 		switch($system->get('action'))
 		{
 			case "readwall":
-				return $this->loadUserWall();
+				$apiresult = $this->loadUserWall();
 				break;
 			case "postwall":
-				return $this->doPostWall();
+                $apiresult = $this->doPostWall();
 				break;
 			case "elfinder":
 				$file->elfinder();
 				break;
 			case "redirect":
-				return $this->userLeaveRedirect();
+                $apiresult = $this->userLeaveRedirect();
 				break;
 			case "js":
-				return $this->showRequestJs();
+                $apiresult = $this->showRequestJs();
 				break;
+            case "postcomment":
+                $apiresult = $this->postComment();
+                break;
+            case "viewcomment":
+                $apiresult = $this->viewComment();
+                break;
 			default:
 				break;
 		}
+        return $language->set($apiresult);
 	}
 	
 	private function showRequestJs()
@@ -39,6 +45,80 @@ class api
 			return $template->tplget($file, $dir.$constant->ds);
 		}
 	}
+
+    private function postComment()
+    {
+        global $system,$constant,$database,$user;
+        $text = $system->nohtml($system->post('comment_message'));
+        $object = $system->post('object');
+        $id = $system->post('id');
+        $hash = $system->post('hash');
+        if($text != null && $object != null && $id != null && $system->isInt($id) && $hash != null && strlen($hash) == 32)
+        {
+            if($user->get('id') > 0 && $user->get('content_post') > 0)
+            {
+                $time = time();
+                $userid = $user->get('id');
+                $stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_mod_comments (target_hash, object_name, object_id, comment, author, time)
+                VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt->bindParam(1, $hash, PDO::PARAM_STR, 32);
+                $stmt->bindParam(2, $object, PDO::PARAM_STR);
+                $stmt->bindParam(3, $id, PDO::PARAM_STR);
+                $stmt->bindParam(4, $text, PDO::PARAM_STR);
+                $stmt->bindParam(5, $userid, PDO::PARAM_INT);
+                $stmt->bindParam(6, $time, PDO::PARAM_INT);
+                $stmt->execute();
+            }
+            return $this->viewComment();
+        }
+        return;
+    }
+
+    public function viewComment()
+    {
+        global $system,$database,$constant,$user,$template,$extension;
+        $object = $system->post('object');
+        $id = $system->post('id');
+        $hash = $system->post('hash');
+        $position = $system->post('comment_position');
+        if($object != null && $id != null && $system->isInt($id) && $hash != null && strlen($hash) == 32 && $system->isInt($position))
+        {
+            $config_on_page = $extension->getConfig('comments_count', 'comments', 'modules', 'int');
+            $end_point = $position == 0 ? $config_on_page : $position * $config_on_page + $config_on_page;
+            $theme_list = $template->tplget('comment_list', 'modules/mod_comments/');
+            $content = null;
+            $stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_mod_comments WHERE target_hash = ? AND object_name = ? AND object_id = ?");
+            $stmt->bindParam(1, $hash, PDO::PARAM_STR, 32);
+            $stmt->bindParam(2, $object, PDO::PARAM_STR);
+            $stmt->bindParam(3, $id, PDO::PARAM_STR);
+            $stmt->execute();
+            $rowRes = $stmt->fetch();
+            $commentCount = $rowRes[0];
+            $stmt = null;
+            $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_mod_comments WHERE target_hash = ? AND object_name = ? AND object_id = ? ORDER BY id DESC LIMIT 0,?");
+            $stmt->bindParam(1, $hash, PDO::PARAM_STR, 32);
+            $stmt->bindParam(2, $object, PDO::PARAM_STR);
+            $stmt->bindParam(3, $id, PDO::PARAM_INT);
+            $stmt->bindParam(4, $end_point, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt = null;
+            $user->listload($system->extractFromMultyArray('author', $result));
+            foreach($result as $item)
+            {
+                $poster_id = $item['author'];
+                $content .= $template->assign(array('poster_id', 'poster_nick', 'poster_avatar', 'comment_text', 'comment_date'),
+                    array($poster_id, $user->get('nick', $poster_id), $user->buildAvatar('small', $poster_id), $item['comment'], $system->toDate($item['time'], 'h')),
+                    $theme_list);
+            }
+            if($end_point > $commentCount)
+            {
+                $content .= '<script>$(\'#loader_comment\').remove();</script>';
+            }
+            return $content;
+        }
+        return;
+    }
 	
 	private function userLeaveRedirect()
 	{

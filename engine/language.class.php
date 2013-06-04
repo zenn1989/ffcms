@@ -12,7 +12,7 @@ class language
 		global $constant;
 		if(loader == "back")
 		{
-			$file = $file = $constant->root.'/language/back_'.$constant->lang.'.lang';
+			$file = $constant->root.'/language/back_'.$constant->lang.'.lang';
 		}
 		else
 		{
@@ -36,7 +36,6 @@ class language
 	}
 	public function set($data)
 	{
-		global $constant;
 		foreach($this->lang as $tag=>$value)
 		{
 			$data = str_replace('{$lang::'.$tag.'}', $value, $data);

@@ -472,5 +472,14 @@ class template
 		}
 		return $this->assign('li_items', $compiled_items, $theme_head);
 	}
+
+    /**
+     * Возвращает количество вхождений тега $tag в глобальном шаблоне $content.
+     * @param $tag
+     */
+    public function tagRepeatCount($tag)
+    {
+        return substr_count($this->content, '{$'.$tag.'}');
+    }
 }
 ?>

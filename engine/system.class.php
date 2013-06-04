@@ -85,6 +85,17 @@ class system
 		return $pharse_suffix == $suffix ? true : false;
 	}
 
+    /**
+     * Функция обвертка для suffixEquals
+     * @param $where
+     * @param $extension
+     * @return bool
+     */
+    public function extensionEquals($where, $extension)
+    {
+        return $this->suffixEquals($where, $extension);
+    }
+
 	/**
 	 * Удаляет расширение у $var (indexxxx.html => index, vasya.exe => vasya)
 	 * Не спасет от идиотизма вида index.html.html.ht.html.ml но нам это и не нужно.
@@ -508,7 +519,7 @@ class system
 	public function validIP($ip)
 	{
 		return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
-	}
+    }
 
 }
 
