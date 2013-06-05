@@ -1,4 +1,11 @@
-	$(document).ready(function() {
+    function replayto(username)
+    {
+        $(document).ready(function() {
+            var comment_value = $('#comment_value').val();
+            $('#comment_value').val('[b]'+username + '[/b], ' + comment_value);
+        });
+    }
+    $(document).ready(function() {
 		$('#doLoadComment').click(function(e) {
             current_point++;
             $.post('{$url}/api.php?action=viewcomment',
@@ -20,9 +27,4 @@
 				$('#comment_value').val(null);
 			}
 		});
-        $('.comment_touser').click(function(e) {
-            var touser = e.target.title;
-            var comment_text = $('#comment_value').val();
-            $('#comment_value').val(touser + ', ' + comment_text);
-        });
 	});

@@ -15,10 +15,25 @@ class hook_bbtohtml_front implements hook_front
         return $this;
     }
 
-    public function bbcode2html($bbcode)
+    /**
+     * Преобразование bbcode в html
+     * @param $bbtext
+     * @return mixed
+     */
+    public function bbcode2html($bbtext)
     {
-        $this->parser->parse($bbcode);
+        $this->parser->parse($bbtext);
         return $this->parser->get_html();
+    }
+
+    /**
+     * Убрать все bbcode из $bbtext
+     * @param $bbtext
+     * @return mixed
+     */
+    public function nobbcode($bbtext)
+    {
+        return preg_replace('/\[.*?\]/s', '', $bbtext);
     }
 }
 

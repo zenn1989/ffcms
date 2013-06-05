@@ -11,7 +11,7 @@
         <tr>
             <td></td>
             <td><div class="pull-right">
-                    <a href="#" class="comment_touser" title="{$poster_nick}"><i class="icon-random"></i> {$lang::comments_text_answerto}</a>
+                    <a onclick="replayto('{$poster_nick}')" href="#"><i class="icon-random"></i> {$lang::comments_text_answerto}</a>
                 </div>
             </td>
         </tr>

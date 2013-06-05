@@ -83,6 +83,7 @@ $tags = array(
     'ul'           => 'Xbb_Tags_List'   ,
     'url'          => 'Xbb_Tags_A'      ,
     'var'          => 'Xbb_Tags_Simple' ,
+	'offtop'       => 'Xbb_Tags_Offtop'  ,
 
     // Теги для вывода кода и подсветки синтаксисов (с помощью GeSHi)
     'actionscript' => 'Xbb_Tags_Code'   ,
