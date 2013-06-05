@@ -1101,6 +1101,7 @@ class com_usercontrol_front
 		}
 		if($system->post('submit'))
 		{
+            $notify = null;
 			$nickname = $system->nohtml($system->post('nick'));
 			$email = $system->post('email');
 			$login = $system->post('login');
@@ -1161,7 +1162,7 @@ class com_usercontrol_front
 				}
 				else
 				{
-					$notify = $notify .= $template->stringNotify('success', $language->get('usercontrol_register_success_noaprove'));
+					$notify .= $template->stringNotify('success', $language->get('usercontrol_register_success_noaprove'));
 				}
 			}
 		}

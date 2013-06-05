@@ -76,7 +76,7 @@ class api
 
     public function viewComment()
     {
-        global $system,$database,$constant,$user,$template,$extension;
+        global $system,$database,$constant,$user,$template,$extension,$hook;
         $object = $system->post('object');
         $id = $system->post('id');
         $hash = $system->post('hash');
@@ -108,7 +108,7 @@ class api
             {
                 $poster_id = $item['author'];
                 $content .= $template->assign(array('poster_id', 'poster_nick', 'poster_avatar', 'comment_text', 'comment_date'),
-                    array($poster_id, $user->get('nick', $poster_id), $user->buildAvatar('small', $poster_id), $item['comment'], $system->toDate($item['time'], 'h')),
+                    array($poster_id, $user->get('nick', $poster_id), $user->buildAvatar('small', $poster_id), $hook->get('bbtohtml')->bbcode2html($item['comment']), $system->toDate($item['time'], 'h')),
                     $theme_list);
             }
             if($end_point > $commentCount)

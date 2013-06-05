@@ -8,6 +8,7 @@
             });
         });
 		$('#comment_send').click(function(e){
+            $('#comment_value').sync();
 			var comment_text = $('#comment_value').val();
 			if(comment_text.length > 0)
 			{

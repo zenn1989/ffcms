@@ -17,7 +17,7 @@ class mod_comments_front implements mod_front
 
     private function buildComments()
     {
-        global $template,$database,$constant,$page,$user,$system,$extension;
+        global $template,$database,$constant,$page,$user,$system,$extension,$hook;
         $theme_list = $template->tplget('comment_list', 'modules/mod_comments/');
         $comment_count = $extension->getConfig('comments_count', 'comments', 'modules', 'int');
         $content = null;
@@ -35,7 +35,7 @@ class mod_comments_front implements mod_front
         {
             $poster_id = $item['author'];
             $content .= $template->assign(array('poster_id', 'poster_nick', 'poster_avatar', 'comment_text', 'comment_date'),
-                array($poster_id, $user->get('nick', $poster_id), $user->buildAvatar('small', $poster_id), $item['comment'], $system->toDate($item['time'], 'h')),
+                array($poster_id, $user->get('nick', $poster_id), $user->buildAvatar('small', $poster_id), $hook->get('bbtohtml')->bbcode2html($item['comment']), $system->toDate($item['time'], 'h')),
                 $theme_list);
         }
         $stmt = null;
