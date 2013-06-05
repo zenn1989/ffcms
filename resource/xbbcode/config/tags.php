@@ -84,6 +84,7 @@ $tags = array(
     'url'          => 'Xbb_Tags_A'      ,
     'var'          => 'Xbb_Tags_Simple' ,
 	'offtop'       => 'Xbb_Tags_Offtop'  ,
+	'youtube'      => 'Xbb_Tags_Youtube'  ,
 
     // Теги для вывода кода и подсветки синтаксисов (с помощью GeSHi)
     'actionscript' => 'Xbb_Tags_Code'   ,
