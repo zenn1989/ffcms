@@ -2,7 +2,7 @@
     <table class="table">
         <tr>
             <td></td>
-            <td>{$lang::comments_text_messagefrom}: <a href="http://ffcms/user/id{$poster_id}"><b>{$poster_nick}</b></a> {$lang::comments_text_messageon} {$comment_date}</td>
+            <td>{$lang::comments_text_messagefrom}: <a href="{$url}/user/id{$poster_id}"><b>{$poster_nick}</b></a> {$lang::comments_text_messageon} {$comment_date}</td>
         </tr>
         <tr>
             <td width="65px"><img src="{$url}/upload/user/avatar/small/{$poster_avatar}" style="max-width: 60px;" /></td>
@@ -11,7 +11,9 @@
         <tr>
             <td></td>
             <td><div class="pull-right">
+                    {$if user.auth}
                     <a onclick="replayto('{$poster_nick}')" href="#"><i class="icon-random"></i> {$lang::comments_text_answerto}</a>
+                    {$/if}
                 </div>
             </td>
         </tr>

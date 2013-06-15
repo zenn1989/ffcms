@@ -3,7 +3,7 @@ class api
 {
 	public function load()
 	{
-		global $system,$file,$language;
+		global $system,$file,$language,$template;
         $apiresult = null;
 		switch($system->get('action'))
 		{
@@ -31,6 +31,7 @@ class api
 			default:
 				break;
 		}
+        $apiresult = $template->ruleCheck($apiresult);
         return $language->set($apiresult);
 	}
 	

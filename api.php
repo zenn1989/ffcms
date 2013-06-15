@@ -21,6 +21,7 @@ require_once(root."/engine/api.class.php");
 require_once(root."/engine/file.class.php");
 require_once(root."/engine/user.class.php");
 require_once(root."/engine/hook.class.php");
+require_once(root."/engine/rule.class.php");
 
 $constant = new constant;
 $system = new system;
@@ -33,6 +34,7 @@ $file = new file;
 $page = new page;
 $extension = new extension;
 $hook = new hook;
+$rule = new rule;
 
 $api = new api;
 echo $api->load();

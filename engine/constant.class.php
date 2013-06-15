@@ -7,6 +7,7 @@
 class constant
 {
 	public $ds = DIRECTORY_SEPARATOR;
+    public $slash = "/";
 	public $root = null;
 	public $tpl_dir = null;
 	public $tpl_name = null;

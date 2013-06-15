@@ -5,8 +5,6 @@
  */
 class template
 {
-	private $separator = "/";
-
 	private $header = array();
 	private $left = array();
 	private $body = array();
@@ -190,22 +188,36 @@ class template
 	/**
 	 * Функция для обработки условий {$if условие}содержимое{/$if} в шаблонах
 	 */
-	private function ruleCheck()
+	public function ruleCheck($content = null)
 	{
 		global $rule;
-		preg_match_all('/{\$if (.+?)}(.*?){\$\/if}/s', $this->content, $matches);
-		// $matches[0][$i] - все
-		// $matches[1][$i] - условие
-		// $matches[2][$i] - содержимое
-		for($i=0;$i<sizeof($matches[1]);$i++)
-		{
-			$theme_result = null;
-			if($rule->getInstance()->check($matches[1][$i]))
-			{
-				$theme_result = $matches[2][$i];
-			}
-			$this->content = str_replace($matches[0][$i], $theme_result, $this->content);
-		}
+        if($content == null)
+        {
+            preg_match_all('/{\$if (.+?)}(.*?){\$\/if}/s', $this->content, $matches);
+            for($i=0;$i<sizeof($matches[1]);$i++)
+            {
+                $theme_result = null;
+                if($rule->getInstance()->check($matches[1][$i]))
+                {
+                    $theme_result = $matches[2][$i];
+                }
+                $this->content = str_replace($matches[0][$i], $theme_result, $this->content);
+            }
+        }
+        else
+        {
+            preg_match_all('/{\$if (.+?)}(.*?){\$\/if}/s', $content, $matches);
+            for($i=0;$i<sizeof($matches[1]);$i++)
+            {
+                $theme_result = null;
+                if($rule->getInstance()->check($matches[1][$i]))
+                {
+                    $theme_result = $matches[2][$i];
+                }
+                $content = str_replace($matches[0][$i], $theme_result, $content);
+            }
+            return $content;
+        }
 	}
 	
 	private function htmlhead()
@@ -262,11 +274,11 @@ class template
 		global $constant,$user;
 		if($isadmin)
 		{
-			$template_path = $constant->tpl_dir.$this->separator.$constant->admin_tpl;
+			$template_path = $constant->tpl_dir.$constant->slash.$constant->admin_tpl;
 		}
 		else
 		{
-			$template_path = $constant->tpl_dir.$this->separator.$constant->tpl_name;
+			$template_path = $constant->tpl_dir.$constant->slash.$constant->tpl_name;
 		}
 		return str_replace(array('{$url}', '{$tpl_dir}', '{$user_id}', '{$user_nick}'),
 				array($constant->url, $template_path, $user->get('id'), $user->get('nick')),
@@ -285,11 +297,11 @@ class template
 		global $constant;
 		if($isadmin)
 		{
-			$file = $constant->root.$this->separator.$constant->tpl_dir.$this->separator.$constant->admin_tpl.$this->separator.$customdirectory.$tplname.".tpl";
+			$file = $constant->root.$constant->ds.$constant->tpl_dir.$constant->ds.$constant->admin_tpl.$constant->ds.$customdirectory.$tplname.".tpl";
 		}
 		else
 		{
-			$file = $constant->root.$this->separator.$constant->tpl_dir.$this->separator.$constant->tpl_name.$this->separator.$customdirectory.$tplname.".tpl";
+			$file = $constant->root.$constant->ds.$constant->tpl_dir.$constant->ds.$constant->tpl_name.$constant->ds.$customdirectory.$tplname.".tpl";
 		}
 		if(file_exists($file))
 		{
