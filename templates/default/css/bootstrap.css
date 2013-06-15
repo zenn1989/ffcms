@@ -2372,6 +2372,16 @@ button.btn.btn-mini, input[type="submit"].btn.btn-mini {
   -moz-background-clip:padding-box;
   background-clip:padding-box;
 }
+.modal.large
+{
+    width: 70% !important;
+    position: fixed;
+    top: 5%;
+    left: 15%;
+    z-index:1050;
+    overflow:auto;
+    margin:-250px 0 0 0px;
+}
 .modal.fade {
   top:-25%;
   -webkit-transition:opacity .3s linear, top .3s ease-out;

@@ -34,8 +34,8 @@ class mod_comments_front implements mod_front
         foreach($result as $item)
         {
             $poster_id = $item['author'];
-            $content .= $template->assign(array('poster_id', 'poster_nick', 'poster_avatar', 'comment_text', 'comment_date'),
-                array($poster_id, $user->get('nick', $poster_id), $user->buildAvatar('small', $poster_id), $hook->get('bbtohtml')->bbcode2html($item['comment']), $system->toDate($item['time'], 'h')),
+            $content .= $template->assign(array('poster_id', 'poster_nick', 'poster_avatar', 'comment_text', 'comment_date', 'comment_id'),
+                array($poster_id, $user->get('nick', $poster_id), $user->buildAvatar('small', $poster_id), $hook->get('bbtohtml')->bbcode2html($item['comment']), $system->toDate($item['time'], 'h'), $item['id']),
                 $theme_list);
         }
         $stmt = null;
@@ -44,7 +44,7 @@ class mod_comments_front implements mod_front
 
     private function buildFormAdd()
     {
-        global $template,$page;
+        global $template;
         return $template->tplget('comment_form', 'modules/mod_comments/');
     }
 }

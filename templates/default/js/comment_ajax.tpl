@@ -5,6 +5,40 @@
             $('#comment_value').val('[b]'+username + '[/b], ' + comment_value);
         });
     }
+    function editcomment(id)
+    {
+        $.get('http://ffcms/api.php?action=commenteditform&id='+id, function(data) {
+            $('#comment-edit-jquery').html(data);
+        });
+
+    }
+
+    function saveeditedcomment(id)
+    {
+        $('#edit-area-comment').sync();
+        var comment_textvalue = $('#edit-area-comment').val();
+        $.post
+        (
+            '{$url}/api.php?action=commenteditpost',
+            {comment_id : id, comment_text : comment_textvalue},
+            function(e) { location.reload(); }
+        );
+    }
+
+    function deletecomment(id)
+    {
+        if(confirm('Delete?'))
+        {
+            $.get
+            (
+                '{$url}/api.php?action=commentdelete&id='+id, function(e) {
+                location.reload();
+                }
+            );
+        }
+    }
+
+
     $(document).ready(function() {
 		$('#doLoadComment').click(function(e) {
             current_point++;

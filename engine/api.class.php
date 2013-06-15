@@ -28,6 +28,15 @@ class api
             case "viewcomment":
                 $apiresult = $this->viewComment();
                 break;
+            case "commenteditform":
+                $apiresult = $this->editComment();
+                break;
+            case "commenteditpost":
+                $this->editPostComment();
+                break;
+            case "commentdelete":
+                $this->deleteComment();
+                break;
 			default:
 				break;
 		}
@@ -47,35 +56,109 @@ class api
 		}
 	}
 
+    private function deleteComment()
+    {
+        global $user,$system,$constant,$database;
+        if($user->get('id') > 0 && $user->get('mod_comment_delete') > 0)
+        {
+            $comment_id = (int)$system->get('id');
+            $stmt = $database->con()->prepare("DELETE FROM {$constant->db['prefix']}_mod_comments WHERE id = ?");
+            $stmt->bindParam(1, $comment_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $stmt = null;
+        }
+        return;
+    }
+
+    private function editPostComment()
+    {
+        global $system,$database,$constant,$user;
+        if($user->get('id') > 0 && $user->get('mod_comment_edit') > 0)
+        {
+            $comment_id = (int)$system->post('comment_id');
+            $comment_text = $system->nohtml($system->post('comment_text'));
+            if($comment_id > 0 && strlen($comment_text) > 0)
+            {
+                $stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_mod_comments set comment = ? where id = ?");
+                $stmt->bindParam(1, $comment_text, PDO::PARAM_STR);
+                $stmt->bindParam(2, $comment_id, PDO::PARAM_INT);
+                $stmt->execute();
+                $stmt = null;
+            }
+        }
+        return;
+    }
+
+    private function editComment()
+    {
+        global $system,$template,$database,$constant,$language;
+        $comment_id = (int)$system->get('id');
+        $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_mod_comments WHERE id = ?");
+        $stmt->bindParam(1, $comment_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $content = null;
+        if($result = $stmt->fetch())
+        {
+            $content = $template->assign(array('comment_id', 'comment_text'), array($comment_id, $result['comment']), $template->tplget('comment_api_edit', 'modules/mod_comments/'));
+        }
+        else
+        {
+            $content = $template->stringNotify('error', $language->get('comment_api_edit_nocomment'));
+        }
+        $stmt = null;
+        return $content;
+    }
+
     private function postComment()
     {
-        global $system,$constant,$database,$user;
+        global $system,$constant,$database,$user,$extension,$template,$language;
         $text = $system->nohtml($system->post('comment_message'));
         $object = $system->post('object');
         $id = $system->post('id');
         $hash = $system->post('hash');
         if($text != null && $object != null && $id != null && $system->isInt($id) && $hash != null && strlen($hash) == 32)
         {
-            if($user->get('id') > 0 && $user->get('content_post') > 0)
+            $notify = null;
+            if($user->get('id') > 0 && $user->get('content_post') > 0 && $user->get('mod_comment_add') > 0)
             {
                 $time = time();
                 $userid = $user->get('id');
-                $stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_mod_comments (target_hash, object_name, object_id, comment, author, time)
-                VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->bindParam(1, $hash, PDO::PARAM_STR, 32);
-                $stmt->bindParam(2, $object, PDO::PARAM_STR);
-                $stmt->bindParam(3, $id, PDO::PARAM_STR);
-                $stmt->bindParam(4, $text, PDO::PARAM_STR);
-                $stmt->bindParam(5, $userid, PDO::PARAM_INT);
-                $stmt->bindParam(6, $time, PDO::PARAM_INT);
+                // узнаем время последнего комментария
+                $stmt = $database->con()->prepare("SELECT `time` FROM {$constant->db['prefix']}_mod_comments WHERE author = ? ORDER BY `time` DESC LIMIT 1");
+                $stmt->bindParam(1, $userid, PDO::PARAM_INT);
                 $stmt->execute();
+                if($result = $stmt->fetch())
+                {
+                    $lastposttime = $result['time'];
+                    if(($time - $lastposttime) < $extension->getConfig('time_delay', 'comments', 'modules', 'int'))
+                    {
+                        $notify = $template->stringNotify('error', $language->get('comments_api_delay_exception'));
+                    }
+                }
+                if($notify == null)
+                {
+                    $stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_mod_comments (target_hash, object_name, object_id, comment, author, time)
+                    VALUES (?, ?, ?, ?, ?, ?)");
+                    $stmt->bindParam(1, $hash, PDO::PARAM_STR, 32);
+                    $stmt->bindParam(2, $object, PDO::PARAM_STR);
+                    $stmt->bindParam(3, $id, PDO::PARAM_STR);
+                    $stmt->bindParam(4, $text, PDO::PARAM_STR);
+                    $stmt->bindParam(5, $userid, PDO::PARAM_INT);
+                    $stmt->bindParam(6, $time, PDO::PARAM_INT);
+                    $stmt->execute();
+                    $notify .= $template->stringNotify('success', $language->get('comments_api_add_success'));
+                }
             }
-            return $this->viewComment();
+            else
+            {
+                $notify .= $template->stringNotify('error', $language->get('comments_api_add_fail'));
+            }
+            return $this->viewComment($notify);
         }
         return;
     }
 
-    public function viewComment()
+    public function viewComment($notify = null)
     {
         global $system,$database,$constant,$user,$template,$extension,$hook;
         $object = $system->post('object');
@@ -88,6 +171,7 @@ class api
             $end_point = $position == 0 ? $config_on_page : $position * $config_on_page + $config_on_page;
             $theme_list = $template->tplget('comment_list', 'modules/mod_comments/');
             $content = null;
+            $content .= $notify;
             $stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_mod_comments WHERE target_hash = ? AND object_name = ? AND object_id = ?");
             $stmt->bindParam(1, $hash, PDO::PARAM_STR, 32);
             $stmt->bindParam(2, $object, PDO::PARAM_STR);
@@ -108,8 +192,8 @@ class api
             foreach($result as $item)
             {
                 $poster_id = $item['author'];
-                $content .= $template->assign(array('poster_id', 'poster_nick', 'poster_avatar', 'comment_text', 'comment_date'),
-                    array($poster_id, $user->get('nick', $poster_id), $user->buildAvatar('small', $poster_id), $hook->get('bbtohtml')->bbcode2html($item['comment']), $system->toDate($item['time'], 'h')),
+                $content .= $template->assign(array('poster_id', 'poster_nick', 'poster_avatar', 'comment_text', 'comment_date', 'comment_id'),
+                    array($poster_id, $user->get('nick', $poster_id), $user->buildAvatar('small', $poster_id), $hook->get('bbtohtml')->bbcode2html($item['comment']), $system->toDate($item['time'], 'h'), $item['id']),
                     $theme_list);
             }
             if($end_point > $commentCount)
@@ -118,7 +202,6 @@ class api
             }
             return $content;
         }
-        return;
     }
 	
 	private function userLeaveRedirect()
