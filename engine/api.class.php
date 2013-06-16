@@ -152,8 +152,12 @@ class api
                     $lastposttime = $result['time'];
                     if(($time - $lastposttime) < $extension->getConfig('time_delay', 'comments', 'modules', 'int'))
                     {
-                        $notify = $template->stringNotify('error', $language->get('comments_api_delay_exception'));
+                        $notify .= $template->stringNotify('error', $language->get('comments_api_delay_exception'));
                     }
+                }
+                if($system->length($text) < $extension->getConfig('min_length', 'comments', 'modules', 'int') || $system->length($text) > $extension->getConfig('max_length', 'comments', 'modules', 'int'))
+                {
+                    $notify .= $template->stringNotify('error', $language->get('comments_api_incorrent_length'));
                 }
                 if($notify == null)
                 {

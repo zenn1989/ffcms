@@ -6,12 +6,14 @@ class mod_comments_front implements mod_front
 
     public function after()
     {
-        global $page,$template,$user;
+        global $page,$template,$user,$language;
         if(!$page->isMain() && $template->tagRepeatCount('com.comment_list') == 1 && $template->tagRepeatCount('com.comment_form') == 1 && !$page->isNullPage())
         {
+            $template->globalSet('com.comment_list', $this->buildComments());
             if($user->get('id') > 0)
-                $template->globalSet('com.comment_list', $this->buildComments());
-            $template->globalSet('com.comment_form', $this->buildFormAdd());
+                $template->globalSet('com.comment_form', $this->buildFormAdd());
+            else
+                $template->globalSet('com.comment_form', $template->stringNotify('warning', $language->get('comments_register_msg')));
         }
         return;
     }

@@ -21,10 +21,21 @@ class com_news_back
 			$theme_manage = $template->tplget('news_list_manage', 'components/', true);
 			$index_start = $admin->getPage();
 			$news_array = array();
-			$stmt = $database->con()->prepare("SELECT a.id,a.title,a.category,a.link,b.category_id,b.path FROM {$constant->db['prefix']}_com_news_entery a, {$constant->db['prefix']}_com_news_category b WHERE a.category = b.category_id ORDER BY a.id DESC LIMIT ?, ?");
-			$stmt->bindParam(1, $index_start, PDO::PARAM_INT);
-			$stmt->bindParam(2, $this->list_count, PDO::PARAM_INT);
-			$stmt->execute();
+            if($system->post('dosearch') && strlen($system->post('search')) > 0)
+            {
+                $search_string = "%{$system->post('search')}%";
+                $stmt = $database->con()->prepare("SELECT a.id,a.title,a.category,a.link,b.category_id,b.path FROM {$constant->db['prefix']}_com_news_entery a, {$constant->db['prefix']}_com_news_category b WHERE a.category = b.category_id AND (a.title like ? OR a.text like ?) ORDER BY a.id DESC");
+                $stmt->bindParam(1, $search_string, PDO::PARAM_STR);
+                $stmt->bindParam(2, $search_string, PDO::PARAM_STR);
+                $stmt->execute();
+            }
+            else
+            {
+                $stmt = $database->con()->prepare("SELECT a.id,a.title,a.category,a.link,b.category_id,b.path FROM {$constant->db['prefix']}_com_news_entery a, {$constant->db['prefix']}_com_news_category b WHERE a.category = b.category_id ORDER BY a.id DESC LIMIT ?, ?");
+                $stmt->bindParam(1, $index_start, PDO::PARAM_INT);
+                $stmt->bindParam(2, $this->list_count, PDO::PARAM_INT);
+                $stmt->execute();
+            }
 			while($result = $stmt->fetch())
 			{
 				$news_id = $result['id'];
@@ -35,7 +46,8 @@ class com_news_back
 				$news_array[] = array($news_id, $editable_name, $full_link, $template->assign(array('news_edit', 'news_delete'), array($edit_link, $delete_link), $theme_manage));
 			}
 			$form_table = $admin->tplRawTable(array($language->get('admin_component_news_th_id'), $language->get('admin_component_news_th_title'), $language->get('admin_component_news_th_link'), $language->get('admin_component_news_th_manage')), $news_array);
-			$work_body = $template->assign(array('ext_table_data'), array($form_table), $theme_list);
+            $pagination_list = $admin->tplRawPagination($this->list_count, $this->getPageCount(), 'components');
+            $work_body = $template->assign(array('ext_table_data', 'ext_pagination_list', 'ext_search_value'), array($form_table, $pagination_list, $system->post('search')), $theme_list);
 		}
 		elseif($admin->getAction() == "edit" && $this->newsExist())
 		{
@@ -485,6 +497,15 @@ class com_news_back
             }
         }
         return false;
+    }
+
+    private function getPageCount()
+    {
+        global $database,$constant;
+        $stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_com_news_entery");
+        $stmt->execute();
+        $result = $stmt->fetch();
+        return intval($result[0]/$this->list_count);
     }
 }
 
