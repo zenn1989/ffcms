@@ -35,5 +35,6 @@ $admin = new admin;
 $meta = new meta;
 $robot = new robot;
 $rule = new rule;
+$rule->getInstance();
 
 ?>

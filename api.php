@@ -35,6 +35,7 @@ $page = new page;
 $extension = new extension;
 $hook = new hook;
 $rule = new rule;
+$rule->getInstance();
 
 $api = new api;
 echo $api->load();

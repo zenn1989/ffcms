@@ -17,7 +17,9 @@
         <h3>{$lang::comment_modal_edit_header}</h3>
     </div>
     <div class="modal-body">
-        <div class="alert alert-info">{$lang::comment_modal_text_notify}</div>
+        {$if user.auth && user.admin}
+            <div class="alert alert-info">{$lang::comment_modal_text_notify}</div>
+        {$/if}
         <div id="comment-edit-jquery">{$lang::comment_modal_edit_loadingnow}</div>
     </div>
 </div>

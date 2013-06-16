@@ -37,9 +37,7 @@ comment_hash = '{$js.comment_hash}';
 </script>
 <div class="tab-content">
     <div class="tab-pane active" id="comment_site">
-    {$if user.auth}
         {$com.comment_form}
-    {$/if}
         <div id="comment_list">{$com.comment_list}</div>
         <blockquote class="white" id="loader_comment"><div id="comment_load"><table class="table"><tr><td style="text-align: center;"><a href="#comment_load" id="doLoadComment">{$lang::comments_text_loadmore}</a></td></tr></table></div></blockquote>
     </div>

@@ -6,10 +6,11 @@ class mod_comments_front implements mod_front
 
     public function after()
     {
-        global $page,$template;
+        global $page,$template,$user;
         if(!$page->isMain() && $template->tagRepeatCount('com.comment_list') == 1 && $template->tagRepeatCount('com.comment_form') == 1 && !$page->isNullPage())
         {
-            $template->globalSet('com.comment_list', $this->buildComments());
+            if($user->get('id') > 0)
+                $template->globalSet('com.comment_list', $this->buildComments());
             $template->globalSet('com.comment_form', $this->buildFormAdd());
         }
         return;
@@ -18,6 +19,7 @@ class mod_comments_front implements mod_front
     private function buildComments()
     {
         global $template,$database,$constant,$page,$user,$system,$extension,$hook;
+        $userid = $user->get('id');
         $theme_list = $template->tplget('comment_list', 'modules/mod_comments/');
         $comment_count = $extension->getConfig('comments_count', 'comments', 'modules', 'int');
         $content = null;
@@ -33,9 +35,23 @@ class mod_comments_front implements mod_front
         $user->listload($system->extractFromMultyArray('author', $result));
         foreach($result as $item)
         {
+            $edit_link = null;
+            $delete_link = null;
             $poster_id = $item['author'];
-            $content .= $template->assign(array('poster_id', 'poster_nick', 'poster_avatar', 'comment_text', 'comment_date', 'comment_id'),
-                array($poster_id, $user->get('nick', $poster_id), $user->buildAvatar('small', $poster_id), $hook->get('bbtohtml')->bbcode2html($item['comment']), $system->toDate($item['time'], 'h'), $item['id']),
+            $editconfig = $extension->getConfig('edit_time', 'comments', 'modules', 'int');
+            if($userid > 0)
+            {
+                if(($poster_id == $userid && (time()-$item['time']) <= $editconfig) || $user->get('mod_comment_edit') > 0)
+                {
+                    $edit_link = $template->assign('comment_id', $item['id'], $template->tplget('comment_link_edit', 'modules/mod_comments/'));
+                }
+                if($user->get('mod_comment_delete') > 0)
+                {
+                    $delete_link = $template->assign('comment_id', $item['id'], $template->tplget('comment_link_delete', 'modules/mod_comments/'));
+                }
+            }
+            $content .= $template->assign(array('poster_id', 'poster_nick', 'poster_avatar', 'comment_text', 'comment_date', 'comment_id', 'comment_link_edit', 'comment_link_delete'),
+                array($poster_id, $user->get('nick', $poster_id), $user->buildAvatar('small', $poster_id), $hook->get('bbtohtml')->bbcode2html($item['comment']), $system->toDate($item['time'], 'h'), $item['id'], $edit_link, $delete_link),
                 $theme_list);
         }
         $stmt = null;

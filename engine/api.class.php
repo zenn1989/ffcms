@@ -72,10 +72,10 @@ class api
 
     private function editPostComment()
     {
-        global $system,$database,$constant,$user;
-        if($user->get('id') > 0 && $user->get('mod_comment_edit') > 0)
+        global $system,$database,$constant,$user,$extension;
+        $comment_id = (int)$system->post('comment_id');
+        if($user->get('id') > 0 && ($user->get('mod_comment_edit') > 0 || $this->commentEditCondition($comment_id)))
         {
-            $comment_id = (int)$system->post('comment_id');
             $comment_text = $system->nohtml($system->post('comment_text'));
             if($comment_id > 0 && strlen($comment_text) > 0)
             {
@@ -89,6 +89,26 @@ class api
         return;
     }
 
+    private function commentEditCondition($id)
+    {
+        global $database,$constant,$user,$extension;
+        if($id > 0)
+        {
+            $stmt = $database->con()->prepare("SELECT author,time FROM {$constant->db['prefix']}_mod_comments WHERE id = ?");
+            $stmt->bindParam(1, $id, PDO::PARAM_INT);
+            $stmt->execute();
+            if($result = $stmt->fetch())
+            {
+                $editconfig = $extension->getConfig('edit_time', 'comments', 'modules', 'int');
+                if($result['author'] == $user->get('id') && (time()-$result['time']) <= $editconfig)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private function editComment()
     {
         global $system,$template,$database,$constant,$language;
@@ -99,7 +119,7 @@ class api
         $content = null;
         if($result = $stmt->fetch())
         {
-            $content = $template->assign(array('comment_id', 'comment_text'), array($comment_id, $result['comment']), $template->tplget('comment_api_edit', 'modules/mod_comments/'));
+            $content = $template->assign(array('comment_id', 'comment_text'), array($comment_id, $system->nohtml($result['comment'])), $template->tplget('comment_api_edit', 'modules/mod_comments/'));
         }
         else
         {
@@ -167,6 +187,7 @@ class api
         $position = $system->post('comment_position');
         if($object != null && $id != null && $system->isInt($id) && $hash != null && strlen($hash) == 32 && $system->isInt($position))
         {
+            $userid = $user->get('id');
             $config_on_page = $extension->getConfig('comments_count', 'comments', 'modules', 'int');
             $end_point = $position == 0 ? $config_on_page : $position * $config_on_page + $config_on_page;
             $theme_list = $template->tplget('comment_list', 'modules/mod_comments/');
@@ -191,9 +212,23 @@ class api
             $user->listload($system->extractFromMultyArray('author', $result));
             foreach($result as $item)
             {
+                $edit_link = null;
+                $delete_link = null;
                 $poster_id = $item['author'];
-                $content .= $template->assign(array('poster_id', 'poster_nick', 'poster_avatar', 'comment_text', 'comment_date', 'comment_id'),
-                    array($poster_id, $user->get('nick', $poster_id), $user->buildAvatar('small', $poster_id), $hook->get('bbtohtml')->bbcode2html($item['comment']), $system->toDate($item['time'], 'h'), $item['id']),
+                $editconfig = $extension->getConfig('edit_time', 'comments', 'modules', 'int');
+                if($userid > 0)
+                {
+                    if(($poster_id == $userid && (time()-$item['time']) <= $editconfig) || $user->get('mod_comment_edit') > 0)
+                    {
+                        $edit_link = $template->assign('comment_id', $item['id'], $template->tplget('comment_link_edit', 'modules/mod_comments/'));
+                    }
+                    if($user->get('mod_comment_delete') > 0)
+                    {
+                        $delete_link = $template->assign('comment_id', $item['id'], $template->tplget('comment_link_delete', 'modules/mod_comments/'));
+                    }
+                }
+                $content .= $template->assign(array('poster_id', 'poster_nick', 'poster_avatar', 'comment_text', 'comment_date', 'comment_id', 'comment_link_edit', 'comment_link_delete'),
+                    array($poster_id, $user->get('nick', $poster_id), $user->buildAvatar('small', $poster_id), $hook->get('bbtohtml')->bbcode2html($item['comment']), $system->toDate($item['time'], 'h'), $item['id'], $edit_link, $delete_link),
                     $theme_list);
             }
             if($end_point > $commentCount)

@@ -12,9 +12,9 @@
             <td></td>
             <td>
                 <div class="pull-left">
-                    {$if user.auth && user.admin}
-                    <a href="#edit-comment" data-toggle="modal" class="edit-comment" onclick="return editcomment({$comment_id});"><i class="icon-pencil"></i> {$lang::comment_text_edit_link}</a>
-                    <a href="#" onclick="return deletecomment({$comment_id});"><i class="icon-off"></i> {$lang::comment_text_delete_link}</a>
+                    {$if user.auth}
+                        {$comment_link_edit}
+                        {$comment_link_delete}
                     {$/if}
                 </div>
                 <div class="pull-right">
