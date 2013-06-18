@@ -217,6 +217,8 @@ class system
 	{
 		global $constant;
 		header("Location: {$constant->url}{$uri}");
+        exit();
+        return;
 	}
 
 	public function isLatinOrNumeric($data)

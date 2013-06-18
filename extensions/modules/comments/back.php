@@ -43,6 +43,55 @@ class mod_comments_back implements backend
             $pagination_list = $admin->tplRawPagination($this->list_count, $this->getCommentCount(), 'modules');
             $work_body = $template->assign(array('comment_table', 'ext_pagination_list', 'notify'), array($table, $pagination_list, $notify), $theme);
         }
+        elseif($admin->getAction() == "edit")
+        {
+            $action_page_title .= $language->get('admin_modules_comment_manage_title');
+            $comment_id = $admin->getPage();
+            $notify = null;
+            if($system->post('save_comment') && $comment_id > 0 && strlen($system->post('comment_text')) > 0)
+            {
+                $new_comment_text = $system->nohtml($system->post('comment_text'));
+                $stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_mod_comments SET comment = ? WHERE id = ?");
+                $stmt->bindParam(1, $new_comment_text, PDO::PARAM_STR);
+                $stmt->bindParam(2, $comment_id, PDO::PARAM_INT);
+                $stmt->execute();
+                $notify = $template->stringNotify('success', $language->get('admin_modules_comment_edited_success'));
+            }
+            $theme_edit = $template->tplget('comment_edit', 'modules/', true);
+            $stmt = $database->con()->prepare("SELECT comment FROM {$constant->db['prefix']}_mod_comments WHERE id = ?");
+            $stmt->bindParam(1, $comment_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $comment_text = null;
+            if($result = $stmt->fetch())
+            {
+                $comment_text = $result['comment'];
+            }
+            $work_body = $template->assign(array('comment_text', 'notify'), array($comment_text, $notify), $theme_edit);
+        }
+        elseif($admin->getAction() == "delete")
+        {
+            $comment_id = $admin->getPage();
+            if($system->post('delete_comment') && $comment_id > 0)
+            {
+                $stmt = $database->con()->prepare("DELETE FROM {$constant->db['prefix']}_mod_comments WHERE id = ?");
+                $stmt->bindParam(1, $comment_id, PDO::PARAM_INT);
+                $stmt->execute();
+                $system->redirect($_SERVER['PHP_SELF']."?object=modules&id=".$admin->getID());
+            }
+            $action_page_title .= $language->get('admin_modules_comment_manage_title');
+            $theme_delete = $template->tplget('comment_delete', 'modules/', true);
+            $result_array = array();
+            $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_mod_comments WHERE id = ?");
+            $stmt->bindParam(1, $comment_id, PDO::PARAM_INT);
+            $stmt->execute();
+            if($result = $stmt->fetch())
+            {
+                $result_array[] = array($result['id'], $user->get('login', $result['author']), $result['comment']);
+            }
+            $stmt = null;
+            $rawTable = $admin->tplRawTable(array($language->get('admin_modules_comment_del_th1'), $language->get('admin_modules_comment_del_th2'), $language->get('admin_modules_comment_del_th3')), $result_array, $theme_delete);
+            $work_body = $template->assign('comment_data', $rawTable, $theme_delete);
+        }
         elseif($admin->getAction() == "settings")
         {
             $action_page_title .= $language->get('admin_modules_comment_settings_title');
