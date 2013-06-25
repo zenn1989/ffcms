@@ -227,20 +227,35 @@ class page
      * Рекомендовано использование для сквозных модулей, которым необходима уникальная строка для каждой страницы
      * @return string
      */
-    public function hashFromPathway()
+    public function hashFromPathway($additional = null)
     {
         global $system;
-        $string = null;
-        for($i=1;$i<=sizeof($this->pathway);$i++)
+        $array_object = array();
+        if($additional != null)
         {
-            if($system->extensionEquals($this->pathway[$i], '.html'))
+            // нулевой элемент
+            $array_object[] = $this->pathway[0];
+            // дальнейший путь из аддона
+            foreach($additional as $values)
             {
-                $string .= $this->pathway[$i];
+                $array_object[] = $values;
+            }
+        }
+        else
+        {
+            $array_object = $this->pathway;
+        }
+        $string = null;
+        for($i=1;$i<=sizeof($array_object);$i++)
+        {
+            if($system->extensionEquals($array_object[$i], '.html'))
+            {
+                $string .= $array_object[$i];
                 continue;
             }
-            elseif($this->pathway[$i] != null)
+            elseif($array_object[$i] != null)
             {
-                $string .= $this->pathway[$i]."/";
+                $string .= $array_object[$i]."/";
             }
         }
         return $string != null ? md5($string) : null;

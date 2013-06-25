@@ -71,7 +71,7 @@ class com_news_front implements com_front
 	
 	public function viewCategory()
 	{
-		global $page,$system,$database,$constant,$template,$user,$rule,$extension;
+		global $page,$system,$database,$constant,$template,$user,$hook,$extension;
 		$way = $page->shiftPathway();
 		$content = null;
 		$pop_array = $way;
@@ -182,8 +182,10 @@ class com_news_front implements com_front
 					{
 						$news_full_link = $result['path']."/".$result['link'];
 					}
-					$content .= $template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'news_full_link'),
-							array($result['title'], $news_short_text, $system->toDate($result['date'], 'h'), $result['path'], $result['name'], $result['author'], $user->get('nick', $result['author']), $news_full_link),
+                    $hashWay = $page->hashFromPathway($system->altexplode('/', $news_full_link));
+                    $comment_count = $hook->get('comment')->getCount($hashWay);
+					$content .= $template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'news_full_link', 'news_comment_count'),
+							array($result['title'], $news_short_text, $system->toDate($result['date'], 'h'), $result['path'], $result['name'], $result['author'], $user->get('nick', $result['author']), $news_full_link, $comment_count),
 							$short_theme);
 				}
 			}

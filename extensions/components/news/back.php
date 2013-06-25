@@ -325,7 +325,8 @@ class com_news_back
 			$config_set .= $admin->tplSettingsInputText('config:short_news_length', $admin->getConfig('short_news_length', 'int'), $language->get('admin_component_news_config_newsshort_length_title'), $language->get('admin_component_news_config_newsshort_length_desc'));
 			$config_set .= $admin->tplSettingsDirectory($language->get('admin_component_news_settings_catblock'));
 			$config_set .= $admin->tplSettingsSelectYorN('config:multi_category', $language->get('admin_component_news_config_newscat_multi_title'), $language->get('admin_component_news_config_newscat_multi_desc'), $admin->getConfig('multi_category', 'boolean'));
-			
+            $config_set .= $admin->tplSettingsDirectory($language->get('admin_component_news_settings_tags'));
+            $config_set .= $admin->tplSettingsSelectYorN('config:enable_tags', $language->get('admin_component_news_config_tag_title'), $language->get('admin_component_news_config_tag_desc'), $admin->getConfig('enable_tags', 'boolean'));
 			$work_body .= $template->assign('ext_form', $config_set, $config_form);
 		}
 		

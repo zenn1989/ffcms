@@ -4,7 +4,7 @@ class mod_news_on_main_front implements mod_front
 {
     public function before()
     {
-        global $page,$database,$constant,$extension,$template,$system,$user;
+        global $page,$database,$constant,$extension,$template,$system,$user,$hook;
         $short_theme = $template->tplget('view_short_news', 'components/news/');
         $time = time();
         $page_news_count = $extension->getConfig('count_news_page', 'news', 'components', 'int');
@@ -52,8 +52,10 @@ class mod_news_on_main_front implements mod_front
             {
                 $news_full_link = $result['path']."/".$result['link'];
             }
-            $content .= $template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'news_full_link'),
-                array($result['title'], $news_short_text, $system->toDate($result['date'], 'h'), $result['path'], $result['name'], $result['author'], $user->get('nick', $result['author']), $news_full_link),
+            $hashWay = $page->hashFromPathway($system->altexplode('/', $news_full_link));
+            $comment_count = $hook->get('comment')->getCount($hashWay);
+            $content .= $template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'news_full_link', 'news_comment_count'),
+                array($result['title'], $news_short_text, $system->toDate($result['date'], 'h'), $result['path'], $result['name'], $result['author'], $user->get('nick', $result['author']), $news_full_link, $comment_count),
                 $short_theme);
         }
         if($content != null)
