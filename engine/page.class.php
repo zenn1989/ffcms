@@ -41,6 +41,7 @@ class page
 			$template->globalset('admin_email', $constant->mail['from_email']);
 			return;
 		}
+        $meta->set('title', $constant->seo_meta['title']);
 		// если пользователь не авторизован и есть полный кеш страницы
 		if($user->get('id') == NULL && $cache->check())
 		{
@@ -56,8 +57,7 @@ class page
 		{
 			// может быть это главная страничка?
 			if(sizeof($this->pathway) == 0 || $system->contains('index.', $this->pathway[0]))
-			{
-				$meta->set('title', $constant->seo_meta['title']);
+            {
 				$this->isMainPage = true;
 			}
 			// Нет? Не главная? Скомпилим 404

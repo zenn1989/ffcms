@@ -7,9 +7,9 @@
  */
 class meta
 {
-	private $title = null;
-	private $description = null;
-	private $keywords = null;
+	private $title = array();
+	private $description = array();
+	private $keywords = array();
 
 	/**
 	 * Назначение содержимого мета-тега по имени тега
@@ -18,7 +18,8 @@ class meta
 	 */
 	public function set($metaname, $data)
 	{
-		$this->{$metaname} = $data;
+		$this->{$metaname} = null;
+        $this->{$metaname}[] = $data;
 	}
 
 	/**
@@ -37,15 +38,15 @@ class meta
 	 */
 	public function add($metaname, $data)
 	{
-		$this->{$metaname} .= $data;
+		$this->{$metaname}[] = $data;
 	}
 	
 	public function compile()
 	{
-		global $template;
-		$template->globalset('keywords', $this->keywords);
-		$template->globalset('description', $this->description);
-		$template->globalset('title', $this->title);
+		global $template,$system;
+		$template->globalset('keywords', $system->altimplode(", ", $this->keywords));
+		$template->globalset('description', $system->altimplode(". ", $this->description));
+		$template->globalset('title', $system->altimplode(" - ", array_reverse($this->title)));
 	}
 
 }

@@ -49,7 +49,7 @@ class com_static_front implements com_front
 	 */
 	private function loadSinglePage($pathway)
 	{
-		global $database,$constant,$template;
+		global $database,$constant,$template,$meta;
 		$query = "SELECT * FROM {$constant->db['prefix']}_com_static WHERE pathway = ?";
 		$stmt = $database->con()->prepare($query);
 		$stmt->bindParam(1, $pathway, PDO::PARAM_STR);
@@ -60,6 +60,9 @@ class com_static_front implements com_front
 			return $template->compile404();
 		}
 		$com_theme = $template->tplget("page", "components/static/");
+        $meta->add('title', $result['title']);
+        $meta->set('keywords', $result['keywords']);
+        $meta->set('description', $result['description']);
 		return $template->assign(array('title', 'text', 'date'), array($result['title'], $result['text'], $result['date']), $com_theme);
 
 	}

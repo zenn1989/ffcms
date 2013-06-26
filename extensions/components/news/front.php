@@ -32,7 +32,7 @@ class com_news_front implements com_front
 	
 	public function viewFullNews($url, $categories)
 	{
-		global $database,$constant,$system,$template,$rule,$user,$page;
+		global $database,$constant,$system,$template,$rule,$user,$page,$meta;
 		$stmt = null;
 		$category_link = null;
 		$category_text = null;
@@ -61,6 +61,9 @@ class com_news_front implements com_front
 		}
 		if($stmt != null && $result = $stmt->fetch())
 		{
+            $meta->add('title', $result['title']);
+            $meta->set('keywords', $result['keywords']);
+            $meta->set('description', $result['description']);
 			$news_theme = $template->tplget('view_full_news', 'components/news/');
 			return $template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'js.comment_object', 'js.comment_id', 'js.comment_hash'),
 					array($result['title'], $result['text'], $system->toDate($result['date'], 'h'), $category_link, $category_text, $result['author'], $user->get('nick', $result['author']), 'news', $result['id'], $page->hashFromPathway()),
@@ -71,7 +74,7 @@ class com_news_front implements com_front
 	
 	public function viewCategory()
 	{
-		global $page,$system,$database,$constant,$template,$user,$hook,$extension;
+		global $page,$system,$database,$constant,$template,$user,$hook,$extension,$meta;
 		$way = $page->shiftPathway();
 		$content = null;
 		$pop_array = $way;
@@ -110,6 +113,8 @@ class com_news_front implements com_front
 		while($fresult = $fstmt->fetch())
 		{
 			$category_select_array[] = $fresult['category_id'];
+            if($cat_link == $fresult['path'])
+                $meta->add('title', $fresult['name']);
 		}
 		$category_list = $system->altimplode(',', $category_select_array);
 		$fstmt = null;
@@ -157,7 +162,7 @@ class com_news_front implements com_front
 				$cstmt->execute();
 				if($countRows = $cstmt->fetch())
 				{
-				$total_news_count = $countRows[0];
+				    $total_news_count = $countRows[0];
 				}
 				$cstmt = null;
 			}

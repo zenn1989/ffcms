@@ -1,6 +1,7 @@
 global_accept_button<=>Принять
 global_reject_button<=>Отменить
 global_send_button<=>Отправить
+seo_title_userlist<=>Список пользователей
 usercontrol_auth_header<=>Авторизация
 usercontrol_reg_header<=>Регистрация
 usercontrol_recovery_header<=>Восстановление

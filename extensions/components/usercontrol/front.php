@@ -420,7 +420,7 @@ class com_usercontrol_front
 
 	private function profileComponent()
 	{
-		global $page,$system,$template,$page,$user,$extension,$rule;
+		global $page,$system,$template,$page,$user,$extension,$rule,$meta;
 		$way = $page->getPathway();
 		$userid = substr($way[1], 2);
 		$content = null;
@@ -439,6 +439,7 @@ class com_usercontrol_front
 			{
 				if($system->isInt($userid) && $userid > 0 && $user->exists($userid))
 				{
+                    $meta->add('title', $user->get('nick', $userid));
 					if($user->get('content_view', $userid) < 1)
 					{
 						$content = $template->compileBan();
@@ -508,7 +509,8 @@ class com_usercontrol_front
 
 	private function showUserList()
 	{
-		global $database,$constant,$template,$user,$system,$page,$extension;
+		global $database,$constant,$template,$user,$system,$page,$extension,$meta,$language;
+        $meta->add('title', $language->get('seo_title_userlist'));
 		$usercount_on_page = $extension->getConfig('userlist_count', 'usercontrol', 'components', 'int');
 		$way = $page->getPathway();
 		$theme_head = $template->tplget('userlist_head', 'components/usercontrol/');
