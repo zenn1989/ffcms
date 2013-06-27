@@ -42,6 +42,7 @@ class page
 			return;
 		}
         $meta->set('title', $constant->seo_meta['title']);
+        $meta->set('generator', 'Fast Flexible CMS - http://ffcms.ru');
 		// если пользователь не авторизован и есть полный кеш страницы
 		if($user->get('id') == NULL && $cache->check())
 		{
@@ -58,6 +59,8 @@ class page
 			// может быть это главная страничка?
 			if(sizeof($this->pathway) == 0 || $system->contains('index.', $this->pathway[0]))
             {
+                $meta->set('description', $constant->seo_meta['description']);
+                $meta->set('keywords', $constant->seo_meta['keywords']);
 				$this->isMainPage = true;
 			}
 			// Нет? Не главная? Скомпилим 404

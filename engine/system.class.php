@@ -76,8 +76,14 @@ class system
 		}
 		return $answer;
 	}
-	
-	public function suffixEquals($where, $suffix)
+
+    /**
+     * Поиск вхождений с конца строки для $suffix по его длине. Пример: suffixEquals(helloThisWorld, World) вернет true, suffixEquals(helloThisWorld, This) - вернет false
+     * @param $where
+     * @param $suffix
+     * @return bool
+     */
+    public function suffixEquals($where, $suffix)
 	{
 		if(strlen($suffix) < 1)
 			return false;
@@ -94,6 +100,20 @@ class system
     public function extensionEquals($where, $extension)
     {
         return $this->suffixEquals($where, $extension);
+    }
+
+    /**
+     * Поиск вхождений с начала строки для $prefix по его длине. Пример: prefixEquals(helloThisWorld, hello) вернет true, prefixEquals(helloThisWorld, This) - вернет false
+     * @param $where
+     * @param $prefix
+     * @return bool
+     */
+    public function prefixEquals($where, $prefix)
+    {
+        if(strlen($prefix) < 1)
+            return false;
+        $pharse_prefix = substr($where, 0, strlen($prefix));
+        return $pharse_prefix == $prefix ? true : false;
     }
 
 	/**

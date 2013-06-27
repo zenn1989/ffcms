@@ -55,6 +55,9 @@ class admin
 				case "hooks":
 					$page->setContentPosition('body', $this->loadHooks());
 					break;
+                case "settings":
+                    $page->setContentPosition('body', $this->loadSystemConfigs());
+                    break;
 				default:
 					$page->setContentPosition('body', $this->loadMainPage());
 					break;
@@ -66,6 +69,138 @@ class admin
 		$template->init();
 		return $template->compile();
 	}
+
+    private function loadSystemConfigs()
+    {
+        global $template,$language,$config,$constant,$system;
+        if($system->post('submit'))
+        {
+            $save_data = "<?php\n";
+            foreach($system->post_data as $var_name => $var_value)
+            {
+                if($system->prefixEquals($var_name, 'cfgmain:'))
+                {
+                    $var_clear_name = str_replace("cfgmain:", "", $var_name);
+                    // boolean type
+                    if($var_value == "1" || $var_value == "0")
+                    {
+                        $boolean_var = $var_value == "1" ? true : false;
+                        $save_data .= '$config[\''.$var_clear_name.'\'] = '.$var_value.';'."\n";
+                    }
+                    else
+                    {
+                        $save_data .= '$config[\''.$var_clear_name.'\'] = "'.$var_value.'";'."\n";
+                    }
+                }
+            }
+            $save_data .= "?>";
+            if(is_readable($constant->root.$constant->ds."config.php") && is_writable($constant->root.$constant->ds."config.php"))
+            {
+                file_put_contents($constant->root.$constant->ds."config.php", $save_data);
+            }
+            $system->redirect($_SERVER['PHP_SELF']."?object=settings&action=saved");
+        }
+        $action_page_title = $language->get('admin_settings_title');
+        $menu_theme = $template->tplget('config_menu', null, true);
+        $menu_link = null;
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=settings', $language->get('admin_nav_li_settings')), $menu_theme);
+
+        $work_body = $template->tplget('settings', null, true);
+        $theme_option_active = $template->tplget('form_option_item_active', null, true);
+        $theme_option_inactive = $template->tplget('form_option_item_inactive', null, true);
+        // строчные конфигурации, редактируемые вручную через input.text
+        foreach($config as $cfg_name=>$cfg_value)
+        {
+            if($cfg_name == 'tpl_name')
+            {
+                $theme_scan_option = null;
+                $scan = scandir($constant->root.$constant->ds.$constant->tpl_dir);
+                foreach($scan as $found_tpl)
+                {
+                    if($found_tpl != '.' && $found_tpl != '..' && !$system->contains('.', $found_tpl) && !$system->contains('admin', $found_tpl))
+                    {
+                        if($found_tpl == $constant->tpl_name)
+                        {
+                            $theme_scan_option .= $template->assign(array('option_value', 'option_name'), $found_tpl, $theme_option_active);
+                        }
+                        else
+                        {
+                            $theme_scan_option .= $template->assign(array('option_value', 'option_name'), $found_tpl, $theme_option_inactive);
+                        }
+                    }
+                }
+                $work_body = $template->assign('settings_tpl_name_list', $theme_scan_option, $work_body);
+            }
+            elseif($cfg_name == 'debug')
+            {
+                $theme_debug_option = null;
+                if($cfg_value == true)
+                {
+                    $theme_debug_option .= $template->assign(array('option_value', 'option_name'), array(1, $language->get('admin_settings_ison')), $theme_option_active);
+                    $theme_debug_option .= $template->assign(array('option_value', 'option_name'), array(0, $language->get('admin_settings_isoff')), $theme_option_inactive);
+                }
+                else
+                {
+                    $theme_debug_option .= $template->assign(array('option_value', 'option_name'), array(0, $language->get('admin_settings_isoff')), $theme_option_active);
+                    $theme_debug_option .= $template->assign(array('option_value', 'option_name'), array(1, $language->get('admin_settings_ison')), $theme_option_inactive);
+                }
+                $work_body = $template->assign('settings_debug_list', $theme_debug_option, $work_body);
+            }
+            elseif($cfg_name == 'multi_title')
+            {
+                $theme_multititle_option = null;
+                if($cfg_value == true)
+                {
+                    $theme_multititle_option .= $template->assign(array('option_value', 'option_name'), array(1, $language->get('admin_settings_ison')), $theme_option_active);
+                    $theme_multititle_option .= $template->assign(array('option_value', 'option_name'), array(0, $language->get('admin_settings_isoff')), $theme_option_inactive);
+                }
+                else
+                {
+                    $theme_multititle_option .= $template->assign(array('option_value', 'option_name'), array(0, $language->get('admin_settings_isoff')), $theme_option_active);
+                    $theme_multititle_option .= $template->assign(array('option_value', 'option_name'), array(1, $language->get('admin_settings_ison')), $theme_option_inactive);
+                }
+                $work_body = $template->assign('settings_multi_title_list', $theme_multititle_option, $work_body);
+            }
+            elseif($cfg_name == "mail_smtp_use")
+            {
+                $theme_smtpuse_option = null;
+                if($cfg_value == true)
+                {
+                    $theme_smtpuse_option .= $template->assign(array('option_value', 'option_name'), array(1, $language->get('admin_settings_ison')), $theme_option_active);
+                    $theme_smtpuse_option .= $template->assign(array('option_value', 'option_name'), array(0, $language->get('admin_settings_isoff')), $theme_option_inactive);
+                }
+                else
+                {
+                    $theme_smtpuse_option .= $template->assign(array('option_value', 'option_name'), array(0, $language->get('admin_settings_isoff')), $theme_option_active);
+                    $theme_smtpuse_option .= $template->assign(array('option_value', 'option_name'), array(1, $language->get('admin_settings_ison')), $theme_option_inactive);
+                }
+                $work_body = $template->assign('settings_smtp_use_list', $theme_smtpuse_option, $work_body);
+            }
+            elseif($cfg_name == "mail_smtp_auth")
+            {
+                $theme_smtpauth_option = null;
+                if($cfg_value == true)
+                {
+                    $theme_smtpauth_option .= $template->assign(array('option_value', 'option_name'), array(1, $language->get('admin_settings_ison')), $theme_option_active);
+                    $theme_smtpauth_option .= $template->assign(array('option_value', 'option_name'), array(0, $language->get('admin_settings_isoff')), $theme_option_inactive);
+                }
+                else
+                {
+                    $theme_smtpauth_option .= $template->assign(array('option_value', 'option_name'), array(0, $language->get('admin_settings_isoff')), $theme_option_active);
+                    $theme_smtpauth_option .= $template->assign(array('option_value', 'option_name'), array(1, $language->get('admin_settings_ison')), $theme_option_inactive);
+                }
+                $work_body = $template->assign('settings_smtp_auth_list', $theme_smtpauth_option, $work_body);
+            }
+            if(!is_bool($cfg_value))
+                $work_body = $template->assign('config.'.$cfg_name, $cfg_value, $work_body);
+        }
+        if($this->getAction() == "saved")
+        {
+            $work_body = $template->assign('notify', $template->stringNotify('success', $language->get('admin_settings_saved')), $work_body);
+        }
+        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
+        return $body_form;
+    }
 
 	private function loadHooks()
 	{

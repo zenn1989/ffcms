@@ -6,7 +6,8 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 <meta name="keywords" content="{$keywords}" />
 <meta name="description" content="{$description}" />
-<meta content="ffcms" name="author" />
+<meta name="generator" content="{$generator}" />
+<meta name="robots" content="all" />
 {$cssfile css/bootstrap.css}
 {$cssfile css/bootstrap-responsive.css}
 {$cssfile css/docs.css}

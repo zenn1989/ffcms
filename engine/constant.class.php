@@ -56,6 +56,7 @@ class constant
 		$this->seo_meta['title'] = $config['seo_title'];
 		$this->seo_meta['keywords'] = $config['seo_keywords'];
 		$this->seo_meta['description'] = $config['seo_description'];
+        $this->seo_meta['multi_title'] = $config['multi_title'];
 
 		$this->cache_interval = $config['cache_interval'];
 		$this->token_time = $config['token_time'];
