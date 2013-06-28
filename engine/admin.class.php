@@ -61,6 +61,9 @@ class admin
                 case "filemanager":
                     $page->setContentPosition('body', $this->loadFileManager());
                     break;
+                case "antivirus":
+                    $page->setContentPosition('body', $this->loadAntiVirus());
+                    break;
 				default:
 					$page->setContentPosition('body', $this->loadMainPage());
 					break;
@@ -72,6 +75,60 @@ class admin
 		$template->init();
 		return $template->compile();
 	}
+
+    private function loadAntiVirus()
+    {
+        global $template,$language,$antivirus,$system,$constant;
+        $action_page_title = $language->get('admin_nav_li_avir');
+        $menu_theme = $template->tplget('config_menu', null, true);
+        $menu_link = null;
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=antivirus', $language->get('admin_nav_li_avir')), $menu_theme);
+        $work_body = $template->tplget('antivirus', null, true);
+        $clear_files = null;
+        $unknown_files = null;
+        $wrong_files = null;
+        $hack_files = null;
+        if($system->post('submit') || !file_exists($constant->root."/cache/.avir_scan"))
+        {
+            $antivirus->doFullScan();
+            foreach($antivirus->getClearList() as $file=>$md5)
+            {
+                $clear_files .= $template->stringNotify('success', $file." => ".$md5, true);
+            }
+            foreach($antivirus->getUnknownList() as $file=>$md5)
+            {
+                $unknown_files .= $template->stringNotify('warning', $file." => ".$md5, true);
+            }
+            foreach($antivirus->getWrongList() as $file=>$md5)
+            {
+                $wrong_files .= $template->stringNotify('error', $file." => ".$md5, true);
+            }
+            foreach($antivirus->getHackList() as $file=>$md5)
+            {
+                $hack_files .= $template->stringNotify('error', $file." => ".$md5, true);
+            }
+            if($hack_files == null)
+            {
+                $hack_files = $template->stringNotify('success', $language->get('admin_antivirus_cleaall'));
+            }
+            if($wrong_files == null)
+            {
+                $wrong_files = $template->stringNotify('success', $language->get('admin_antivirus_cleaall'));
+            }
+            if($unknown_files == null)
+            {
+                $unknown_files = $template->stringNotify('success', $language->get('admin_antivirus_cleaall'));
+            }
+            $work_body = $template->assign(array('avir_clear', 'avir_unknown', 'avir_wrong', 'avir_injected'), array($clear_files, $unknown_files, $wrong_files, $hack_files), $work_body);
+            file_put_contents($constant->root."/cache/.avir_scan", $work_body);
+        }
+        else
+        {
+            $work_body = file_get_contents($constant->root."/cache/.avir_scan");
+        }
+        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
+        return $body_form;
+    }
 
     private function loadFileManager()
     {

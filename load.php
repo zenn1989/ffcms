@@ -17,6 +17,7 @@ require_once(root."/engine/admin.class.php");
 require_once(root."/engine/meta.class.php");
 require_once(root."/engine/robot.class.php");
 require_once(root."/engine/rule.class.php");
+require_once(root."/engine/antivirus.class.php");
 
 $constant = new constant;
 $system = new system;
@@ -36,5 +37,6 @@ $meta = new meta;
 $robot = new robot;
 $rule = new rule;
 $rule->getInstance();
+$antivirus = new antivirus;
 
 ?>
