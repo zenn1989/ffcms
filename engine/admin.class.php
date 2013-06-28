@@ -58,6 +58,9 @@ class admin
                 case "settings":
                     $page->setContentPosition('body', $this->loadSystemConfigs());
                     break;
+                case "filemanager":
+                    $page->setContentPosition('body', $this->loadFileManager());
+                    break;
 				default:
 					$page->setContentPosition('body', $this->loadMainPage());
 					break;
@@ -69,6 +72,18 @@ class admin
 		$template->init();
 		return $template->compile();
 	}
+
+    private function loadFileManager()
+    {
+        global $template,$language;
+        $action_page_title = $language->get('admin_nav_li_filemanager');
+        $menu_theme = $template->tplget('config_menu', null, true);
+        $menu_link = null;
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=filemanager', $language->get('admin_nav_li_filemanager')), $menu_theme);
+        $work_body = $template->tplget('file_manager', null, true);
+        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
+        return $body_form;
+    }
 
     private function loadSystemConfigs()
     {

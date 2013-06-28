@@ -43,6 +43,37 @@ class file
 		$connector = new elFinderConnector(new elFinder($opts));
 		$connector->run();
 	}
+
+    public function elfinderForAdmin()
+    {
+        global $constant,$user;
+        if($user->get('access_to_admin') < 1)
+        {
+            return;
+        }
+        include_once $constant->root.'/resource/elfinder/php/elFinderConnector.class.php';
+        include_once $constant->root.'/resource/elfinder/php/elFinder.class.php';
+        include_once $constant->root.'/resource/elfinder/php/elFinderVolumeDriver.class.php';
+        include_once $constant->root.'/resource/elfinder/php/elFinderVolumeLocalFileSystem.class.php';
+        function access($attr, $path, $data, $volume) {
+            return strpos(basename($path), '.') === 0       // if file/folder begins with '.' (dot)
+                ? !($attr == 'read' || $attr == 'write')    // set read+write to false, other (locked+hidden) set to true
+                :  null;                                    // else elFinder decide it itself
+        }
+        $opts = array(
+            // 'debug' => true,
+            'roots' => array(
+                array(
+                    'driver'        => 'LocalFileSystem',   // driver for accessing file system (REQUIRED)
+                    'path'          => $constant->root.'/upload/',         // path to files (REQUIRED)
+                    'URL'           => $constant->url.'/upload/', // URL to files (REQUIRED)
+                    'accessControl' => 'access',             // disable and hide dot starting files (OPTIONAL)
+                )
+            )
+        );
+        $connector = new elFinderConnector(new elFinder($opts));
+        $connector->run();
+    }
 	
 	
 	/**

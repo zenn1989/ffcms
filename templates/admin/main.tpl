@@ -117,7 +117,7 @@
 			height   : 350,
 			fmOpen : function(callback) {
 			      $('<div/>').dialogelfinder({
-			        url : '{$url}/api.php?u=1&action=elfinder', // connector URL (REQUIRED)
+			        url : '{$url}/api.php?&action=elfinder', // connector URL (REQUIRED)
 			        // lang: 'ru', // elFinder language (OPTIONAL)
 			        commandsOptions: {
 			          getfile: {

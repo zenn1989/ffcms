@@ -28,7 +28,7 @@ admin_nav_hooks<=>Хуки
 admin_nav_more_link<=><font color="green">Показать все!</font>
 admin_nav_li_settings<=>Настройки
 admin_nav_li_clear<=>Очистка
-admin_nav_li_imgmanager<=>Изображения
+admin_nav_li_filemanager<=>Файловый менеджер
 admin_nav_li_avir<=>Антивирус
 admin_nav_li_backup<=>Резервирование
 admin_settings_title<=>Настройки системы
@@ -88,6 +88,7 @@ admin_settings_list_label_db_name_desc<=>Имя базы данных в кот�
 admin_settings_list_label_db_prefix_title<=>Префикс
 admin_settings_list_label_db_prefix_desc<=>Префикс для таблиц в базе данных(пример: ffcms)
 admin_settings_list_button_save<=>Сохранить
+admin_filemanager_desc<=>С помощью данного раздела вы можете управлять файлами в загрузочной директории /upload/. Помните, удаленные файлы не возможно будет восстановить.
 admin_components_title<=>Управление компонентами
 admin_components_tab_all<=>Все компоненты
 admin_components_tab_enabled<=>Активные компоненты

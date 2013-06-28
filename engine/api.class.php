@@ -14,8 +14,11 @@ class api
                 $apiresult = $this->doPostWall();
 				break;
 			case "elfinder":
-				$file->elfinder();
+				return $file->elfinder();
 				break;
+            case "adminfiles":
+                return $file->elfinderForAdmin();
+                break;
 			case "redirect":
                 $apiresult = $this->userLeaveRedirect();
 				break;
@@ -32,10 +35,10 @@ class api
                 $apiresult = $this->editComment();
                 break;
             case "commenteditpost":
-                $this->editPostComment();
+                return $this->editPostComment();
                 break;
             case "commentdelete":
-                $this->deleteComment();
+                return $this->deleteComment();
                 break;
 			default:
 				break;
