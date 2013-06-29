@@ -7,8 +7,9 @@ class cache
 {
 
     private $noexist = false;
+    private $static_always_loaded = false;
 
-    public function check()
+    public function check($site_down = false)
     {
         global $page, $constant;
         if ($constant->debug_no_cache) {
@@ -23,8 +24,9 @@ class cache
         $file = $this->pathHash();
         if (file_exists($file)) {
             $filetime = filemtime($file);
-            // если файл пролежал меньше, чем указано в конфиге
-            if ((time() - $filetime) < $constant->cache_interval) {
+            // если файл пролежал меньше, чем указано в конфиге или база данных недоступна в текущий момент
+            if ((time() - $filetime) < $constant->cache_interval || $site_down) {
+                $this->static_always_loaded = true;
                 return true;
             }
         }
@@ -61,7 +63,7 @@ class cache
             return;
         }
         $place = $this->pathHash();
-        file_put_contents($place, $data);
+        file_put_contents($place, $data, LOCK_EX);
     }
 
     /**
@@ -78,6 +80,11 @@ class cache
     public function setNoExist($boolean)
     {
         $this->noexist = $boolean;
+    }
+
+    public function used()
+    {
+        return $this->static_always_loaded;
     }
 
 

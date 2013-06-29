@@ -11,6 +11,8 @@ class robot
     public function collect()
     {
         global $database, $constant, $system, $user;
+        if($database->isDown())
+            return;
         $realip = $system->getRealIp();
         $visittime = time();
         $browser = $this->user_browser($_SERVER['HTTP_USER_AGENT']);

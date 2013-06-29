@@ -19,7 +19,7 @@ class database
             $this->con->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, "SET NAMES utf8");
             $this->con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            exit("Database connection error " . $e);
+            //exit("Database connection error " . $e);
         }
     }
 
@@ -37,6 +37,11 @@ class database
     function __destruct()
     {
         $this->con = null;
+    }
+
+    public function isDown()
+    {
+        return $this->con == null ? true : false;
     }
 }
 

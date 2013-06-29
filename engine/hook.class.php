@@ -9,6 +9,8 @@ class hook
     function hook()
     {
         global $database, $constant;
+        if($database->isDown())
+            return;
         $query = "SELECT * FROM {$constant->db['prefix']}_hooks WHERE enabled = 1";
         $stmt = $database->con()->query($query);
         $stmt->execute();

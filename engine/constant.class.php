@@ -16,7 +16,7 @@ class constant
     public $db = array();
 
     public $cache_interval = 60;
-    public $debug_no_cache = true;
+    public $debug_no_cache = false;
 
     public $seo_meta = array();
 

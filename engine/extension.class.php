@@ -16,6 +16,9 @@ class extension
 
     function extension()
     {
+        global $database;
+        if($database->isDown())
+            return;
         $this->rawcomponents();
     }
 

@@ -55,7 +55,19 @@ class template
      */
     public function compile()
     {
-        global $cache, $extension, $constant;
+        global $extension, $constant, $cache, $user, $database;
+        if($database->isDown())
+        {
+            if($cache->check(true)) {
+                return $cache->get();
+            } else {
+                $this->overloadCarcase('database_down');
+                $this->globalset('admin_email', $constant->mail['from_email']);
+            }
+        }
+        if($user->get('id') < 1 && $cache->check()) {
+            return $cache->get();
+        }
         $this->fortpl('header');
         $this->fortpl('left');
         $this->fortpl('right');
@@ -74,9 +86,8 @@ class template
         if ($constant->do_compress_html && loader == 'front') {
             $this->compress();
         }
-        if (loader == 'back') {
+        if(loader == 'front' && !$cache->used())
             $cache->save($this->content);
-        }
         return $this->content;
     }
 

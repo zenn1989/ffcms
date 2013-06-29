@@ -12,6 +12,9 @@ class user
 
     function user()
     {
+        global $database;
+        if($database->isDown())
+            return;
         $this->auth();
     }
 

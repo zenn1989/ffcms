@@ -32,8 +32,13 @@ class page
      */
     public function doload()
     {
-        global $template, $system, $cache, $user, $admin, $extension, $meta, $constant;
+        global $template, $system, $cache, $user, $extension, $meta, $constant, $database;
         $isComponent = false;
+        // база данны недоступна? Выходим, на template::compile() отобразим кеш если есть или 404
+        if($database->isDown())
+        {
+            return;
+        }
         // пользователь пермаментно заблокирован?
         if ($user->isPermaBan()) {
             $template->overloadCarcase('permaban');
@@ -42,9 +47,9 @@ class page
         }
         $meta->set('title', $constant->seo_meta['title']);
         $meta->set('generator', 'Fast Flexible CMS - http://ffcms.ru');
-        // если пользователь не авторизован и есть полный кеш страницы
-        if ($user->get('id') == NULL && $cache->check()) {
-            return $cache->get();
+        // если пользователь не авторизован и есть полный кеш страницы - выходим, на template::compile() отобразим
+        if ($user->get('id') < 1 && $cache->check()) {
+            return;
         }
         // если размер пачвея более 0
         if (sizeof($this->pathway) > 0) {
