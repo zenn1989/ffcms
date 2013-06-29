@@ -8,7 +8,7 @@ class database
     private $con = null;
     private $queries = 0;
 
-    function __construct()
+    function database()
     {
         global $constant;
         try {

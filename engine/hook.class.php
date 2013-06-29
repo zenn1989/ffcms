@@ -6,7 +6,7 @@ class hook
 {
     private $hook_list = array();
 
-    function __construct()
+    function hook()
     {
         global $database, $constant;
         $query = "SELECT * FROM {$constant->db['prefix']}_hooks WHERE enabled = 1";

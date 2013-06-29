@@ -22,7 +22,7 @@ class page
     private $isMainPage = false;
     private $isNullPage = false;
 
-    function __construct()
+    function page()
     {
         $this->rawuri();
     }

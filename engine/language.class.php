@@ -7,7 +7,7 @@ class language
 
     private $lang = array();
 
-    function __construct()
+    function language()
     {
         global $constant;
         if (loader == "back") {

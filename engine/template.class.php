@@ -17,13 +17,19 @@ class template
 
     private $precompile_tag = array();
 
-
-    function __construct()
+    function template()
     {
-        if (loader != 'api') {
+        if (loader == 'front' || loader == 'back') {
             $this->content = $this->getCarcase();
         }
     }
+    /**
+    function __construct()
+    {
+        if (loader == 'front' || loader == 'back') {
+            $this->content = $this->getCarcase();
+        }
+    }*/
 
     /**
      * Инициация шаблонизатора. Загрузка стандартных блоков.
@@ -182,7 +188,7 @@ class template
             preg_match_all('/{\$if (.+?)}(.*?){\$\/if}/s', $this->content, $matches);
             for ($i = 0; $i < sizeof($matches[1]); $i++) {
                 $theme_result = null;
-                if ($rule->getInstance()->check($matches[1][$i])) {
+                if ($rule->check($matches[1][$i])) {
                     $theme_result = $matches[2][$i];
                 }
                 $this->content = str_replace($matches[0][$i], $theme_result, $this->content);
@@ -191,7 +197,7 @@ class template
             preg_match_all('/{\$if (.+?)}(.*?){\$\/if}/s', $content, $matches);
             for ($i = 0; $i < sizeof($matches[1]); $i++) {
                 $theme_result = null;
-                if ($rule->getInstance()->check($matches[1][$i])) {
+                if ($rule->check($matches[1][$i])) {
                     $theme_result = $matches[2][$i];
                 }
                 $content = str_replace($matches[0][$i], $theme_result, $content);

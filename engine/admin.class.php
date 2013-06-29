@@ -15,7 +15,7 @@ class admin
 
     private $object_name = null;
 
-    function __construct()
+    function admin()
     {
         global $system;
         $this->object = $system->get('object');

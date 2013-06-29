@@ -14,7 +14,7 @@ class extension
 
     public $object = array();
 
-    function __construct()
+    function extension()
     {
         $this->rawcomponents();
     }

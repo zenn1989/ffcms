@@ -10,7 +10,7 @@ class user
     private $custominit = false;
     private $customparam = array();
 
-    function __construct()
+    function user()
     {
         $this->auth();
     }

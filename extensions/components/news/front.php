@@ -36,9 +36,9 @@ class com_news_front implements com_front
         $link_cat = $system->altimplode("/", $categories);
         $time = time();
         if ($link_cat != null) {
-            $rule->getInstance()->add('com.news.have_category', true);
+            $rule->add('com.news.have_category', true);
         } else {
-            $rule->getInstance()->add('com.news.have_category', false);
+            $rule->add('com.news.have_category', false);
         }
         $catstmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_category WHERE path = ?");
         $catstmt->bindParam(1, $link_cat, PDO::PARAM_STR);

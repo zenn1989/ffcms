@@ -8,22 +8,17 @@
 class rule
 {
     public $rule_data = array();
-    private $init = false;
 
     // реализация нативных правил
-    public function getInstance()
+    function rule()
     {
         global $user;
-        if (!$this->init) {
-            if ($user->get('id') > 0) {
-                $this->rule_data['user.auth'] = true;
-            }
-            if ($user->get('access_to_admin') > 0) {
-                $this->rule_data['user.admin'] = true;
-            }
-            $this->init = true;
+        if ($user->get('id') > 0) {
+            $this->rule_data['user.auth'] = true;
         }
-        return $this;
+        if ($user->get('access_to_admin') > 0) {
+            $this->rule_data['user.admin'] = true;
+        }
     }
 
     /**

@@ -6,7 +6,7 @@ class system
     public $post_data = array();
     public $get_data = array();
 
-    function __construct()
+    function system()
     {
         $this->post_data = $_POST;
         $this->get_data = $_GET;

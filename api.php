@@ -23,21 +23,20 @@ require_once(root . "/engine/user.class.php");
 require_once(root . "/engine/hook.class.php");
 require_once(root . "/engine/rule.class.php");
 
-$constant = new constant;
-$system = new system;
-$database = new database;
-$language = new language;
-$template = new template;
-$user = new user;
-$system = new system;
-$file = new file;
-$page = new page;
-$extension = new extension;
-$hook = new hook;
-$rule = new rule;
-$rule->getInstance();
+$constant = new constant();
+$system = new system();
+$database = new database();
+$language = new language();
+$template = new template();
+$user = new user();
+$system = new system();
+$file = new file();
+$page = new page();
+$extension = new extension();
+$hook = new hook();
+$rule = new rule();
 
-$api = new api;
+$api = new api();
 echo $api->load();
 
 ?>
