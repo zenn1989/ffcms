@@ -1,7 +1,7 @@
 <form action="" method="post">
-    <input type="submit" name="submit" value="{$lang::admin_antivirus_rescan}" class="pull-right btn btn-success" />
+    <input type="submit" name="submit" value="{$lang::admin_antivirus_rescan}" class="pull-right btn btn-success"/>
 </form>
-<br /><br />
+<br/><br/>
 <h5>{$lang::admin_antivirus_injected_h5}</h5>
 <p>{$lang::admin_antivirus_injected_desc}</p>
 {$avir_injected}

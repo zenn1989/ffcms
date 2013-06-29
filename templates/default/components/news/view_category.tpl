@@ -1,3 +1,3 @@
 {$news_body}
-<br />
+<br/>
 {$pagination}

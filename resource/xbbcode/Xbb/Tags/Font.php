@@ -22,23 +22,31 @@
  ******************************************************************************/
 
 // Класс для тега [font]
-class Xbb_Tags_Font extends bbcode {
+class Xbb_Tags_Font extends bbcode
+{
     public $behaviour = 'span';
-    function get_html($tree = null) {
+
+    function get_html($tree = null)
+    {
         $attr = '';
-        if (isset($this -> attrib['face'])) {
-            $face = $this -> attrib['face'];
+        if (isset($this->attrib['face'])) {
+            $face = $this->attrib['face'];
         } else {
-            $face = $this -> attrib['font'];
+            $face = $this->attrib['font'];
         }
         if ($face) {
-            $attr .= ' face="'.htmlspecialchars($face).'"';
+            $attr .= ' face="' . htmlspecialchars($face) . '"';
         }
-        $color = isset($this -> attrib['color']) ? $this -> attrib['color'] : '';
-        if ($color) { $attr .= ' color="'.htmlspecialchars($color).'"'; }
-        $size = isset($this -> attrib['size']) ? $this -> attrib['size'] : '';
-        if ($size) { $attr .= ' size="'.htmlspecialchars($size).'"'; }
-        return '<font'.$attr.'>'.parent::get_html($this -> tree).'</font>';
+        $color = isset($this->attrib['color']) ? $this->attrib['color'] : '';
+        if ($color) {
+            $attr .= ' color="' . htmlspecialchars($color) . '"';
+        }
+        $size = isset($this->attrib['size']) ? $this->attrib['size'] : '';
+        if ($size) {
+            $attr .= ' size="' . htmlspecialchars($size) . '"';
+        }
+        return '<font' . $attr . '>' . parent::get_html($this->tree) . '</font>';
     }
 }
+
 ?>

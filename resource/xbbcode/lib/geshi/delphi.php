@@ -2,8 +2,8 @@
 /*************************************************************************************
  * delphi.php
  * ----------
- * Author: Járja Norbert (jnorbi@vipmail.hu)
- * Copyright: (c) 2004 Járja Norbert, Nigel McNie (http://qbnz.com/highlighter)
+ * Author: Jï¿½rja Norbert (jnorbi@vipmail.hu)
+ * Copyright: (c) 2004 Jï¿½rja Norbert, Nigel McNie (http://qbnz.com/highlighter)
  * Release Version: 1.0.7.18
  * Date Started: 2004/07/26
  *
@@ -43,7 +43,7 @@
  *
  ************************************************************************************/
 
-$language_data = array (
+$language_data = array(
     'LANG_NAME' => 'Delphi',
     'COMMENT_SINGLE' => array(1 => '//'),
     'COMMENT_MULTI' => array('(*' => '*)', '{' => '}'),
@@ -64,10 +64,10 @@ $language_data = array (
             'To', 'Try', 'Type', 'Unit', 'Until', 'Uses', 'Var', 'Virtual', 'While',
             'With', 'Xor', 'assembler', 'cdecl', 'far', 'near', 'pascal', 'register',
             'safecall', 'stdcall', 'varargs'
-            ),
+        ),
         2 => array(
             'nil', 'false', 'self', 'true', 'var', 'type', 'const'
-            ),
+        ),
         3 => array(
             'Abs', 'AcquireExceptionObject', 'Addr', 'AnsiToUtf8', 'Append', 'ArcTan',
             'Assert', 'AssignFile', 'Assigned', 'BeginThread', 'BlockRead',
@@ -191,7 +191,7 @@ $language_data = array (
             'SimpleRoundTo', 'SinCos', 'Sinh', 'StdDev', 'Sum', 'SumInt',
             'SumOfSquares', 'SumsAndSquares', 'Tan', 'Tanh', 'TotalVariance',
             'Variance'
-            ),
+        ),
         4 => array(
             'AnsiChar', 'AnsiString', 'Bool', 'Boolean', 'Byte', 'ByteBool', 'Cardinal', 'Char',
             'Comp', 'Currency', 'DWORD', 'Double', 'Extended', 'Int64', 'Integer', 'IUnknown',
@@ -202,69 +202,65 @@ $language_data = array (
             'PWordArray', 'PWordBool', 'PWideChar', 'PWideString', 'Real', 'Real48', 'ShortInt', 'ShortString',
             'Single', 'SmallInt', 'String', 'TClass', 'TDate', 'TDateTime', 'TextFile', 'THandle',
             'TObject', 'TTime', 'Variant', 'WideChar', 'WideString', 'Word', 'WordBool'
-            ),
         ),
+    ),
     'CASE_SENSITIVE' => array(
         GESHI_COMMENTS => true,
         1 => false,
         2 => false,
         3 => false,
         4 => false,
-        ),
+    ),
     'STYLES' => array(
         'KEYWORDS' => array(
             1 => 'color: #000000; font-weight: bold;',
             2 => 'color: #000000; font-weight: bold;',
             3 => 'color: #000066;',
             4 => 'color: #993333;'
-            ),
+        ),
         'COMMENTS' => array(
             1 => 'color: #808080; font-style: italic;',
             'MULTI' => 'color: #808080; font-style: italic;'
-            ),
-        'ESCAPE_CHAR' => array(
-            ),
+        ),
+        'ESCAPE_CHAR' => array(),
         'BRACKETS' => array(
             0 => 'color: #66cc66;'
-            ),
+        ),
         'STRINGS' => array(
             0 => 'color: #ff0000;'
-            ),
+        ),
         'NUMBERS' => array(
             0 => 'color: #cc66cc;'
-            ),
+        ),
         'METHODS' => array(
             1 => 'color: #006600;'
-            ),
+        ),
         'REGEXPS' => array(
             0 => 'color: #9ac;',
             1 => 'color: #ff0000;'
-            ),
+        ),
         'SYMBOLS' => array(
             0 => 'color: #66cc66;'
-            ),
-        'SCRIPT' => array(
-            )
         ),
+        'SCRIPT' => array()
+    ),
     'URLS' => array(
         1 => '',
         2 => '',
         3 => '',
         4 => ''
-        ),
+    ),
     'OOLANG' => true,
     'OBJECT_SPLITTERS' => array(
         1 => '.'
-        ),
+    ),
     'REGEXPS' => array(
         0 => '\$[0-9a-fA-F]+',
         1 => '\#\$?[0-9]{1,3}'
-        ),
+    ),
     'STRICT_MODE_APPLIES' => GESHI_NEVER,
-    'SCRIPT_DELIMITERS' => array(
-        ),
-    'HIGHLIGHT_STRICT_BLOCK' => array(
-        )
+    'SCRIPT_DELIMITERS' => array(),
+    'HIGHLIGHT_STRICT_BLOCK' => array()
 );
 
 ?>

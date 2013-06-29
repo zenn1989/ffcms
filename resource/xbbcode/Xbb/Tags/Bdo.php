@@ -22,9 +22,12 @@
  ******************************************************************************/
 
 // Класс для тега [bdo]
-class Xbb_Tags_Bdo extends bbcode {
+class Xbb_Tags_Bdo extends bbcode
+{
     public $behaviour = 'span';
-    function get_html($tree = null) {
+
+    function get_html($tree = null)
+    {
         $dir = '';
         switch (strtolower($this->attrib['bdo'])) {
             case 'ltr':
@@ -33,7 +36,7 @@ class Xbb_Tags_Bdo extends bbcode {
             case 'rtl':
                 $dir = 'rtl';
         }
-        if (! $dir) {
+        if (!$dir) {
             return parent::get_html();
         }
         /* <bdo> может иметь следующие атрибуты: dir, lang, id, class, style,
@@ -45,4 +48,5 @@ class Xbb_Tags_Bdo extends bbcode {
         return '<bdo ' . $attr . '>' . parent::get_html() . '</bdo>';
     }
 }
+
 ?>

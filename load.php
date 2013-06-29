@@ -1,23 +1,23 @@
 <?php
 
-require_once(root."/engine/constant.class.php");
-require_once(root."/engine/database.class.php");
-require_once(root."/engine/language.class.php");
-require_once(root."/engine/event.class.php");
-require_once(root."/engine/extension.class.php");
-require_once(root."/engine/page.class.php");
-require_once(root."/engine/user.class.php");
-require_once(root."/engine/template.class.php");
-require_once(root."/engine/system.class.php");
-require_once(root."/engine/cache.class.php");
-require_once(root."/engine/hook.class.php");
-require_once(root."/engine/file.class.php");
-require_once(root."/engine/mail.class.php");
-require_once(root."/engine/admin.class.php");
-require_once(root."/engine/meta.class.php");
-require_once(root."/engine/robot.class.php");
-require_once(root."/engine/rule.class.php");
-require_once(root."/engine/antivirus.class.php");
+require_once(root . "/engine/constant.class.php");
+require_once(root . "/engine/database.class.php");
+require_once(root . "/engine/language.class.php");
+require_once(root . "/engine/event.class.php");
+require_once(root . "/engine/extension.class.php");
+require_once(root . "/engine/page.class.php");
+require_once(root . "/engine/user.class.php");
+require_once(root . "/engine/template.class.php");
+require_once(root . "/engine/system.class.php");
+require_once(root . "/engine/cache.class.php");
+require_once(root . "/engine/hook.class.php");
+require_once(root . "/engine/file.class.php");
+require_once(root . "/engine/mail.class.php");
+require_once(root . "/engine/admin.class.php");
+require_once(root . "/engine/meta.class.php");
+require_once(root . "/engine/robot.class.php");
+require_once(root . "/engine/rule.class.php");
+require_once(root . "/engine/antivirus.class.php");
 
 $constant = new constant;
 $system = new system;

@@ -1,1 +1,1 @@
-<input type="text" class="input input-small" value="{$input_value}" name="{$input_name}" />
+<input type="text" class="input input-small" value="{$input_value}" name="{$input_name}"/>

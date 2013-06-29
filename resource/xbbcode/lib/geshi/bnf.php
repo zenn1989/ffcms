@@ -40,7 +40,7 @@
  *
  ************************************************************************************/
 
-$language_data = array (
+$language_data = array(
     'LANG_NAME' => 'bnf',
     'COMMENT_SINGLE' => array(),
     'COMMENT_MULTI' => array(),
@@ -51,13 +51,11 @@ $language_data = array (
     'SYMBOLS' => array(
         '<', '>', '::=', '|'
     ),
-    'CASE_SENSITIVE' => array(
-        //GESHI_COMMENTS => false
+    'CASE_SENSITIVE' => array(//GESHI_COMMENTS => false
     ),
     'STYLES' => array(
         'KEYWORDS' => array(),
-        'COMMENTS' => array(
-        ),
+        'COMMENTS' => array(),
         'ESCAPE_CHAR' => array(
             0 => ''
         ),
@@ -84,7 +82,7 @@ $language_data = array (
             3 => 'color: #909;'
         ),
         'SCRIPT' => array(
-          0 => ''
+            0 => ''
         )
     ),
     'URLS' => array(),
@@ -121,10 +119,8 @@ $language_data = array (
         ),
     ),
     'STRICT_MODE_APPLIES' => GESHI_NEVER,
-    'SCRIPT_DELIMITERS' => array(
-    ),
-    'HIGHLIGHT_STRICT_BLOCK' => array(
-    )
+    'SCRIPT_DELIMITERS' => array(),
+    'HIGHLIGHT_STRICT_BLOCK' => array()
 );
 
 ?>

@@ -22,15 +22,21 @@
  ******************************************************************************/
 
 // Класс для тега [tr]
-class Xbb_Tags_Tr extends bbcode {
+class Xbb_Tags_Tr extends bbcode
+{
     public $behaviour = 'tr';
-    function get_html($tree = null) {
+
+    function get_html($tree = null)
+    {
         $str = '<tr class="bb">';
-        foreach ($this -> tree as $key => $item) {
-            if ('text' == $item['type']) { unset($this -> tree[$key]); }
+        foreach ($this->tree as $key => $item) {
+            if ('text' == $item['type']) {
+                unset($this->tree[$key]);
+            }
         }
-        $str .= parent::get_html($this -> tree).'</tr>';
+        $str .= parent::get_html($this->tree) . '</tr>';
         return $str;
     }
 }
+
 ?>

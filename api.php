@@ -8,20 +8,20 @@ define('version', '0.1');
 define('loader', 'api');
 
 // подключаем файл конфигураций
-require_once(root."/config.php");
+require_once(root . "/config.php");
 
-require_once(root."/engine/constant.class.php");
-require_once(root."/engine/database.class.php");
-require_once(root."/engine/language.class.php");
-require_once(root."/engine/template.class.php");
-require_once(root."/engine/page.class.php");
-require_once(root."/engine/extension.class.php");
-require_once(root."/engine/system.class.php");
-require_once(root."/engine/api.class.php");
-require_once(root."/engine/file.class.php");
-require_once(root."/engine/user.class.php");
-require_once(root."/engine/hook.class.php");
-require_once(root."/engine/rule.class.php");
+require_once(root . "/engine/constant.class.php");
+require_once(root . "/engine/database.class.php");
+require_once(root . "/engine/language.class.php");
+require_once(root . "/engine/template.class.php");
+require_once(root . "/engine/page.class.php");
+require_once(root . "/engine/extension.class.php");
+require_once(root . "/engine/system.class.php");
+require_once(root . "/engine/api.class.php");
+require_once(root . "/engine/file.class.php");
+require_once(root . "/engine/user.class.php");
+require_once(root . "/engine/hook.class.php");
+require_once(root . "/engine/rule.class.php");
 
 $constant = new constant;
 $system = new system;

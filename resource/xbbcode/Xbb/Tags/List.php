@@ -22,11 +22,14 @@
  ******************************************************************************/
 
 // Класс для тегов [list], [ol], [ul]
-class Xbb_Tags_List extends bbcode {
+class Xbb_Tags_List extends bbcode
+{
     public $lbr = 1;
     public $rbr = 1;
     public $behaviour = 'ul';
-    function get_html($tree = null) {
+
+    function get_html($tree = null)
+    {
         $tag_name = 'ul';
         $type = '';
         switch ($this->tag) {
@@ -52,4 +55,5 @@ class Xbb_Tags_List extends bbcode {
         return $str;
     }
 }
+
 ?>

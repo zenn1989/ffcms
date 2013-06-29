@@ -10,10 +10,10 @@ define('version', '0.1');
 define('loader', 'front');
 
 // подключаем файл конфигураций
-require_once(root."/config.php");
+require_once(root . "/config.php");
 
 // подключаем и инициируем все используемые классы движка
-require_once(root."/load.php");
+require_once(root . "/load.php");
 // выставляем стандарт времени
 date_default_timezone_set($constant->time_zone);
 
@@ -28,9 +28,8 @@ $template->cleanafterprint();
 $debug_endtime = microtime(true);
 
 // Отладочная информация
-if($config['debug'] && $user->get('access_to_admin') > 0)
-{
-	$load_time = round($debug_endtime-$debug_starttime, 3);
-	echo "<hr />Debug loading: ".$load_time." sec <br />Sql query count: ".$database->totalQueryCount()."<br />Theme files readed count: ".$template->getReadCount()."<br />Memory(peak): ".round(memory_get_peak_usage()/(1024*1024), 3)."mb";
+if ($config['debug'] && $user->get('access_to_admin') > 0) {
+    $load_time = round($debug_endtime - $debug_starttime, 3);
+    echo "<hr />Debug loading: " . $load_time . " sec <br />Sql query count: " . $database->totalQueryCount() . "<br />Theme files readed count: " . $template->getReadCount() . "<br />Memory(peak): " . round(memory_get_peak_usage() / (1024 * 1024), 3) . "mb";
 }
 ?>

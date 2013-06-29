@@ -22,9 +22,12 @@
  ******************************************************************************/
 
 // Класс для простейших тегов
-class Xbb_Tags_Simple extends bbcode {
+class Xbb_Tags_Simple extends bbcode
+{
     public $behaviour = 'span';
-    function get_html($tree = null) {
+
+    function get_html($tree = null)
+    {
         switch ($this->tag) {
             case 'b':
                 $this->tag = 'strong';
@@ -38,4 +41,5 @@ class Xbb_Tags_Simple extends bbcode {
         return $html;
     }
 }
+
 ?>

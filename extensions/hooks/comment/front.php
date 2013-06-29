@@ -13,7 +13,7 @@ class hook_comment_front
      */
     public function getCount($hash)
     {
-        global $database,$constant;
+        global $database, $constant;
         $stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_mod_comments WHERE target_hash = ?");
         $stmt->bindParam(1, $hash, PDO::PARAM_STR, 32);
         $stmt->execute();

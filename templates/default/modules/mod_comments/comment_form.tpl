@@ -1,16 +1,17 @@
 {$jsurl {$url}/resource/wysibb/jquery.wysibb.min.js}
 {$cssurl {$url}/resource/wysibb/theme/default/wbbtheme.css}
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         $(".wysibb-editor").wysibb()
     });
 </script>
-<br /><br />
+<br/><br/>
 <div>
-    <textarea style="width: 95%;" placeHolder="{$lang::comments_text_writemsg}" id="comment_value" class="wysibb-editor" rows="5"></textarea>
-    <a href="#comment-add" id="comment_send" class="btn btn-success pull-right" />{$lang::global_send_button}</a>
+    <textarea style="width: 95%;" placeHolder="{$lang::comments_text_writemsg}" id="comment_value" class="wysibb-editor"
+              rows="5"></textarea>
+    <a href="#comment-add" id="comment_send" class="btn btn-success pull-right"/>{$lang::global_send_button}</a>
 </div>
-<br /><br />
+<br/><br/>
 <div id="edit-comment" class="modal hide fade large">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -18,7 +19,7 @@
     </div>
     <div class="modal-body">
         {$if user.auth && user.admin}
-            <div class="alert alert-info">{$lang::comment_modal_text_notify}</div>
+        <div class="alert alert-info">{$lang::comment_modal_text_notify}</div>
         {$/if}
         <div id="comment-edit-jquery">{$lang::comment_modal_edit_loadingnow}</div>
     </div>

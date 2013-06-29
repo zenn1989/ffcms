@@ -39,7 +39,7 @@
  *
  ************************************************************************************/
 
-$language_data = array (
+$language_data = array(
     'LANG_NAME' => 'SAS',
     'COMMENT_SINGLE' => array(),
     'COMMENT_MULTI' => array('/*' => '*/'),
@@ -49,7 +49,7 @@ $language_data = array (
     'KEYWORDS' => array(
         1 => array(
             '_NULL_', '_INFILE_', '_N_', '_WEBOUT_', '_NUMERIC_', '_CHARACTER_', '_ALL_'
-            ),
+        ),
         2 => array(
             '%BQUOTE', '%NRBQUOTE', '%CMPRES', '%QCMPRES',
 
@@ -69,7 +69,7 @@ $language_data = array (
 
             '%TO', '%TRIM', '%UNQUOTE', '%UNTIL',
             '%UPCASE', '%VERIFY', '%WHILE', '%WINDOW'
-            ),
+        ),
         3 => array(
             'ABS', 'ADDR', 'AIRY', 'ARCOS', 'ARSIN', 'ATAN', 'ATTRC', 'ATTRN',
 
@@ -123,7 +123,7 @@ $language_data = array (
             'VTYPE', 'WEEKDAY', 'YEAR', 'YYQ', 'ZIPFIPS', 'ZIPNAME', 'ZIPNAMEL',
 
             'ZIPSTATE'
-            ),
+        ),
         4 => array(
             'ABORT', 'ARRAY', 'ATTRIB', 'BY', 'CALL', 'CARDS4', 'CATNAME',
             'CONTINUE', 'DATALINES4', 'DELETE', 'DISPLAY',
@@ -144,29 +144,27 @@ $language_data = array (
 
             'RESET', 'RESTRICT', 'SELECT', 'SET', 'TABLE',
             'UNIQUE', 'UPDATE', 'VALIDATE', 'VIEW', 'WHERE'
-            ),
+        ),
         5 => array(
             'DO', 'ELSE', 'END', 'IF', 'THEN', 'UNTIL', 'WHILE'
 
-            ),
+        ),
         6 => array(
             'RUN', 'QUIT', 'DATA'
-            ),
+        ),
         7 => array(
 
             'ERROR'
-            ),
+        ),
         8 => array(
             'WARNING'
-            ),
+        ),
 
         9 => array(
             'NOTE'
-            )
-        ),
-    'SYMBOLS' => array(
-
-        ),
+        )
+    ),
+    'SYMBOLS' => array(),
     'CASE_SENSITIVE' => array(
         GESHI_COMMENTS => false,
         1 => false,
@@ -181,7 +179,7 @@ $language_data = array (
         8 => false,
         9 => false
 
-        ),
+    ),
     'STYLES' => array(
         'KEYWORDS' => array(
             1 => 'color: #0000ff;',
@@ -196,32 +194,30 @@ $language_data = array (
             8 => 'color: #00ff00;',
             9 => 'color: #0000ff;'
 
-            ),
+        ),
         'COMMENTS' => array(
             1 => 'color: #006400; font-style: italic;',
             'MULTI' => 'color: #006400; font-style: italic;'
 
-            ),
+        ),
         'ESCAPE_CHAR' => array(
             0 => 'color: #000099; font-weight: bold;'
-            ),
+        ),
         'BRACKETS' => array(
 
             0 => 'color: #66cc66;'
-            ),
+        ),
         'STRINGS' => array(
             0 => 'color: #a020f0;'
 
-            ),
+        ),
         'NUMBERS' => array(
             0 => 'color: #2e8b57; font-weight: bold;'
-            ),
-        'METHODS' => array(
-
-            ),
+        ),
+        'METHODS' => array(),
         'SYMBOLS' => array(
             0 => 'color: #66cc66;'
-            ),
+        ),
         'SCRIPT' => array(
 
             0 => '',
@@ -229,7 +225,7 @@ $language_data = array (
             2 => '',
             3 => ''
 
-            ),
+        ),
         'REGEXPS' => array(
             0 => 'color: #0000ff; font-weight: bold;',
             1 => 'color: #000080; font-weight: bold;',
@@ -244,8 +240,8 @@ $language_data = array (
             8 => 'color: #b218b2; font-weight: bold;',
             9 => 'color: #b218b2; font-weight: bold;'
 
-            )
-        ),
+        )
+    ),
     'URLS' => array(
         1 => '',
         2 => '',
@@ -258,11 +254,10 @@ $language_data = array (
         7 => '',
         8 => '',
         9 => ''
-        ),
+    ),
 
     'OOLANG' => false,
-    'OBJECT_SPLITTERS' => array(
-        ),
+    'OBJECT_SPLITTERS' => array(),
     'REGEXPS' => array(
 
         0 => "&amp;[a-zA-Z_][a-zA-Z0-9_]*",
@@ -273,7 +268,7 @@ $language_data = array (
             GESHI_MODIFIERS => 'im',
             GESHI_BEFORE => '\\1',
             GESHI_AFTER => ''
-            ),
+        ),
 
         2 => array(
             GESHI_SEARCH => '(^\\s*)(\\*.*;)',
@@ -282,7 +277,7 @@ $language_data = array (
 
             GESHI_BEFORE => '\\1',
             GESHI_AFTER => ''
-            ),
+        ),
         3 => array(
 
             GESHI_SEARCH => '(.*;\\s*)(\\*.*;)',
@@ -291,7 +286,7 @@ $language_data = array (
             GESHI_BEFORE => '\\1',
 
             GESHI_AFTER => ''
-            ),
+        ),
         4 => array(
             GESHI_SEARCH => '(^\\s*)(%\\*.*;)',
 
@@ -300,7 +295,7 @@ $language_data = array (
             GESHI_BEFORE => '\\1',
             GESHI_AFTER => ''
 
-            ),
+        ),
         5 => array(
             GESHI_SEARCH => '(^ERROR.*)',
             GESHI_REPLACE => '\\1',
@@ -308,7 +303,7 @@ $language_data = array (
             GESHI_MODIFIERS => 'im',
             GESHI_BEFORE => '',
             GESHI_AFTER => ''
-            ),
+        ),
 
         6 => array(
             GESHI_SEARCH => '(^WARNING.*)',
@@ -317,7 +312,7 @@ $language_data = array (
 
             GESHI_BEFORE => '',
             GESHI_AFTER => ''
-            ),
+        ),
         7 => array(
 
             GESHI_SEARCH => '(^NOTE.*)',
@@ -326,7 +321,7 @@ $language_data = array (
             GESHI_BEFORE => '',
 
             GESHI_AFTER => ''
-            ),
+        ),
         8 => array(
             GESHI_SEARCH => '(^\\s*)(CARDS.*)(^\\s*;\\s*$)',
 
@@ -335,7 +330,7 @@ $language_data = array (
             GESHI_BEFORE => '\\1',
             GESHI_AFTER => '\\3'
 
-            ),
+        ),
         9 => array(
             GESHI_SEARCH => '(^\\s*)(DATALINES.*)(^\\s*;\\s*$)',
             GESHI_REPLACE => '\\2',
@@ -343,15 +338,12 @@ $language_data = array (
             GESHI_MODIFIERS => 'sim',
             GESHI_BEFORE => '\\1',
             GESHI_AFTER => '\\3'
-            )
-
-        ),
-    'STRICT_MODE_APPLIES' => GESHI_MAYBE,
-    'SCRIPT_DELIMITERS' => array(
-        ),
-    'HIGHLIGHT_STRICT_BLOCK' => array(
-
         )
+
+    ),
+    'STRICT_MODE_APPLIES' => GESHI_MAYBE,
+    'SCRIPT_DELIMITERS' => array(),
+    'HIGHLIGHT_STRICT_BLOCK' => array()
 );
 
 ?>

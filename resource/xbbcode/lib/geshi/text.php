@@ -3,7 +3,7 @@
  * text.php
  * --------
  * Author: Sean Hanna (smokingrope@gmail.com)
- * Copyright: (c) 2006 Sean Hanna 
+ * Copyright: (c) 2006 Sean Hanna
  * Release Version: 1.0.7.18
  * Date Started: 04/23/2006
  *
@@ -20,8 +20,8 @@
  *
  * TODO (updated 04/27/2006)
  * -------------------------
- * 
- * 
+ *
+ *
  *************************************************************************************
  *
  *     This file is part of GeSHi.
@@ -40,38 +40,37 @@
  *   along with GeSHi; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
-
  ************************************************************************************/
-$language_data = array (
-	'LANG_NAME' => 'Text',
-	'COMMENT_SINGLE' => array( ),
-	'COMMENT_MULTI' => array( ),
-	'CASE_KEYWORDS' => GESHI_CAPS_NO_CHANGE,
-	'QUOTEMARKS' => array(),
-	'ESCAPE_CHAR' => '',
-	'KEYWORDS' => array( ),
-	'SYMBOLS' => array( ),
-	'CASE_SENSITIVE' => array(
-		GESHI_COMMENTS => false
-		),
-	'STYLES' => array(
-		'KEYWORDS' => array(),
-		'COMMENTS' => array(),
-		'ESCAPE_CHAR' => array(),
-		'BRACKETS' => array(),
-		'STRINGS' => array(),
-		'NUMBERS' => array(),
-		'METHODS' => array(),
-		'SYMBOLS' => array(),
-		'SCRIPT' => array(),
-		'REGEXPS' => array()
-		),
-	'OOLANG' => false,
-	'OBJECT_SPLITTERS' => array(),
-	'REGEXPS' => array(	),
-	'STRICT_MODE_APPLIES' => GESHI_NEVER,
-	'SCRIPT_DELIMITERS' => array( ),
-	'HIGHLIGHT_STRICT_BLOCK' => array( )
+$language_data = array(
+    'LANG_NAME' => 'Text',
+    'COMMENT_SINGLE' => array(),
+    'COMMENT_MULTI' => array(),
+    'CASE_KEYWORDS' => GESHI_CAPS_NO_CHANGE,
+    'QUOTEMARKS' => array(),
+    'ESCAPE_CHAR' => '',
+    'KEYWORDS' => array(),
+    'SYMBOLS' => array(),
+    'CASE_SENSITIVE' => array(
+        GESHI_COMMENTS => false
+    ),
+    'STYLES' => array(
+        'KEYWORDS' => array(),
+        'COMMENTS' => array(),
+        'ESCAPE_CHAR' => array(),
+        'BRACKETS' => array(),
+        'STRINGS' => array(),
+        'NUMBERS' => array(),
+        'METHODS' => array(),
+        'SYMBOLS' => array(),
+        'SCRIPT' => array(),
+        'REGEXPS' => array()
+    ),
+    'OOLANG' => false,
+    'OBJECT_SPLITTERS' => array(),
+    'REGEXPS' => array(),
+    'STRICT_MODE_APPLIES' => GESHI_NEVER,
+    'SCRIPT_DELIMITERS' => array(),
+    'HIGHLIGHT_STRICT_BLOCK' => array()
 );
 if (isset($this) && is_a($this, 'GeSHi')) {
     $this->set_numbers_highlighting(false);

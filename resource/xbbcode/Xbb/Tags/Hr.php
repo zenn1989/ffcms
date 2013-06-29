@@ -22,12 +22,16 @@
  ******************************************************************************/
 
 // Класс для тега [hr]
-class Xbb_Tags_Hr extends bbcode {
+class Xbb_Tags_Hr extends bbcode
+{
     public $is_close = true;
     public $rbr = 1;
     public $behaviour = 'hr';
-    function get_html($tree = null) {
+
+    function get_html($tree = null)
+    {
         return '<hr class="bb" />';
     }
 }
+
 ?>

@@ -25,56 +25,56 @@
 
 // Список шрифтов, предлагаемых на выбор пользователя
 $fonts = array(
-    'Arial'          ,
-    'Courier'        ,
-    'Geneva'         ,
-    'Impact'         ,
-    'Optima'         ,
+    'Arial',
+    'Courier',
+    'Geneva',
+    'Impact',
+    'Optima',
     'Times New Roman',
-    'Verdana'        ,
-    'Tahoma'         ,
+    'Verdana',
+    'Tahoma',
     'Symbol'
 );
 // Палитра цветов, предлагаемых на выбор пользователя
 $colors = array(
-    array('Black',  'Maroon',  'Green',  'Navy'),
-    array('Silver', 'Red',     'Lime',   'Blue'),
-    array('Gray',   'Purple',  'Olive',  'Teal'),
-    array('White',  'Fuchsia', 'Yellow', 'Aqua')
+    array('Black', 'Maroon', 'Green', 'Navy'),
+    array('Silver', 'Red', 'Lime', 'Blue'),
+    array('Gray', 'Purple', 'Olive', 'Teal'),
+    array('White', 'Fuchsia', 'Yellow', 'Aqua')
 );
 // Основные смайлики, предлагаемые на выбор пользователя
 $smiles = array(
     array(
-        array('1.gif' , ':D'     ),
-        array('2.gif' , ':)'     ),
-        array('3.gif' , ':('     ),
-        array('4.gif' , ':heap:' ),
-        array('5.gif' , ':ooi:'  ),
+        array('1.gif', ':D'),
+        array('2.gif', ':)'),
+        array('3.gif', ':('),
+        array('4.gif', ':heap:'),
+        array('5.gif', ':ooi:'),
     ),
     array(
-        array('6.gif' , ':so:'   ),
-        array('7.gif' , ':surp:' ),
-	    array('8.gif' , ':ag:'   ),
-	    array('9.gif' , ':ir:'   ),
-	    array('10.gif', ':oops:' ),
+        array('6.gif', ':so:'),
+        array('7.gif', ':surp:'),
+        array('8.gif', ':ag:'),
+        array('9.gif', ':ir:'),
+        array('10.gif', ':oops:'),
     ),
-	array(
-	    array('11.gif', ':P'     ),
-	    array('12.gif', ':cry:'  ),
-	    array('13.gif', ':rage:' ),
-	    array('15.gif', ':roll:' ),
-	    array('16.gif', ':wink:' ),
-	),
-	array(
-	    array('17.gif', ':yes:'  ),
-	    array('18.gif', ':bot:'  ),
-	    array('19.gif', ':z)'    ),
-	    array('20.gif', ':arrow:'),
-	    array('41.gif', ':lol:'  ),
-	),
-	array(
-	    array('58.gif', ':heart:'),
-	    array('64.gif', ':gift:' ),
-	    array('74.gif', ':pnk:'  ),
-	),
+    array(
+        array('11.gif', ':P'),
+        array('12.gif', ':cry:'),
+        array('13.gif', ':rage:'),
+        array('15.gif', ':roll:'),
+        array('16.gif', ':wink:'),
+    ),
+    array(
+        array('17.gif', ':yes:'),
+        array('18.gif', ':bot:'),
+        array('19.gif', ':z)'),
+        array('20.gif', ':arrow:'),
+        array('41.gif', ':lol:'),
+    ),
+    array(
+        array('58.gif', ':heart:'),
+        array('64.gif', ':gift:'),
+        array('74.gif', ':pnk:'),
+    ),
 );

@@ -52,8 +52,10 @@ $pak = file($this->_current_path . 'images/smiles/Set_Smiles_YarNET.pak');
 $smiles = array();
 foreach ($pak as $val) {
     $val = trim($val);
-    if (! $val || '#' == $val{0}) { continue; }
-    list($gif, $alt, $symbol) = explode('=+:',$val);
+    if (!$val || '#' == $val{0}) {
+        continue;
+    }
+    list($gif, $alt, $symbol) = explode('=+:', $val);
     $smiles[$symbol] = '<img src="' . $path . htmlspecialchars($gif) . '" alt="'
         . htmlspecialchars($alt) . '" />';
 }

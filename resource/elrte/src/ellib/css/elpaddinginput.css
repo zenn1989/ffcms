@@ -1,11 +1,13 @@
 .el-paddinginput {
-	display: block;
-	white-space: nowrap;
+    display: block;
+    white-space: nowrap;
 }
+
 .el-paddinginput input {
-	margin :0 1px 0 0;
-	border:1px solid #ccc;
+    margin: 0 1px 0 0;
+    border: 1px solid #ccc;
 }
+
 .el-paddinginput select {
-	padding:0;
+    padding: 0;
 }

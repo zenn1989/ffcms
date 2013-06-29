@@ -2,15 +2,16 @@
 
 class mod_comments_front implements mod_front
 {
-    public function before() {}
+    public function before()
+    {
+    }
 
     public function after()
     {
-        global $page,$template,$user,$language;
-        if(!$page->isMain() && $template->tagRepeatCount('com.comment_list') == 1 && $template->tagRepeatCount('com.comment_form') == 1 && !$page->isNullPage())
-        {
+        global $page, $template, $user, $language;
+        if (!$page->isMain() && $template->tagRepeatCount('com.comment_list') == 1 && $template->tagRepeatCount('com.comment_form') == 1 && !$page->isNullPage()) {
             $template->globalSet('com.comment_list', $this->buildComments());
-            if($user->get('id') > 0)
+            if ($user->get('id') > 0)
                 $template->globalSet('com.comment_form', $this->buildFormAdd());
             else
                 $template->globalSet('com.comment_form', $template->stringNotify('warning', $language->get('comments_register_msg')));
@@ -20,7 +21,7 @@ class mod_comments_front implements mod_front
 
     private function buildComments()
     {
-        global $template,$database,$constant,$page,$user,$system,$extension,$hook;
+        global $template, $database, $constant, $page, $user, $system, $extension, $hook;
         $userid = $user->get('id');
         $theme_list = $template->tplget('comment_list', 'modules/mod_comments/');
         $comment_count = $extension->getConfig('comments_count', 'comments', 'modules', 'int');
@@ -35,20 +36,16 @@ class mod_comments_front implements mod_front
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $user->listload($system->extractFromMultyArray('author', $result));
-        foreach($result as $item)
-        {
+        foreach ($result as $item) {
             $edit_link = null;
             $delete_link = null;
             $poster_id = $item['author'];
             $editconfig = $extension->getConfig('edit_time', 'comments', 'modules', 'int');
-            if($userid > 0)
-            {
-                if(($poster_id == $userid && (time()-$item['time']) <= $editconfig) || $user->get('mod_comment_edit') > 0)
-                {
+            if ($userid > 0) {
+                if (($poster_id == $userid && (time() - $item['time']) <= $editconfig) || $user->get('mod_comment_edit') > 0) {
                     $edit_link = $template->assign('comment_id', $item['id'], $template->tplget('comment_link_edit', 'modules/mod_comments/'));
                 }
-                if($user->get('mod_comment_delete') > 0)
-                {
+                if ($user->get('mod_comment_delete') > 0) {
                     $delete_link = $template->assign('comment_id', $item['id'], $template->tplget('comment_link_delete', 'modules/mod_comments/'));
                 }
             }
@@ -66,7 +63,6 @@ class mod_comments_front implements mod_front
         return $template->tplget('comment_form', 'modules/mod_comments/');
     }
 }
-
 
 
 ?>

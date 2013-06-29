@@ -1,3 +1,3 @@
 <tr>
-	{$raw_td}
+    {$raw_td}
 </tr>

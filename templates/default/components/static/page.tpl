@@ -1,4 +1,4 @@
 <h2>{$title}</h2>
-<hr />
+<hr/>
 {$text}
 <p style="text-align:right;">{$date}</p>
