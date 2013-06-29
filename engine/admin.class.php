@@ -75,17 +75,57 @@ class admin
 
     private function loadDumper()
     {
-        global $template, $language;
+        global $template, $language, $backup, $system, $constant;
         $action_page_title = $language->get('admin_nav_li_backup') . " : ";
         $menu_theme = $template->tplget('config_menu', null, true);
         $menu_link = null;
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=export', $language->get('admin_dump_export')), $menu_theme);
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=import', $language->get('admin_dump_import')), $menu_theme);
+        $work_body = null;
         if ($this->getAction() == "export" || $this->getAction() == null) {
+            if ($system->post('submit')){
+                $backup->makeDump();
+            }
             $action_page_title .= $language->get('admin_dump_export');
-            $work_body = "AZAZA EXPORT";
+            $reader = scandir($constant->root . "/backup/");
+            $date_array = array();
+            foreach($reader as $files) {
+                if(!$system->prefixEquals($files, '.')) {
+                    $file_date_array = $system->altexplode('_', $files);
+                    $file_date = array_shift($file_date_array);
+                    $date_array = $system->arrayAdd($system->toUnixTime($file_date), $date_array);
+                }
+            }
+            arsort($date_array);
+            $last_backup_date = null;
+            if($date_array[0] == null)
+            {
+                $last_backup_date = $language->get('admin_dump_notexist');
+            }
+            else
+            {
+                $last_backup_date = $system->toDate($date_array[0], 'd');
+            }
+            $work_body = $template->assign('last_backup_date', $last_backup_date, $template->tplget('backup_export', null, true));
         } elseif ($this->getAction() == "import") {
             $action_page_title .= $language->get('admin_dump_import');
+            $scan = scandir($constant->root . "/backup");
+            $date_array = array();
+            foreach($scan as $file) {
+                if(!$system->prefixEquals($file, ".")) {
+                    $file_explode = $system->altexplode('_', $file);
+                    $file_date = array_shift($file_explode);
+                    $date_array = $system->arrayAdd($system->toUnixTime($file_date), $date_array);
+                }
+            }
+            arsort($date_array);
+            $raw_prepare_array = array();
+            foreach($date_array as $file_date) {
+                $read_date = $system->toDate($file_date, 'd');
+                $raw_prepare_array[] = array($read_date, '/backup/'.$read_date.'_www.zip', '/backup/'.$read_date.'_sql.sql.gz');
+            }
+            $raw_table = $this->tplRawTable(array($language->get('admin_dump_th_date'), $language->get('admin_dump_th_www'), $language->get('admin_dump_th_sql')), $raw_prepare_array);
+            $work_body = $template->assign('raw_table_files', $raw_table, $template->tplget('backup_import', null, true));
         }
         $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
         return $body_form;

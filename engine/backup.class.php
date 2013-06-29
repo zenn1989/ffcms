@@ -3,6 +3,16 @@
 class backup
 {
     /**
+     * Создание резервной копии mysql и www
+     */
+    public function makeDump()
+    {
+        global $constant,$system;
+        $file_mainname = $system->toDate(time(), 'd')."_backup";
+        $this->zipCreate($constant->root, $constant->root . "/backup/".$file_mainname . "_www.zip");
+        $this->mysqlDump("/backup/".$file_mainname . "_sql.sql.gz");
+    }
+    /**
      * Authors: http://stackoverflow.com/questions/1334613/how-to-recursively-zip-a-directory-in-php thx for that
      * @param $source
      * @param $destination
@@ -10,7 +20,7 @@ class backup
      * @param array $additionalIgnoreFiles
      * @return bool
      */
-    public function zipCreate($source, $destination, $include_dir = false, $additionalIgnoreFiles = array())
+    private function zipCreate($source, $destination, $include_dir = false, $additionalIgnoreFiles = array())
     {
         // Ignore "." and ".." folders by default
         $defaultIgnoreFiles = array('.', '..');
@@ -75,9 +85,12 @@ class backup
         return true;
     }
 
-    public function mysqlDump()
+    private function mysqlDump($dumpname)
     {
-
+        global $constant;
+        require_once($constant->root . "/resource/phpmysqldumper/MySQLDump.php");
+        $dumper = new MySQLDump(new mysqli($constant->db['host'], $constant->db['user'], $constant->db['pass'], $constant->db['db']));
+        $dumper->save($constant->root . $dumpname);
     }
 }
 
