@@ -60,6 +60,8 @@ class api
     private function deleteComment()
     {
         global $user, $system, $constant, $database;
+        if($database->isDown())
+            return;
         if ($user->get('id') > 0 && $user->get('mod_comment_delete') > 0) {
             $comment_id = (int)$system->get('id');
             $stmt = $database->con()->prepare("DELETE FROM {$constant->db['prefix']}_mod_comments WHERE id = ?");
@@ -72,7 +74,9 @@ class api
 
     private function editPostComment()
     {
-        global $system, $database, $constant, $user, $extension;
+        global $system, $database, $constant, $user;
+        if($database->isDown())
+            return;
         $comment_id = (int)$system->post('comment_id');
         if ($user->get('id') > 0 && ($user->get('mod_comment_edit') > 0 || $this->commentEditCondition($comment_id))) {
             $comment_text = $system->nohtml($system->post('comment_text'));
@@ -90,6 +94,8 @@ class api
     private function commentEditCondition($id)
     {
         global $database, $constant, $user, $extension;
+        if($database->isDown())
+            return;
         if ($id > 0) {
             $stmt = $database->con()->prepare("SELECT author,time FROM {$constant->db['prefix']}_mod_comments WHERE id = ?");
             $stmt->bindParam(1, $id, PDO::PARAM_INT);
@@ -107,6 +113,8 @@ class api
     private function editComment()
     {
         global $system, $template, $database, $constant, $language;
+        if($database->isDown())
+            return;
         $comment_id = (int)$system->get('id');
         $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_mod_comments WHERE id = ?");
         $stmt->bindParam(1, $comment_id, PDO::PARAM_INT);
@@ -124,6 +132,8 @@ class api
     private function postComment()
     {
         global $system, $constant, $database, $user, $extension, $template, $language;
+        if($database->isDown())
+            return;
         $text = $system->nohtml($system->post('comment_message'));
         $object = $system->post('object');
         $id = $system->post('id');
@@ -169,6 +179,8 @@ class api
     public function viewComment($notify = null)
     {
         global $system, $database, $constant, $user, $template, $extension, $hook;
+        if($database->isDown())
+            return;
         $object = $system->post('object');
         $id = $system->post('id');
         $hash = $system->post('hash');
@@ -230,6 +242,8 @@ class api
     public function doPostWall()
     {
         global $system, $user, $database, $constant, $extension;
+        if($database->isDown())
+            return;
         $root_post_id = $system->get('id');
         $writer_id = $user->get('id');
         $message = $system->nohtml($system->post('message'));
@@ -260,7 +274,9 @@ class api
 
     public function loadUserWall($limit = false)
     {
-        global $system, $database, $constant, $user, $language, $extension, $template;
+        global $system, $database, $constant, $user, $language, $template;
+        if($database->isDown())
+            return;
         $root_post_id = $system->get('id');
         if ($system->isInt($root_post_id)) {
             $theme = $template->tplget('api_wallanswer', 'components/usercontrol/');

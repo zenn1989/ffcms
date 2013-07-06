@@ -33,10 +33,11 @@ class com_static_back
             $tbody = null;
             $static_array_data = array();
             while ($res = $stmt->fetch()) {
+                $lang_title = unserialize($res['title']);
                 $edit_link = "?object=components&id=" . $admin->getID() . "&action=edit&page=" . $res['id'];
                 $delete_link = "?object=components&id=" . $admin->getID() . "&action=delete&page=" . $res['id'];
                 $manage_link = $template->assign(array('page_edit', 'page_delete'), array($edit_link, $delete_link), $static_manage);
-                $title_with_edit = '<a href="' . $edit_link . '">' . $res['title'] . '</a>';
+                $title_with_edit = '<a href="' . $edit_link . '">' . $lang_title[$constant->lang] . '</a>';
                 $path_with_view = '<a href="' . $constant->url . '/' . $this->com_pathway . '/' . $res['pathway'] . '" target="_blank">/' . $this->com_pathway . '/' . $res['pathway'] . '</a>';
                 $static_array_data[] = array($res['id'], $title_with_edit, $path_with_view, $manage_link);
             }
@@ -48,12 +49,12 @@ class com_static_back
             if ($system->post('save')) {
 
                 $page_id = $admin->getPage();
-                $page_title = $system->nohtml($system->post('title'));
+                $page_title = serialize($system->nohtml($system->post('title')));
                 $page_way = $system->nohtml($system->post('pathway') . ".html");
-                $page_text = $system->post('text');
-                $page_description = $system->nohtml($system->post('description'));
-                $page_keywords = $system->nohtml($system->post('keywords'));
-                $page_date = $system->nohtml($system->post('date'));
+                $page_text = serialize($system->post('text'));
+                $page_description = serialize($system->nohtml($system->post('description')));
+                $page_keywords = serialize($system->nohtml($system->post('keywords')));
+                $page_date = $system->toUnixTime($system->post('date'));
                 if ($this->check_pageway($page_way, $page_id)) {
                     $stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_com_static SET title = ?, text = ?, pathway = ?, description = ?, keywords = ?, date = ? WHERE id = ?");
                     $stmt->bindParam(1, $page_title, PDO::PARAM_STR);
@@ -61,63 +62,112 @@ class com_static_back
                     $stmt->bindParam(3, $page_way, PDO::PARAM_STR);
                     $stmt->bindParam(4, $page_description, PDO::PARAM_STR);
                     $stmt->bindParam(5, $page_keywords, PDO::PARAM_STR);
-                    $stmt->bindParam(6, $page_date, PDO::PARAM_STR);
+                    $stmt->bindParam(6, $page_date, PDO::PARAM_INT);
                     $stmt->bindParam(7, $page_id, PDO::PARAM_INT);
                     $stmt->execute();
                     $stmt = null;
-                    $notify = $template->compileNotify('success', $language->get('admin_component_static_page_saved'), true);
+                    $notify = $template->stringNotify('success', $language->get('admin_component_static_page_saved'), true);
                 } else {
-                    $notify = $template->compileNotify('error', $language->get('admin_component_static_page_notsaved'), true);
+                    $notify = $template->stringNotify('error', $language->get('admin_component_static_page_notsaved'), true);
                 }
             }
             $action_page_title .= $language->get('admin_component_static_edit');
             $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_static WHERE id = ?");
+            $theme_body = $template->get('static_edit', 'components/');
+            $theme_li = $template->get('static_language_li', 'components/');
+            $theme_head = $template->get('static_edit_header', 'components/');
             $page_id = $admin->getPage();
             $stmt->bindParam(1, $page_id, PDO::PARAM_INT);
             $stmt->execute();
             if ($stmt->rowCount() != 1) {
                 $work_body = "<p>Not found!</p>";
             } else {
+                $precompile_body = null;
+                $precompile_head = null;
+                $is_active_first_element = true;
+                foreach($language->getAvailable() as $current_language) {
+                    $precompile_head .= $template->assign(array('current_language', 'is_active_element'), array($current_language, $is_active_first_element ? 'class="active"' : null), $theme_li);
+                    $precompile_body .= $template->assign(array('current_language', 'is_active_element'), array($current_language, $is_active_first_element ? 'active' : null), $theme_body);
+                    $is_active_first_element = false;
+                }
+                $work_body = $template->assign(array('selecter_li_languages', 'selecter_body_languages'), array($precompile_head, $precompile_body), $theme_head);
                 $result = $stmt->fetch();
                 $way = $system->noextention($result['pathway']);
-                $work_body = $template->assign(array('static_title', 'static_text', 'static_path', 'static_description', 'static_keywords', 'static_date', 'notify_message'),
-                    array($result['title'], $result['text'], $way, $result['description'], $result['keywords'], $result['date'], $notify),
-                    $template->tplget('static_edit', 'components/', true));
+                $date = $system->toDate($result['date'], 'd');
+                $page_title = unserialize($result['title']);
+                $page_text = unserialize($result['text']);
+                $page_description = unserialize($result['description']);
+                $page_keywords = unserialize($result['keywords']);
+                foreach($language->getAvailable() as $current_language) {
+                    $work_body = $template->assign(array('static_title_'.$current_language, 'static_text_'.$current_language, 'static_description_'.$current_language, 'static_keywords_'.$current_language),
+                        array($page_title[$current_language], $page_text[$current_language], $page_description[$current_language], $page_keywords[$current_language]),
+                        $work_body);
+                }
+                $work_body = $template->assign(array('static_path', 'static_date', 'notify'), array($way, $date, $notify), $work_body);
+                //$work_body = $template->assign(array('static_title', 'static_text', 'static_path', 'static_description', 'static_keywords', 'static_date', 'notify_message'),
+                   // array($result['title'], $result['text'], $way, $result['description'], $result['keywords'], $result['date'], $notify),
+                    //$theme_body);
+                //$work_body = $theme_head;
             }
         } elseif ($admin->getAction() == "add") {
-            $this->check_pageway('text.html');
             $action_page_title .= $language->get('admin_component_static_add');
+            $theme_body = $template->get('static_edit', 'components/');
+            $theme_li = $template->get('static_language_li', 'components/');
+            $theme_head = $template->get('static_edit_header', 'components/');
+            $notify = null;
+            $page_title = array();
+            $page_way = null;
+            $page_text = array();
+            $page_description = array();
+            $page_keywords = array();
+            $page_date = null;
             if ($system->post('save')) {
-                $page_id = $admin->getPage();
                 $page_title = $system->nohtml($system->post('title'));
                 $page_way = $system->nohtml($system->post('pathway') . ".html");
                 $page_text = $system->post('text');
                 $page_description = $system->nohtml($system->post('description'));
                 $page_keywords = $system->nohtml($system->post('keywords'));
-                $page_date = $system->nohtml($system->post('date'));
+                $page_date = $system->toUnixTime($system->post('date'));
                 $page_owner = $user->get('id');
-                if ($this->check_pageway($page_way)) {
+                if (strlen($page_title[$constant->lang]) < 1) {
+                    $notify .= $template->stringNotify('error', $language->get('admin_component_static_page_titlenull'));
+                } elseif (!$this->check_pageway($page_way)) {
+                    $notify .= $template->stringNotify('error', $language->get('admin_component_static_page_pathused'), true);
+                } else {
+                    $serial_title = serialize($page_title);
+                    $serial_text = serialize($page_text);
+                    $serial_description = serialize($page_description);
+                    $serial_keywords = serialize($page_keywords);
+                    if($page_date == null)
+                        $page_date = time();
                     $stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_com_static (title, text, owner, pathway, date, description, keywords) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                    $stmt->bindParam(1, $page_title, PDO::PARAM_STR);
-                    $stmt->bindParam(2, $page_text, PDO::PARAM_STR);
+                    $stmt->bindParam(1, $serial_title, PDO::PARAM_STR);
+                    $stmt->bindParam(2, $serial_text, PDO::PARAM_STR);
                     $stmt->bindParam(3, $page_owner, PDO::PARAM_INT);
                     $stmt->bindParam(4, $page_way, PDO::PARAM_STR);
-                    $stmt->bindParam(5, $page_date, PDO::PARAM_STR);
-                    $stmt->bindParam(6, $page_description, PDO::PARAM_STR);
-                    $stmt->bindParam(7, $page_keywords, PDO::PARAM_STR);
+                    $stmt->bindParam(5, $page_date, PDO::PARAM_INT);
+                    $stmt->bindParam(6, $serial_description, PDO::PARAM_STR);
+                    $stmt->bindParam(7, $serial_keywords, PDO::PARAM_STR);
                     $stmt->execute();
-                    $work_body = $template->assign('static_date', date('Y-m-d'), $template->tplget('static_edit', 'components/', true));
                     $system->redirect($_SERVER['PHP_SELF'] . "?object=components&id=" . $admin->getID());
-                } else {
-                    $notify = $template->compileNotify('error', $language->get('admin_component_static_page_notsaved'), true);
-                    $work_body = $template->assign(array('static_title', 'static_text', 'static_path', 'static_description', 'static_keywords', 'static_date', 'notify_message'),
-                        array($page_title, $page_text, $system->noextention($page_way), $page_description, $page_keywords, $page_date, $notify),
-                        $template->tplget('static_edit', 'components/', true));
                 }
-            } else {
-                $work_body = $template->assign(array('static_date'),
-                    array(date('Y-m-d')),
-                    $template->tplget('static_edit', 'components/', true));
+            }
+            $precompile_body = null;
+            $precompile_head = null;
+            $is_active_first_element = true;
+            foreach($language->getAvailable() as $current_language) {
+                $precompile_head .= $template->assign(array('current_language', 'is_active_element'), array($current_language, $is_active_first_element ? 'class="active"' : null), $theme_li);
+                $precompile_body .= $template->assign(array('current_language', 'is_active_element'), array($current_language, $is_active_first_element ? 'active' : null), $theme_body);
+                $is_active_first_element = false;
+            }
+            $work_body = $template->assign(array('selecter_li_languages', 'selecter_body_languages', 'notify'), array($precompile_head, $precompile_body, $notify), $theme_head);
+            if($notify != null) {
+                foreach($language->getAvailable() as $current_language) {
+                    $work_body = $template->assign(array('static_title_'.$current_language, 'static_text_'.$current_language, 'static_description_'.$current_language, 'static_keywords_'.$current_language),
+                    array($page_title[$current_language], $page_text[$current_language], $page_description[$current_language], $page_keywords[$current_language]),
+                    $work_body);
+                }
+                $work_body = $template->assign(array('static_path', 'static_date'), array($system->noextention($page_way), ''), $work_body);
             }
         } elseif ($admin->getAction() == "delete" && $admin->getPage() > 0) {
             $action_page_title .= $language->get('admin_component_static_delete');

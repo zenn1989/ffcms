@@ -46,7 +46,7 @@ class com_static_front implements com_front
      */
     private function loadSinglePage($pathway)
     {
-        global $database, $constant, $template, $meta;
+        global $database, $constant, $template, $meta, $system, $language;
         $query = "SELECT * FROM {$constant->db['prefix']}_com_static WHERE pathway = ?";
         $stmt = $database->con()->prepare($query);
         $stmt->bindParam(1, $pathway, PDO::PARAM_STR);
@@ -55,11 +55,15 @@ class com_static_front implements com_front
         if ($stmt->rowCount() != 1) {
             return $template->compile404();
         }
-        $com_theme = $template->tplget("page", "components/static/");
-        $meta->add('title', $result['title']);
-        $meta->set('keywords', $result['keywords']);
-        $meta->set('description', $result['description']);
-        return $template->assign(array('title', 'text', 'date'), array($result['title'], $result['text'], $result['date']), $com_theme);
+        $com_theme = $template->get("page", "components/static/");
+        $serial_title = unserialize($result['title']);
+        $serial_text = unserialize($result['text']);
+        $serial_keywords = unserialize($result['keywords']);
+        $serial_description = unserialize($result['description']);
+        $meta->add('title', $serial_title[$language->getCustom()]);
+        $meta->set('keywords', $serial_keywords[$language->getCustom()]);
+        $meta->set('description', $serial_description[$language->getCustom()]);
+        return $template->assign(array('title', 'text', 'date'), array($serial_title[$language->getCustom()], $serial_text[$language->getCustom()], $system->toDate($result['date'], 'd')), $com_theme);
 
     }
 

@@ -1,3 +1,4 @@
+var changed_path = false;
 $(document).ready(function () {
     $('#setcurrentdate').change(function () {
         var $event_click = $(this);
@@ -9,6 +10,10 @@ $(document).ready(function () {
         }
     });
 });
+function pathCallback()
+{
+    changed_path = true;
+}
 var keywords1, keywords2 = new Array(), keywords3 = new Array();
 function strip_tags(str, allow) {
     // making sure the allow arg is a string containing only tags in lowercase (<a><b><c>)
@@ -32,8 +37,8 @@ function getKeywords(s) {
     tmp = getWords(s);
     return tmp.split(" "); // returns Array of words
 }
-function countKeywords() {
-    var s = $('#textobject').elrte('val');
+function countKeywords(current_lang) {
+    var s = $('#textobject'+current_lang+'.wysi').elrte('val');
     var minLengthKeyword = 3;
     var minRepeatKeyword = 3;
     var coincidence = parseFloat(0.7);
@@ -65,7 +70,7 @@ function countKeywords() {
             keywords3.push(currentWord);
         }
     }
-    document.getElementById('keywords').value = keywords3.slice(0, keywords_count);
+    document.getElementById('keywords['+current_lang+']').value = keywords3.slice(0, keywords_count);
     keywords2 = new Array();
     keywords3 = new Array();
 }
@@ -88,7 +93,7 @@ Array.prototype.remove = function (s) {
 
 Array.prototype.grep = grep;
 
-var default_out_length = $('#out').length;
+
 function JSTranslit() {
     this.strTranslit = function (el) {
         new_el = document.getElementById('out');
@@ -159,8 +164,8 @@ function JSTranslit() {
         A["ь"] = "";
         A["б"] = "b";
         A["ю"] = "yu";
-        A[" "] = "_";
-        if (default_out_length < 1) {
+        A[" "] = "-";
+        if (!changed_path) {
             new_el.value = el.value.replace(/[^A-Za-z0-9\u0410-\u0451_ ]/g, '').replace(/([\u0410-\u0451 ])/g,
                 function (str, p1, offset, s) {
                     if (A[str] != 'undefined') {

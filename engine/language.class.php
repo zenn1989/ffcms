@@ -4,16 +4,28 @@
  */
 class language
 {
-
     private $lang = array();
+    private $use_lang = null;
+    private $load_add_front = false;
+    private $load_add_back = false;
+    private $available = array();
 
-    function language()
+    function language($lang = null)
     {
-        global $constant;
+        global $constant, $system;
+        $this->loadAvailableLanguages();
+        $this->use_lang = $constant->lang;
+        if($lang != null && $this->canUseLanguage($lang))
+        {
+            $this->use_lang = $lang;
+        }
+        $file = null;
         if (loader == "back") {
-            $file = $constant->root . '/language/back_' . $constant->lang . '.lang';
+            $file = $constant->root . '/language/' . $this->use_lang . '.back.lang';
+        } elseif(loader == "install") {
+            $file = $constant->root . '/language/' . $this->use_lang . '.install.lang';
         } else {
-            $file = $constant->root . '/language/front_' . $constant->lang . '.lang';
+            $file = $constant->root . '/language/' . $this->use_lang . '.front.lang';
         }
 
         if (file_exists($file)) {
@@ -23,8 +35,42 @@ class language
                 // a<=>b is a min. example
                 if (strlen($line) > 4) {
                     list($tag, $value) = explode("<=>", $line);
-                    $this->lang[$tag] = $value;
+                    if(!$system->prefixEquals($tag, '#'))
+                        $this->lang[$tag] = $value;
                 }
+            }
+        }
+    }
+
+    public function getCustom()
+    {
+        return $this->use_lang;
+    }
+
+    public function canUseLanguage($lang)
+    {
+        if(in_array($lang, $this->available))
+            return true;
+        return false;
+    }
+
+    public function getAvailable()
+    {
+        return $this->available;
+    }
+
+    private function loadAvailableLanguages()
+    {
+        global $constant, $system;
+        $language_files = scandir($constant->root . '/language/');
+        $found_lang = array();
+        foreach($language_files as $file) {
+            if(!$system->prefixEquals('.', $file) && $system->suffixEquals($file, '.lang'))
+                $found_lang = $system->arrayAdd(strstr($file, '.', true), $found_lang);
+        }
+        foreach($found_lang as $found) {
+            if(file_exists($constant->root . '/language/' . $found . '.front.lang') && file_exists($constant->root . '/language/' . $found . '.back.lang') && file_exists($constant->root . '/language/' . $found . '.install.lang')) {
+                $this->available[] = $found;
             }
         }
     }
@@ -37,8 +83,36 @@ class language
         return $data;
     }
 
+    private function additionalLoad()
+    {
+        global $constant, $system;
+        $file = null;
+        if(loader == "back") {
+            $file = $constant->root . '/language/'. $this->use_lang . '.back.addition.lang';
+            $this->load_add_back = true;
+        } else {
+            $file = $constant->root . '/language/'. $this->use_lang . '.front.addition.lang';
+            $this->load_add_front = true;
+        }
+        if($file != null && file_exists($file)) {
+            $con = file_get_contents($file);
+            $add_array = explode("\n", $con);
+            foreach($add_array as $line) {
+                if(strlen($line) > 4) {
+                    list($tag, $value) = explode("<=>", $line);
+                    if(!$system->prefixEquals($tag, '#'))
+                        $this->lang[$tag] = $value;
+                }
+            }
+        }
+    }
+
     public function get($data)
     {
+        // содержимое не найдено? поищим в addition листах
+        if($this->lang[$data] == null && ((loader == "back" && !$this->load_add_back) || ((loader == "front" || loader == "api") && !$this->load_add_front))) {
+            $this->additionalLoad();
+        }
         return $this->lang[$data];
     }
 

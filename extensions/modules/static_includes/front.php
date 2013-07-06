@@ -10,7 +10,7 @@ class mod_static_includes_front implements mod_front
         $stmt = $database->con()->query("SELECT * FROM {$constant->db['prefix']}_mod_static_includes");
         $stmt->execute();
         while ($result = $stmt->fetch()) {
-            $page->setContentPosition($result['tag'], $template->setDefaults($result['template'], false), $result['index']);
+            $page->setContentPosition($result['tag'], $template->setDefaults($result['template']), $result['index']);
         }
     }
 

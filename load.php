@@ -1,5 +1,6 @@
 <?php
 
+require_once(root . "/config.php");
 require_once(root . "/engine/constant.class.php");
 require_once(root . "/engine/database.class.php");
 require_once(root . "/engine/language.class.php");

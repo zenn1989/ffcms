@@ -26,6 +26,7 @@ class constant
     public $mail = array();
 
     public $admin_tpl = 'admin';
+    public $install_tpl = 'install';
 
     // язык
     public $lang = 'ru';
@@ -39,7 +40,7 @@ class constant
 
     public $password_salt = "TjE3#81A@j9^am1@";
 
-    function __construct()
+    function constant()
     {
         global $config;
         $this->root = root;

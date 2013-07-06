@@ -296,7 +296,7 @@ class admin
             $component_back = $constant->root . '/extensions/hooks/' . $result['dir'] . '/back.php';
             $backend_config = null;
             if (file_exists($component_back)) {
-                $this->object_name = $result['name'];
+                $this->object_name = $language->get('admin_hook_'.$result['dir'].'.name') == null ? $result['dir'] : $language->get('admin_hook_'.$result['dir'].'.name');
                 require_once($component_back);
                 $class = "hook_{$result['dir']}_back";
                 $init = new $class;
@@ -319,29 +319,31 @@ class admin
             $prepare_theme = array();
             while ($result = $stmt->fetch()) {
                 $config_link = "?object=hooks&id=" . $result['id'];
+                $hook_name = $language->get('admin_hook_'.$result['dir'].'.name') == null ? $result['dir'] : $language->get('admin_hook_'.$result['dir'].'.name');
+                $hook_desc = $language->get('admin_hook_'.$result['dir'].'.desc') == null ? $result['dir'] : $language->get('admin_hook_'.$result['dir'].'.desc');
                 // вносим в список отключенных
                 if ($result['enabled'] == 0) {
                     $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array($config_link, '?object=hooks&id=' . $result['id'] . '&action=turn'), $template->tplget('manage_noactive', null, true));
                     $prepare_theme['dissabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
-                        array($result['id'], $result['name'], $result['description'], $iconset, $config_link),
+                        array($result['id'], $hook_name, $hook_desc, $iconset, $config_link),
                         $tbody);
                 } // иначе вносим в список включенных
                 else {
                     $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=hooks&id=' . $result['id'], '?object=hooks&id=' . $result['id'] . '&action=turn'), $template->tplget('manage_active', null, true));
                     $prepare_theme['enabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
-                        array($result['id'], $result['name'], $result['description'], $iconset, $config_link),
+                        array($result['id'], $hook_name, $hook_desc, $iconset, $config_link),
                         $tbody);
                 }
                 // вносим в список не установленных
                 if ($result['installed'] == 0) {
                     $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=hooks&id=' . $result['id'], '?object=hooks&id=' . $result['id'] . '&action=install'), $template->tplget('manage_install', null, true));
                     $prepare_theme['toinstall'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
-                        array($result['id'], $result['name'], $result['description'], $iconset),
+                        array($result['id'], $hook_desc, $hook_desc, $iconset),
                         $tbody);
                 }
                 $iconset = $template->assign('ext_config_link', '?object=hooks&id=' . $result['id'], $template->tplget('manage_all', null, true));
                 $prepare_theme['all'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
-                    array($result['id'], $result['name'], $result['description'], $iconset, $config_link),
+                    array($result['id'], $hook_name, $hook_desc, $iconset, $config_link),
                     $tbody);
             }
             $alllist = $template->assign('extension_tbody', $prepare_theme['all'], $thead);
@@ -384,9 +386,10 @@ class admin
             $stmt->execute();
             $result = $stmt->fetch();
             $component_back = $constant->root . '/extensions/modules/' . $result['dir'] . '/back.php';
+            $mod_name = $language->get('admin_modules_'.$result['dir'].'.name') == null ? $result['dir'] : $language->get('admin_modules_'.$result['dir'].'.name');
             $backend_config = null;
             if (file_exists($component_back)) {
-                $this->object_name = $result['name'];
+                $this->object_name = $mod_name;
                 require_once($component_back);
                 $class = "mod_{$result['dir']}_back";
                 $init = new $class;
@@ -409,29 +412,31 @@ class admin
             $prepare_theme = array();
             while ($result = $stmt->fetch()) {
                 $config_link = "?object=modules&id=" . $result['id'];
+                $mod_name = $language->get('admin_modules_'.$result['dir'].'.name') == null ? $result['dir'] : $language->get('admin_modules_'.$result['dir'].'.name');
+                $mod_desc = $language->get('admin_modules_'.$result['dir'].'.desc') == null ? $result['dir'] : $language->get('admin_modules_'.$result['dir'].'.desc');
                 // вносим в список отключенных
                 if ($result['enabled'] == 0) {
                     $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array($config_link, '?object=modules&id=' . $result['id'] . '&action=turn'), $template->tplget('manage_noactive', null, true));
                     $prepare_theme['dissabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
-                        array($result['id'], $result['name'], $result['description'], $iconset, $config_link),
+                        array($result['id'], $mod_name, $mod_desc, $iconset, $config_link),
                         $tbody);
                 } // иначе вносим в список включенных
                 else {
                     $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=modules&id=' . $result['id'], '?object=modules&id=' . $result['id'] . '&action=turn'), $template->tplget('manage_active', null, true));
                     $prepare_theme['enabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
-                        array($result['id'], $result['name'], $result['description'], $iconset, $config_link),
+                        array($result['id'], $mod_name, $mod_desc, $iconset, $config_link),
                         $tbody);
                 }
                 // вносим в список не установленных
                 if ($result['installed'] == 0) {
                     $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=modules&id=' . $result['id'], '?object=modules&id=' . $result['id'] . '&action=install'), $template->tplget('manage_install', null, true));
                     $prepare_theme['toinstall'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
-                        array($result['id'], $result['name'], $result['description'], $iconset),
+                        array($result['id'], $mod_name, $mod_desc, $iconset),
                         $tbody);
                 }
                 $iconset = $template->assign('ext_config_link', '?object=modules&id=' . $result['id'], $template->tplget('manage_all', null, true));
                 $prepare_theme['all'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
-                    array($result['id'], $result['name'], $result['description'], $iconset, $config_link),
+                    array($result['id'], $mod_name, $mod_desc, $iconset, $config_link),
                     $tbody);
             }
             $alllist = $template->assign('extension_tbody', $prepare_theme['all'], $thead);
@@ -473,8 +478,9 @@ class admin
             $result = $stmt->fetch();
             $component_back = $constant->root . '/extensions/components/' . $result['dir'] . '/back.php';
             $backend_config = null;
+            $com_name = $language->get('admin_component_'.$result['dir'].'.name') == null ? $result['dir'] : $language->get('admin_component_'.$result['dir'].'.name');
             if (file_exists($component_back)) {
-                $this->object_name = $result['name'];
+                $this->object_name = $com_name;
                 require_once($component_back);
                 $class = "com_{$result['dir']}_back";
                 $init = new $class;
@@ -498,29 +504,31 @@ class admin
             $prepare_theme = array();
             while ($result = $stmt->fetch()) {
                 $config_link = "?object=components&id=" . $result['id'];
+                $com_name = $language->get('admin_component_'.$result['dir'].'.name') == null ? $result['dir'] : $language->get('admin_component_'.$result['dir'].'.name');
+                $com_desc = $language->get('admin_component_'.$result['dir'].'.desc') == null ? $result['dir'] : $language->get('admin_component_'.$result['dir'].'.desc');
                 // вносим в список отключенных
                 if ($result['enabled'] == 0) {
                     $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=components&id=' . $result['id'], '?object=components&id=' . $result['id'] . '&action=turn'), $template->tplget('manage_noactive', null, true));
                     $prepare_theme['dissabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
-                        array($result['id'], $result['name'], $result['description'], $iconset),
+                        array($result['id'], $com_name, $com_desc, $iconset),
                         $tbody);
                 } // иначе вносим в список включенных
                 else {
                     $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=components&id=' . $result['id'], '?object=components&id=' . $result['id'] . '&action=turn'), $template->tplget('manage_active', null, true));
                     $prepare_theme['enabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
-                        array($result['id'], $result['name'], $result['description'], $iconset, $config_link),
+                        array($result['id'], $com_name, $com_desc, $iconset, $config_link),
                         $tbody);
                 }
                 // вносим в список не установленных
                 if ($result['installed'] == 0) {
                     $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=components&id=' . $result['id'], '?object=components&id=' . $result['id'] . '&action=install'), $template->tplget('manage_install', null, true));
                     $prepare_theme['toinstall'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
-                        array($result['id'], $result['name'], $result['description'], $iconset),
+                        array($result['id'], $com_name, $com_desc, $iconset),
                         $tbody);
                 }
                 $iconset = $template->assign('ext_config_link', '?object=components&id=' . $result['id'], $template->tplget('manage_all', null, true));
                 $prepare_theme['all'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
-                    array($result['id'], $result['name'], $result['description'], $iconset, $config_link),
+                    array($result['id'], $com_name, $com_desc, $iconset, $config_link),
                     $tbody);
             }
             $alllist = $template->assign('extension_tbody', $prepare_theme['all'], $thead);
@@ -569,7 +577,8 @@ class admin
         $component_list = null;
         $hook_list = null;
         while ($result = $stmt->fetch()) {
-            $module_list .= $template->assign(array('list_href', 'list_text'), array("?object=modules&id={$result['id']}", $result['name']), $list_theme);
+            $mod_name = $language->get('admin_modules_'.$result['dir'].'.name') == null ? $result['dir'] : $language->get('admin_modules_'.$result['dir'].'.name');
+            $module_list .= $template->assign(array('list_href', 'list_text'), array("?object=modules&id={$result['id']}", $mod_name), $list_theme);
         }
         $module_list .= $template->assign(array('list_href', 'list_text'), array("?object=modules", $language->get('admin_nav_more_link')), $list_theme);
         $stmt = null;
@@ -577,7 +586,8 @@ class admin
         $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_components WHERE enabled = 1 LIMIT 5");
         $stmt->execute();
         while ($result = $stmt->fetch()) {
-            $component_list .= $template->assign(array('list_href', 'list_text'), array("?object=components&id={$result['id']}", $result['name']), $list_theme);
+            $com_name = $language->get('admin_component_'.$result['dir'].'.name') == null ? $result['dir'] : $language->get('admin_component_'.$result['dir'].'.name');
+            $component_list .= $template->assign(array('list_href', 'list_text'), array("?object=components&id={$result['id']}", $com_name), $list_theme);
         }
         $component_list .= $template->assign(array('list_href', 'list_text'), array("?object=components", $language->get('admin_nav_more_link')), $list_theme);
         $stmt = null;
@@ -585,7 +595,8 @@ class admin
         $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_hooks WHERE enabled = 1 LIMIT 5");
         $stmt->execute();
         while ($result = $stmt->fetch()) {
-            $hook_list .= $template->assign(array('list_href', 'list_text'), array("?object=hooks&id={$result['id']}", $result['name']), $list_theme);
+            $hook_name = $language->get('admin_hook_'.$result['dir'].'.name') == null ? $result['dir'] : $language->get('admin_hook_'.$result['dir'].'.name');
+            $hook_list .= $template->assign(array('list_href', 'list_text'), array("?object=hooks&id={$result['id']}", $hook_name), $list_theme);
         }
         $hook_list .= $template->assign(array('list_href', 'list_text'), array("?object=hooks", $language->get('admin_nav_more_link')), $list_theme);
         $theme = $template->assign(array('module_list', 'component_list', 'hook_list'), array($module_list, $component_list, $hook_list), $theme);

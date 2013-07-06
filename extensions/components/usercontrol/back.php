@@ -8,6 +8,7 @@ class com_usercontrol_back
         global $admin, $template, $language, $constant, $database, $system, $user;
         $action_page_title = $admin->getExtName() . " : ";
         $menu_theme = $template->tplget('config_menu', null, true);
+        $menu_link = null;
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id=' . $admin->getID() . '&action=list', $language->get('admin_component_usercontrol_manage')), $menu_theme);
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id=' . $admin->getID() . '&action=group', $language->get('admin_component_usercontrol_group')), $menu_theme);
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id=' . $admin->getID() . '&action=ban', $language->get('admin_component_usercontrol_serviceban')), $menu_theme);

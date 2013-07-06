@@ -12,7 +12,7 @@ class database
     {
         global $constant;
         try {
-            $this->con = new PDO("mysql:host={$constant->db['host']};dbname={$constant->db['db']}", $constant->db['user'], $constant->db['pass']);
+            $this->con = @new PDO("mysql:host={$constant->db['host']};dbname={$constant->db['db']}", $constant->db['user'], $constant->db['pass']);
             // отключаем эмуляцию, т.к. мы не фильтруем INPUT данные, ведь это умеет PDO
             // ставим жесткий указатель на UTF8
             $this->con->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);

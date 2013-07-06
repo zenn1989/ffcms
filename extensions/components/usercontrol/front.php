@@ -905,8 +905,8 @@ class com_usercontrol_front
                     $stmt2->bindParam(5, $md5pwd);
                     $stmt2->execute();
 
-                    setcookie('person', $loginoremail, 0, '/');
-                    setcookie('token', $md5token, 0, '/');
+                    setcookie('person', $loginoremail, null, '/', null, null, true);
+                    setcookie('token', $md5token, null, '/', null, null, true);
                     $system->redirect();
                     exit();
                 } else {

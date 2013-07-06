@@ -261,25 +261,25 @@ class template
     /**
      * Установка стандартных шаблоных переменных. Пример: {$url} => http://blabla
      */
-    public function setDefaults($theme, $isadmin = false)
+    public function setDefaults($theme)
     {
         global $constant, $user;
-        if ($isadmin) {
+        if (loader == 'back') {
             $template_path = $constant->tpl_dir . $constant->slash . $constant->admin_tpl;
+        } elseif(loader == 'install') {
+            $template_path = $constant->tpl_dir . $constant->slash . $constant->install_tpl;
         } else {
             $template_path = $constant->tpl_dir . $constant->slash . $constant->tpl_name;
         }
         return str_replace(array('{$url}', '{$tpl_dir}', '{$user_id}', '{$user_nick}'),
-            array($constant->url, $template_path, $user->get('id'), $user->get('nick')),
+            array($constant->url, $template_path, loader == 'install' ? null : $user->get('id'), loader == 'install' ? null : $user->get('nick')),
             $theme);
     }
 
 
     /**
-     * Загрузка файла шаблона.
-     * @param STRING $tplname Имя файла шаблона
-     * @param STRING $customdirectory Вложение в директорию внутри шаблона. Может быть пустым.
-     * @param BOOLEAN $isadmin Для использования в админ панели
+     * Use function get(tpl_name, customdirectory)
+     * @deprecated
      */
     public function tplget($tplname, $customdirectory = null, $isadmin = false)
     {
@@ -291,7 +291,24 @@ class template
         }
         if (file_exists($file)) {
             $this->debug_readcount++;
-            return $this->setDefaults(file_get_contents($file), $isadmin);
+            return $this->setDefaults(file_get_contents($file));
+        }
+        return $this->tplException($tplname);
+    }
+
+    public function get($tplname, $customdirectory = null)
+    {
+        global $constant;
+        if(loader == 'back') {
+            $file = $constant->root . $constant->ds . $constant->tpl_dir . $constant->ds . $constant->admin_tpl . $constant->ds . $customdirectory . $tplname . ".tpl";
+        } elseif(loader == 'install') {
+            $file = $constant->root . $constant->ds . $constant->tpl_dir . $constant->ds . $constant->install_tpl . $constant->ds . $customdirectory . $tplname . ".tpl";
+        } else {
+            $file = $constant->root . $constant->ds . $constant->tpl_dir . $constant->ds . $constant->tpl_name . $constant->ds . $customdirectory . $tplname . ".tpl";
+        }
+        if (file_exists($file)) {
+            $this->debug_readcount++;
+            return $this->setDefaults(file_get_contents($file));
         }
         return $this->tplException($tplname);
     }
@@ -332,7 +349,7 @@ class template
      */
     public function stringNotify($type, $content, $isadmin = false)
     {
-        $theme = $this->tplget("notify_string_{$type}", null, $isadmin);
+        $theme = $this->get("notify_string_{$type}", null);
         return $this->assign('content', $content, $theme);
     }
 
@@ -343,14 +360,14 @@ class template
     {
         global $cache;
         $cache->setNoExist(true);
-        return $this->tplget('404');
+        return $this->get('404');
     }
 
     public function compileBan()
     {
         global $cache;
         $cache->setNoExist(true);
-        return $this->tplget('ban');
+        return $this->get('ban');
     }
 
     /**
@@ -386,10 +403,10 @@ class template
 
     public function drowNumericPagination($index, $count, $total, $link)
     {
-        $theme_head = $this->tplget('pagination_head');
-        $theme_active = $this->tplget('pagination_active_item');
-        $theme_inactive = $this->tplget('pagination_inactive_item');
-        $theme_spliter = $this->tplget('pagination_split_item');
+        $theme_head = $this->get('pagination_head');
+        $theme_active = $this->get('pagination_active_item');
+        $theme_inactive = $this->get('pagination_inactive_item');
+        $theme_spliter = $this->get('pagination_split_item');
 
         // если все записи вмещены на 1 странице - пагинация не нужна.
         if ($total <= $count) {

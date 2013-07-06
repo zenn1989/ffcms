@@ -33,10 +33,11 @@ class com_news_back
                 $stmt->execute();
             }
             while ($result = $stmt->fetch()) {
+                $lang_title = unserialize($result['title']);
                 $news_id = $result['id'];
                 $edit_link = "?object=components&id={$admin->getID()}&action=edit&page={$news_id}";
                 $delete_link = "?object=components&id={$admin->getID()}&action=delete&page={$news_id}";
-                $editable_name = "<a href=\"$edit_link\">{$result['title']}</a>";
+                $editable_name = "<a href=\"$edit_link\">{$lang_title[$constant->lang]}</a>";
                 $full_link = "<a href=\"{$constant->url}/news/{$result['path']}/{$result['link']}\" target=\"_blank\">{$result['path']}/{$result['link']}</a>";
                 $news_array[] = array($news_id, $editable_name, $full_link, $template->assign(array('news_edit', 'news_delete'), array($edit_link, $delete_link), $theme_manage));
             }
@@ -46,6 +47,9 @@ class com_news_back
         } elseif ($admin->getAction() == "edit" && $this->newsExist()) {
             $news_id = $admin->getPage();
             $action_page_title .= $language->get('admin_component_news_modedit_title');
+            $theme_body = $template->get('news_edit', 'components/');
+            $theme_li = $template->get('news_language_li', 'components/');
+            $theme_head = $template->get('news_edit_header', 'components/');
             $notify = null;
             if ($system->post('save')) {
                 $editor_id = $user->get('id');
@@ -58,7 +62,7 @@ class com_news_back
                 $description = $system->nohtml($system->post('description'));
                 $keywords = $system->nohtml($system->post('keywords'));
                 $date = $system->post('current_date') == "on" ? time() : $system->toUnixTime($system->post('date'));
-                if (strlen($title) < 1) {
+                if (strlen($title[$constant->lang]) < 1) {
                     $notify .= $template->stringNotify('error', $language->get('admin_component_news_edit_notify_title_length'));
                 }
                 if (!$system->isInt($category_id)) {
@@ -67,10 +71,14 @@ class com_news_back
                 if (strlen($pathway) < 1 || !$this->check_pageway($pathway, $news_id, $category_id)) {
                     $notify .= $template->stringNotify('error', $language->get('admin_component_news_edit_notify_pathway_null'));
                 }
-                if (strlen($text) < 1) {
+                if (strlen($text[$constant->lang]) < 1) {
                     $notify .= $template->stringNotify('error', $language->get('admin_component_news_edit_notify_text_null'));
                 }
                 if ($notify == null) {
+                    $serial_title = serialize($title);
+                    $serial_text = serialize($text);
+                    $serial_description = serialize($description);
+                    $serial_keywords = serialize($keywords);
                     $stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_com_news_entery SET
 						title = ?, 
 						text = ?, 
@@ -83,22 +91,22 @@ class com_news_back
 						display = ?, 
 						important = ? 
 						WHERE id = ?");
-                    $stmt->bindParam(1, $title, PDO::PARAM_STR);
-                    $stmt->bindParam(2, $text, PDO::PARAM_STR);
+                    $stmt->bindParam(1, $serial_title, PDO::PARAM_STR);
+                    $stmt->bindParam(2, $serial_text, PDO::PARAM_STR);
                     $stmt->bindParam(3, $pathway, PDO::PARAM_STR);
                     $stmt->bindParam(4, $category_id, PDO::PARAM_INT);
                     $stmt->bindParam(5, $date, PDO::PARAM_INT);
                     $stmt->bindParam(6, $editor_id, PDO::PARAM_INT);
-                    $stmt->bindParam(7, $description, PDO::PARAM_STR);
-                    $stmt->bindParam(8, $keywords, PDO::PARAM_STR);
+                    $stmt->bindParam(7, $serial_description, PDO::PARAM_STR);
+                    $stmt->bindParam(8, $serial_keywords, PDO::PARAM_STR);
                     $stmt->bindParam(9, $display, PDO::PARAM_INT);
                     $stmt->bindParam(10, $important, PDO::PARAM_INT);
                     $stmt->bindParam(11, $news_id, PDO::PARAM_INT);
                     $stmt->execute();
+                    $stmt = null;
                     $notify .= $template->stringNotify('success', $language->get('admin_component_news_edit_notify_success_save'));
                 }
             }
-            $edit_theme = $template->tplget('news_edit', 'components/', true);
             $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_entery WHERE id = ?");
             $stmt->bindParam(1, $news_id, PDO::PARAM_INT);
             $stmt->execute();
@@ -107,14 +115,43 @@ class com_news_back
             $is_display = $news_result['display'] > 0 ? "checked" : null;
             $is_important = $news_result['important'] > 0 ? "checked" : null;
 
-            $work_body = $template->assign(array('news_title', 'news_path', 'news_content', 'news_description', 'news_keywords', 'news_date', 'category_option_list', 'notify_message', 'news_display_check', 'news_important_check'),
-                array($news_result['title'], $system->noextention($news_result['link']), $news_result['text'], $news_result['description'], $news_result['keywords'], $system->toDate($news_result['date'], 'h'), $category_option_list, $notify, $is_display, $is_important),
-                $edit_theme);
+            $precompile_body = null;
+            $precompile_head = null;
+            $is_active_first_element = true;
+            foreach($language->getAvailable() as $current_language) {
+                $precompile_head .= $template->assign(array('current_language', 'is_active_element'), array($current_language, $is_active_first_element ? 'class="active"' : null), $theme_li);
+                $precompile_body .= $template->assign(array('current_language', 'is_active_element'), array($current_language, $is_active_first_element ? 'active' : null), $theme_body);
+                $is_active_first_element = false;
+            }
+            $work_body = $template->assign(array('selecter_li_languages', 'selecter_body_languages', 'notify'), array($precompile_head, $precompile_body, $notify), $theme_head);
+            $title = unserialize($news_result['title']);
+            $text = unserialize($news_result['text']);
+            $description = unserialize($news_result['description']);
+            $keywords = unserialize($news_result['keywords']);
+            foreach($language->getAvailable() as $current_language) {
+                $work_body = $template->assign(array('news_title_'.$current_language, 'news_content_'.$current_language, 'news_description_'.$current_language, 'news_keywords_'.$current_language),
+                    array($title[$current_language], $text[$current_language], $description[$current_language], $keywords[$current_language]),
+                    $work_body);
+            }
+            $work_body = $template->assign(array('category_option_list', 'notify', 'news_path', 'news_date', 'news_display_check', 'news_important_check'),
+                array($category_option_list, $notify, $system->noextention($news_result['link']), $system->toDate($news_result['date'], 'h'), $is_display, $is_important),
+                $work_body);
             $stmt = null;
         } elseif ($admin->getAction() == "add") {
             $action_page_title .= $language->get('admin_component_news_add');
-            $theme = $template->tplget('news_edit', 'components/', true);
+            $theme_body = $template->get('news_edit', 'components/');
+            $theme_li = $template->get('news_language_li', 'components/');
+            $theme_head = $template->get('news_edit_header', 'components/');
             $notify = null;
+            $title = null;
+            $category_id = null;
+            $pathway = null;
+            $display = null;
+            $important = null;
+            $text = null;
+            $description = null;
+            $keywords = null;
+            $date = null;
             if ($system->post('save')) {
                 $editor_id = $user->get('id');
                 $title = $system->nohtml($system->post('title'));
@@ -126,58 +163,76 @@ class com_news_back
                 $description = $system->nohtml($system->post('description'));
                 $keywords = $system->nohtml($system->post('keywords'));
                 $date = $system->post('current_date') == "on" ? time() : $system->toUnixTime($system->post('date'));
-                if (strlen($title) < 1) {
+                if (strlen($title[$constant->lang]) < 1) {
                     $notify .= $template->stringNotify('error', $language->get('admin_component_news_edit_notify_title_length'));
                 }
                 if (!$system->isInt($category_id)) {
                     $notify .= $template->stringNotify('error', $language->get('admin_component_news_edit_notify_category_wrong'));
                 }
-                if (strlen($pathway) < 1 || !$this->check_pageway($pathway, $news_id, $category_id)) {
+                if (strlen($pathway) < 1 || !$this->check_pageway($pathway, 0, $category_id)) {
                     $notify .= $template->stringNotify('error', $language->get('admin_component_news_edit_notify_pathway_null'));
                 }
-                if (strlen($text) < 1) {
+                if (strlen($text[$constant->lang]) < 1) {
                     $notify .= $template->stringNotify('error', $language->get('admin_component_news_edit_notify_text_null'));
                 }
                 if ($notify == null) {
-                    $owner_id = $user->get('id');
+                    $serial_title = serialize($title);
+                    $serial_text = serialize($text);
+                    $serial_description = serialize($description);
+                    $serial_keywords = serialize($keywords);
                     $stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_com_news_entery
 					(`title`, `text`, `link`, `category`, `date`, `author`, `description`, `keywords`, `display`, `important`) VALUES
 					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                    $stmt->bindParam(1, $title, PDO::PARAM_STR);
-                    $stmt->bindParam(2, $text, PDO::PARAM_STR);
+                    $stmt->bindParam(1, $serial_title, PDO::PARAM_STR);
+                    $stmt->bindParam(2, $serial_text, PDO::PARAM_STR);
                     $stmt->bindParam(3, $pathway, PDO::PARAM_STR);
                     $stmt->bindParam(4, $category_id, PDO::PARAM_INT);
                     $stmt->bindParam(5, $date, PDO::PARAM_STR);
-                    $stmt->bindParam(6, $owner_id, PDO::PARAM_INT);
-                    $stmt->bindParam(7, $description, PDO::PARAM_STR);
-                    $stmt->bindParam(8, $keywords, PDO::PARAM_STR);
+                    $stmt->bindParam(6, $editor_id, PDO::PARAM_INT);
+                    $stmt->bindParam(7, $serial_description, PDO::PARAM_STR);
+                    $stmt->bindParam(8, $serial_keywords, PDO::PARAM_STR);
                     $stmt->bindParam(9, $display, PDO::PARAM_INT);
                     $stmt->bindParam(10, $important, PDO::PARAM_INT);
                     $stmt->execute();
                     $system->redirect($_SERVER['PHP_SELF'] . "?object=components&id=" . $admin->getID());
                     return;
-                } else {
-                    $work_body = $template->assign(array('category_option_list', 'notify_message', 'news_title', 'news_path', 'news_content', 'news_description', 'news_keywords', 'news_date'),
-                        array($this->buildCategoryOptionList(), $notify, $title, $system->noextention($pathway), $text, $description, $keywords, $system->toDate($date, 'h')),
-                        $theme);
                 }
-            } else {
-                $work_body = $template->assign('category_option_list', $this->buildCategoryOptionList(), $theme);
             }
+            $precompile_body = null;
+            $precompile_head = null;
+            $is_active_first_element = true;
+            foreach($language->getAvailable() as $current_language) {
+                $precompile_head .= $template->assign(array('current_language', 'is_active_element'), array($current_language, $is_active_first_element ? 'class="active"' : null), $theme_li);
+                $precompile_body .= $template->assign(array('current_language', 'is_active_element'), array($current_language, $is_active_first_element ? 'active' : null), $theme_body);
+                $is_active_first_element = false;
+            }
+            $work_body = $template->assign(array('selecter_li_languages', 'selecter_body_languages', 'notify'), array($precompile_head, $precompile_body, $notify), $theme_head);
+            if($notify != null) {
+                foreach($language->getAvailable() as $current_language) {
+                $work_body = $template->assign(array('news_title_'.$current_language, 'news_content_'.$current_language, 'news_description_'.$current_language, 'news_keywords_'.$current_language),
+                            array($title[$current_language], $text[$current_language], $description[$current_language], $keywords[$current_language]),
+                            $work_body);
+                }
+                $work_body = $template->assign(array('notify', 'news_path', 'news_date'),
+                                 array($notify, $system->noextention($pathway), $system->toDate($date, 'h')),
+                                 $work_body);
+            }
+            $work_body = $template->assign('category_option_list', $this->buildCategoryOptionList(), $work_body);
         } elseif ($admin->getAction() == "category") {
             $action_page_title .= $language->get('admin_component_news_category');
-            $theme_head = $template->tplget('news_category_head', 'components/', true);
-            $work_body = $template->assign('news_category_list', $this->categoryListLi(), $theme_head);
+            $theme_head = $template->get('news_category_head', 'components/');
+            $work_body = $template->assign(array('news_category_list', 'component_id'), array($this->categoryListLi(), $admin->getID()), $theme_head);
         } elseif ($admin->getAction() == "addcategory") {
             $notify = null;
             if ($system->post('submit')) {
                 $cat_id = $system->post('category_owner');
                 $cat_name = $system->post('category_name');
+                $cat_serial_name = serialize($cat_name);
                 $cat_path = $system->post('category_path');
                 if (!$system->isInt($cat_id) || $cat_id < 1) {
                     $notify .= $template->stringNotify('error', $language->get('admin_component_news_category_notify_noselectcat'));
                 }
-                if (strlen($cat_name) < 1) {
+                if (strlen($cat_name[$constant->lang]) < 1) {
                     $notify .= $template->stringNotify('error', $language->get('admin_component_news_category_notify_noname'));
                 }
                 if (!$this->check_catway($cat_path, $cat_id)) {
@@ -195,8 +250,9 @@ class com_news_back
                             $new_category_path = $res['path'] . "/" . $cat_path;
                         }
                         $stmt = null;
+
                         $stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_com_news_category (`name`, `path`) VALUES (?, ?)");
-                        $stmt->bindParam(1, $cat_name, PDO::PARAM_STR);
+                        $stmt->bindParam(1, $cat_serial_name, PDO::PARAM_STR);
                         $stmt->bindParam(2, $new_category_path, PDO::PARAM_STR);
                         $stmt->execute();
                         $system->redirect($_SERVER['PHP_SELF'] . "?object=components&id=" . $admin->getID() . "&action=category");
@@ -204,10 +260,21 @@ class com_news_back
                     }
                 }
             }
+            $theme_li = $template->get('news_language_li', 'components/');
+            $theme_head = $template->get('news_category_add_head', 'components/');
+            $theme_body = $template->get('news_category_add_body', 'components/');
             $selected_category = $admin->getPage() == 0 ? null : $admin->getPage();
             $action_page_title .= $language->get('admin_component_news_category');
-            $theme_add = $template->tplget('news_category_add', 'components/', true);
-            $work_body = $template->assign(array('news_category_select', 'notify_message'), array($this->buildCategoryOptionList(0, $selected_category), $notify), $theme_add);
+            $precompile_body = null;
+            $precompile_head = null;
+            $is_active_first_element = true;
+            foreach($language->getAvailable() as $current_language) {
+                $precompile_head .= $template->assign(array('current_language', 'is_active_element'), array($current_language, $is_active_first_element ? 'class="active"' : null), $theme_li);
+                $precompile_body .= $template->assign(array('current_language', 'is_active_element'), array($current_language, $is_active_first_element ? 'active' : null), $theme_body);
+                $is_active_first_element = false;
+            }
+            $work_body = $template->assign(array('selecter_li_languages', 'selecter_body_languages', 'notify', 'news_category_select'), array($precompile_head, $precompile_body, $notify, $this->buildCategoryOptionList(0, $selected_category)), $theme_head);
+            //$work_body = $template->assign(array('news_category_select', 'notify_message'), array($this->buildCategoryOptionList(0, $selected_category), $notify), $theme_add);
         } elseif ($admin->getAction() == "delcategory") {
             $action_page_title .= $language->get('admin_component_news_category');
             $theme_delete = $template->tplget('news_category_delete', 'components/', true);
@@ -219,7 +286,8 @@ class com_news_back
                 $stmt->bindParam(1, $cat_id, PDO::PARAM_INT);
                 $stmt->execute();
                 if ($res = $stmt->fetch()) {
-                    $cat_name = $res['name'];
+                    $cat_serial_name = unserialize($res['name']);
+                    $cat_name = $cat_serial_name[$constant->lang];
                     $cat_path = $res['path'];
                 }
                 $stmt = null;
@@ -265,7 +333,7 @@ class com_news_back
                     $work_body .= $template->stringNotify('error', $language->get('admin_extension_config_update_fail'), true);;
             }
 
-            $config_form = $template->tplget('config_form', null, true);
+            $config_form = $template->get('config_form');
 
             $config_set = $language->get('admin_component_news_description');
             $config_set .= $admin->tplSettingsDirectory($language->get('admin_component_news_settings_mainblock'));
@@ -331,7 +399,8 @@ class com_news_back
                 $add = "-";
             }
             $current_id = $result_id[$path];
-            $current_name = $result_name[$path];
+            $current_serial_name = unserialize($result_name[$path]);
+            $current_name = $current_serial_name[$constant->lang];
             if ($active_category == null) {
                 if ($current_id == $news_category_id) {
                     $result_string .= $template->assign(array('option_value', 'option_name'), array($current_id, $add . " " . $current_name), $theme_option_active);
@@ -379,8 +448,8 @@ class com_news_back
             }
             $add_link = "?object=components&id=" . $admin->getID() . "&action=addcategory&page=" . $result_id[$path];
             $delete_link = "?object=components&id=" . $admin->getID() . "&action=delcategory&page=" . $result_id[$path];
-            $current_name = $result_name[$path];
-            $result_string .= $template->assign(array('news_category_path', 'news_category_name', 'news_category_add', 'news_category_delete', 'news_category_cursors'), array($path, $current_name, $add_link, $delete_link, $add), $theme_item);
+            $current_name = unserialize($result_name[$path]);
+            $result_string .= $template->assign(array('news_category_path', 'news_category_name', 'news_category_add', 'news_category_delete', 'news_category_cursors'), array($path, $current_name[$constant->lang], $add_link, $delete_link, $add), $theme_item);
         }
         $stmt = null;
         return $result_string;

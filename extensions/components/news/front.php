@@ -29,7 +29,7 @@ class com_news_front implements com_front
 
     public function viewFullNews($url, $categories)
     {
-        global $database, $constant, $system, $template, $rule, $user, $page, $meta;
+        global $database, $constant, $system, $template, $rule, $user, $page, $meta, $language;
         $stmt = null;
         $category_link = null;
         $category_text = null;
@@ -45,7 +45,8 @@ class com_news_front implements com_front
         $catstmt->execute();
         if ($catresult = $catstmt->fetch()) {
             $category_link = $catresult['path'];
-            $category_text = $catresult['name'];
+            $category_serial_text = unserialize($catresult['name']);
+            $category_text = $category_serial_text[$language->getCustom()];
             $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_entery WHERE link = ? AND category = ? AND display = 1 AND date <= ?");
             $stmt->bindParam(1, $url, PDO::PARAM_STR);
             $stmt->bindParam(2, $catresult['category_id'], PDO::PARAM_INT);
@@ -53,12 +54,16 @@ class com_news_front implements com_front
             $stmt->execute();
         }
         if ($stmt != null && $result = $stmt->fetch()) {
-            $meta->add('title', $result['title']);
-            $meta->set('keywords', $result['keywords']);
-            $meta->set('description', $result['description']);
-            $news_theme = $template->tplget('view_full_news', 'components/news/');
+            $news_theme = $template->get('view_full_news', 'components/news/');
+            $lang_text = unserialize($result['text']);
+            $lang_title = unserialize($result['title']);
+            $lang_description = unserialize($result['description']);
+            $lang_keywords = unserialize($result['keywords']);
+            $meta->add('title', $lang_title[$language->getCustom()]);
+            $meta->set('keywords', $lang_keywords[$language->getCustom()]);
+            $meta->set('description', $lang_description[$language->getCustom()]);
             return $template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'js.comment_object', 'js.comment_id', 'js.comment_hash'),
-                array($result['title'], $result['text'], $system->toDate($result['date'], 'h'), $category_link, $category_text, $result['author'], $user->get('nick', $result['author']), 'news', $result['id'], $page->hashFromPathway()),
+                array($lang_title[$language->getCustom()], $lang_text[$language->getCustom()], $system->toDate($result['date'], 'h'), $category_link, $category_text, $result['author'], $user->get('nick', $result['author']), 'news', $result['id'], $page->hashFromPathway()),
                 $news_theme);
         }
         return null;
@@ -66,7 +71,7 @@ class com_news_front implements com_front
 
     public function viewCategory()
     {
-        global $page, $system, $database, $constant, $template, $user, $hook, $extension, $meta;
+        global $page, $system, $database, $constant, $template, $user, $hook, $extension, $meta, $language;
         $way = $page->shiftPathway();
         $content = null;
         $pop_array = $way;
@@ -98,8 +103,10 @@ class com_news_front implements com_front
         }
         while ($fresult = $fstmt->fetch()) {
             $category_select_array[] = $fresult['category_id'];
-            if ($cat_link == $fresult['path'])
-                $meta->add('title', $fresult['name']);
+            if ($cat_link == $fresult['path']) {
+                $serial_name = unserialize($fresult['name']);
+                $meta->add('title', $serial_name[$language->getCustom()]);
+            }
         }
         $category_list = $system->altimplode(',', $category_select_array);
         $fstmt = null;
@@ -147,7 +154,9 @@ class com_news_front implements com_front
             }
             if (sizeof($category_select_array) > 0) {
                 while ($result = $stmt->fetch()) {
-                    $news_short_text = $result['text'];
+                    $lang_text = unserialize($result['text']);
+                    $lang_title = unserialize($result['title']);
+                    $news_short_text = $lang_text[$language->getCustom()];
                     if ($system->contains('<!-- pagebreak -->', $news_short_text)) {
                         $news_short_text = strstr($news_short_text, '<!-- pagebreak -->', true);
                     } elseif ($system->length($news_short_text) > $max_preview_length) {
@@ -160,8 +169,9 @@ class com_news_front implements com_front
                     }
                     $hashWay = $page->hashFromPathway($system->altexplode('/', $news_full_link));
                     $comment_count = $hook->get('comment')->getCount($hashWay);
+                    $cat_serial_text = unserialize($result['name']);
                     $content .= $template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'news_full_link', 'news_comment_count'),
-                        array($result['title'], $news_short_text, $system->toDate($result['date'], 'h'), $result['path'], $result['name'], $result['author'], $user->get('nick', $result['author']), $news_full_link, $comment_count),
+                        array($lang_title[$language->getCustom()], $news_short_text, $system->toDate($result['date'], 'h'), $result['path'], $cat_serial_text[$language->getCustom()], $result['author'], $user->get('nick', $result['author']), $news_full_link, $comment_count),
                         $short_theme);
                 }
             }

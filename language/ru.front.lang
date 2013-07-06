@@ -124,6 +124,7 @@ news_view_publish_date<=>Дата публикации
 news_view_author<=>Автор
 news_view_tags<=>Теги
 news_view_button_more<=>Подробней
+news_not_found<=>Новостей пока не обнаружено. Сайт находиться в стадии наполение содержимым.
 comments_text_title<=>Комментарии
 comments_text_loadmore<=>Загрузить еще...
 comments_text_writemsg<=>Написать комментарий

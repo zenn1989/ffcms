@@ -10,5 +10,5 @@
 <div class="span9">
     <p>{$lang::admin_component_news_category_manage_desc}</p>
 </div>
-<div class="span9"><a href="#" class="btn pull-right">{$lang::admin_component_news_category_alternative_button}</a>
+<div class="span9"><a href="?object=components&id={$component_id}&action=addcategory" class="btn pull-right">{$lang::admin_component_news_category_alternative_button}</a>
 </div>
