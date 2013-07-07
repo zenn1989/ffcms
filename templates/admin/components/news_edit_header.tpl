@@ -6,7 +6,7 @@
             <h5>{$lang::admin_component_news_edit_page_pathway_title}</h5>
 
             <div class="input-prepend input-append">
-                <input class="span4" type="text" id="out" name="pathway" value="{$news_path}">
+                <input class="span4" type="text" id="out" name="pathway" value="{$news_path}" onkeyup="return pathCallback();">
                 <span class="add-on">.html</span>
             </div>
             <span class="help-block">{$lang::admin_component_news_edit_page_pathway_desc}</span>

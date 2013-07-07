@@ -28,8 +28,8 @@ class com_static_back
                 $stmt->bindParam(2, $this->list_count, PDO::PARAM_INT);
                 $stmt->execute();
             }
-            $static_theme = $template->tplget('static_list', 'components/', true);
-            $static_manage = $template->tplget('static_list_manage', 'components/', true);
+            $static_theme = $template->get('static_list', 'components/');
+            $static_manage = $template->get('static_list_manage', 'components/');
             $tbody = null;
             $static_array_data = array();
             while ($res = $stmt->fetch()) {
@@ -104,10 +104,6 @@ class com_static_back
                         $work_body);
                 }
                 $work_body = $template->assign(array('static_path', 'static_date', 'notify'), array($way, $date, $notify), $work_body);
-                //$work_body = $template->assign(array('static_title', 'static_text', 'static_path', 'static_description', 'static_keywords', 'static_date', 'notify_message'),
-                   // array($result['title'], $result['text'], $way, $result['description'], $result['keywords'], $result['date'], $notify),
-                    //$theme_body);
-                //$work_body = $theme_head;
             }
         } elseif ($admin->getAction() == "add") {
             $action_page_title .= $language->get('admin_component_static_add');
@@ -183,19 +179,19 @@ class com_static_back
                 $stmt->execute();
                 if ($stmt->rowCount() > 0) {
                     $res = $stmt->fetch();
-                    $array_data[] = array($res['id'], $res['title'], $res['pathway']);
-                    $tbody = $admin->tplrawTable(
-                        array($language->get('admin_component_static_th_id'), $language->get('admin_component_static_th_title'), $language->get('admin_component_static_th_path')),
+                    $serial_title = unserialize($res['title']);
+                    $array_data[] = array($res['id'], $serial_title[$language->getCustom()], $res['pathway']);
+                    $tbody = $admin->tplrawTable(array($language->get('admin_component_static_th_id'), $language->get('admin_component_static_th_title'), $language->get('admin_component_static_th_path')),
                         $array_data);
 
                 }
                 $theme_delete = $template->assign(array('static_delete_info', 'cancel_link'),
                     array($tbody, '?object=components&id=' . $admin->getId()),
-                    $template->tplget('static_delete', 'components/', true));
+                    $template->get('static_delete', 'components/'));
                 $work_body = $theme_delete;
             }
         }
-        $menu_theme = $template->tplget('config_menu', null, true);
+        $menu_theme = $template->get('config_menu');
         $menu_link = null;
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id=' . $admin->getID() . '&action=list', $language->get('admin_component_static_control')), $menu_theme);
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id=' . $admin->getID() . '&action=add', $language->get('admin_component_static_add')), $menu_theme);

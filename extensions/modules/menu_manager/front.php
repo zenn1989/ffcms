@@ -41,11 +41,11 @@ class mod_menu_manager_front implements mod_front
     private function preparePharse($array, $tpl)
     {
         global $template;
-        $res = $template->tplget($tpl[0], 'modules/mod_menu_manager/');
+        $res = $template->get($tpl[0], 'modules/mod_menu_manager/');
         // 0 = sub_open_tag, 1 = $sub_close_tag, 2 = list
-        $prepare_tpl = array($template->tplget($tpl[2], 'modules/mod_menu_manager/'), $template->tplget($tpl[3], 'modules/mod_menu_manager/'), $template->tplget($tpl[4], 'modules/mod_menu_manager/'));
+        $prepare_tpl = array($template->get($tpl[2], 'modules/mod_menu_manager/'), $template->get($tpl[3], 'modules/mod_menu_manager/'), $template->get($tpl[4], 'modules/mod_menu_manager/'));
         $res .= $this->pharse($array, $prepare_tpl);
-        $res .= $template->tplget($tpl[1], 'modules/mod_menu_manager/');
+        $res .= $template->get($tpl[1], 'modules/mod_menu_manager/');
         return $res;
     }
 

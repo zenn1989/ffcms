@@ -29,7 +29,7 @@ class mod_static_on_main_back implements backend
 
     private function buildOptionListPages()
     {
-        global $template, $constant, $database, $admin;
+        global $template, $constant, $database, $admin, $language;
         $saved_value = $admin->getConfig('news_id', 'int');
         $theme_option_active = $template->tplget('form_option_item_active', null, true);
         $theme_option_inactive = $template->tplget('form_option_item_inactive', null, true);
@@ -37,10 +37,11 @@ class mod_static_on_main_back implements backend
         $stmt->execute();
         $output = null;
         while ($result = $stmt->fetch()) {
+            $page_serial_name = unserialize($result['title']);
             if ($result['id'] == $saved_value) {
-                $output .= $template->assign(array('option_value', 'option_name'), array($result['id'], $result['title']), $theme_option_active);
+                $output .= $template->assign(array('option_value', 'option_name'), array($result['id'], $page_serial_name[$language->getCustom()]), $theme_option_active);
             } else {
-                $output .= $template->assign(array('option_value', 'option_name'), array($result['id'], $result['title']), $theme_option_inactive);
+                $output .= $template->assign(array('option_value', 'option_name'), array($result['id'], $page_serial_name[$language->getCustom()]), $theme_option_inactive);
             }
         }
         $stmt = null;

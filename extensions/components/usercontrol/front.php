@@ -259,8 +259,17 @@ class com_usercontrol_front
             if ($current_marker + $pm_on_page < $total_pm_count) {
                 $rule->add('com.usercontrol.have_next', true);
             }
-            $theme_body = $template->tplget('profile_message_body', 'components/usercontrol/');
-            $theme_head = $template->tplget('profile_message_head', 'components/usercontrol/');
+            $theme_body = $template->get('profile_message_body', 'components/usercontrol/');
+            $theme_head = $template->get('profile_message_head', 'components/usercontrol/');
+            // обновляем маркер последнего просмотра личных сообщений
+            if($way[1] == "in" || $way[1] == "all") {
+                $stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_user_custom SET lastpmview = ? where id = ?");
+                $time = time();
+                $stmt->bindParam(1, $time, PDO::PARAM_INT);
+                $stmt->bindParam(2, $userid, PDO::PARAM_INT);
+                $stmt->execute();
+                $stmt = null;
+            }
             if ($way[1] == "in") {
                 $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_messages WHERE `to` = ? ORDER BY timeupdate DESC LIMIT ?, ?");
                 $stmt->bindParam(1, $userid, PDO::PARAM_INT);
@@ -325,8 +334,8 @@ class com_usercontrol_front
                     }
                 }
             }
-            $theme_head = $template->tplget('profile_topic_head', 'components/usercontrol/');
-            $theme_body = $template->tplget('profile_topic_body', 'components/usercontrol/');
+            $theme_head = $template->get('profile_topic_head', 'components/usercontrol/');
+            $theme_body = $template->get('profile_topic_body', 'components/usercontrol/');
             $topics_first = null;
             $topics_body = null;
             // выбираем первое сообщение

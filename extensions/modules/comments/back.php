@@ -20,8 +20,8 @@ class mod_comments_back implements backend
                 }
             }
             $action_page_title .= $language->get('admin_modules_comment_manage_title');
-            $theme = $template->tplget('comments_list', 'modules/', true);
-            $manage_theme = $template->tplget('comments_list_manage', 'modules/', true);
+            $theme = $template->get('comments_list', 'modules/');
+            $manage_theme = $template->get('comments_list_manage', 'modules/');
             $index_start = $admin->getPage();
             $comment_array = array();
             $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_mod_comments ORDER BY id DESC LIMIT ?,?");
@@ -51,7 +51,7 @@ class mod_comments_back implements backend
                 $stmt->execute();
                 $notify = $template->stringNotify('success', $language->get('admin_modules_comment_edited_success'));
             }
-            $theme_edit = $template->tplget('comment_edit', 'modules/', true);
+            $theme_edit = $template->get('comment_edit', 'modules/');
             $stmt = $database->con()->prepare("SELECT comment FROM {$constant->db['prefix']}_mod_comments WHERE id = ?");
             $stmt->bindParam(1, $comment_id, PDO::PARAM_INT);
             $stmt->execute();
@@ -69,7 +69,7 @@ class mod_comments_back implements backend
                 $system->redirect($_SERVER['PHP_SELF'] . "?object=modules&id=" . $admin->getID());
             }
             $action_page_title .= $language->get('admin_modules_comment_manage_title');
-            $theme_delete = $template->tplget('comment_delete', 'modules/', true);
+            $theme_delete = $template->get('comment_delete', 'modules/');
             $result_array = array();
             $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_mod_comments WHERE id = ?");
             $stmt->bindParam(1, $comment_id, PDO::PARAM_INT);
@@ -89,16 +89,18 @@ class mod_comments_back implements backend
                 else
                     $work_body .= $template->stringNotify('error', $language->get('admin_extension_config_update_fail'), true);;
             }
-            $config_form = $template->tplget('config_form', null, true);
+            $config_form = $template->get('config_form');
             $config_set = $admin->tplSettingsInputText('config:comments_count', $admin->getConfig('comments_count', 'int'), $language->get('admin_modules_comment_config_count_title'), $language->get('admin_modules_comment_config_count_desc'));
             $config_set .= $admin->tplSettingsInputText('config:time_delay', $admin->getConfig('time_delay', 'int'), $language->get('admin_modules_comment_config_timedelay_title'), $language->get('admin_modules_comment_config_timedelay_desc'));
             $config_set .= $admin->tplSettingsInputText('config:edit_time', $admin->getConfig('edit_time', 'int'), $language->get('admin_modules_comment_config_edittime_title'), $language->get('admin_modules_comment_config_edittime_desc'));
             $config_set .= $admin->tplSettingsInputText('config:min_length', $admin->getConfig('min_length', 'int'), $language->get('admin_modules_comment_config_minlength_title'), $language->get('admin_modules_comment_config_minlength_desc'));
             $config_set .= $admin->tplSettingsInputText('config:max_length', $admin->getConfig('max_length', 'int'), $language->get('admin_modules_comment_config_maxlength_title'), $language->get('admin_modules_comment_config_maxlength_desc'));
             $work_body .= $template->assign('ext_form', $config_set, $config_form);
+        } elseif ($admin->getAction() == "turn") {
+            return $admin->turn();
         }
 
-        $menu_theme = $template->tplget('config_menu', null, true);
+        $menu_theme = $template->get('config_menu');
         $menu_link = null;
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=modules&id=' . $admin->getID() . "&action=manage", $language->get('admin_modules_comment_manage_title')), $menu_theme);
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=modules&id=' . $admin->getID() . "&action=settings", $language->get('admin_modules_comment_settings_title')), $menu_theme);

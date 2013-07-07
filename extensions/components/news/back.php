@@ -274,7 +274,6 @@ class com_news_back
                 $is_active_first_element = false;
             }
             $work_body = $template->assign(array('selecter_li_languages', 'selecter_body_languages', 'notify', 'news_category_select'), array($precompile_head, $precompile_body, $notify, $this->buildCategoryOptionList(0, $selected_category)), $theme_head);
-            //$work_body = $template->assign(array('news_category_select', 'notify_message'), array($this->buildCategoryOptionList(0, $selected_category), $notify), $theme_add);
         } elseif ($admin->getAction() == "delcategory") {
             $action_page_title .= $language->get('admin_component_news_category');
             $theme_delete = $template->tplget('news_category_delete', 'components/', true);
@@ -322,6 +321,29 @@ class com_news_back
                     $work_body = $template->stringNotify('error', $language->get('admin_component_news_category_delete_unposible'));
                 }
             }
+        } elseif($admin->getAction() == "delete" && $admin->getPage() > 0) {
+            $news_id = $admin->getPage();
+            if($system->post('submit')) {
+                $stmt = $database->con()->prepare("DELETE FROM {$constant->db['prefix']}_com_news_entery WHERE id = ?");
+                $stmt->bindParam(1, $news_id, PDO::PARAM_INT);
+                $stmt->execute();
+                $system->redirect($_SERVER['PHP_SELF'] . "?object=components&id=" . $admin->getID());
+            }
+            $action_page_title .= $language->get('admin_component_news_delete');
+            $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_entery WHERE id = ?");
+            $stmt->bindParam(1, $news_id, PDO::PARAM_INT);
+            $stmt->execute();
+            if($stmt->rowCount() == 1) {
+                $result = $stmt->fetch();
+                $serial_title = unserialize($result['title']);
+                $array_data[] = array($result['id'], $serial_title[$language->getCustom()], $result['link']);
+                $rawTable = $admin->tplRawTable(array($language->get('admin_component_news_delete_th1'), $language->get('admin_component_news_delete_th2'), $language->get('admin_component_news_delete_th3')),
+                    $array_data);
+                $work_body = $template->assign(array('news_delete_info', 'cancel_link'),
+                    array($rawTable, "?object=components&id=" . $admin->getID()),
+                    $template->get('news_delete', 'components/'));
+            }
+            $stmt = null;
         } elseif ($admin->getAction() == "settings") {
             $action_page_title .= $language->get('admin_component_news_settings');
 
