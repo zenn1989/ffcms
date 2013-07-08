@@ -1,0 +1,4 @@
+Example of addons position in site:
+header_0.tpl
+              => its a position {$header} in main.tpl with indexes 0 and 1.
+header_1.tpl

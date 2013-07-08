@@ -1,16 +1,22 @@
 <?php
 
 
-// Отображение статичных блоков.
+// Отображение статичных блоков из /templates/tpl_name/positions/*
 class mod_static_includes_front implements mod_front
 {
     public function before()
     {
-        global $database, $page, $constant, $template;
-        $stmt = $database->con()->query("SELECT * FROM {$constant->db['prefix']}_mod_static_includes");
-        $stmt->execute();
-        while ($result = $stmt->fetch()) {
-            $page->setContentPosition($result['tag'], $template->setDefaults($result['template']), $result['index']);
+        global $constant, $page, $template, $system;
+        $scandir = scandir($constant->root . "/" . $constant->tpl_dir . "/" . $constant->tpl_name . "/positions/");
+        $allowedPositions = $template->allowedPositions();
+        foreach($scandir as $files) {
+            if(!$system->prefixEquals($files, '.') && $system->suffixEquals($files, '.tpl')) {
+                list($position, $index) = $system->altexplode('_', $files);
+                $index = strstr($index, '.', true);
+                if(in_array($position, $allowedPositions) && $system->isInt($index)) {
+                    $page->setContentPosition($position, $template->get(strstr($files, '.', true), 'positions/'), $index);
+                }
+            }
         }
     }
 

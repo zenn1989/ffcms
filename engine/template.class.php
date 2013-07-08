@@ -15,6 +15,8 @@ class template
     private $content = null;
     private $debug_readcount = 0;
 
+
+
     private $precompile_tag = array();
 
     function template()
@@ -23,13 +25,11 @@ class template
             $this->content = $this->getCarcase();
         }
     }
-    /**
-    function __construct()
+
+    public function allowedPositions()
     {
-        if (loader == 'front' || loader == 'back') {
-            $this->content = $this->getCarcase();
-        }
-    }*/
+        return array('header', 'left', 'body', 'right', 'bottom', 'footer');
+    }
 
     /**
      * Инициация шаблонизатора. Загрузка стандартных блоков.

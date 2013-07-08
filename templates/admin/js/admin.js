@@ -10,6 +10,12 @@ $(document).ready(function () {
         }
     });
 });
+$(document).ready(function() {
+   var df = $('#out').val();
+    if(df.length > 0) {
+        changed_path = true;
+    }
+});
 function pathCallback()
 {
     changed_path = true;
