@@ -2569,6 +2569,10 @@ Layout: Responsive
     }
 }
 
+.wysi {
+    height: 400px;
+}
+
 @media (max-width: 979px) {
     #header {
         height: auto;

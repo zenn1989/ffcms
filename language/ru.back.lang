@@ -396,3 +396,6 @@ admin_hook_comment.name<=>Comment ext
 admin_hook_comment.desc<=>Реализация дополнительных методов для модуля комментариев
 admin_modules_user_notify.name<=>Уведомления пользователей
 admin_modules_user_notify.desc<=>Вывод информации о новых сообщениях для пользователей авторизованных на сайте
+admin_modules_static_includes_menuinfo<=>Информация
+admin_modules_static_includes_help_1<=>На данной странице вы можете просмотреть список статических включений для вашего сайта
+admin_modules_static_includes_help_2<=>Вы всегда можете отредактировать данные шаблоны в директории

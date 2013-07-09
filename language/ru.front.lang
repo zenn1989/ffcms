@@ -142,3 +142,14 @@ comment_text_delete_link<=>Удалить
 comment_modal_text_notify<=>Если вам необходимо массовое администрирование комментариев вы можете сделать это в управлении модулем комментариев
 comments_api_incorrent_length<=>Некоректная длина текста комментария
 comments_register_msg<=>Для того чтобы публиковать комментарии на сайте вам необходимо <a href="/register">зарегистрироваться</a>
+position_header_main<=>Главная
+position_header_news<=>Новости
+position_header_users<=>Пользователи
+position_header_about<=>О сайте
+position_header_toprofile<=>К профилю
+position_header_messages<=>Сообщения
+position_header_friendrequests<=>Запросы в друзья
+position_header_adminpanel<=>Админ панель
+position_left_header<=>Внешние ссылки
+position_left_link_1<=>Сайт FFCMS
+position_left_link_2<=>Форум FFCMS

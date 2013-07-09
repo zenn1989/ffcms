@@ -40,6 +40,7 @@ class language
                 }
             }
         }
+        $this->additionalLoad();
     }
 
     public function getCustom()
@@ -109,10 +110,6 @@ class language
 
     public function get($data)
     {
-        // содержимое не найдено? поищим в addition листах
-        if($this->lang[$data] == null && ((loader == "back" && !$this->load_add_back) || ((loader == "front" || loader == "api") && !$this->load_add_front))) {
-            $this->additionalLoad();
-        }
         return $this->lang[$data];
     }
 

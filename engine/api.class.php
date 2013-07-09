@@ -12,11 +12,11 @@ class api
             case "postwall":
                 $apiresult = $this->doPostWall();
                 break;
-            case "elfinder":
-                return $file->elfinder();
-                break;
             case "adminfiles":
                 return $file->elfinderForAdmin();
+                break;
+            case "imperaviimageload":
+                return $file->imperaviLoad();
                 break;
             case "redirect":
                 $apiresult = $this->userLeaveRedirect();

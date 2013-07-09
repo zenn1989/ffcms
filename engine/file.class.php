@@ -7,42 +7,17 @@
 class file
 {
 
-    /**
-     * Крючек для работы ElFinder редактора
-     */
-    public function elfinder()
+    public function imperaviLoad()
     {
-        global $constant, $user;
-        if ($user->get('access_to_admin') < 1) {
+        global $user, $constant;
+        if ($user->get('access_to_admin') < 1)
             return;
-        }
-        include_once $constant->root . '/resource/elfinder/php/elFinderConnector.class.php';
-        include_once $constant->root . '/resource/elfinder/php/elFinder.class.php';
-        include_once $constant->root . '/resource/elfinder/php/elFinderVolumeDriver.class.php';
-        include_once $constant->root . '/resource/elfinder/php/elFinderVolumeLocalFileSystem.class.php';
-        function access($attr, $path, $data, $volume)
-        {
-            return strpos(basename($path), '.') === 0 // if file/folder begins with '.' (dot)
-                ? !($attr == 'read' || $attr == 'write') // set read+write to false, other (locked+hidden) set to true
-                : null; // else elFinder decide it itself
-        }
-
-        $opts = array(
-            // 'debug' => true,
-            'roots' => array(
-                array(
-                    'driver' => 'LocalFileSystem', // driver for accessing file system (REQUIRED)
-                    'path' => $constant->root . '/upload/all/', // path to files (REQUIRED)
-                    'URL' => $constant->url . '/upload/all/', // URL to files (REQUIRED)
-                    'accessControl' => 'access', // disable and hide dot starting files (OPTIONAL)
-                    'uploadAllow' => array('image'),
-                    'uploadDeny' => array('all'),
-                    'uploadOrder' => 'deny,allow',
-                )
-            )
+        $file = $_FILES['file'];
+        $result = $this->imageupload($file);
+        $json_resp = array(
+            'filelink' => $constant->url.'/upload/images/'.$result
         );
-        $connector = new elFinderConnector(new elFinder($opts));
-        $connector->run();
+        return stripslashes(json_encode($json_resp));
     }
 
     public function elfinderForAdmin()
@@ -167,7 +142,9 @@ class file
             $image_extension = array_pop($object_pharse);
             $image_save_name = $this->analiseImageName(implode('', $object_pharse), $image_extension, $dir);
             move_uploaded_file($file['tmp_name'], $constant->root . $dir . $image_save_name . "." . $image_extension);
+            return $image_save_name . "." .$image_extension;
         }
+        return false;
     }
 
     private function analiseImageName($name, $xt, $dir, $recursive = false)

@@ -44,7 +44,7 @@ function getKeywords(s) {
     return tmp.split(" "); // returns Array of words
 }
 function countKeywords(current_lang) {
-    var s = $('#textobject'+current_lang+'.wysi').elrte('val');
+    var s = $('#textobject'+current_lang+'.wysi').val();
     var minLengthKeyword = 3;
     var minRepeatKeyword = 3;
     var coincidence = parseFloat(0.7);
