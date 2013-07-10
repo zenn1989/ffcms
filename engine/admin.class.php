@@ -286,8 +286,42 @@ class admin
 
     private function loadHooks()
     {
-        global $template, $language, $database, $constant;
-        if ($this->hook_exists()) {
+        global $template, $language, $database, $constant, $system;
+        if($this->action == "install") {
+            $ext_name = $this->add;
+            $stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_hooks WHERE dir = ?");
+            $stmt->bindParam(1, $ext_name, PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetch();
+            $countFind = $res[0];
+            $stmt = null;
+            $theme_install = $template->get('extension_install');
+            $notify = null;
+            if($countFind == 0) {
+                $front_file = $constant->root . "/extension/hooks/" . $ext_name . "/front.php";
+                $back_file = $constant->root . "/extension/hooks/" . $ext_name . "/front.php";
+                if(file_exists($front_file) && file_exists($back_file)) {
+                    require_once($back_file);
+                    $class_name = "hook_" . $back_file ."_back";
+                    if(class_exists($class_name)) {
+                        $loader_class = new $class_name;
+                        if(method_exists($loader_class, 'install')) {
+                            $loader_class->install();
+                            $notify .= $template->stringNotify('success', $language->get('extension_install_success'));
+                        } else {
+                            $notify .= $template->stringNotify('error', $language->get('extension_install_methodno'));
+                        }
+                    } else {
+                        $notify .= $template->stringNotify('error', $language->get('extension_install_classno'));
+                    }
+                } else {
+                    $notify .= $template->stringNotify('error', $language->get('extension_install_filenotfound'));
+                }
+            } else {
+                $notify .= $template->stringNotify('error', $language->get('extension_install_always'));
+            }
+            return $template->assign('notify', $notify, $theme_install);
+        } elseif ($this->hook_exists()) {
             // хук существует, обращаемся к настройке
             $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_hooks WHERE id = ?");
             $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
@@ -307,7 +341,8 @@ class admin
             }
             return $backend_config;
         } else {
-            $theme = $template->assign(array('title', 'word_all', 'word_active', 'word_noactive', 'word_toinstall'),
+            $theme = $template->assign(
+                array('title', 'word_all', 'word_active', 'word_noactive', 'word_toinstall'),
                 array($language->get('admin_hooks_title'), $language->get('admin_hooks_tab_all'), $language->get('admin_hooks_tab_enabled'), $language->get('admin_hooks_tab_dissabled'), $language->get('admin_hooks_tab_toinstall')),
                 $template->tplget('extension_list', null, true));
             $thead = $template->assign(array('ext_th_1', 'ext_th_2', 'ext_th_3', 'ext_th_4'),
@@ -317,6 +352,7 @@ class admin
             $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_hooks");
             $stmt->execute();
             $prepare_theme = array();
+            $installed_ext_array = array();
             while ($result = $stmt->fetch()) {
                 $config_link = "?object=hooks&id=" . $result['id'];
                 $hook_name = $language->get('admin_hook_'.$result['dir'].'.name') == null ? $result['dir'] : $language->get('admin_hook_'.$result['dir'].'.name');
@@ -345,6 +381,16 @@ class admin
                 $prepare_theme['all'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
                     array($result['id'], $hook_name, $hook_desc, $iconset, $config_link),
                     $tbody);
+                $installed_ext_array[] = $result['dir'];
+            }
+            $all_availed_ext = scandir($constant->root . '/extensions/hooks/');
+            foreach($all_availed_ext as $current_ext) {
+                if(!$system->prefixEquals($current_ext, '.') && !in_array($current_ext, $installed_ext_array)) {
+                    $iconset = $template->assign('ext_turn_link', '?object=hooks&action=install&add='.$current_ext, $template->get('manage_install'));
+                    $prepare_theme['toinstall'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
+                        array(0, $current_ext, "Uninstalled extension in folder /extension/".$this->object."/".$current_ext, $iconset),
+                        $tbody);
+                }
             }
             $alllist = $template->assign('extension_tbody', $prepare_theme['all'], $thead);
             $toinstalllist = $template->assign('extension_tbody', $prepare_theme['toinstall'], $thead);
@@ -378,8 +424,42 @@ class admin
 
     private function loadModules()
     {
-        global $template, $language, $database, $constant;
-        if ($this->module_exits()) {
+        global $template, $language, $database, $constant, $system;
+        if($this->action == "install") {
+            $ext_name = $this->add;
+            $stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_modules WHERE dir = ?");
+            $stmt->bindParam(1, $ext_name, PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetch();
+            $countFind = $res[0];
+            $stmt = null;
+            $theme_install = $template->get('extension_install');
+            $notify = null;
+            if($countFind == 0) {
+                $front_file = $constant->root . "/extension/modules/" . $ext_name . "/front.php";
+                $back_file = $constant->root . "/extension/modules/" . $ext_name . "/front.php";
+                if(file_exists($front_file) && file_exists($back_file)) {
+                    require_once($back_file);
+                    $class_name = "mod_" . $back_file ."_back";
+                    if(class_exists($class_name)) {
+                        $loader_class = new $class_name;
+                        if(method_exists($loader_class, 'install')) {
+                            $loader_class->install();
+                            $notify .= $template->stringNotify('success', $language->get('extension_install_success'));
+                        } else {
+                            $notify .= $template->stringNotify('error', $language->get('extension_install_methodno'));
+                        }
+                    } else {
+                        $notify .= $template->stringNotify('error', $language->get('extension_install_classno'));
+                    }
+                } else {
+                    $notify .= $template->stringNotify('error', $language->get('extension_install_filenotfound'));
+                }
+            } else {
+                $notify .= $template->stringNotify('error', $language->get('extension_install_always'));
+            }
+            return $template->assign('notify', $notify, $theme_install);
+        } elseif ($this->module_exits()) {
             // модуль существует, выгружаем backend
             $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_modules WHERE id = ?");
             $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
@@ -410,6 +490,7 @@ class admin
             $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_modules");
             $stmt->execute();
             $prepare_theme = array();
+            $installed_ext_array = array();
             while ($result = $stmt->fetch()) {
                 $config_link = "?object=modules&id=" . $result['id'];
                 $mod_name = $language->get('admin_modules_'.$result['dir'].'.name') == null ? $result['dir'] : $language->get('admin_modules_'.$result['dir'].'.name');
@@ -427,17 +508,20 @@ class admin
                         array($result['id'], $mod_name, $mod_desc, $iconset, $config_link),
                         $tbody);
                 }
-                // вносим в список не установленных
-                if ($result['installed'] == 0) {
-                    $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=modules&id=' . $result['id'], '?object=modules&id=' . $result['id'] . '&action=install'), $template->tplget('manage_install', null, true));
-                    $prepare_theme['toinstall'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
-                        array($result['id'], $mod_name, $mod_desc, $iconset),
-                        $tbody);
-                }
                 $iconset = $template->assign('ext_config_link', '?object=modules&id=' . $result['id'], $template->tplget('manage_all', null, true));
                 $prepare_theme['all'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
                     array($result['id'], $mod_name, $mod_desc, $iconset, $config_link),
                     $tbody);
+                $installed_ext_array[] = $result['dir'];
+            }
+            $all_availed_ext = scandir($constant->root . '/extensions/modules/');
+            foreach($all_availed_ext as $current_ext) {
+                if(!$system->prefixEquals($current_ext, '.') && !in_array($current_ext, $installed_ext_array)) {
+                    $iconset = $template->assign('ext_turn_link', '?object=modules&action=install&add='.$current_ext, $template->get('manage_install'));
+                    $prepare_theme['toinstall'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
+                        array(0, $current_ext, "Uninstalled extension in folder /extension/".$this->object."/".$current_ext, $iconset),
+                        $tbody);
+                }
             }
             $alllist = $template->assign('extension_tbody', $prepare_theme['all'], $thead);
             $toinstalllist = $template->assign('extension_tbody', $prepare_theme['toinstall'], $thead);
@@ -470,8 +554,42 @@ class admin
 
     private function loadComponents()
     {
-        global $template, $language, $database, $constant;
-        if ($this->component_exists()) {
+        global $template, $language, $database, $constant, $system;
+        if($this->action == "install") {
+            $ext_name = $this->add;
+            $stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_components WHERE dir = ?");
+            $stmt->bindParam(1, $ext_name, PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetch();
+            $countFind = $res[0];
+            $stmt = null;
+            $theme_install = $template->get('extension_install');
+            $notify = null;
+            if($countFind == 0) {
+                $front_file = $constant->root . "/extension/components/" . $ext_name . "/front.php";
+                $back_file = $constant->root . "/extension/components/" . $ext_name . "/front.php";
+                if(file_exists($front_file) && file_exists($back_file)) {
+                    require_once($back_file);
+                    $class_name = "com_" . $back_file ."_back";
+                    if(class_exists($class_name)) {
+                        $loader_class = new $class_name;
+                        if(method_exists($loader_class, 'install')) {
+                            $loader_class->install();
+                            $notify .= $template->stringNotify('success', $language->get('extension_install_success'));
+                        } else {
+                            $notify .= $template->stringNotify('error', $language->get('extension_install_methodno'));
+                        }
+                    } else {
+                        $notify .= $template->stringNotify('error', $language->get('extension_install_classno'));
+                    }
+                } else {
+                    $notify .= $template->stringNotify('error', $language->get('extension_install_filenotfound'));
+                }
+            } else {
+                $notify .= $template->stringNotify('error', $language->get('extension_install_always'));
+            }
+            return $template->assign('notify', $notify, $theme_install);
+        } elseif ($this->component_exists()) {
             $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_components WHERE id = ?");
             $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
             $stmt->execute();
@@ -502,6 +620,7 @@ class admin
             $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_components");
             $stmt->execute();
             $prepare_theme = array();
+            $installed_ext_array = array();
             while ($result = $stmt->fetch()) {
                 $config_link = "?object=components&id=" . $result['id'];
                 $com_name = $language->get('admin_component_'.$result['dir'].'.name') == null ? $result['dir'] : $language->get('admin_component_'.$result['dir'].'.name');
@@ -519,18 +638,22 @@ class admin
                         array($result['id'], $com_name, $com_desc, $iconset, $config_link),
                         $tbody);
                 }
-                // вносим в список не установленных
-                if ($result['installed'] == 0) {
-                    $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=components&id=' . $result['id'], '?object=components&id=' . $result['id'] . '&action=install'), $template->tplget('manage_install', null, true));
-                    $prepare_theme['toinstall'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
-                        array($result['id'], $com_name, $com_desc, $iconset),
-                        $tbody);
-                }
+                $installed_ext_array[] = $result['dir'];
                 $iconset = $template->assign('ext_config_link', '?object=components&id=' . $result['id'], $template->tplget('manage_all', null, true));
                 $prepare_theme['all'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
                     array($result['id'], $com_name, $com_desc, $iconset, $config_link),
                     $tbody);
             }
+            $all_availed_ext = scandir($constant->root . '/extensions/components/');
+            foreach($all_availed_ext as $current_ext) {
+                if(!$system->prefixEquals($current_ext, '.') && !in_array($current_ext, $installed_ext_array)) {
+                    $iconset = $template->assign('ext_turn_link', '?object=components&action=install&add='.$current_ext, $template->get('manage_install'));
+                    $prepare_theme['toinstall'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
+                        array(0, $current_ext, "Uninstalled extension in folder /extension/".$this->object."/".$current_ext, $iconset),
+                        $tbody);
+                }
+            }
+
             $alllist = $template->assign('extension_tbody', $prepare_theme['all'], $thead);
             $toinstalllist = $template->assign('extension_tbody', $prepare_theme['toinstall'], $thead);
             $activelist = $template->assign('extension_tbody', $prepare_theme['enabled'], $thead);
@@ -547,7 +670,7 @@ class admin
     private function showNull()
     {
         global $template;
-        return $template->tplget('nullcontent', null, true);
+        return $template->get('nullcontent');
     }
 
     private function component_exists()

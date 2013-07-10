@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL ^ E_NOTICE);
 // маркер начала загруки, для отладочной информации.
 $debug_starttime = microtime(true);
 session_start();

@@ -7,7 +7,7 @@ $('#comment_value').val('[b]'+username + '[/b], ' + comment_value);
 }
 function editcomment(id)
 {
-$.get('http://ffcms/api.php?action=commenteditform&id='+id, function(data) {
+$.get('{$url}/api.php?action=commenteditform&id='+id, function(data) {
 $('#comment-edit-jquery').html(data);
 });
 

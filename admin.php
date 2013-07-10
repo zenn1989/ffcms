@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL ^ E_NOTICE);
 define('root', $_SERVER['DOCUMENT_ROOT']);
 // версия системы
 define('version', '0.1');
