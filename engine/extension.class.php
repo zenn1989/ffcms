@@ -28,7 +28,7 @@ class extension
     private function rawcomponents()
     {
         global $constant, $database;
-        $stmt = $database->con()->query("SELECT * FROM {$constant->db['prefix']}_components WHERE enabled = 1 AND installed = 1");
+        $stmt = $database->con()->query("SELECT * FROM {$constant->db['prefix']}_components WHERE enabled = 1");
         $stmt->execute();
         while ($result = $stmt->fetch()) {
             $component_front = $constant->root . '/extensions/components/' . $result['dir'] . '/front.php';
@@ -40,7 +40,7 @@ class extension
         }
     }
 
-    /**
+    /**h
      * Регистрация путей для компонентов
      * Для первого параметра(пути) возможен массив путей registerPathWay(array('login', 'registration', 'recovery), 'usercontrol')
      */

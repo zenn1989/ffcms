@@ -511,6 +511,22 @@ class system
         return $outstring;
     }
 
+    public function DbPrepareListdata($array)
+    {
+        $output = null;
+        $i = 1;
+        foreach($array as $value) {
+            // последний элемент
+            if(sizeof($array) == $i) {
+                $output .= "'{$value}'";
+            } else {
+                $output .= "'{$value}', ";
+            }
+            $i++;
+        }
+        return $output;
+    }
+
     /**
      * Проверка IP на валидность
      * @param $ip

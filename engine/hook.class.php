@@ -5,6 +5,7 @@
 class hook
 {
     private $hook_list = array();
+    private $hook_link = array();
 
     function hook()
     {
@@ -25,6 +26,8 @@ class hook
         if ($this->hook_list[$type] == null) {
             return null;
         }
+        if($this->hook_link[$type] != null)
+            return $this->hook_link[$type];
         $file = $constant->root . '/extensions/hooks/' . $this->hook_list[$type] . '/front.php';
         if (!file_exists($file)) {
             return null;
@@ -32,7 +35,9 @@ class hook
         require_once($file);
         $class = "hook_{$this->hook_list[$type]}_front";
         $init = new $class;
-        return $init->load();
+        $object = $init->load();
+        $this->hook_link[$type] = $object;
+        return $object;
     }
 
     public function after()

@@ -113,6 +113,29 @@ class language
         return $this->lang[$data];
     }
 
+    /**
+     * Функция добавляет в lang.type.addition.lang значения из массива $line_array
+     * array(ru => array('add.some-string' => 'value this string));
+     * @param $line_array
+     */
+    public function addLinesLanguage($line_array, $isback = false)
+    {
+        global $constant;
+        foreach($line_array as $lang=>$lines) {
+            $toWriteString = "\r\n";
+            foreach($lines as $param=>$value) {
+                $toWriteString .= $param . "<=>" . $value . "\n";
+            }
+            $file = null;
+            if($isback) {
+                $file = $constant->root . "/language/" . $lang . ".back.addition.lang";
+            } else {
+                $file = $constant->root . "/language/" . $lang . ".front.addition.lang";
+            }
+            file_put_contents($file, $toWriteString, FILE_APPEND | LOCK_EX);
+        }
+    }
+
 }
 
 ?>

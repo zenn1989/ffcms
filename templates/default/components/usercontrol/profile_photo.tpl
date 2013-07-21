@@ -22,6 +22,9 @@
     {$if user.auth && !com.usercontrol.self_profile && com.usercontrol.in_friends}
     <li><a href="{$url}/message/write/{$target_user_id}">{$lang::usercontrol_profile_mymenu_writemsg}</a></li>
     {$/if}
+    {$if user.auth && com.usercontrol.self_profile && com.usercontrol.have_additional}
+    {$hook_additional_link}
+    {$/if}
     {$if user.auth && !com.usercontrol.self_profile && !com.usercontrol.in_friends && !com.usercontrol.in_friends_request}
     <form class="hidden" id="friendget" action="" method="post"><input type="hidden" name="requestfriend" value="1"/>
     </form>

@@ -45,7 +45,10 @@
         $(document).ready(
                 function()
                 {
-                    $('.wysi').redactor({ imageUpload: '{$url}/api.php?action=imperaviimageload' });
+                    $('.wysi').redactor({
+                        imageUpload: '{$url}/api.php?action=imperaviimageload',
+                        convertDivs: false
+                    });
                 }
         );
     </script>

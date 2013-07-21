@@ -855,10 +855,14 @@ class com_usercontrol_front
 
     private function userProfilePhotoSettings($userid)
     {
-        global $template, $user;
+        global $template, $user, $rule;
         $parsed = $template->assign(array('user_avatar', 'target_user_id'),
             array($user->buildAvatar('big', $userid), $userid),
-            $template->tplget('profile_photo', 'components/usercontrol/'));
+            $template->get('profile_photo', 'components/usercontrol/'));
+        if($this->hook_item_settings != null) {
+            $rule->add('com.usercontrol.have_additional', true);
+            $parsed = $template->assign('hook_additional_link', $this->hook_item_settings, $parsed);
+        }
         return $parsed;
     }
 
@@ -1015,7 +1019,7 @@ class com_usercontrol_front
 
     private function recoveryComponent()
     {
-        global $template, $hook, $page, $system, $database, $constant, $language;
+        global $template, $hook, $page, $system, $database, $constant, $language, $mail;
         $pathway = $page->getPathway();
         if ($pathway[1] != null && $pathway[2] != null) {
             // todo

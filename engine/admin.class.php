@@ -298,11 +298,11 @@ class admin
             $theme_install = $template->get('extension_install');
             $notify = null;
             if($countFind == 0) {
-                $front_file = $constant->root . "/extension/hooks/" . $ext_name . "/front.php";
-                $back_file = $constant->root . "/extension/hooks/" . $ext_name . "/front.php";
+                $front_file = $constant->root . "/extensions/hooks/" . $ext_name . "/front.php";
+                $back_file = $constant->root . "/extensions/hooks/" . $ext_name . "/back.php";
                 if(file_exists($front_file) && file_exists($back_file)) {
                     require_once($back_file);
-                    $class_name = "hook_" . $back_file ."_back";
+                    $class_name = "hook_" . $ext_name ."_back";
                     if(class_exists($class_name)) {
                         $loader_class = new $class_name;
                         if(method_exists($loader_class, 'install')) {
@@ -370,13 +370,6 @@ class admin
                         array($result['id'], $hook_name, $hook_desc, $iconset, $config_link),
                         $tbody);
                 }
-                // вносим в список не установленных
-                if ($result['installed'] == 0) {
-                    $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=hooks&id=' . $result['id'], '?object=hooks&id=' . $result['id'] . '&action=install'), $template->tplget('manage_install', null, true));
-                    $prepare_theme['toinstall'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
-                        array($result['id'], $hook_desc, $hook_desc, $iconset),
-                        $tbody);
-                }
                 $iconset = $template->assign('ext_config_link', '?object=hooks&id=' . $result['id'], $template->tplget('manage_all', null, true));
                 $prepare_theme['all'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
                     array($result['id'], $hook_name, $hook_desc, $iconset, $config_link),
@@ -436,11 +429,11 @@ class admin
             $theme_install = $template->get('extension_install');
             $notify = null;
             if($countFind == 0) {
-                $front_file = $constant->root . "/extension/modules/" . $ext_name . "/front.php";
-                $back_file = $constant->root . "/extension/modules/" . $ext_name . "/front.php";
+                $front_file = $constant->root . "/extensions/modules/" . $ext_name . "/front.php";
+                $back_file = $constant->root . "/extensions/modules/" . $ext_name . "/back.php";
                 if(file_exists($front_file) && file_exists($back_file)) {
                     require_once($back_file);
-                    $class_name = "mod_" . $back_file ."_back";
+                    $class_name = "mod_" . $ext_name ."_back";
                     if(class_exists($class_name)) {
                         $loader_class = new $class_name;
                         if(method_exists($loader_class, 'install')) {
@@ -566,11 +559,11 @@ class admin
             $theme_install = $template->get('extension_install');
             $notify = null;
             if($countFind == 0) {
-                $front_file = $constant->root . "/extension/components/" . $ext_name . "/front.php";
-                $back_file = $constant->root . "/extension/components/" . $ext_name . "/front.php";
+                $front_file = $constant->root . "/extensions/components/" . $ext_name . "/front.php";
+                $back_file = $constant->root . "/extensions/components/" . $ext_name . "/back.php";
                 if(file_exists($front_file) && file_exists($back_file)) {
                     require_once($back_file);
-                    $class_name = "com_" . $back_file ."_back";
+                    $class_name = "com_" . $ext_name ."_back";
                     if(class_exists($class_name)) {
                         $loader_class = new $class_name;
                         if(method_exists($loader_class, 'install')) {

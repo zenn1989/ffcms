@@ -87,6 +87,36 @@ class cache
         return $this->static_always_loaded;
     }
 
+    /**
+     * Сохранение блочного объекта в кеш
+     * @param $name
+     * @param $data
+     */
+    public function saveBlock($name, $data)
+    {
+        global $constant;
+        $fname = $constant->root . "/cache/block/" . $name . ".cache";
+        @file_put_contents($fname, $data, LOCK_EX);
+    }
+
+    /**
+     * Получение блочного объекта из кеша
+     * @param $name
+     * @param int $time
+     * @return null|string
+     */
+    public function getBlock($name, $time = 120)
+    {
+        global $constant;
+        $fname = $constant->root . "/cache/block/" . $name . ".cache";
+        if(!file_exists($fname))
+            return null;
+        $ftime = filemtime($fname);
+        if(time() - $ftime < $time)
+            return file_get_contents($fname);
+        return null;
+    }
+
 
 }
 

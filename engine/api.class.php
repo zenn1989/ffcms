@@ -39,11 +39,33 @@ class api
             case "commentdelete":
                 return $this->deleteComment();
                 break;
+            case "apicallback":
+                return $this->apiCallBack();
+                break;
             default:
                 break;
         }
         $apiresult = $template->ruleCheck($apiresult);
         return $language->set($apiresult);
+    }
+
+    private function apiCallBack()
+    {
+        global $constant, $system;
+        $name = $system->get('object');
+        $file = $constant->root . "/extensions/apicallback/" . $name . "/front.php";
+        if(file_exists($file))
+        {
+            require_once($file);
+            $class_name = "api_{$name}_front";
+            if(class_exists($class_name)) {
+                $init = new $class_name;
+                if(method_exists($init, 'load')) {
+                    return $init->load();
+                }
+            }
+        }
+        return;
     }
 
     private function showRequestJs()

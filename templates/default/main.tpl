@@ -52,7 +52,9 @@
     <!-- /second navi menu -->
     <div style="padding-top: 10px;"></div>
     <div class="row">
-        {$left}
+        <div class="span3" id="lnav">
+            {$left}
+        </div>
         <div class="span9">
             <div class="well well-500px">
                 {$body}
