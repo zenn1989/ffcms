@@ -5,8 +5,8 @@ $debug_starttime = microtime(true);
 session_start();
 // задаем глобальную корня
 define('root', $_SERVER['DOCUMENT_ROOT']);
-// версия системы
-define('version', '0.1');
+// версия системы (api.major.minor)
+define('version', '1.0.0');
 // указатель интерфейса
 define('loader', 'front');
 

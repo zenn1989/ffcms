@@ -1,8 +1,8 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 define('root', $_SERVER['DOCUMENT_ROOT']);
-// версия системы
-define('version', '0.1');
+// версия системы (api.major.minor)
+define('version', '1.0.0');
 // указатель на админ-интерфейс
 define('loader', 'back');
 // указатель позволяющий изменить имя скрипта

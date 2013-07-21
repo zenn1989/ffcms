@@ -2,7 +2,7 @@
 // задаем глобальную корня
 define('root', $_SERVER['DOCUMENT_ROOT']);
 // версия системы
-define('version', '0.1');
+define('version', '1.0.0');
 // указатель интерфейса
 define('loader', 'install');
 

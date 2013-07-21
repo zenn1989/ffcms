@@ -2,8 +2,8 @@
 error_reporting(E_ALL ^ E_NOTICE);
 // задаем глобальную корня
 define('root', $_SERVER['DOCUMENT_ROOT']);
-// версия системы
-define('version', '0.1');
+// версия системы (api.major.minor)
+define('version', '1.0.0');
 // указатель интерфейса
 define('loader', 'api');
 

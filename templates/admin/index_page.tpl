@@ -109,7 +109,7 @@
                 </tr>
                 <tr>
                     <td>{$lang::admin_block_info_revision}</td>
-                    <td>0.1</td>
+                    <td>1.0.0</td>
                 </tr>
             </table>
         </div>
