@@ -1,0 +1,1 @@
+<a href="{$url}/news/tag/{$news_tag_urlencode}.html" title="{$news_tag_name}">{$news_tag_name}</a>

@@ -4,8 +4,18 @@ class mod_news_on_main_front implements mod_front
 {
     public function before()
     {
-        global $page, $database, $constant, $extension, $template, $system, $user, $hook, $language;
-        $short_theme = $template->tplget('view_short_news', 'components/news/');
+        global $page, $database, $constant, $extension, $template, $system, $user, $hook, $language, $rule;
+        $short_theme = $template->get('view_short_news', 'components/news/');
+        $viewTags = $extension->getConfig('enable_tags', 'news', 'components', 'boolean');
+        $viewCount = $extension->getConfig('enable_views_count', 'news', 'components', 'boolean');
+        $tag_theme = $template->get('tag_link', 'components/news/');
+        $tag_spliter = $template->get('tag_spliter', 'components/news/');
+        if($viewTags) {
+            $rule->add('com.news.tag', true);
+        }
+        if($viewCount) {
+            $rule->add('com.news.view_count', true);
+        }
         $time = time();
         $page_news_count = $extension->getConfig('count_news_page', 'news', 'components', 'int');
         $max_preview_length = $extension->getConfig('short_news_length', 'news', 'components', 'int');
@@ -33,6 +43,7 @@ class mod_news_on_main_front implements mod_front
         while ($result = $stmt->fetch()) {
             $lang_text = unserialize($result['text']);
             $lang_title = unserialize($result['title']);
+            $lang_keywords = unserialize($result['keywords']);
             $news_short_text = $lang_text[$language->getCustom()];
             if ($system->contains('<!-- pagebreak -->', $news_short_text)) {
                 $news_short_text = strstr($news_short_text, '<!-- pagebreak -->', true);
@@ -44,11 +55,25 @@ class mod_news_on_main_front implements mod_front
             } else {
                 $news_full_link = $result['path'] . "/" . $result['link'];
             }
+            $prepareTags = $system->altexplode(',', $lang_keywords[$language->getCustom()]);
+            $tag_text = null;
+            for($i=0;$i<=sizeof($prepareTags);$i++) {
+                $tag_url = urlencode($system->noSpaceOnStartEnd($prepareTags[$i]));
+                if($tag_url != null) {
+                    $tag_text .= $template->assign(array('news_tag_urlencode', 'news_tag_name'), array($tag_url, $system->noSpaceOnStartEnd($prepareTags[$i])), $tag_theme);
+                    if($i < sizeof($prepareTags)-1) {
+                        $tag_text .= $tag_spliter;
+                    }
+                }
+            }
+            if($tag_text == null) {
+                $tag_text = $language->get('news_view_tag_notfind');
+            }
             $hashWay = $page->hashFromPathway($system->altexplode('/', $news_full_link));
             $comment_count = $hook->get('comment')->getCount($hashWay);
             $cat_serial_text = unserialize($result['name']);
-            $content .= $template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'news_full_link', 'news_comment_count'),
-                array($lang_title[$language->getCustom()], $news_short_text, $system->toDate($result['date'], 'h'), $result['path'], $cat_serial_text[$language->getCustom()], $result['author'], $user->get('nick', $result['author']), $news_full_link, $comment_count),
+            $content .= $template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'news_full_link', 'news_comment_count', 'news_tag', 'news_view_count'),
+                array($lang_title[$language->getCustom()], $news_short_text, $system->toDate($result['date'], 'h'), $result['path'], $cat_serial_text[$language->getCustom()], $result['author'], $user->get('nick', $result['author']), $news_full_link, $comment_count, $tag_text, $result['views']),
                 $short_theme);
         }
         if ($content != null) {

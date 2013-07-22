@@ -8,7 +8,7 @@ class com_news_back
         global $admin, $template, $language, $database, $constant, $system, $user;
         $action_page_title = $admin->getExtName() . " : ";
         $work_body = null;
-        $menu_theme = $template->tplget('config_menu', null, true);
+        $menu_theme = $template->get('config_menu');
         $menu_link = null;
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id=' . $admin->getID() . '&action=list', $language->get('admin_component_news_manage')), $menu_theme);
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id=' . $admin->getID() . '&action=add', $language->get('admin_component_news_add')), $menu_theme);
@@ -276,7 +276,7 @@ class com_news_back
             $work_body = $template->assign(array('selecter_li_languages', 'selecter_body_languages', 'notify', 'news_category_select'), array($precompile_head, $precompile_body, $notify, $this->buildCategoryOptionList(0, $selected_category)), $theme_head);
         } elseif ($admin->getAction() == "delcategory") {
             $action_page_title .= $language->get('admin_component_news_category');
-            $theme_delete = $template->tplget('news_category_delete', 'components/', true);
+            $theme_delete = $template->get('news_category_delete', 'components/');
             $cat_id = $admin->getPage();
             $cat_name = null;
             $cat_path = null;
@@ -362,6 +362,7 @@ class com_news_back
             $config_set .= $admin->tplSettingsSelectYorN('config:delay_news_public', $language->get('admin_component_news_config_newsdelay_title'), $language->get('admin_component_news_config_newsdelay_desc'), $admin->getConfig('delay_news_public', 'boolean'));
             $config_set .= $admin->tplSettingsInputText('config:count_news_page', $admin->getConfig('count_news_page', 'int'), $language->get('admin_component_news_config_newscount_page_title'), $language->get('admin_component_news_config_newscount_page_desc'));
             $config_set .= $admin->tplSettingsInputText('config:short_news_length', $admin->getConfig('short_news_length', 'int'), $language->get('admin_component_news_config_newsshort_length_title'), $language->get('admin_component_news_config_newsshort_length_desc'));
+            $config_set .= $admin->tplSettingsSelectYorN('config:enable_views_count', $language->get('admin_component_news_config_viewcount_title'), $language->get('admin_component_news_config_viewcount_desc'), $admin->getConfig('enable_views_count', 'boolean'));
             $config_set .= $admin->tplSettingsDirectory($language->get('admin_component_news_settings_catblock'));
             $config_set .= $admin->tplSettingsSelectYorN('config:multi_category', $language->get('admin_component_news_config_newscat_multi_title'), $language->get('admin_component_news_config_newscat_multi_desc'), $admin->getConfig('multi_category', 'boolean'));
             $config_set .= $admin->tplSettingsDirectory($language->get('admin_component_news_settings_tags'));

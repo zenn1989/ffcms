@@ -8,17 +8,22 @@
     <div class="pull-left">{$lang::news_view_category}: <a href="{$url}/news/">{$lang::news_view_category_unset}</a>
     </div>
     {$/if}
-    <div class="pull-right">{$lang::news_view_publish_date}: {$news_date}</div>
+    <div class="pull-right">
+        {$lang::news_view_publish_date}: {$news_date}
+    </div>
 </div>
 <hr/>
 <div>
     {$news_text}
 </div>
 <hr/>
-{$if com.news.tag && com.news.have_tag}
+{$if com.news.tag}
 <div class="pull-left">{$lang::news_view_tags}: {$news_tag}</div>
 {$/if}
-<div class="pull-right">{$lang::news_view_author}: <a href="{$url}/user/id{$author_id}">{$author_nick}</a></div>
+<div class="pull-right">
+    {$lang::news_view_author}: <a href="{$url}/user/id{$author_id}">{$author_nick}</a>
+    {$if com.news.view_count}{$lang::news_view_countviews}: {$news_view_count} {$/if}
+</div>
 <!-- COMMENT FORM & LIST -->
 <br/><br/>
 <ul class="nav nav-tabs">

@@ -537,6 +537,23 @@ class system
         return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
     }
 
+    /**
+     * Удаление пробелов с начала и конца строки. Пример String ' Hello ' => 'Hello'
+     * @param $string
+     * @return string
+     */
+    public function noSpaceOnStartEnd($string) {
+        $start_character = substr($string, 0, 1);
+        if($start_character == " ") {
+            $string = substr($string, 1, strlen($string));
+        }
+        $end_character = substr($string, -1);
+        if($end_character == " ") {
+            $string = substr($string, 0, -1);
+        }
+        return $string;
+    }
+
 }
 
 ?>
