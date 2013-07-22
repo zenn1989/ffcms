@@ -42,12 +42,9 @@ class template
             // инициация пре-загружаемых модулей с возможностью $page::setContentPosition(pos, data, index)
             $extension->modules_before_load();
         }
-        $this->header = $page->getContentPosition('header');
-        $this->left = $page->getContentPosition('left');
-        $this->right = $page->getContentPosition('right');
-        $this->bottom = $page->getContentPosition('bottom');
-        $this->footer = $page->getContentPosition('footer');
-        $this->body = $page->getContentPosition('body');
+        foreach($this->allowedPositions() as $position) {
+            $this->{$position} = $page->getContentPosition($position);
+        }
     }
 
     /**
@@ -68,12 +65,9 @@ class template
         if($user->get('id') < 1 && $cache->check()) {
             return $cache->get();
         }
-        $this->fortpl('header');
-        $this->fortpl('left');
-        $this->fortpl('right');
-        $this->fortpl('bottom');
-        $this->fortpl('footer');
-        $this->fortpl('body');
+        foreach($this->allowedPositions() as $position) {
+            $this->fortpl($position);
+        }
         if (loader == 'front') {
             // инициация пост-загружаемых модулей
             $extension->moduleAfterLoad();
@@ -140,14 +134,13 @@ class template
      */
     private function getCarcase()
     {
-        $isadmin = (loader == 'back') ? true : false;
-        return $this->tplget('main', null, $isadmin);
+        return $this->get('main');
     }
 
     public function overloadCarcase($theme)
     {
         $this->content = null;
-        $this->content = $this->tplget($theme);
+        $this->content = $this->get($theme);
     }
 
     /**
@@ -271,8 +264,8 @@ class template
         } else {
             $template_path = $constant->tpl_dir . $constant->slash . $constant->tpl_name;
         }
-        return str_replace(array('{$url}', '{$tpl_dir}', '{$user_id}', '{$user_nick}'),
-            array($constant->url, $template_path, loader == 'install' ? null : $user->get('id'), loader == 'install' ? null : $user->get('nick')),
+        return str_replace(array('{$url}', '{$tpl_dir}', '{$user_id}', '{$user_nick}', '{$ffcms_version}'),
+            array($constant->url, $template_path, loader == 'install' ? null : $user->get('id'), loader == 'install' ? null : $user->get('nick'), version),
             $theme);
     }
 
@@ -393,12 +386,9 @@ class template
     public function cleanafterprint()
     {
         unset($this->content);
-        unset($this->header);
-        unset($this->left);
-        unset($this->body);
-        unset($this->right);
-        unset($this->bottom);
-        unset($this->footer);
+        foreach($this->allowedPositions() as $position) {
+            unset($this->{$position});
+        }
     }
 
     public function drowNumericPagination($index, $count, $total, $link)

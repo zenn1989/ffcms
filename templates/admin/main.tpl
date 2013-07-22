@@ -47,7 +47,8 @@
                 {
                     $('.wysi').redactor({
                         imageUpload: '{$url}/api.php?action=imperaviimageload',
-                        convertDivs: false
+                        convertDivs: false,
+                        focus: true
                     });
                 }
         );

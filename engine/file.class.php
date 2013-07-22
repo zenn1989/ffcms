@@ -10,7 +10,7 @@ class file
     public function imperaviLoad()
     {
         global $user, $constant;
-        if ($user->get('access_to_admin') < 1)
+        if ($user->get('access_to_admin') < 1 || $_FILES['file'] == null)
             return;
         $file = $_FILES['file'];
         $result = $this->imageupload($file);

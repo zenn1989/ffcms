@@ -188,14 +188,13 @@ class page
     /**
      * Добавление к массиву позиций значения
      */
-    public function setContentPosition($position, $content, $index = null)
+    public function setContentPosition($position, $content, $index = 0)
     {
         $var = "content_{$position}";
-        if ($index == null) {
-            $this->{$var}[] = $content;
-        } else {
-            $this->{$var}[$index] = $content;
+        if($this->{$var}[$index] != null) {
+            return $this->setContentPosition($position, $content, $index+1);
         }
+        $this->{$var}[$index] = $content;
     }
 
     /**
