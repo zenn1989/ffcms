@@ -46,13 +46,7 @@
         <!-- /search menu -->
     </div>
     <!-- second navi menu -->
-    <div class="subnav">
-        <ul class="nav nav-pills pull-left">
-            <li><a href="#">Меню</a></li>
-            <li><a href="#">Меню</a></li>
-            <li><a href="#">Меню</a></li>
-        </ul>
-    </div>
+    {$subheader}
     <!-- /second navi menu -->
     <div style="padding-top: 10px;"></div>
     <div class="row">

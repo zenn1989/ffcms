@@ -8,6 +8,7 @@ class template
     private $position = array();
     private $content = null;
     private $debug_readcount = 0;
+    private $position_allowed = array();
 
     private $precompile_tag = array();
 
@@ -25,11 +26,16 @@ class template
     public function allowedPositions()
     {
         global $constant, $system;
+        if(sizeof($this->position_allowed) > 0) {
+            return $this->position_allowed;
+        }
         $file = $constant->root . $constant->ds . $constant->tpl_dir . $constant->ds . $constant->tpl_name . $constant->ds . "position.list";
         if(!file_exists($file)) {
-            return array('header', 'left', 'body', 'right', 'bottom', 'footer');
+            $this->position_allowed = array('header', 'left', 'body', 'right', 'bottom', 'footer');
+        } else {
+            $this->position_allowed = $system->altexplode('|', file_get_contents($file));
         }
-        return $system->altexplode('|', file_get_contents($file));
+        return $this->position_allowed;
     }
 
     /**
@@ -145,7 +151,9 @@ class template
     public function overloadCarcase($theme)
     {
         $this->content = null;
-        $this->content = $this->get($theme);
+        if($theme != null) {
+            $this->content = $this->get($theme);
+        }
     }
 
     /**

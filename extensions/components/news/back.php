@@ -481,7 +481,7 @@ class com_news_back
     private function check_pageway($way, $id = 0, $cat_id)
     {
         global $database, $constant;
-        if (preg_match('/[\'~`\!@#\$%\^&\*\(\)+=\{\}\[\]\|;:"\<\>,\?\\\]/', $way)) {
+        if (preg_match('/[\'~`\!@#\$%\^&\*\(\)+=\{\}\[\]\|;:"\<\>,\?\\\]/', $way) || $way == "tag") {
             return false;
         }
         $stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_com_news_entery WHERE link = ? AND category = ? AND id != ?");

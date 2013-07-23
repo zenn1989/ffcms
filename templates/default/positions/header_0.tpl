@@ -4,12 +4,8 @@
             <div class="nav-collapse">
                 <ul class="nav">
                     <li><a href="{$url}"> {$lang::position_header_main}</a></li>
-
                     <li><a href="{$url}/news/"> {$lang::position_header_news}</a></li>
-
                     <li><a href="{$url}/user/"> {$lang::position_header_users}</a></li>
-
-                    <li><a href="{$url}/static/about.html"> {$lang::position_header_about}</a></li>
                 </ul>
                 <ul class="nav pull-right">
                     {$if user.auth}
