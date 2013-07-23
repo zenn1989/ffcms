@@ -5,17 +5,9 @@
  */
 class template
 {
-    private $header = array();
-    private $left = array();
-    private $body = array();
-    private $right = array();
-    private $bottom = array();
-    private $footer = array();
-
+    private $position = array();
     private $content = null;
     private $debug_readcount = 0;
-
-
 
     private $precompile_tag = array();
 
@@ -26,6 +18,10 @@ class template
         }
     }
 
+    /**
+     * Допустимые позиции в шаблоне. В дальнейшем - сделать конфигурабельно относительно шаблонов
+     * @return array
+     */
     public function allowedPositions()
     {
         return array('header', 'left', 'body', 'right', 'bottom', 'footer');
@@ -43,7 +39,7 @@ class template
             $extension->modules_before_load();
         }
         foreach($this->allowedPositions() as $position) {
-            $this->{$position} = $page->getContentPosition($position);
+            $this->position[$position] = $page->getContentPosition($position);
         }
     }
 
@@ -111,7 +107,7 @@ class template
     private function fortpl($position_name)
     {
         $result = null;
-        $sort_entery = $this->{$position_name};
+        $sort_entery = $this->position[$position_name];
         if (count($sort_entery) > 0) {
             foreach ($sort_entery as $enteries) {
                 $result .= $enteries;
@@ -137,6 +133,10 @@ class template
         return $this->get('main');
     }
 
+    /**
+     * Перезагрузка супер-позиции шаблона на указанный
+     * @param $theme
+     */
     public function overloadCarcase($theme)
     {
         $this->content = null;
@@ -386,9 +386,7 @@ class template
     public function cleanafterprint()
     {
         unset($this->content);
-        foreach($this->allowedPositions() as $position) {
-            unset($this->{$position});
-        }
+        unset($this->position);
     }
 
     public function drowNumericPagination($index, $count, $total, $link)

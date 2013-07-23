@@ -10,12 +10,7 @@ class page
 
     private $string_pathway = null;
 
-    private $content_body = array();
-    private $content_header = array();
-    private $content_left = array();
-    private $content_right = array();
-    private $content_bottom = array();
-    private $content_footer = array();
+    private $content_position = array();
 
     private $notifyModuleAfter = array();
 
@@ -66,7 +61,7 @@ class page
             else {
                 $this->isNullPage = true;
                 $cache->setNoExist(true);
-                $this->content_body[] = $template->compile404();
+                $this->content_position['body'][0] = $template->compile404();
             }
         }
         $meta->compile();
@@ -181,8 +176,7 @@ class page
      */
     public function getContentPosition($position)
     {
-        $pos = "content_{$position}";
-        return $this->{$pos};
+        return $this->content_position[$position];
     }
 
     /**
@@ -190,11 +184,10 @@ class page
      */
     public function setContentPosition($position, $content, $index = 0)
     {
-        $var = "content_{$position}";
-        if($this->{$var}[$index] != null) {
+        if($this->content_position[$position][$index] != null) {
             return $this->setContentPosition($position, $content, $index+1);
         }
-        $this->{$var}[$index] = $content;
+        $this->content_position[$position][$index] = $content;
     }
 
     /**
