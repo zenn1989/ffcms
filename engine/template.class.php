@@ -24,7 +24,12 @@ class template
      */
     public function allowedPositions()
     {
-        return array('header', 'left', 'body', 'right', 'bottom', 'footer');
+        global $constant, $system;
+        $file = $constant->root . $constant->ds . $constant->tpl_dir . $constant->ds . $constant->tpl_name . $constant->ds . "position.list";
+        if(!file_exists($file)) {
+            return array('header', 'left', 'body', 'right', 'bottom', 'footer');
+        }
+        return $system->altexplode('|', file_get_contents($file));
     }
 
     /**

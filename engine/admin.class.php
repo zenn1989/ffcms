@@ -18,9 +18,9 @@ class admin
     function admin()
     {
         global $system;
-        $this->object = $system->get('object');
-        $this->action = $system->get('action');
-        $this->add = $system->get('add');
+        $this->object = (string)$system->get('object');
+        $this->action = (string)$system->get('action');
+        $this->add = (string)$system->get('add');
         $this->id = (int)$system->get('id');
         $this->page = (int)$system->get('page');
     }
@@ -224,7 +224,7 @@ class admin
                 $theme_scan_option = null;
                 $scan = scandir($constant->root . $constant->ds . $constant->tpl_dir);
                 foreach ($scan as $found_tpl) {
-                    if ($found_tpl != '.' && $found_tpl != '..' && !$system->contains('.', $found_tpl) && !$system->contains('admin', $found_tpl)) {
+                    if ($found_tpl != '.' && $found_tpl != '..' && !$system->contains('.', $found_tpl) && !$system->contains('admin', $found_tpl) && !$system->contains('install', $found_tpl)) {
                         if ($found_tpl == $constant->tpl_name) {
                             $theme_scan_option .= $template->assign(array('option_value', 'option_name'), $found_tpl, $theme_option_active);
                         } else {

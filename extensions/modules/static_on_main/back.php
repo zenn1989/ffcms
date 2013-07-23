@@ -9,7 +9,7 @@ class mod_static_on_main_back implements backend
             return $admin->turn();
         }
         $action_page_title = $admin->getExtName() . " : " . $language->get('admin_modules_staticonmain_settings');
-        $menu_theme = $template->tplget('config_menu', null, true);
+        $menu_theme = $template->get('config_menu');
         $work_body = null;
         if ($system->post('submit')) {
             $save_try = $admin->trySaveConfigs();
@@ -31,8 +31,8 @@ class mod_static_on_main_back implements backend
     {
         global $template, $constant, $database, $admin, $language;
         $saved_value = $admin->getConfig('news_id', 'int');
-        $theme_option_active = $template->tplget('form_option_item_active', null, true);
-        $theme_option_inactive = $template->tplget('form_option_item_inactive', null, true);
+        $theme_option_active = $template->get('form_option_item_active');
+        $theme_option_inactive = $template->get('form_option_item_inactive');
         $stmt = $database->con()->prepare("SELECT `id`, `title` FROM {$constant->db['prefix']}_com_static ORDER BY `id` DESC");
         $stmt->execute();
         $output = null;

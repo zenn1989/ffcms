@@ -47,7 +47,11 @@
     </div>
     <!-- second navi menu -->
     <div class="subnav">
-        {$mod_top_menu}
+        <ul class="nav nav-pills pull-left">
+            <li><a href="#">Меню</a></li>
+            <li><a href="#">Меню</a></li>
+            <li><a href="#">Меню</a></li>
+        </ul>
     </div>
     <!-- /second navi menu -->
     <div style="padding-top: 10px;"></div>

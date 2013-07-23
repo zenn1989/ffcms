@@ -1,1 +1,0 @@
-<ul class="nav nav-pills pull-left">
