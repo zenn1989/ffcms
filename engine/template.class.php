@@ -148,7 +148,7 @@ class template
      * Перезагрузка супер-позиции шаблона на указанный
      * @param $theme
      */
-    public function overloadCarcase($theme)
+    public function overloadCarcase($theme = null)
     {
         $this->content = null;
         if($theme != null) {

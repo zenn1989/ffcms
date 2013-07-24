@@ -47,6 +47,8 @@ class constant
         $this->tpl_dir = $config['tpl_dir'];
         $this->tpl_name = $config['tpl_name'];
         $this->url = $config['url'];
+        $this->lang = $config['lang'];
+        $this->time_zone = $config['time_zone'];
 
         $this->db['host'] = $config['db_host'];
         $this->db['user'] = $config['db_user'];

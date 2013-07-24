@@ -211,13 +211,13 @@ class admin
             $system->redirect($_SERVER['PHP_SELF'] . "?object=settings&action=saved");
         }
         $action_page_title = $language->get('admin_settings_title');
-        $menu_theme = $template->tplget('config_menu', null, true);
+        $menu_theme = $template->get('config_menu');
         $menu_link = null;
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=settings', $language->get('admin_nav_li_settings')), $menu_theme);
 
-        $work_body = $template->tplget('settings', null, true);
-        $theme_option_active = $template->tplget('form_option_item_active', null, true);
-        $theme_option_inactive = $template->tplget('form_option_item_inactive', null, true);
+        $work_body = $template->get('settings');
+        $theme_option_active = $template->get('form_option_item_active');
+        $theme_option_inactive = $template->get('form_option_item_inactive');
         // строчные конфигурации, редактируемые вручную через input.text
         foreach ($config as $cfg_name => $cfg_value) {
             if ($cfg_name == 'tpl_name') {
@@ -233,6 +233,27 @@ class admin
                     }
                 }
                 $work_body = $template->assign('settings_tpl_name_list', $theme_scan_option, $work_body);
+            } elseif($cfg_name == "lang") {
+                $lang_scan_option = null;
+                foreach($language->getAvailable() as $allowed_lang) {
+                    if($allowed_lang == $cfg_value) {
+                        $lang_scan_option .= $template->assign(array('option_value', 'option_name'), $allowed_lang, $theme_option_active);
+                    } else {
+                        $lang_scan_option .= $template->assign(array('option_value', 'option_name'), $allowed_lang, $theme_option_inactive);
+                    }
+                }
+                $work_body = $template->assign('settings_lang_list', $lang_scan_option, $work_body);
+            } elseif($cfg_name == "time_zone") {
+                $timezone_option = null;
+                $timezone_array = array('Pacific/Kwajalein', 'Pacific/Samoa', 'US/Hawaii', 'US/Alaska', 'US/Pacific', 'US/Arizona', 'America/Mexico_City', 'S/East-Indiana', 'America/Santiago', 'America/Buenos_Aires', 'Brazil/DeNoronha', 'Atlantic/Cape_Verde', 'Europe/London', 'Europe/Berlin', 'Europe/Kiev', 'Europe/Moscow', 'Europe/Samara', 'Asia/Yekaterinburg', 'Asia/Novosibirsk', 'Asia/Krasnoyarsk', 'Asia/Irkutsk', 'Asia/Yakutsk', 'Asia/Vladivostok', 'Asia/Magadan', 'Asia/Kamchatka', 'Pacific/Tongatapu', 'Pacific/Kiritimati');
+                foreach($timezone_array as $timezone_select) {
+                    if($cfg_value == $timezone_select) {
+                        $timezone_option .= $template->assign(array('option_value', 'option_name'), $timezone_select, $theme_option_active);
+                    } else {
+                        $timezone_option .= $template->assign(array('option_value', 'option_name'), $timezone_select, $theme_option_inactive);
+                    }
+                }
+                $work_body = $template->assign('settings_timezone_list', $timezone_option, $work_body);
             } elseif ($cfg_name == 'debug') {
                 $theme_debug_option = null;
                 if ($cfg_value == true) {

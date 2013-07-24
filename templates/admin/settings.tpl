@@ -32,6 +32,24 @@
             </div>
         </div>
         <div class="control-group">
+            <label class="control-label">{$lang::admin_settings_list_label_lang_title}</label>
+
+            <div class="controls">
+                <select name="cfgmain:lang">{$settings_lang_list}</select>
+
+                <p class="help-block">{$lang::admin_settings_list_label_lang_desc}</p>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">{$lang::admin_settings_list_label_timezone_title}</label>
+
+            <div class="controls">
+                <select name="cfgmain:time_zone">{$settings_timezone_list}</select>
+
+                <p class="help-block">{$lang::admin_settings_list_label_timezone_desc}</p>
+            </div>
+        </div>
+        <div class="control-group">
             <label class="control-label">{$lang::admin_settings_list_label_debug_title}</label>
 
             <div class="controls">
