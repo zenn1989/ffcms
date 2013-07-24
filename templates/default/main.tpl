@@ -11,6 +11,7 @@
     {$cssfile css/bootstrap.css}
     {$cssfile css/bootstrap-responsive.css}
     {$cssfile css/docs.css}
+    {$cssfile css/font-awesome.min.css}
     {$jsfile js/jquery-1.9.1.min.js}
     {$jsfile js/bootstrap.js}
     <!--[if lt IE 9]>
