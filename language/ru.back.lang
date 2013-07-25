@@ -44,12 +44,10 @@ admin_settings_list_label_tpldir_title<=>Директория шаблонов
 admin_settings_list_label_tpldir_desc<=>Название папки в которой расположены файлы шаблонов
 admin_settings_list_label_tplname_title<=>Текущий шаблон
 admin_settings_list_label_tplname_desc<=>Текущий шаблон который используется на вашем веб-сайте в качестве основного
-
 admin_settings_list_label_lang_title<=>Язык
 admin_settings_list_label_lang_desc<=>Язык используемый на сайте как основной
 admin_settings_list_label_timezone_title<=>Временная зона
 admin_settings_list_label_timezone_desc<=>Временная зона используемая для сайта
-
 admin_settings_list_label_debug_title<=>Отладка
 admin_settings_list_label_debug_desc<=>Выводить ли отладочную информацию администраторам сайта(в позиции footer сайта)?
 admin_settings_list_seo_block<=>Параметры SEO и юзабилити
@@ -388,6 +386,8 @@ admin_component_sitemap.name<=>Управление Sitemap
 admin_component_sitemap.desc<=>Создает карту сайта для поисковых систем по адресу /sitemap/sitemap.xml
 admin_component_feedback.name<=>Обратная связь
 admin_component_feedback.desc<=>Реализация функции обратной связи с посетителями сайта
+admin_component_search.name<=>Поиск
+admin_component_search.desc<=>Реализация поиска на сайте по новостям и статическим страницам
 admin_modules_static_includes.name<=>Статические блоки
 admin_modules_static_includes.desc<=>Модуль, позволяющий управлять статическими включениями в страницы
 admin_modules_static_on_main.name<=>Статика на главной

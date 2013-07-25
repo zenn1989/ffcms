@@ -24,4 +24,5 @@ $config['db_user'] = "mysql";
 $config['db_pass'] = "mysql";
 $config['db_name'] = "ffcms";
 $config['db_prefix'] = "ffcms";
+$config['password_salt'] = "TjE3#81A@j9^am1@";
 ?>

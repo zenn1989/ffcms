@@ -50,6 +50,8 @@ class constant
         $this->lang = $config['lang'];
         $this->time_zone = $config['time_zone'];
 
+        $this->password_salt = $config['password_salt'];
+
         $this->db['host'] = $config['db_host'];
         $this->db['user'] = $config['db_user'];
         $this->db['pass'] = $config['db_pass'];

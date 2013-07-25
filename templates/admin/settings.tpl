@@ -240,5 +240,6 @@
             </div>
         </div>
     </fieldset>
+    <input type="hidden" name="cfgmain:password_salt" value="{$config.password_salt}" />
     <input type="submit" name="submit" value="{$lang::admin_settings_list_button_save}" class="btn btn-success"/>
 </form>

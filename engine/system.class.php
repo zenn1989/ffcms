@@ -486,10 +486,14 @@ class system
      * @param unknown_type $string
      * @return string
      */
-    public function doublemd5($string)
+    public function doublemd5($string, $custom_salt = null)
     {
         global $constant;
-        return md5(md5($string) . $constant->password_salt);
+        $salt = $constant->password_salt;
+        if($custom_salt != null) {
+            $salt = $custom_salt;
+        }
+        return md5(md5($string) . $salt);
     }
 
     /**

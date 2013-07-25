@@ -32,9 +32,9 @@
         <!-- search menu -->
         <div class="span5" align="right">
             <form id="search" class="form-search">
-                <input class="search-query" id="search-term" placeholder="Some data" type="text"/>
+                <input class="search-query" id="search-term" placeholder="query..." type="text"/>
 
-                <button class="btn" id="search-submit" type="submit"> Search</button>
+                <button class="btn" id="search-submit" type="submit"> {$lang::global_search_button}</button>
             </form>
             <script>
                 $('#search').submit(function (e) {

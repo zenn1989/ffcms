@@ -116,13 +116,13 @@ class com_usercontrol_front
 
                     $nick = $user->get('nick');
                 }
-                if (!$system->validPhone($phone)) {
+                if (!$system->validPhone($phone) && $system->length($phone) > 0) {
                     $phone = $user->customget('phone');
                 }
                 if (!$system->isInt($sex) || $sex < 0 || $sex > 2) {
                     $sex = $user->customget('sex');
                 }
-                if (!filter_var($webpage, FILTER_VALIDATE_URL)) {
+                if (!filter_var($webpage, FILTER_VALIDATE_URL) && $system->length($webpage) > 0) {
                     $webpage = $user->customget('webpage');
                 }
                 // новый пароль был назначен, новые пароли совпали а так же старый пароль введен верно

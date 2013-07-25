@@ -63,6 +63,7 @@ class install
                                 $configs_data .= '$config[\''.$var_name.'\'] = "'.$var_value.'"'.";\n";
                             }
                         }
+                        $random_password_salt = $system->randomString(rand(12,16));
                         $configs_data .= '$config[\'tpl_dir\'] = "templates";
 $config[\'tpl_name\'] = "default";
 $config[\'debug\'] = 1;
@@ -79,11 +80,13 @@ $config[\'mail_smtp_port\'] = "25";
 $config[\'mail_smtp_auth\'] = 1;
 $config[\'mail_smtp_login\'] = "admin@example.com";
 $config[\'mail_smtp_password\'] = "madness";
+$config[\'password_salt\'] = "'.$random_password_salt.'";
 ';
                         $configs_data .= '?>';
                         file_put_contents($constant->root . '/install/.lock', 'Install success');
                         file_put_contents($constant->root . '/config.example.php', $configs_data);
                         // $testCon->multiquery();
+                        $md5_doublehash = $system->doublemd5($reg_pass, $random_password_salt);
                         $testCon = null;
                         $notify = $template->stringNotify('success', $language->get('install_done_success'));
                     } else {
@@ -106,6 +109,17 @@ $config[\'mail_smtp_password\'] = "madness";
                     $notify = $template->stringNotify('error', $language->get('install_db_wrongcon'));
                 }
             }
+            $theme_option_inactive = $template->get('form_option_item_inactive');
+            $timezone_option = null;
+            $timezone_array = array('Pacific/Kwajalein', 'Pacific/Samoa', 'US/Hawaii', 'US/Alaska', 'US/Pacific', 'US/Arizona', 'America/Mexico_City', 'S/East-Indiana', 'America/Santiago', 'America/Buenos_Aires', 'Brazil/DeNoronha', 'Atlantic/Cape_Verde', 'Europe/London', 'Europe/Berlin', 'Europe/Kiev', 'Europe/Moscow', 'Europe/Samara', 'Asia/Yekaterinburg', 'Asia/Novosibirsk', 'Asia/Krasnoyarsk', 'Asia/Irkutsk', 'Asia/Yakutsk', 'Asia/Vladivostok', 'Asia/Magadan', 'Asia/Kamchatka', 'Pacific/Tongatapu', 'Pacific/Kiritimati');
+            foreach($timezone_array as $timezone_current) {
+                $timezone_option .= $template->assign(array('option_value', 'option_name'), $timezone_current, $theme_option_inactive);
+            }
+            $lang_option = null;
+            foreach($language->getAvailable() as $lang_current) {
+                $lang_option .= $template->assign(array('option_value', 'option_name'), $lang_current, $theme_option_inactive);
+            }
+            $theme = $template->assign(array('config_option_lang', 'config_option_timezone'), array($lang_option, $timezone_option), $theme);
         }
         return $template->assign('notify', $notify, $theme);
     }

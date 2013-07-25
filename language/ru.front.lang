@@ -1,6 +1,7 @@
 global_accept_button<=>Принять
 global_reject_button<=>Отменить
 global_send_button<=>Отправить
+global_search_button<=>Найти
 seo_title_userlist<=>Список пользователей
 usercontrol_auth_header<=>Авторизация
 usercontrol_reg_header<=>Регистрация
@@ -176,3 +177,9 @@ feedback_form_email_desc<=>Укажите ваш почтовый ящик дл�
 feedback_form_captcha_label<=>Анти робот
 feedback_form_captcha_desc<=>Введите символы указанные на картинке
 feedback_form_send_button<=>Отправить сообщение
+search_seo_title<=>Поиск
+search_nothing_found<=>По запросу не найдено никакой информации
+search_form_title<=>Поиск на сайте
+search_form_news<=>Новости
+search_form_pages<=>Страницы
+search_form_no_query<=>Укажите ваш поисковой запрос в форму и начните поиск

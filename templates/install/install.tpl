@@ -45,6 +45,20 @@
         </div>
     </div>
     <div class="control-group">
+        <label class="control-label">Язык</label>
+        <div class="controls">
+            <select name="config:lang">{$config_option_lang}</select>
+            <p class="help-block">Выберите основной язык вашего сайта</p>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Временная зона</label>
+        <div class="controls">
+            <select name="config:time_zone">{$config_option_timezone}</select>
+            <p class="help-block">Выберите основную временную зону вашего сайта</p>
+        </div>
+    </div>
+    <div class="control-group">
         <label class="control-label">Заголовок</label>
         <div class="controls">
             <input type="text" placeholder="Dart Vader blog" name="config:seo_title" value="{$config_seo_title}">
