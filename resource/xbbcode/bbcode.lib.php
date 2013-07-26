@@ -134,6 +134,7 @@ class bbcode
     /* Конструктор класса */
     function bbcode($code = '')
     {
+        global $constant, $system;
         $this->_current_path = dirname(__FILE__) . DIRECTORY_SEPARATOR;
         include $this->_current_path . 'config' . DIRECTORY_SEPARATOR . 'parser.config.php';
         include $this->_current_path . 'config' . DIRECTORY_SEPARATOR . 'tags.php';
@@ -1129,10 +1130,6 @@ class bbcode
             $url = './' . $url;
         }
         $url = htmlentities($url, ENT_QUOTES);
-        $url = str_replace('.', '&#' . ord('.') . ';', $url);
-        $url = str_replace(':', '&#' . ord(':') . ';', $url);
-        $url = str_replace('(', '&#' . ord('(') . ';', $url);
-        $url = str_replace(')', '&#' . ord(')') . ';', $url);
         return $url;
     }
 

@@ -6,6 +6,7 @@
     </script>
 </head>
 <body>
-Redirecting ...
+Redirecting ... <br />
+<strong>Link: <noindex><a href="{$target_url}" rel="nofollow">{$target_url}</a></noindex></strong>
 </body>
 </html>

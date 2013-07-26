@@ -34,8 +34,8 @@ $this->preg_autolinks = array(
         "'[\w]+[\w\-\.]+@[\w\-\.]+\.[\w]+'si",
     ),
     'replacement' => array(
-        '<a href="$0" target="_blank">$0</a>',
-        '$1<a href="http://$2" target="_blank">$2</a>',
+        '<a href="'.$constant->url.'/api.php?action=redirect&url=$0" target="_blank">$0</a>',
+        '$1<a href="'.$constant->url.'/api.php?action=redirect&url=$2" target="_blank">$2</a>',
         '<a href="mailto:$0" rel="nofollow">$0</a>',
     ),
     'highlight' => array(

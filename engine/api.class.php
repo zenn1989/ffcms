@@ -21,6 +21,9 @@ class api
             case "redirect":
                 $apiresult = $this->userLeaveRedirect();
                 break;
+            case "encodedredirect":
+                $apiresult = $this->userEncodedLeaveRedirect();
+                break;
             case "js":
                 $apiresult = $this->showRequestJs();
                 break;
@@ -38,6 +41,9 @@ class api
                 break;
             case "commentdelete":
                 return $this->deleteComment();
+                break;
+            case "addbookmark":
+                return $this->addBookMark();
                 break;
             case "apicallback":
                 return $this->apiCallBack();
@@ -66,6 +72,32 @@ class api
             }
         }
         return;
+    }
+
+    private function addBookMark()
+    {
+        global $database, $constant, $system, $user;
+        if($user->get('id') < 1) {
+            return;
+        }
+        $title = $system->nohtml($system->post('title'));
+        $url = $system->nohtml($system->post('url'));
+        $userid = $user->get('id');
+        if($system->prefixEquals($url, $constant->url)) {
+            $stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user_bookmarks WHERE target = ? AND href = ?");
+            $stmt->bindParam(1, $userid, PDO::PARAM_INT);
+            $stmt->bindParam(2, $url, PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetch();
+            if($res[0] == 0) {
+                $stmt = null;
+                $stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user_bookmarks (`target`, `title`, `href`) VALUES (?, ?, ?)");
+                $stmt->bindParam(1, $userid, PDO::PARAM_INT);
+                $stmt->bindParam(2, $title, PDO::PARAM_STR);
+                $stmt->bindParam(3, $url, PDO::PARAM_STR);
+                $stmt->execute();
+            }
+        }
     }
 
     private function showRequestJs()
@@ -258,7 +290,14 @@ class api
     private function userLeaveRedirect()
     {
         global $system, $template;
-        return $template->assign('target_url', $system->get('url'), $template->tplget('redirect'));
+        return $template->assign('target_url', $system->get('url'), $template->get('redirect'));
+    }
+
+    private function userEncodedLeaveRedirect()
+    {
+        global $system, $template;
+        $url = base64_decode($system->get('url'));
+        return $template->assign('target_url', $url, $template->get('redirect'));
     }
 
     public function doPostWall()

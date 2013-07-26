@@ -23,7 +23,7 @@ class mod_comments_front implements mod_front
     {
         global $template, $database, $constant, $page, $user, $system, $extension, $hook;
         $userid = $user->get('id');
-        $theme_list = $template->tplget('comment_list', 'modules/mod_comments/');
+        $theme_list = $template->get('comment_list', 'modules/mod_comments/');
         $comment_count = $extension->getConfig('comments_count', 'comments', 'modules', 'int');
         $content = null;
         $hash = $page->hashFromPathway();
@@ -43,10 +43,10 @@ class mod_comments_front implements mod_front
             $editconfig = $extension->getConfig('edit_time', 'comments', 'modules', 'int');
             if ($userid > 0) {
                 if (($poster_id == $userid && (time() - $item['time']) <= $editconfig) || $user->get('mod_comment_edit') > 0) {
-                    $edit_link = $template->assign('comment_id', $item['id'], $template->tplget('comment_link_edit', 'modules/mod_comments/'));
+                    $edit_link = $template->assign('comment_id', $item['id'], $template->get('comment_link_edit', 'modules/mod_comments/'));
                 }
                 if ($user->get('mod_comment_delete') > 0) {
-                    $delete_link = $template->assign('comment_id', $item['id'], $template->tplget('comment_link_delete', 'modules/mod_comments/'));
+                    $delete_link = $template->assign('comment_id', $item['id'], $template->get('comment_link_delete', 'modules/mod_comments/'));
                 }
             }
             $content .= $template->assign(array('poster_id', 'poster_nick', 'poster_avatar', 'comment_text', 'comment_date', 'comment_id', 'comment_link_edit', 'comment_link_delete'),
@@ -60,7 +60,7 @@ class mod_comments_front implements mod_front
     private function buildFormAdd()
     {
         global $template;
-        return $template->tplget('comment_form', 'modules/mod_comments/');
+        return $template->get('comment_form', 'modules/mod_comments/');
     }
 }
 

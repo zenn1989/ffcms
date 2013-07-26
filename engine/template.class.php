@@ -269,7 +269,7 @@ class template
      */
     public function setDefaults($theme)
     {
-        global $constant, $user;
+        global $constant, $user, $page;
         if (loader == 'back') {
             $template_path = $constant->tpl_dir . $constant->slash . $constant->admin_tpl;
         } elseif(loader == 'install') {
@@ -277,8 +277,8 @@ class template
         } else {
             $template_path = $constant->tpl_dir . $constant->slash . $constant->tpl_name;
         }
-        return str_replace(array('{$url}', '{$tpl_dir}', '{$user_id}', '{$user_nick}', '{$ffcms_version}'),
-            array($constant->url, $template_path, loader == 'install' ? null : $user->get('id'), loader == 'install' ? null : $user->get('nick'), version),
+        return str_replace(array('{$url}', '{$tpl_dir}', '{$user_id}', '{$user_nick}', '{$ffcms_version}', '{$self_url}'),
+            array($constant->url, $template_path, loader == 'install' ? null : $user->get('id'), loader == 'install' ? null : $user->get('nick'), version, $constant->url.$page->getStrPathway()),
             $theme);
     }
 

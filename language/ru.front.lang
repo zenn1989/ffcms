@@ -156,6 +156,7 @@ position_header_adminpanel<=>Админ панель
 position_left_header<=>Внешние ссылки
 position_left_link_1<=>Сайт FFCMS
 position_left_link_2<=>Форум FFCMS
+position_left_header_bookmark<=>Закладки
 position_subheader_about<=>О сайте
 position_subheader_link_2<=>Обратная связь
 feedback_error_email<=>Указан не корректный почтовый ящик

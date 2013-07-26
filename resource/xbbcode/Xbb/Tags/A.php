@@ -28,6 +28,7 @@ class Xbb_Tags_A extends bbcode
 
     function get_html($tree = null)
     {
+        global $constant, $system;
         $this->autolinks = false;
         $text = '';
         foreach ($this->tree as $val) {
@@ -51,7 +52,11 @@ class Xbb_Tags_A extends bbcode
         $href = $this->checkUrl($href);
         $attr = 'class="bb"';
         if ($href) {
-            $attr .= ' href="' . $href . '"';
+            if($system->prefixEquals($href, $constant->url) || $href == $constant->url) {
+                $attr .= ' href="' . $href . '"';
+            } else {
+                $attr .= ' href="' . $constant->url . "/api.php?action=encodedredirect&url=" . base64_encode($href) . '"';
+            }
         }
         if (isset($this->attrib['title'])) {
             $title = $this->attrib['title'];

@@ -611,16 +611,16 @@ class com_usercontrol_front
 
     private function showBookmarks($userid)
     {
-        global $user, $rule, $page, $template, $database, $constant, $extension;
+        global $user, $rule, $page, $template, $database, $constant, $extension, $system;
         $way = $page->getPathway();
         $marks_marker = (int)$way[3];
         $total_marks_row = $this->getMarkTotalRows($userid);
         $marks_config_rows = $extension->getConfig('marks_post_count', 'usercontrol', 'components');
         $marks_index = $marks_marker * $marks_config_rows;
-        $main_theme = $template->tplget('profile_main', 'components/usercontrol/');
+        $main_theme = $template->get('profile_main', 'components/usercontrol/');
         $user_compiled_menu = $this->showUserMenu($userid);
-        $user_marks_header = $template->tplget('profile_marks_head', 'components/usercontrol/');
-        $user_marks_body = $template->tplget('profile_marks_body', 'components/usercontrol/');
+        $user_marks_header = $template->get('profile_marks_head', 'components/usercontrol/');
+        $user_marks_body = $template->get('profile_marks_body', 'components/usercontrol/');
         $user_marks_list = null;
         $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_bookmarks WHERE target = ? ORDER BY id DESC LIMIT ?, ?");
         $stmt->bindParam(1, $userid, PDO::PARAM_INT);
@@ -628,8 +628,14 @@ class com_usercontrol_front
         $stmt->bindParam(3, $marks_config_rows, PDO::PARAM_INT);
         $stmt->execute();
         while ($result = $stmt->fetch()) {
-            $user_marks_list .= $template->assign(array('mark_title', 'mark_link'),
-                array($result['title'], $constant->url . $result['href']),
+            $link_compile = null;
+            if($system->prefixEquals($result['href'], $constant->url)) {
+                $link_compile = $result['href'];
+            } else {
+                $link_compile = $constant->url . "/api.php?action=redirect&url=" . $result['href'];
+            }
+            $user_marks_list .= $template->assign(array('mark_title', 'mark_link', 'mark_text_link'),
+                array($result['title'], $link_compile, $result['href']),
                 $user_marks_body);
         }
         $user_marks = $template->assign(array('marks_body', 'target_user_id', 'mark_prev', 'mark_next'), array($user_marks_list, $userid, $marks_marker - 1, $marks_marker + 1), $user_marks_header);
