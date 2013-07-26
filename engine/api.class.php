@@ -18,6 +18,9 @@ class api
             case "imperaviimageload":
                 return $file->imperaviLoad();
                 break;
+            case "commentupload":
+                return $file->commentUserUpload();
+                break;
             case "redirect":
                 $apiresult = $this->userLeaveRedirect();
                 break;

@@ -2,7 +2,7 @@
 {$cssurl {$url}/resource/wysibb/theme/default/wbbtheme.css}
 <script>
     $(document).ready(function () {
-        $(".wysibb-editor").wysibb()
+        $(".wysibb-editor").wysibb({img_uploadurl: "{$url}/api.php?action=commentupload"})
     });
 </script>
 <br/><br/>

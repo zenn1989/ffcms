@@ -20,6 +20,29 @@ class file
         return stripslashes(json_encode($json_resp));
     }
 
+    public function commentUserUpload()
+    {
+        global $user, $constant;
+        if ($user->get('id') < 1 || $_FILES['img'] == null)
+            return;
+        $isIframe = ($_POST["iframe"]) ? true : false;
+        $idarea = $_POST["idarea"];
+        $result = $this->imageupload($_FILES['img'], '/upload/comment/');
+        $fulllink = $constant->url . "/upload/comment/" .$result;
+        if($isIframe) {
+            return '<html><body>OK<script>window.parent.$("#' . $idarea . '").insertImage("' . $fulllink . '","' . $fulllink . '").closeModal().updateUI();</script></body></html>';
+        } else {
+            header("Content-type: text/javascript");
+            $json_response = array(
+                'status' => '1',
+                'msg' => 'ok',
+                'image_link' => $fulllink,
+                'thumb_link' => $fulllink
+            );
+            return stripslashes(json_encode($json_response));
+        }
+    }
+
     public function elfinderForAdmin()
     {
         global $constant, $user;
@@ -138,6 +161,9 @@ class file
     {
         global $constant, $system;
         if ($this->validImage($file)) {
+            if(!file_exists($constant->root . $dir)) {
+                mkdir($constant->root . $dir);
+            }
             $object_pharse = explode(".", $file['name']);
             $image_extension = array_pop($object_pharse);
             $image_save_name = $this->analiseImageName(implode('', $object_pharse), $image_extension, $dir);
