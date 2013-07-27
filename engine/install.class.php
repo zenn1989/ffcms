@@ -10,8 +10,18 @@ class install
             $work_body = $this->showInstaller();
         } elseif($system->get('action') == "update") {
             $work_body = $this->showUpdater();
+        } elseif($system->get('action') == "lang") {
+            if(in_array($system->get('lang'), $language->getAvailable())) {
+                setcookie('ffcms_lang', $system->get('lang'));
+            }
+            $system->redirect($_SERVER['PHP_SELF']);
         } else {
-            $work_body = $template->get('select_action');
+            $theme_option_inactive = $template->get('form_option_item_inactive');
+            $language_options = null;
+            foreach($language->getAvailable() as $lang_available) {
+                $language_options .= $template->assign(array('option_value', 'option_name'), $lang_available, $theme_option_inactive);
+            }
+            $work_body = $template->assign('language_options', $language_options, $template->get('select_action'));
         }
         $theme = $template->assign('body', $work_body, $theme);
         return preg_replace('/{\$(.*?)}/s', '', $language->set($theme));

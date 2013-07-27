@@ -54,8 +54,8 @@
 		<div class="span2"></div>
 		<div class="span8">
 			<div class="well" style="min-height: 600px;">
-				<h4>Установщик системы и обновлений ffcms</h4>
-                <small class="pull-right">Версия: 1.0.0 developer preview</small><br />
+				<h4>{$lang::install_switch_header}</h4>
+                <small class="pull-right">{$lang::install_switch_version}: {$ffcms_version}</small><br />
 				<hr />
 
 			    {$body}
