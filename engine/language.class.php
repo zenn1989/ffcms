@@ -50,9 +50,7 @@ class language
 
     public function canUseLanguage($lang)
     {
-        if(in_array($lang, $this->available))
-            return true;
-        return false;
+        return in_array($lang, $this->available) ? true : false;
     }
 
     public function getAvailable()

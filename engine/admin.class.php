@@ -75,13 +75,7 @@ class admin
     {
         global $template, $language, $backup, $system, $constant;
         $action_page_title = $language->get('admin_nav_li_backup') . " : ";
-        $menu_theme = $template->get('config_menu');
-        $menu_link = null;
-        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=settings', $language->get('admin_nav_li_settings')), $menu_theme);
-        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=filemanager', $language->get('admin_nav_li_filemanager')), $menu_theme);
-        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=antivirus', $language->get('admin_nav_li_avir')), $menu_theme);
-        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=export', $language->get('admin_dump_export')), $menu_theme);
-        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=import', $language->get('admin_dump_import')), $menu_theme);
+        $menu_link = $this->loadSystemMenuPositions();
         $work_body = null;
         if ($this->getAction() == "export" || $this->getAction() == null) {
             if ($system->post('submit')){
@@ -136,13 +130,7 @@ class admin
     {
         global $template, $language, $antivirus, $system, $constant;
         $action_page_title = $language->get('admin_nav_li_avir');
-        $menu_theme = $template->get('config_menu');
-        $menu_link = null;
-        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=settings', $language->get('admin_nav_li_settings')), $menu_theme);
-        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=filemanager', $language->get('admin_nav_li_filemanager')), $menu_theme);
-        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=antivirus', $language->get('admin_nav_li_avir')), $menu_theme);
-        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=export', $language->get('admin_dump_export')), $menu_theme);
-        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=import', $language->get('admin_dump_import')), $menu_theme);
+        $menu_link = $this->loadSystemMenuPositions();
         $work_body = $template->get('antivirus');
         $clear_files = null;
         $unknown_files = null;
@@ -184,6 +172,15 @@ class admin
     {
         global $template, $language;
         $action_page_title = $language->get('admin_nav_li_filemanager');
+        $menu_link = $this->loadSystemMenuPositions();
+        $work_body = $template->get('file_manager');
+        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->get('config_head'));
+        return $body_form;
+    }
+
+    private function loadSystemMenuPositions()
+    {
+        global $template, $language;
         $menu_theme = $template->get('config_menu');
         $menu_link = null;
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=settings', $language->get('admin_nav_li_settings')), $menu_theme);
@@ -191,9 +188,7 @@ class admin
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=antivirus', $language->get('admin_nav_li_avir')), $menu_theme);
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=export', $language->get('admin_dump_export')), $menu_theme);
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=import', $language->get('admin_dump_import')), $menu_theme);
-        $work_body = $template->get('file_manager');
-        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->get('config_head'));
-        return $body_form;
+        return $menu_link;
     }
 
     private function loadSystemConfigs()
@@ -220,14 +215,7 @@ class admin
             $system->redirect($_SERVER['PHP_SELF'] . "?object=settings&action=saved");
         }
         $action_page_title = $language->get('admin_settings_title');
-        $menu_theme = $template->get('config_menu');
-        $menu_link = null;
-        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=settings', $language->get('admin_nav_li_settings')), $menu_theme);
-        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=filemanager', $language->get('admin_nav_li_filemanager')), $menu_theme);
-        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=antivirus', $language->get('admin_nav_li_avir')), $menu_theme);
-        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=export', $language->get('admin_dump_export')), $menu_theme);
-        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=import', $language->get('admin_dump_import')), $menu_theme);
-
+        $menu_link = $this->loadSystemMenuPositions();
 
         $work_body = $template->get('settings');
         $theme_option_active = $template->get('form_option_item_active');

@@ -64,11 +64,7 @@ class system
      */
     public function contains($what, $where)
     {
-        $answer = false;
-        if (strpos($where, $what) !== false) {
-            $answer = true;
-        }
-        return $answer;
+        return strpos($where, $what) !== false ? true : false;
     }
 
     /**
@@ -90,6 +86,7 @@ class system
      * @param $where
      * @param $extension
      * @return bool
+     * @deprecated
      */
     public function extensionEquals($where, $extension)
     {
@@ -116,17 +113,9 @@ class system
      */
     public function noextention($var)
     {
-        // режем
         $split = explode(".", $var);
-        // крутим цикл, исключаем последний элемент
-        if (sizeof($split) > 1) {
-            $return = null;
-            for ($i = 0; $i < (sizeof($split) - 1); $i++) {
-                $return .= $split[$i];
-            }
-            return $return;
-        }
-        return $var;
+        array_pop($split);
+        return $split;
     }
 
 
@@ -277,9 +266,7 @@ class system
     public function toInt($data)
     {
         $result = preg_replace('/[^0-9]/s', '', $data);
-        if ($result < 0)
-            $result = 0;
-        return $result;
+        return $result < 0 ? 0 : $result;
     }
 
     /**
@@ -515,6 +502,11 @@ class system
         return $outstring;
     }
 
+    /**
+     * Генерация из массива $array списка 'a1', 'a2', 'a3', ... 'an' для SQL запросов
+     * @param $array
+     * @return null|string
+     */
     public function DbPrepareListdata($array)
     {
         $output = null;
