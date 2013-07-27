@@ -104,7 +104,7 @@ class mod_comments_back implements backend
         $menu_link = null;
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=modules&id=' . $admin->getID() . "&action=manage", $language->get('admin_modules_comment_manage_title')), $menu_theme);
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=modules&id=' . $admin->getID() . "&action=settings", $language->get('admin_modules_comment_settings_title')), $menu_theme);
-        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
+        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->get('config_head'));
         return $body_form;
     }
 

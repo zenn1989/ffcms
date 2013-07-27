@@ -21,6 +21,7 @@ usercontrol_invalid_email_error<=>Вы указали не верный email
 usercontrol_invalid_emailorlogin_error<=>Вы указали неверный логин или почтовый ящик
 usercontrol_incorrent_password_error<=>Ваш пароль короче 4 символов или больше 32
 usercontrol_incorrent_password_query<=>Вы указали не верный пароль или такого пользователя не существует!
+usercontrol_recovery_pass_notify<=>Ваш пароль был успешно восстановлен
 usercontrol_captcha_form_error<=>Вы не верно указали символы с защитного изображения
 usercontrol_reg_mail_aprove_link_text<=>Подтвердить регистрацию
 usercontrol_menu_reg<=>Регистрация
@@ -33,6 +34,9 @@ usercontrol_aprove_text<=>Поздравляем! Ваш аккаунт успе
 usercontrol_reg_mail_title<=>Подтверждение регистрации
 usercontrol_reg_mail_description<=>Вы или кто то другой запросил регистрацию на нашем сайте. Если данный запрос сделали вы, подтвердите регистрацию.
 usercontrol_reg_mail_footer<=>Если вы не запрашивали регистрацию на данном сайте проигнорируйте это письмо.
+usercontrol_recovery_mail_title<=>Восстановление доступа
+usercontrol_recovery_mail_description<=>Вы или кто то другой запросил восстановление пароля на нашем сайте. Если данный запрос сделали вы - подтвердите восстановление пароля. <br />Новый пароль: <b>{$new_password}</b>
+usercontrol_recovery_mail_footer<=>Если вы не запрашивали восстановление пароля - проигнорируйте данное письмо.
 usercontrol_recovery_button<=>Отправить письмо
 usercontrol_recovery_mail_unknown<=>Такой аккаунт не найден на нашем сайте
 usercontrol_mail_link_text<=><a href="{$recovery_url}">Подтвердить восстановление</a>
@@ -184,3 +188,5 @@ search_form_title<=>Поиск на сайте
 search_form_news<=>Новости
 search_form_pages<=>Страницы
 search_form_no_query<=>Укажите ваш поисковой запрос в форму и начните поиск
+global_404_title<=>Страница не найдена
+global_404_desc<=>Такая страница не найдена на нашем сайте. Попробуйте <a href="/">вернуться на главную</a>

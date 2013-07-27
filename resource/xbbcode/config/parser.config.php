@@ -46,8 +46,7 @@ $this->preg_autolinks = array(
 );
 
 // Формируем набор смайликов
-$path = substr($this->_current_path, strlen($_SERVER['DOCUMENT_ROOT']));
-$path = str_replace('\\', '/', $path) . 'images/smiles/';
+$path = $constant->url . "/resource/xbbcode/images/smiles/";
 $pak = file($this->_current_path . 'images/smiles/Set_Smiles_YarNET.pak');
 $smiles = array();
 foreach ($pak as $val) {
@@ -56,8 +55,7 @@ foreach ($pak as $val) {
         continue;
     }
     list($gif, $alt, $symbol) = explode('=+:', $val);
-    $smiles[$symbol] = '<img src="' . $path . htmlspecialchars($gif) . '" alt="'
-        . htmlspecialchars($alt) . '" />';
+    $smiles[$symbol] = '<img src="' . $path . htmlspecialchars($gif) . '" alt="' . htmlspecialchars($alt) . '" />';
 }
 // Задаем набор смайликов
 $this->mnemonics = $smiles;

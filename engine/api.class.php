@@ -110,7 +110,7 @@ class api
         $dir = $system->get('dir');
         $file = $system->get('name');
         if (file_exists($constant->root . $constant->ds . $constant->tpl_dir . $constant->ds . $constant->tpl_name . $constant->ds . $dir . $constant->ds . $file . ".tpl")) {
-            return $template->tplget($file, $dir . $constant->ds);
+            return $template->get($file, $dir . $constant->ds);
         }
     }
 
@@ -178,7 +178,7 @@ class api
         $stmt->execute();
         $content = null;
         if ($result = $stmt->fetch()) {
-            $content = $template->assign(array('comment_id', 'comment_text'), array($comment_id, $system->nohtml($result['comment'])), $template->tplget('comment_api_edit', 'modules/mod_comments/'));
+            $content = $template->assign(array('comment_id', 'comment_text'), array($comment_id, $system->nohtml($result['comment'])), $template->get('comment_api_edit', 'modules/mod_comments/'));
         } else {
             $content = $template->stringNotify('error', $language->get('comment_api_edit_nocomment'));
         }
@@ -246,7 +246,7 @@ class api
             $userid = $user->get('id');
             $config_on_page = $extension->getConfig('comments_count', 'comments', 'modules', 'int');
             $end_point = $position == 0 ? $config_on_page : $position * $config_on_page + $config_on_page;
-            $theme_list = $template->tplget('comment_list', 'modules/mod_comments/');
+            $theme_list = $template->get('comment_list', 'modules/mod_comments/');
             $content = null;
             $content .= $notify;
             $stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_mod_comments WHERE target_hash = ? AND object_name = ? AND object_id = ?");
@@ -273,10 +273,10 @@ class api
                 $editconfig = $extension->getConfig('edit_time', 'comments', 'modules', 'int');
                 if ($userid > 0) {
                     if (($poster_id == $userid && (time() - $item['time']) <= $editconfig) || $user->get('mod_comment_edit') > 0) {
-                        $edit_link = $template->assign('comment_id', $item['id'], $template->tplget('comment_link_edit', 'modules/mod_comments/'));
+                        $edit_link = $template->assign('comment_id', $item['id'], $template->get('comment_link_edit', 'modules/mod_comments/'));
                     }
                     if ($user->get('mod_comment_delete') > 0) {
-                        $delete_link = $template->assign('comment_id', $item['id'], $template->tplget('comment_link_delete', 'modules/mod_comments/'));
+                        $delete_link = $template->assign('comment_id', $item['id'], $template->get('comment_link_delete', 'modules/mod_comments/'));
                     }
                 }
                 $content .= $template->assign(array('poster_id', 'poster_nick', 'poster_avatar', 'comment_text', 'comment_date', 'comment_id', 'comment_link_edit', 'comment_link_delete'),
@@ -343,7 +343,7 @@ class api
             return;
         $root_post_id = $system->get('id');
         if ($system->isInt($root_post_id)) {
-            $theme = $template->tplget('api_wallanswer', 'components/usercontrol/');
+            $theme = $template->get('api_wallanswer', 'components/usercontrol/');
             $compiled = null;
             if ($limit) {
                 $compiled .= $template->stringNotify('error', $language->get('usercontrol_profile_wall_answer_spamdetect'));

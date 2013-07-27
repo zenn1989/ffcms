@@ -107,8 +107,8 @@ wbbdebug = true;
             //img upload config 
             imgupload: true,
             img_uploadurl: "/iupload.php",
-            img_maxwidth: 800,
-            img_maxheight: 800,
+            img_maxwidth: 600,
+            img_maxheight: 600,
             hotkeys: true,
             showHotkeys: true,
             autoresize: true,

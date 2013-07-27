@@ -82,7 +82,7 @@ class com_usercontrol_front
                     $notify = $template->stringNotify('error', $language->get('usercontrol_profile_photochange_fail'));
                 }
             }
-            $photo_theme = $template->tplget('profile_settings_photo', 'components/usercontrol/');
+            $photo_theme = $template->get('profile_settings_photo', 'components/usercontrol/');
             $compiled_body = $template->assign('notify_message', $notify, $photo_theme);
         } elseif ($way[1] == "status") {
             if ($system->post('updatestatus')) {
@@ -93,7 +93,7 @@ class com_usercontrol_front
                 $stmt->execute();
                 $user->customoverload($userid);
             }
-            $theme_status = $template->tplget('profile_settings_status', 'components/usercontrol/');
+            $theme_status = $template->get('profile_settings_status', 'components/usercontrol/');
             $compiled_body = $template->assign('user_status', $user->customget('status'), $theme_status);
         } else {
             $notify = null;
@@ -142,8 +142,8 @@ class com_usercontrol_front
                 $user->fulluseroverload($userid);
                 $notify .= $template->stringNotify('success', $language->get('usercontrol_profile_settings_notify_updated'));
             }
-            $theme_option_inactive = $template->tplget('form_select_option_inactive', 'components/usercontrol/');
-            $theme_option_active = $template->tplget('form_select_option_active', 'components/usercontrol/');
+            $theme_option_inactive = $template->get('form_select_option_inactive', 'components/usercontrol/');
+            $theme_option_active = $template->get('form_select_option_active', 'components/usercontrol/');
             list($birth_year, $birth_month, $birth_day) = explode("-", $user->customget('birthday'));
             $day_range = $system->generateIntRangeArray(1, 31);
             $month_range = $system->generateIntRangeArray(1, 12);
@@ -185,11 +185,11 @@ class com_usercontrol_front
             }
             $compiled_body = $template->assign(array('option_day', 'option_month', 'option_year', 'user_nickname', 'option_sex', 'user_phone', 'notify_messages', 'user_website'),
                 array($day_option_list, $month_option_list, $year_option_list, $user->get('nick'), $sex_list, $user->customget('phone'), $notify, $user->customget('webpage')),
-                $template->tplget('profile_settings_main', 'components/usercontrol/'));
+                $template->get('profile_settings_main', 'components/usercontrol/'));
         }
         $compiled_theme = $template->assign(array('user_photo_control', 'user_header', 'user_menu', 'user_main_block'),
             array($this->userProfilePhotoSettings($userid), $this->userProfileHeaders($userid), $this->showUserMenu($userid), $compiled_body),
-            $template->tplget('profile_main', 'components/usercontrol/'));
+            $template->get('profile_main', 'components/usercontrol/'));
         $page->setContentPosition('body', $compiled_theme);
     }
 
@@ -227,9 +227,9 @@ class com_usercontrol_front
             }
 
             $toid = $system->toInt($way[2]);
-            $theme_main = $template->tplget('profile_message_write', 'components/usercontrol/');
-            $theme_option_inactive = $template->tplget('form_select_option_inactive', 'components/usercontrol/');
-            $theme_option_active = $template->tplget('form_select_option_active', 'components/usercontrol/');
+            $theme_main = $template->get('profile_message_write', 'components/usercontrol/');
+            $theme_option_inactive = $template->get('form_select_option_inactive', 'components/usercontrol/');
+            $theme_option_active = $template->get('form_select_option_active', 'components/usercontrol/');
             $result_option_select = null;
 
             $friendlist = $user->customget('friend_list');
@@ -362,7 +362,7 @@ class com_usercontrol_front
         }
         $compiled_theme = $template->assign(array('user_photo_control', 'user_header', 'user_menu', 'user_main_block'),
             array($this->userProfilePhotoSettings($userid), $this->userProfileHeaders($userid), $this->showUserMenu($userid), $compiled_messages),
-            $template->tplget('profile_main', 'components/usercontrol/'));
+            $template->get('profile_main', 'components/usercontrol/'));
         $page->setContentPosition('body', $compiled_theme);
     }
 
@@ -374,7 +374,7 @@ class com_usercontrol_front
         $content = null;
 
         if (!$extension->getConfig('profile_view', 'usercontrol', 'components', 'boolean') && $user->get('id') < 1) {
-            $content = $template->tplget('guest_message', 'components/usercontrol/');
+            $content = $template->get('guest_message', 'components/usercontrol/');
         } else {
             if ($way[1] == null || $system->isInt($way[1])) {
                 $content = $this->showUserList();;
@@ -442,8 +442,8 @@ class com_usercontrol_front
         $meta->add('title', $language->get('seo_title_userlist'));
         $usercount_on_page = $extension->getConfig('userlist_count', 'usercontrol', 'components', 'int');
         $way = $page->getPathway();
-        $theme_head = $template->tplget('userlist_head', 'components/usercontrol/');
-        $theme_body = $template->tplget('userlist_body', 'components/usercontrol/');
+        $theme_head = $template->get('userlist_head', 'components/usercontrol/');
+        $theme_body = $template->get('userlist_body', 'components/usercontrol/');
         $compiled_body = null;
         $currentOnline = null;
         $current_user_id = $user->get('id');
@@ -490,7 +490,7 @@ class com_usercontrol_front
     {
         global $user, $template, $page, $system, $rule, $database, $constant, $language, $extension;
         $body_compiled = null;
-        $theme_head = $template->tplget('profile_friendlist_head', 'components/usercontrol/');
+        $theme_head = $template->get('profile_friendlist_head', 'components/usercontrol/');
         $way = $page->getPathway();
 
         switch ($way[3]) {
@@ -504,7 +504,7 @@ class com_usercontrol_front
                     $rule->add('com.usercontrol.profile_friend_request', true);
                     $request_list = $user->customget('friend_request');
                     if (strlen($request_list) > 0) {
-                        $theme_body = $template->tplget('profile_friendrequest_body', 'components/usercontrol/');
+                        $theme_body = $template->get('profile_friendrequest_body', 'components/usercontrol/');
                         // загружаем данные о пользователях 1 запросом
                         $user->listload($request_list);
                         $request_array = explode(",", $request_list);
@@ -526,7 +526,7 @@ class com_usercontrol_front
                     }
                     $rows_count = $extension->getConfig('friend_page_count', 'usercontrol', 'components', 'int');
                     $page_start = $page_index * $rows_count;
-                    $theme_body = $template->tplget('profile_friendlist_body', 'components/usercontrol/');
+                    $theme_body = $template->get('profile_friendlist_body', 'components/usercontrol/');
                     $friend_current_page = array_slice($friend_array, $page_start, $page_start + $rows_count);
                     if (sizeof($friend_current_page) > 0) {
                         $user->listload(implode(",", $friend_current_page));
@@ -548,7 +548,7 @@ class com_usercontrol_front
 
         $compiled_theme = $template->assign(array('user_photo_control', 'user_header', 'user_menu', 'user_main_block'),
             array($this->userProfilePhotoSettings($userid), $this->userProfileHeaders($userid), $this->showUserMenu($userid), $container_compiled),
-            $template->tplget('profile_main', 'components/usercontrol/'));
+            $template->get('profile_main', 'components/usercontrol/'));
         return $compiled_theme;
     }
 
@@ -688,7 +688,7 @@ class com_usercontrol_front
         if ($this->hook_item_menu != null) {
             $rule->add('com.usercontrol.menu_dropdown_notempty', true);
         }
-        return $template->assign(array('target_user_id', 'additional_hook_list'), array($userid, $this->hook_item_menu), $template->tplget('profile_block_menu', 'components/usercontrol/'));
+        return $template->assign(array('target_user_id', 'additional_hook_list'), array($userid, $this->hook_item_menu), $template->get('profile_block_menu', 'components/usercontrol/'));
     }
 
     private function showProfileUser($userid)
@@ -722,8 +722,8 @@ class com_usercontrol_front
         }
         $way = $page->getPathway();
         $wall_marker = (int)$way[3];
-        $profile_theme = $template->tplget('profile_main', 'components/usercontrol/');
-        $profile_data_theme = $template->tplget('profile_block_data', 'components/usercontrol/');
+        $profile_theme = $template->get('profile_main', 'components/usercontrol/');
+        $profile_data_theme = $template->get('profile_block_data', 'components/usercontrol/');
         // пользовательские данные
         $regdate = $system->toDate($user->customget('regdate', $userid), 'd');
         $birthday = $system->toDate($user->customget('birthday', $userid), 'd');
@@ -762,7 +762,7 @@ class com_usercontrol_front
     private function loadUserWall($userid, $marker, $limit = false)
     {
         global $template, $database, $constant, $user, $language, $extension, $rule, $system;
-        $theme = $template->tplget('profile_wall', 'components/usercontrol/');
+        $theme = $template->get('profile_wall', 'components/usercontrol/');
         $output = null;
         if ($limit) {
             $output .= $template->stringNotify('error', $language->get('usercontrol_profile_wall_answer_spamdetect'));
@@ -883,7 +883,7 @@ class com_usercontrol_front
         if (strlen($status) < 1) {
             $status = $language->get('usercontrol_profile_status_unknown');
         }
-        return $template->assign(array('user_name', 'user_status'), array($nickname, $status), $template->tplget('profile_header', 'components/usercontrol/'));
+        return $template->assign(array('user_name', 'user_status'), array($nickname, $status), $template->get('profile_header', 'components/usercontrol/'));
     }
 
     private function loginComponent()
@@ -927,13 +927,16 @@ class com_usercontrol_front
                     setcookie('person', $loginoremail, null, '/', null, null, true);
                     setcookie('token', $md5token, null, '/', null, null, true);
                     $system->redirect();
-                    exit();
                 } else {
                     $notify .= $template->stringNotify('error', $language->get('usercontrol_incorrent_password_query'));
                 }
             }
         }
-        $theme = $template->tplget('login', 'components/usercontrol/');
+        $way = $page->getPathway();
+        if($way[1] == "recoverysuccess") {
+            $notify .= $template->stringNotify('success', $language->get('usercontrol_recovery_pass_notify'));
+        }
+        $theme = $template->get('login', 'components/usercontrol/');
         $captcha = $hook->get('captcha')->show();
         $theme = $template->assign(array('captcha', 'notify'), array($captcha, $notify), $theme);
         $page->setContentPosition('body', $theme);
@@ -950,7 +953,7 @@ class com_usercontrol_front
         if ($stmt->rowCount() == 0) {
             $page->setContentPosition('body', $template->compile404());
         } else {
-            $page->setContentPosition('body', $template->tplget('aprove', 'components/usercontrol/'));
+            $page->setContentPosition('body', $template->get('aprove', 'components/usercontrol/'));
         }
     }
 
@@ -1007,7 +1010,7 @@ class com_usercontrol_front
                 $stmt = null;
                 if ($aprove_reg_from_email) {
                     $notify .= $template->stringNotify('success', $language->get('usercontrol_register_success_aprove'));
-                    $mail_body = $template->tplget('mail');
+                    $mail_body = $template->get('mail');
                     $link = '<a href="' . $constant->url . '/aprove/' . $validate . '">' . $language->get('usercontrol_reg_mail_aprove_link_text') . ' - ' . $constant->url . '</a>';
                     $mail_body = $template->assign(array('title', 'description', 'text', 'footer'), array($language->get('usercontrol_reg_mail_title'), $language->get('usercontrol_reg_mail_description'), $link, $language->get('usercontrol_reg_mail_footer')), $mail_body);
                     $mail->send($email, $language->get('usercontrol_reg_mail_title'), $mail_body, $nickname);
@@ -1016,7 +1019,7 @@ class com_usercontrol_front
                 }
             }
         }
-        $theme = $template->tplget('register', 'components/usercontrol/');
+        $theme = $template->get('register', 'components/usercontrol/');
         $captcha = $hook->get('captcha')->show();
         $theme = $template->assign(array('captcha', 'notify'), array($captcha, $notify), $theme);
         $page->setContentPosition('body', $theme);
@@ -1027,8 +1030,26 @@ class com_usercontrol_front
     {
         global $template, $hook, $page, $system, $database, $constant, $language, $mail;
         $pathway = $page->getPathway();
-        if ($pathway[1] != null && $pathway[2] != null) {
-            // todo
+        if ($pathway[1] != null && $system->isInt($pathway[1]) && $pathway[2] != null) {
+            $recovery_id = $pathway[1];
+            $recovery_hashsum = $pathway[2];
+            $stmt = $database->con()->prepare("SELECT userid,password FROM {$constant->db['prefix']}_user_recovery WHERE id =? AND hash = ?");
+            $stmt->bindParam(1, $recovery_id, PDO::PARAM_INT);
+            $stmt->bindParam(2, $recovery_hashsum, PDO::PARAM_STR, 32);
+            $stmt->execute();
+            if($stmt->rowCount() == 1) {
+                $res = $stmt->fetch(PDO::FETCH_ASSOC);
+                $userid = $res['userid'];
+                $newpwd = $res['password'];
+                $stmt = null;
+                $stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_user SET pass = ? WHERE id = ?");
+                $stmt->bindParam(1, $newpwd, PDO::PARAM_STR, 32);
+                $stmt->bindParam(2, $userid, PDO::PARAM_INT);
+                $stmt->execute();
+                $system->redirect('/login/recoverysuccess');
+            }
+            $stmt = null;
+            return $template->compile404();
         } else {
             $notify = null;
             if ($system->post('submit')) {
@@ -1041,9 +1062,10 @@ class com_usercontrol_front
                 }
                 if ($notify == null) {
                     $new_password = $system->randomString(rand(8, 12));
+                    $hashed_password = $system->doublemd5($new_password);
                     $hash = $system->md5random();
-                    $stmt = $database->con()->prepare("SELECT id FROM {$constant->db['prefix']}_user WHERE email = ?");
-                    $stmt->bindParam(1, $email);
+                    $stmt = $database->con()->prepare("SELECT id,nick FROM {$constant->db['prefix']}_user WHERE email = ?");
+                    $stmt->bindParam(1, $email, PDO::PARAM_STR);
                     $stmt->execute();
                     if ($stmt->rowCount() != 1) {
                         $notify .= $template->stringNotify('error', $language->get('usercontrol_recovery_mail_unknown'));
@@ -1051,21 +1073,23 @@ class com_usercontrol_front
                         // Учетка есть, делаем запись в бд для восстановления
                         $res_stmt = $stmt->fetch();
                         $userid = $res_stmt['id'];
+                        $nickname = $res_stmt['nick'];
                         $stmt2 = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user_recovery (`password`, `hash`, `userid`) VALUES (?, ?, ?)");
-                        $stmt2->bindParam(1, $new_password);
-                        $stmt2->bindParam(2, $hash);
-                        $stmt2->bindParam(3, $userid);
+                        $stmt2->bindParam(1, $hashed_password, PDO::PARAM_STR, 32);
+                        $stmt2->bindParam(2, $hash, PDO::PARAM_STR, 32);
+                        $stmt2->bindParam(3, $userid, PDO::PARAM_INT);
                         $stmt2->execute();
                         $request_id = $database->con()->lastInsertId();
                         $recovery_link = $template->assign('recovery_url', $constant->url . '/recovery/' . $request_id . '/' . $hash, $language->get("usercontrol_mail_link_text"));
+                        $recovery_desc = $template->assign('new_password', $new_password, $language->get('usercontrol_recovery_mail_description'));
 
-                        $mail_body = $template->tplget('mail');
-                        $mail_body = $template->assign(array('title', 'description', 'text', 'footer'), array($language->get('usercontrol_reg_mail_title'), $language->get('usercontrol_reg_mail_description'), $link, $language->get('usercontrol_reg_mail_footer')), $mail_body);
-                        $mail->send($email, $language->get('usercontrol_reg_mail_title'), $mail_body, $nickname);
+                        $mail_body = $template->get('mail');
+                        $mail_body = $template->assign(array('title', 'description', 'text', 'footer'), array($language->get('usercontrol_recovery_mail_title'), $recovery_desc, $recovery_link, $language->get('usercontrol_recovery_mail_footer')), $mail_body);
+                        $mail->send($email, $language->get('usercontrol_recovery_mail_title'), $mail_body, $nickname);
                     }
                 }
             }
-            $theme = $template->tplget('recovery', 'components/usercontrol/');
+            $theme = $template->get('recovery', 'components/usercontrol/');
             $captcha = $hook->get('captcha')->show();
             $theme = $template->assign(array('captcha', 'notify'), array($captcha, $notify), $theme);
             $page->setContentPosition('body', $theme);
@@ -1074,7 +1098,7 @@ class com_usercontrol_front
 
     private function doLogOut()
     {
-        global $system, $user, $page;
+        global $system, $user, $page, $template;
         if ($user->get('id') == NULL) {
             $page->setContentPosition('body', $template->compile404());
             return;
@@ -1098,7 +1122,7 @@ class com_usercontrol_front
 
     private function loginIsIncorrent($login)
     {
-        global $database, $constant, $system;
+        global $database, $constant;
         if (strlen($login) < 3 || strlen($login) > 64) {
             return true;
         }

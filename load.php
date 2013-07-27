@@ -24,6 +24,7 @@ require_once(root . "/engine/backup.class.php");
 
 $constant = new constant();
 $system = new system();
+$language = new language();
 $framework = new framework();
 $database = new database();
 $event = new event();
@@ -32,7 +33,6 @@ $page = new page();
 $user = new user();
 $template = new template();
 $cache = new cache();
-$language = new language($_COOKIE['ffcms_lang']);
 $file = new file();
 $hook = new hook();
 $mail = new mail();

@@ -34,10 +34,8 @@ class admin
         global $page, $user, $template, $system;
         if ($user->get('id') == NULL) {
             $system->redirect('/login');
-            exit();
         } elseif ($user->get('access_to_admin') != 1) {
             $system->redirect();
-            exit();
         } else {
             switch ($this->object) {
                 case "components":
@@ -77,8 +75,11 @@ class admin
     {
         global $template, $language, $backup, $system, $constant;
         $action_page_title = $language->get('admin_nav_li_backup') . " : ";
-        $menu_theme = $template->tplget('config_menu', null, true);
+        $menu_theme = $template->get('config_menu');
         $menu_link = null;
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=settings', $language->get('admin_nav_li_settings')), $menu_theme);
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=filemanager', $language->get('admin_nav_li_filemanager')), $menu_theme);
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=antivirus', $language->get('admin_nav_li_avir')), $menu_theme);
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=export', $language->get('admin_dump_export')), $menu_theme);
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=import', $language->get('admin_dump_import')), $menu_theme);
         $work_body = null;
@@ -106,7 +107,7 @@ class admin
             {
                 $last_backup_date = $system->toDate($date_array[0], 'd');
             }
-            $work_body = $template->assign('last_backup_date', $last_backup_date, $template->tplget('backup_export', null, true));
+            $work_body = $template->assign('last_backup_date', $last_backup_date, $template->get('backup_export'));
         } elseif ($this->getAction() == "import") {
             $action_page_title .= $language->get('admin_dump_import');
             $scan = scandir($constant->root . "/backup");
@@ -125,9 +126,9 @@ class admin
                 $raw_prepare_array[] = array($read_date, '/backup/'.$read_date.'_www.zip', '/backup/'.$read_date.'_sql.sql.gz');
             }
             $raw_table = $this->tplRawTable(array($language->get('admin_dump_th_date'), $language->get('admin_dump_th_www'), $language->get('admin_dump_th_sql')), $raw_prepare_array);
-            $work_body = $template->assign('raw_table_files', $raw_table, $template->tplget('backup_import', null, true));
+            $work_body = $template->assign('raw_table_files', $raw_table, $template->get('backup_import'));
         }
-        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
+        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->get('config_head'));
         return $body_form;
     }
 
@@ -135,10 +136,14 @@ class admin
     {
         global $template, $language, $antivirus, $system, $constant;
         $action_page_title = $language->get('admin_nav_li_avir');
-        $menu_theme = $template->tplget('config_menu', null, true);
+        $menu_theme = $template->get('config_menu');
         $menu_link = null;
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=settings', $language->get('admin_nav_li_settings')), $menu_theme);
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=filemanager', $language->get('admin_nav_li_filemanager')), $menu_theme);
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=antivirus', $language->get('admin_nav_li_avir')), $menu_theme);
-        $work_body = $template->tplget('antivirus', null, true);
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=export', $language->get('admin_dump_export')), $menu_theme);
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=import', $language->get('admin_dump_import')), $menu_theme);
+        $work_body = $template->get('antivirus');
         $clear_files = null;
         $unknown_files = null;
         $wrong_files = null;
@@ -171,7 +176,7 @@ class admin
         } else {
             $work_body = file_get_contents($constant->root . "/cache/.avir_scan");
         }
-        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
+        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->get('config_head'));
         return $body_form;
     }
 
@@ -179,11 +184,15 @@ class admin
     {
         global $template, $language;
         $action_page_title = $language->get('admin_nav_li_filemanager');
-        $menu_theme = $template->tplget('config_menu', null, true);
+        $menu_theme = $template->get('config_menu');
         $menu_link = null;
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=settings', $language->get('admin_nav_li_settings')), $menu_theme);
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=filemanager', $language->get('admin_nav_li_filemanager')), $menu_theme);
-        $work_body = $template->tplget('file_manager', null, true);
-        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=antivirus', $language->get('admin_nav_li_avir')), $menu_theme);
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=export', $language->get('admin_dump_export')), $menu_theme);
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=import', $language->get('admin_dump_import')), $menu_theme);
+        $work_body = $template->get('file_manager');
+        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->get('config_head'));
         return $body_form;
     }
 
@@ -214,6 +223,11 @@ class admin
         $menu_theme = $template->get('config_menu');
         $menu_link = null;
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=settings', $language->get('admin_nav_li_settings')), $menu_theme);
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=filemanager', $language->get('admin_nav_li_filemanager')), $menu_theme);
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=antivirus', $language->get('admin_nav_li_avir')), $menu_theme);
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=export', $language->get('admin_dump_export')), $menu_theme);
+        $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=dump&action=import', $language->get('admin_dump_import')), $menu_theme);
+
 
         $work_body = $template->get('settings');
         $theme_option_active = $template->get('form_option_item_active');
@@ -301,7 +315,7 @@ class admin
         if ($this->getAction() == "saved") {
             $work_body = $template->assign('notify', $template->stringNotify('success', $language->get('admin_settings_saved')), $work_body);
         }
-        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
+        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->get('config_head'));
         return $body_form;
     }
 
@@ -365,11 +379,11 @@ class admin
             $theme = $template->assign(
                 array('title', 'word_all', 'word_active', 'word_noactive', 'word_toinstall'),
                 array($language->get('admin_hooks_title'), $language->get('admin_hooks_tab_all'), $language->get('admin_hooks_tab_enabled'), $language->get('admin_hooks_tab_dissabled'), $language->get('admin_hooks_tab_toinstall')),
-                $template->tplget('extension_list', null, true));
+                $template->get('extension_list'));
             $thead = $template->assign(array('ext_th_1', 'ext_th_2', 'ext_th_3', 'ext_th_4'),
                 array($language->get('admin_hooks_table_th_1'), $language->get('admin_hooks_table_th_2'), $language->get('admin_hooks_table_th_3'), $language->get('admin_hooks_table_th_4'),),
-                $template->tplget('extension_thead', null, true));
-            $tbody = $template->tplget('extension_tbody', null, true);
+                $template->get('extension_thead'));
+            $tbody = $template->get('extension_tbody');
             $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_hooks");
             $stmt->execute();
             $prepare_theme = array();
@@ -380,18 +394,18 @@ class admin
                 $hook_desc = $language->get('admin_hook_'.$result['dir'].'.desc') == null ? $result['dir'] : $language->get('admin_hook_'.$result['dir'].'.desc');
                 // вносим в список отключенных
                 if ($result['enabled'] == 0) {
-                    $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array($config_link, '?object=hooks&id=' . $result['id'] . '&action=turn'), $template->tplget('manage_noactive', null, true));
+                    $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array($config_link, '?object=hooks&id=' . $result['id'] . '&action=turn'), $template->get('manage_noactive'));
                     $prepare_theme['dissabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
                         array($result['id'], $hook_name, $hook_desc, $iconset, $config_link),
                         $tbody);
                 } // иначе вносим в список включенных
                 else {
-                    $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=hooks&id=' . $result['id'], '?object=hooks&id=' . $result['id'] . '&action=turn'), $template->tplget('manage_active', null, true));
+                    $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=hooks&id=' . $result['id'], '?object=hooks&id=' . $result['id'] . '&action=turn'), $template->get('manage_active'));
                     $prepare_theme['enabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
                         array($result['id'], $hook_name, $hook_desc, $iconset, $config_link),
                         $tbody);
                 }
-                $iconset = $template->assign('ext_config_link', '?object=hooks&id=' . $result['id'], $template->tplget('manage_all', null, true));
+                $iconset = $template->assign('ext_config_link', '?object=hooks&id=' . $result['id'], $template->get('manage_all'));
                 $prepare_theme['all'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
                     array($result['id'], $hook_name, $hook_desc, $iconset, $config_link),
                     $tbody);
@@ -496,11 +510,11 @@ class admin
         } else {
             $theme = $template->assign(array('title', 'word_all', 'word_active', 'word_noactive', 'word_toinstall'),
                 array($language->get('admin_modules_title'), $language->get('admin_modules_tab_all'), $language->get('admin_modules_tab_enabled'), $language->get('admin_modules_tab_dissabled'), $language->get('admin_modules_tab_toinstall')),
-                $template->tplget('extension_list', null, true));
+                $template->get('extension_list'));
             $thead = $template->assign(array('ext_th_1', 'ext_th_2', 'ext_th_3', 'ext_th_4'),
                 array($language->get('admin_modules_table_th_1'), $language->get('admin_modules_table_th_2'), $language->get('admin_modules_table_th_3'), $language->get('admin_modules_table_th_4'),),
-                $template->tplget('extension_thead', null, true));
-            $tbody = $template->tplget('extension_tbody', null, true);
+                $template->get('extension_thead'));
+            $tbody = $template->get('extension_tbody');
             $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_modules");
             $stmt->execute();
             $prepare_theme = array();
@@ -511,18 +525,18 @@ class admin
                 $mod_desc = $language->get('admin_modules_'.$result['dir'].'.desc') == null ? $result['dir'] : $language->get('admin_modules_'.$result['dir'].'.desc');
                 // вносим в список отключенных
                 if ($result['enabled'] == 0) {
-                    $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array($config_link, '?object=modules&id=' . $result['id'] . '&action=turn'), $template->tplget('manage_noactive', null, true));
+                    $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array($config_link, '?object=modules&id=' . $result['id'] . '&action=turn'), $template->get('manage_noactive'));
                     $prepare_theme['dissabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
                         array($result['id'], $mod_name, $mod_desc, $iconset, $config_link),
                         $tbody);
                 } // иначе вносим в список включенных
                 else {
-                    $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=modules&id=' . $result['id'], '?object=modules&id=' . $result['id'] . '&action=turn'), $template->tplget('manage_active', null, true));
+                    $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=modules&id=' . $result['id'], '?object=modules&id=' . $result['id'] . '&action=turn'), $template->get('manage_active'));
                     $prepare_theme['enabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
                         array($result['id'], $mod_name, $mod_desc, $iconset, $config_link),
                         $tbody);
                 }
-                $iconset = $template->assign('ext_config_link', '?object=modules&id=' . $result['id'], $template->tplget('manage_all', null, true));
+                $iconset = $template->assign('ext_config_link', '?object=modules&id=' . $result['id'], $template->get('manage_all'));
                 $prepare_theme['all'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
                     array($result['id'], $mod_name, $mod_desc, $iconset, $config_link),
                     $tbody);
@@ -626,11 +640,11 @@ class admin
             // такого компонента нет, отображаем списки
             $theme = $template->assign(array('title', 'word_all', 'word_active', 'word_noactive', 'word_toinstall'),
                 array($language->get('admin_components_title'), $language->get('admin_components_tab_all'), $language->get('admin_components_tab_enabled'), $language->get('admin_components_tab_dissabled'), $language->get('admin_components_tab_toinstall')),
-                $template->tplget('extension_list', null, true));
+                $template->get('extension_list'));
             $thead = $template->assign(array('ext_th_1', 'ext_th_2', 'ext_th_3', 'ext_th_4'),
                 array($language->get('admin_components_table_th_1'), $language->get('admin_components_table_th_2'), $language->get('admin_components_table_th_3'), $language->get('admin_components_table_th_4'),),
-                $template->tplget('extension_thead', null, true));
-            $tbody = $template->tplget('extension_tbody', null, true);
+                $template->get('extension_thead'));
+            $tbody = $template->get('extension_tbody');
             $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_components");
             $stmt->execute();
             $prepare_theme = array();
@@ -641,19 +655,19 @@ class admin
                 $com_desc = $language->get('admin_component_'.$result['dir'].'.desc') == null ? $result['dir'] : $language->get('admin_component_'.$result['dir'].'.desc');
                 // вносим в список отключенных
                 if ($result['enabled'] == 0) {
-                    $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=components&id=' . $result['id'], '?object=components&id=' . $result['id'] . '&action=turn'), $template->tplget('manage_noactive', null, true));
+                    $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=components&id=' . $result['id'], '?object=components&id=' . $result['id'] . '&action=turn'), $template->get('manage_noactive'));
                     $prepare_theme['dissabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage'),
                         array($result['id'], $com_name, $com_desc, $iconset),
                         $tbody);
                 } // иначе вносим в список включенных
                 else {
-                    $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=components&id=' . $result['id'], '?object=components&id=' . $result['id'] . '&action=turn'), $template->tplget('manage_active', null, true));
+                    $iconset = $template->assign(array('ext_config_link', 'ext_turn_link'), array('?object=components&id=' . $result['id'], '?object=components&id=' . $result['id'] . '&action=turn'), $template->get('manage_active'));
                     $prepare_theme['enabled'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
                         array($result['id'], $com_name, $com_desc, $iconset, $config_link),
                         $tbody);
                 }
                 $installed_ext_array[] = $result['dir'];
-                $iconset = $template->assign('ext_config_link', '?object=components&id=' . $result['id'], $template->tplget('manage_all', null, true));
+                $iconset = $template->assign('ext_config_link', '?object=components&id=' . $result['id'], $template->get('manage_all'));
                 $prepare_theme['all'] .= $template->assign(array('ext_id', 'ext_name', 'ext_desc', 'ext_manage', 'ext_config_link'),
                     array($result['id'], $com_name, $com_desc, $iconset, $config_link),
                     $tbody);
@@ -706,8 +720,8 @@ class admin
     private function foreachMenuPositions()
     {
         global $template, $database, $constant, $language;
-        $theme = $template->tplget('header', null, true);
-        $list_theme = $template->tplget('list', null, true);
+        $theme = $template->get('header');
+        $list_theme = $template->get('list');
         $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_modules WHERE enabled = 1 LIMIT 5");
         $stmt->execute();
         $module_list = null;
@@ -764,7 +778,7 @@ class admin
         $stmt3->execute();
         $res3 = $stmt3->fetch();
         $unique_registered = $res3[0];
-        $body = $template->tplget('index_page', null, true);
+        $body = $template->get('index_page');
         $template->globalset('view_count', $views_count);
         $template->globalset('user_unique', $unique_user);
         $template->globalset('unique_registered', $unique_registered);
@@ -838,14 +852,14 @@ class admin
         $selected ? $selected_yes = "selected" : $selected_no = "selected";
         $theme = $template->assign(array('ext_config_name', 'ext_label', 'ext_description', 'selected_yes', 'selected_no'),
             array($variable_name, $variable_pseudo_name, $variable_desc, $selected_yes, $selected_no),
-            $template->tplget('config_block_select_yorn', null, true));
+            $template->get('config_block_select_yorn'));
         return $theme;
     }
 
     public function tplSettingsDirectory($data)
     {
         global $template;
-        return $template->assign('config_directory', $data, $template->tplget('config_block_spacer', null, true));
+        return $template->assign('config_directory', $data, $template->get('config_block_spacer'));
     }
 
     /**
@@ -863,7 +877,7 @@ class admin
             $variable_pseudo_name = $variable_name;
         $theme = $template->assign(array('ext_config_name', 'ext_config_value', 'ext_label', 'ext_description'),
             array($variable_name, $variable_value, $variable_pseudo_name, $variable_desc),
-            $template->tplget('config_block_input_text', null, true));
+            $template->get('config_block_input_text'));
         return $theme;
     }
 
@@ -876,10 +890,10 @@ class admin
     {
         global $template, $language;
         if (is_array($columns) && is_array($tbody)) {
-            $thead = $template->tplget('rawtable_thead', null, true);
-            $th_column = $template->tplget('rawtable_thcolumn', null, true);
-            $tbody_tr = $template->tplget('rawtable_tbody', null, true);
-            $td_raw_data = $template->tplget('rawtable_tdcolumn', null, true);
+            $thead = $template->get('rawtable_thead');
+            $th_column = $template->get('rawtable_thcolumn');
+            $tbody_tr = $template->get('rawtable_tbody');
+            $td_raw_data = $template->get('rawtable_tdcolumn');
             $th_raw_result = null;
             foreach ($columns as $th_data) {
                 $th_raw_result .= $template->assign('raw_column', $th_data, $th_column);
@@ -910,7 +924,7 @@ class admin
     public function tplRawPagination($list_count, $pagination_page_count, $uri_object = "components")
     {
         global $template;
-        $pagination_list_theme = $template->tplget('list_pagination', 'components/', true);
+        $pagination_list_theme = $template->get('list_pagination', 'components/');
         $ret_position = intval($this->page / $list_count);
         $pagination_list = null;
         if ($pagination_page_count <= 10 || $ret_position < 5) {

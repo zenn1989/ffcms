@@ -7,7 +7,7 @@ class com_usercontrol_back
     {
         global $admin, $template, $language, $constant, $database, $system, $user;
         $action_page_title = $admin->getExtName() . " : ";
-        $menu_theme = $template->tplget('config_menu', null, true);
+        $menu_theme = $template->get('config_menu');
         $menu_link = null;
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id=' . $admin->getID() . '&action=list', $language->get('admin_component_usercontrol_manage')), $menu_theme);
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id=' . $admin->getID() . '&action=group', $language->get('admin_component_usercontrol_group')), $menu_theme);
@@ -17,8 +17,8 @@ class com_usercontrol_back
         if ($admin->getAction() == "list" || $admin->getAction() == null) {
             $action_page_title .= $language->get('admin_component_usercontrol_manage');
             $index_start = $admin->getPage();
-            $list_theme = $template->tplget('usercontrol_list', 'components/', true);
-            $manage_theme = $template->tplget('usercontrol_list_manage', 'components/', true);
+            $list_theme = $template->get('usercontrol_list', 'components/');
+            $manage_theme = $template->get('usercontrol_list_manage', 'components/');
             $stmt = null;
             if ($system->post('dosearch') && strlen($system->post('search')) > 0) {
                 $search_string = "%{$system->post('search')}%";
@@ -47,13 +47,14 @@ class com_usercontrol_back
             if ($system->post('submit')) {
                 $save_try = $admin->trySaveConfigs();
                 if ($save_try)
-                    $work_body .= $template->compileNotify('success', $language->get('admin_extension_config_update_success'), true);
+                    $work_body .= $template->stringNotify('success', $language->get('admin_extension_config_update_success'));
                 else
-                    $work_body .= $template->compileNotify('error', $language->get('admin_extension_config_update_fail'), true);;
+                    $work_body .= $template->stringNotify('error', $language->get('admin_extension_config_update_fail'));
             }
 
             $action_page_title .= $language->get('admin_component_usercontrol_settings');
-            $config_form = $template->tplget('config_form', null, true);
+            $config_form = $template->get('config_form');
+            $config_set = null;
 
             $config_set .= $language->get('admin_component_usercontrol_description');
             $config_set .= $admin->tplSettingsDirectory($language->get('admin_component_usercontrol_first_data'));
@@ -100,8 +101,8 @@ class com_usercontrol_back
                     $user->fulluseroverload($object_user_id);
                     $notify .= $template->stringNotify('success', $language->get('admin_component_usercontrol_edit_notify_success'), true);
                 }
-                $theme_option_active = $template->tplget('form_option_item_active', null, true);
-                $theme_option_inactive = $template->tplget('form_option_item_inactive', null, true);
+                $theme_option_active = $template->get('form_option_item_active');
+                $theme_option_inactive = $template->get('form_option_item_inactive');
                 $prepared_option = null;
                 $stmt = $database->con()->prepare("SELECT group_id, group_name FROM {$constant->db['prefix']}_user_access_level");
                 $stmt->execute();
@@ -113,7 +114,7 @@ class com_usercontrol_back
                         $prepared_option .= $template->assign(array('option_value', 'option_name'), array($item_access['group_id'], $item_access['group_name']), $theme_option_inactive);
                     }
                 }
-                $theme_edit = $template->tplget('usercontrol_user_edit', 'components/', true);
+                $theme_edit = $template->get('usercontrol_user_edit', 'components/');
                 $work_body .= $template->assign(array('target_user_id', 'target_user_login', 'target_user_nick', 'target_user_phone', 'target_user_sex', 'target_user_webpage', 'target_user_birthday', 'target_user_status', 'option_group_prepare', 'notify'),
                     array($object_user_id, $user->get('login', $object_user_id), $user->get('nick', $object_user_id), $user->customget('phone', $object_user_id), $user->customget('sex', $object_user_id), $user->customget('webpage', $object_user_id), $user->customget('birthday', $object_user_id), $user->customget('status', $object_user_id), $prepared_option, $notify),
                     $theme_edit);
@@ -146,11 +147,10 @@ class com_usercontrol_back
                             $stmt = null;
                             $system->redirect(file_name . "?object=components&id=" . $admin->getID());
                             // TODO: удаление из фриендлиста
-                            exit();
                         }
                     }
                 }
-                $theme_delete = $template->tplget('usercontrol_user_delete', 'components/', true);
+                $theme_delete = $template->get('usercontrol_user_delete', 'components/');
                 $work_body = $template->assign(array('target_user_id', 'target_user_login', 'target_user_email', 'notify'),
                     array($target_user_id, $user->get('login', $target_user_id), $user->get('email', $target_user_id), $notify),
                     $theme_delete);
@@ -204,11 +204,11 @@ class com_usercontrol_back
                 }
             }
             $action_page_title .= $language->get('admin_component_usercontrol_group');
-            $group_theme = $template->tplget('usercontrol_group_manage', 'components/', true);
-            $column_theme = $template->tplget('usercontrol_group_manage_th', 'components/', true);
-            $checkbox_theme = $template->tplget('usercontrol_group_manage_checkbox', 'components/', true);
-            $input_theme = $template->tplget('usercontrol_group_manage_input', 'components/', true);
-            $delete_theme = $template->tplget('usercontrol_group_manage_delete', 'components/', true);
+            $group_theme = $template->get('usercontrol_group_manage', 'components/');
+            $column_theme = $template->get('usercontrol_group_manage_th', 'components/');
+            $checkbox_theme = $template->get('usercontrol_group_manage_checkbox', 'components/');
+            $input_theme = $template->get('usercontrol_group_manage_input', 'components/');
+            $delete_theme = $template->get('usercontrol_group_manage_delete', 'components/');
             $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_access_level");
             $stmt->execute();
             $resultFetch = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -282,7 +282,7 @@ class com_usercontrol_back
                 $stmt->execute();
                 if ($rowUser = $stmt->fetch()) {
                     $target_id = $rowUser['id'];
-                    $continue_block = $template->assign('block_user_id', $target_id, $template->tplget('usercontrol_ban_pers', 'components/', true));
+                    $continue_block = $template->assign('block_user_id', $target_id, $template->get('usercontrol_ban_pers', 'components/'));
                 } else {
                     $notify .= $template->stringNotify('error', $language->get('admin_component_usercontrol_ban_wrong_data'), true);
                 }
@@ -304,10 +304,10 @@ class com_usercontrol_back
                 $notify .= $template->stringNotify('success', $language->get('admin_component_usercontrol_ban_ip_setted'));
             }
             $action_page_title .= $language->get('admin_component_usercontrol_serviceban');
-            $ban_theme = $template->tplget('usercontrol_ban', 'components/', true);
+            $ban_theme = $template->get('usercontrol_ban', 'components/');
             $work_body .= $template->assign(array('notify', 'continue_block'), array($notify, $continue_block), $ban_theme);
         }
-        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
+        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->get('config_head'));
         return $body_form;
     }
 

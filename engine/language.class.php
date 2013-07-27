@@ -10,14 +10,14 @@ class language
     private $load_add_back = false;
     private $available = array();
 
-    function language($lang = null)
+    function language()
     {
         global $constant, $system;
         $this->loadAvailableLanguages();
         $this->use_lang = $constant->lang;
-        if($lang != null && $this->canUseLanguage($lang))
+        if($_COOKIE['ffcms_lang'] != null && $this->canUseLanguage($_COOKIE['ffcms_lang']))
         {
-            $this->use_lang = $lang;
+            $this->use_lang = $_COOKIE['ffcms_lang'];
         }
         $file = null;
         if (loader == "back") {

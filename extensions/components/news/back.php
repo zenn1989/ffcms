@@ -16,8 +16,8 @@ class com_news_back
         $menu_link .= $template->assign(array('ext_menu_link', 'ext_menu_text'), array('?object=components&id=' . $admin->getID() . '&action=settings', $language->get('admin_component_news_settings')), $menu_theme);
         if ($admin->getAction() == "list" || $admin->getAction() == null) {
             $action_page_title .= $language->get('admin_component_news_manage');
-            $theme_list = $template->tplget('news_list', 'components/', true);
-            $theme_manage = $template->tplget('news_list_manage', 'components/', true);
+            $theme_list = $template->get('news_list', 'components/');
+            $theme_manage = $template->get('news_list_manage', 'components/');
             $index_start = $admin->getPage();
             $news_array = array();
             if ($system->post('dosearch') && strlen($system->post('search')) > 0) {
@@ -370,7 +370,7 @@ class com_news_back
             $work_body .= $template->assign('ext_form', $config_set, $config_form);
         }
 
-        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->tplget('config_head', null, true));
+        $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->get('config_head'));
         return $body_form;
     }
 
@@ -390,9 +390,9 @@ class com_news_back
 
     private function buildCategoryOptionList($news_id = 0, $active_category = null)
     {
-        global $database, $constant, $system, $template;
-        $theme_option_active = $template->tplget('form_option_item_active', null, true);
-        $theme_option_inactive = $template->tplget('form_option_item_inactive', null, true);
+        global $database, $constant, $template;
+        $theme_option_active = $template->get('form_option_item_active');
+        $theme_option_inactive = $template->get('form_option_item_inactive');
         $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_category ORDER BY `path` ASC");
         $stmt->execute();
         $result_array = array();
@@ -445,8 +445,8 @@ class com_news_back
     private function categoryListLi()
     {
         global $database, $constant, $template, $admin;
-        $theme_item = $template->tplget('news_category_item', 'components/', true);
-        $theme_cursor = $template->tplget('news_category_item_cursor', 'components/', true);
+        $theme_item = $template->get('news_category_item', 'components/');
+        $theme_cursor = $template->get('news_category_item_cursor', 'components/');
         $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_com_news_category ORDER BY `path` ASC");
         $stmt->execute();
         $result_array = array();

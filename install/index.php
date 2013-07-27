@@ -14,14 +14,16 @@ require_once(root . "/config.php");
 require_once(root . "/engine/constant.class.php");
 require_once(root . "/engine/database.class.php");
 require_once(root . "/engine/language.class.php");
+require_once(root . "/engine/page.class.php");
 require_once(root . "/engine/template.class.php");
 require_once(root . "/engine/system.class.php");
 require_once(root . "/engine/install.class.php");
 
 $constant = new constant();
 $system = new system();
-$language = new language($_COOKIE['ff_lang'] != null ? $_COOKIE['ff_lang'] : 'ru');
+$language = new language();
 $template = new template();
+$page = new page();
 $install = new install();
 
 echo $install->make();

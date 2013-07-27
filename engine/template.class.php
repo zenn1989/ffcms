@@ -265,11 +265,11 @@ class template
     }
 
     /**
-     * Установка стандартных шаблоных переменных. Пример: {$url} => http://blabla
+     * Установка стандартных шаблоных переменных. Пример: {$url} => http://ffcms.ru
      */
     public function setDefaults($theme)
     {
-        global $constant, $user, $page;
+        global $language, $constant, $user, $page;
         if (loader == 'back') {
             $template_path = $constant->tpl_dir . $constant->slash . $constant->admin_tpl;
         } elseif(loader == 'install') {
@@ -277,29 +277,9 @@ class template
         } else {
             $template_path = $constant->tpl_dir . $constant->slash . $constant->tpl_name;
         }
-        return str_replace(array('{$url}', '{$tpl_dir}', '{$user_id}', '{$user_nick}', '{$ffcms_version}', '{$self_url}'),
-            array($constant->url, $template_path, loader == 'install' ? null : $user->get('id'), loader == 'install' ? null : $user->get('nick'), version, $constant->url.$page->getStrPathway()),
+        return $this->assign(array('url', 'tpl_dir', 'user_id', 'user_nick', 'ffcms_version', 'self_url', 'language'),
+            array($constant->url, $template_path, loader == 'install' ? null : $user->get('id'), loader == 'install' ? null : $user->get('nick'), version, $constant->url.$page->getStrPathway(), $language->getCustom()),
             $theme);
-    }
-
-
-    /**
-     * Use function get(tpl_name, customdirectory)
-     * @deprecated
-     */
-    public function tplget($tplname, $customdirectory = null, $isadmin = false)
-    {
-        global $constant;
-        if ($isadmin) {
-            $file = $constant->root . $constant->ds . $constant->tpl_dir . $constant->ds . $constant->admin_tpl . $constant->ds . $customdirectory . $tplname . ".tpl";
-        } else {
-            $file = $constant->root . $constant->ds . $constant->tpl_dir . $constant->ds . $constant->tpl_name . $constant->ds . $customdirectory . $tplname . ".tpl";
-        }
-        if (file_exists($file)) {
-            $this->debug_readcount++;
-            return $this->setDefaults(file_get_contents($file));
-        }
-        return $this->tplException($tplname);
     }
 
     public function get($tplname, $customdirectory = null)
@@ -374,15 +354,6 @@ class template
         global $cache;
         $cache->setNoExist(true);
         return $this->get('ban');
-    }
-
-    /**
-     * USE template::stringNotify()
-     * @deprecated
-     */
-    public function compileNotify($type, $text, $isadmin = false)
-    {
-        return $this->stringNotify($type, $text, $isadmin);
     }
 
     /**

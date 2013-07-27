@@ -10,5 +10,5 @@
     <strong>{$lang::usercontrol_profile_pm_write_text}</strong><br/>
     <textarea class="input-block-level" name="message" rows="10"></textarea>
 
-    <div class="pull-right"><input type="submit" name="sendmessage" value="Отправить" class="btn btn-success"/></div>
+    <div class="pull-right"><input type="submit" name="sendmessage" value="{$lang::global_send_button}" class="btn btn-success"/></div>
 </form>
