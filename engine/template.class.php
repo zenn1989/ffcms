@@ -276,16 +276,29 @@ class template
      */
     public function setDefaults($theme)
     {
-        global $language, $constant, $user, $page;
+        global $language, $constant, $user, $page, $system;
+        $template_path = null;
+        $url = null;
         if (loader == 'back') {
             $template_path = $constant->tpl_dir . $constant->slash . $constant->admin_tpl;
+            $url = $constant->url;
         } elseif(loader == 'install') {
             $template_path = $constant->tpl_dir . $constant->slash . $constant->install_tpl;
+            $url = "http://" . $_SERVER['HTTP_HOST'];
+            $pathway = $system->altexplode('/', $_SERVER['PHP_SELF']);
+            foreach($pathway as $path) {
+                if(!$system->contains('.php', $path) && $path != "install") {
+                    $url .= "/".$path;
+                }
+            }
         } else {
             $template_path = $constant->tpl_dir . $constant->slash . $constant->tpl_name;
+            $url = $constant->url;
         }
+
+
         return $this->assign(array('url', 'tpl_dir', 'user_id', 'user_nick', 'ffcms_version', 'self_url', 'language'),
-            array($constant->url, $template_path, loader == 'install' ? null : $user->get('id'), loader == 'install' ? null : $user->get('nick'), version, $constant->url.$page->getStrPathway(), $language->getCustom()),
+            array($url, $template_path, loader == 'install' ? null : $user->get('id'), loader == 'install' ? null : $user->get('nick'), version, $constant->url.$page->getStrPathway(), $language->getCustom()),
             $theme);
     }
 
