@@ -59,7 +59,7 @@ RELANG['en'] = {
 	align_center: 'Align Center',
 	align_right: 'Align Right',
 	align_justify: 'Justify',
-	horizontalrule: 'Insert Horizontal Rule',
+	horizontalrule: 'Page breaker(1st - end of short news)',
 	fullscreen: 'Fullscreen',
 	deleted: 'Deleted',
 	anchor: 'Anchor'

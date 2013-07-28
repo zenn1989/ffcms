@@ -115,7 +115,7 @@ class system
     {
         $split = explode(".", $var);
         array_pop($split);
-        return $split;
+        return $this->altimplode('', $split);
     }
 
 
@@ -548,6 +548,16 @@ class system
             $string = substr($string, 0, -1);
         }
         return $string;
+    }
+
+    /**
+     * Удаление из строки $string параметра $char $count-количество (не удаление всех, а до указанного порядкового следования)
+     * @param $char
+     * @param $string
+     * @param $count
+     */
+    public function removeCharsFromString($char, $string, $count) {
+        return preg_replace('#('.$char.')#', '',$string, $count);
     }
 
 }

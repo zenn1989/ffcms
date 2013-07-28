@@ -59,7 +59,7 @@ RELANG['ru'] = {
 	align_center: 'По центру',
 	align_right: 'По правому краю',
 	align_justify: 'Выровнять текст по ширине',
-	horizontalrule: 'Горизонтальная линейка',
+	horizontalrule: 'Разделитель страницы(1ый - конец короткой новости)',
 	fullscreen: 'Во весь экран',
 	deleted: 'Зачеркнутый',
 	anchor: 'Якорь'									

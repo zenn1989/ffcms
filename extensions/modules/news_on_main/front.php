@@ -45,8 +45,8 @@ class mod_news_on_main_front implements mod_front
             $lang_title = unserialize($result['title']);
             $lang_keywords = unserialize($result['keywords']);
             $news_short_text = $lang_text[$language->getCustom()];
-            if ($system->contains('<!-- pagebreak -->', $news_short_text)) {
-                $news_short_text = strstr($news_short_text, '<!-- pagebreak -->', true);
+            if ($system->contains('<hr />', $news_short_text)) {
+                $news_short_text = strstr($news_short_text, '<hr />', true);
             } elseif ($system->length($news_short_text) > $max_preview_length) {
                 $news_short_text = $system->sentenceSub($news_short_text, $max_preview_length) . "...";
             }

@@ -40,6 +40,8 @@
     <link rel="stylesheet" href="{$url}/resource/imperavi-free/redactor/css/redactor.css" />
     <script src="{$url}/resource/imperavi-free/redactor/redactor.min.js"></script>
 
+    {$jsurl {$url}/resource/imperavi-free/redactor/langs/{$language}.js}
+
 
     <script type="text/javascript">
         $(document).ready(
@@ -48,7 +50,9 @@
                     $('.wysi').redactor({
                         imageUpload: '{$url}/api.php?action=imperaviimageload',
                         convertDivs: false,
-                        focus: true
+                        focus: true,
+                        fixed: true,
+                        lang: '{$language}'
                     });
                 }
         );

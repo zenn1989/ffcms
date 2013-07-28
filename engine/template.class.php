@@ -252,7 +252,14 @@ class template
         preg_match_all('/{\$jsurl (.*?)}/s', $this->content, $jsurl_matches);
         $jsurl_array = $system->nullArrayClean(array_unique($jsurl_matches[1]));
         foreach ($jsurl_array as $jsurl) {
-            $compiled_header .= "<script type=\"text/javascript\" src=\"$jsurl\"></script>\r\n";
+            if($system->prefixEquals($jsurl, $constant->url)) {
+                $check_path_js = $system->removeCharsFromString($constant->url, $jsurl, 1);
+                if(file_exists($constant->root . $check_path_js)) {
+                    $compiled_header .= "<script type=\"text/javascript\" src=\"$jsurl\"></script>\r\n";
+                }
+            } else {
+                $compiled_header .= "<script type=\"text/javascript\" src=\"$jsurl\"></script>\r\n";
+            }
         }
         // сборка CSS URL включений
         preg_match_all('/{\$cssurl (.*?)}/s', $this->content, $cssurl_matches);
