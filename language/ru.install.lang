@@ -2,6 +2,7 @@ install_mainahref<=>Установка
 install_updatehref<=>Обновление
 install_devlink<=>Сайт разработчиков
 install_updates_noexist<=>Обновлений для данной версии системы не существует.
+install_sql_not_found<=>Файл импорта баз данных /install/sql/install.sql не найден
 install_locked<=>Установщик заблокирован. Если это произошло ошибочно - удалите файл .lock в директории /install/
 install_config_notwritable<=>Файл конфигураций /config.php недоступен для записи настроек. Проверьте права доступа
 install_self_notwritable<=>Директория установщика /install/ недоступна для записи. Проверьте права доступа

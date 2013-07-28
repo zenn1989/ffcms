@@ -611,7 +611,7 @@ class com_usercontrol_front
 
     private function showBookmarks($userid)
     {
-        global $user, $rule, $page, $template, $database, $constant, $extension, $system;
+        global $rule, $page, $template, $database, $constant, $extension, $system, $language;
         $way = $page->getPathway();
         $marks_marker = (int)$way[3];
         $total_marks_row = $this->getMarkTotalRows($userid);
@@ -642,13 +642,13 @@ class com_usercontrol_front
         // позиция коретки > 0 дает понять о наличии предидущих элементов
         if ($marks_marker > 0) {
             $rule->add('com.usercontrol.have_previous', true);
-        } else {
-            $rule->add('com.usercontrol.have_previous', false);
         }
         if ($total_marks_row > $marks_index + $marks_config_rows) {
             $rule->add('com.usercontrol.have_next', true);
-        } else {
-            $rule->add('com.usercontrol.have_next', false);
+        }
+        // если закладок у пользователя нет
+        if($user_marks_list == null) {
+            $user_marks = $language->get('usercontrol_profile_view_null_info');
         }
         $compiled_theme = $template->assign(array('user_photo_control', 'user_header', 'user_menu', 'user_main_block'),
             array($this->userProfilePhotoSettings($userid), $this->userProfileHeaders($userid), $user_compiled_menu, $user_marks),

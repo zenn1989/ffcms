@@ -34,11 +34,12 @@ class install
         $notify = null;
         if(file_exists($constant->root.'/install/.lock')) {
             $theme = $template->stringNotify('error', $language->get('install_locked'));
-        } elseif(!is_writable($constant->root . '/config.php'))
-        {
+        } elseif(!is_writable($constant->root . '/config.php')) {
             $theme = $template->stringNotify('error', $language->get('install_config_notwritable'));
         } elseif(!is_writable($constant->root . '/install/')) {
             $theme = $template->stringNotify('error', $language->get('install_self_notwritable'));
+        } elseif(!file_exists($constant->root . '/install/sql/install.sql')) {
+            $theme = $template->stringNotify('error', $language->get('install_sql_not_found'));
         } else {
             if($system->post('submit')) {
                 $testCon = null;
@@ -95,8 +96,20 @@ $config[\'password_salt\'] = "'.$random_password_salt.'";
                         $configs_data .= '?>';
                         file_put_contents($constant->root . '/install/.lock', 'Install success');
                         file_put_contents($constant->root . '/config.example.php', $configs_data);
+                        $prefix = $system->post('config:db_prefix');
+                        if(!$system->isLatinOrNumeric($prefix)) {
+                            $prefix = "ffcms";
+                        }
+                        $query_dump = $template->assign('db_prefix', $prefix, file_get_contents($constant->root . '/install/sql/install.sql'));
+                        $testCon->exec($query_dump);
                         // $testCon->multiquery();
                         $md5_doublehash = $system->doublemd5($reg_pass, $random_password_salt);
+                        $stmt = $testCon->prepare("INSERT INTO {$prefix}_user (`login`, `email`, `nick`, `pass`, `access_level`) VALUES(?, ?, 'admin', ?, '3')");
+                        $stmt->bindParam(1, $reg_login, PDO::PARAM_STR);
+                        $stmt->bindParam(2, $reg_email, PDO::PARAM_STR);
+                        $stmt->bindParam(3, $md5_doublehash, PDO::PARAM_STR, 32);
+                        $stmt->execute();
+                        $stmt = null;
                         $testCon = null;
                         $notify = $template->stringNotify('success', $language->get('install_done_success'));
                     } else {
