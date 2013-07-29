@@ -95,7 +95,7 @@ $config[\'password_salt\'] = "'.$random_password_salt.'";
 ';
                         $configs_data .= '?>';
                         file_put_contents($constant->root . '/install/.lock', 'Install success');
-                        file_put_contents($constant->root . '/config.example.php', $configs_data);
+                        file_put_contents($constant->root . '/config.php', $configs_data);
                         $prefix = $system->post('config:db_prefix');
                         if(!$system->isLatinOrNumeric($prefix)) {
                             $prefix = "ffcms";

@@ -46,7 +46,18 @@ class constant
         $this->root = root;
         $this->tpl_dir = $config['tpl_dir'];
         $this->tpl_name = $config['tpl_name'];
-        $this->url = $config['url'];
+        if(loader == "install") {
+            $url = "http://" . $_SERVER['HTTP_HOST'];
+            $pathway = explode('/', $_SERVER['PHP_SELF']);
+            foreach($pathway as $path) {
+                if($path != "install" && $path != null && !(strpos($path, '.php') !== false)) {
+                    $url .= "/".$path;
+                }
+            }
+            $this->url = $url;
+        } else {
+            $this->url = $config['url'];
+        }
         $this->lang = $config['lang'];
         $this->time_zone = $config['time_zone'];
 

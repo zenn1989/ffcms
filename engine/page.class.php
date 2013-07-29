@@ -64,6 +64,7 @@ class page
                 $this->content_position['body'][0] = $template->compile404();
             }
         }
+        $extension->modules_before_load();
         $meta->compile();
         $template->init();
     }

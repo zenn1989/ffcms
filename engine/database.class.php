@@ -12,12 +12,7 @@ class database
     {
         global $constant;
         try {
-            $this->con = @new PDO("mysql:host={$constant->db['host']};dbname={$constant->db['db']}", $constant->db['user'], $constant->db['pass']);
-            // отключаем эмуляцию, т.к. мы не фильтруем INPUT данные, ведь это умеет PDO
-            // ставим жесткий указатель на UTF8
-            $this->con->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-            $this->con->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, "SET NAMES utf8");
-            $this->con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->con = @new PDO("mysql:host={$constant->db['host']};dbname={$constant->db['db']}", $constant->db['user'], $constant->db['pass'], array(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true, PDO::ATTR_EMULATE_PREPARES => false, PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8", PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_PERSISTENT => false));
         } catch (PDOException $e) {
             //exit("Database connection error " . $e);
         }
@@ -27,6 +22,11 @@ class database
     {
         $this->queries++;
         return $this->con;
+    }
+
+    private function prepare($query)
+    {
+
     }
 
     public function totalQueryCount()
