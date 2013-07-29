@@ -1064,14 +1064,15 @@ class com_usercontrol_front
                     $new_password = $system->randomString(rand(8, 12));
                     $hashed_password = $system->doublemd5($new_password);
                     $hash = $system->md5random();
-                    $stmt = $database->con()->prepare("SELECT id,nick FROM {$constant->db['prefix']}_user WHERE email = ?");
+                    $stmt = null;
+                    $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user WHERE email = ?");
                     $stmt->bindParam(1, $email, PDO::PARAM_STR);
                     $stmt->execute();
                     if ($stmt->rowCount() != 1) {
                         $notify .= $template->stringNotify('error', $language->get('usercontrol_recovery_mail_unknown'));
                     } else {
                         // Учетка есть, делаем запись в бд для восстановления
-                        $res_stmt = $stmt->fetch();
+                        $res_stmt = $stmt->fetch(PDO::FETCH_ASSOC);
                         $userid = $res_stmt['id'];
                         $nickname = $res_stmt['nick'];
                         $stmt2 = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user_recovery (`password`, `hash`, `userid`) VALUES (?, ?, ?)");

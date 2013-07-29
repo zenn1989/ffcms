@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL ^ E_NOTICE);
+error_reporting(E_ERROR);
 define('root', $_SERVER['DOCUMENT_ROOT']);
 // версия системы (api.major.minor)
 define('version', '1.0.0');

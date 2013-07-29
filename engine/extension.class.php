@@ -193,17 +193,23 @@ class extension
     private function loadAllExtensionConfigs()
     {
         global $database, $constant;
-        $result = $database->con()->query("SELECT `configs`, `dir` FROM {$constant->db['prefix']}_components WHERE enabled = 1");
+        $result = $database->con()->query("SELECT `id`, `configs`, `dir` FROM {$constant->db['prefix']}_components WHERE enabled = 1");
         foreach($result as $item) {
             $this->config_extension['components'][$item['dir']] = $item['configs'];
+            if(loader == "back")
+                $this->config_extension['components'][$item['id']] = $item['configs'];
         }
-        $result = $database->con()->query("SELECT `configs`, `dir` FROM {$constant->db['prefix']}_modules WHERE enabled = 1");
+        $result = $database->con()->query("SELECT `id`, `configs`, `dir` FROM {$constant->db['prefix']}_modules WHERE enabled = 1");
         foreach($result as $item) {
             $this->config_extension['modules'][$item['dir']] = $item['configs'];
+            if(loader == "back")
+                $this->config_extension['modules'][$item['id']] = $item['configs'];
         }
-        $result = $database->con()->query("SELECT `configs`, `dir` FROM {$constant->db['prefix']}_hooks WHERE enabled = 1");
+        $result = $database->con()->query("SELECT `id`, `configs`, `dir` FROM {$constant->db['prefix']}_hooks WHERE enabled = 1");
         foreach($result as $item) {
             $this->config_extension['hooks'][$item['dir']] = $item['configs'];
+            if(loader == "back")
+                $this->config_extension['modules'][$item['id']] = $item['configs'];
         }
     }
 

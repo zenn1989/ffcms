@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL ^ E_NOTICE);
+error_reporting(E_ERROR);
 // задаем глобальную корня
 define('root', $_SERVER['DOCUMENT_ROOT']);
 // версия системы (api.major.minor)
@@ -35,6 +35,8 @@ $page = new page();
 $extension = new extension();
 $hook = new hook();
 $rule = new rule();
+
+date_default_timezone_set($constant->time_zone);
 
 $api = new api();
 echo $api->load();

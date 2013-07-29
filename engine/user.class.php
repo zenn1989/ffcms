@@ -38,6 +38,7 @@ class user
             $stmt->execute();
             if ($stmt->rowCount() == 1) {
                 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $stmt = null;
                 if ((time() - $result[0]['token_start']) < $constant->token_time) {
                     $this->userindex = $result[0]['id'];
                     foreach ($result[0] as $column_index => $column_data) {
