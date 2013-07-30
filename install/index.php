@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ERROR);
 // задаем глобальную корня
 define('root', $_SERVER['DOCUMENT_ROOT']);
 // версия системы
