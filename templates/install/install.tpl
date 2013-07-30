@@ -9,10 +9,10 @@
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label">{$lang::install_install_db_host_title}</label>
+        <label class="control-label">{$lang::install_install_db_user_title}</label>
         <div class="controls">
             <input type="text" placeholder="root" name="config:db_user" value="{$config_db_user}">
-            <p class="help-block">{$lang::install_install_db_host_desc}</p>
+            <p class="help-block">{$lang::install_install_db_user_desc}</p>
         </div>
     </div>
     <div class="control-group">
