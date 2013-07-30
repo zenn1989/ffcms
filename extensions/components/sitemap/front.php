@@ -1,4 +1,10 @@
 <?php
+// --------------------------------------//
+// THIS SOFTWARE USE GNU GPL V3 LICENSE //
+// AUTHOR: zenn, Pyatinsky Mihail.     //
+// Official website: www.ffcms.ru     //
+// ----------------------------------//
+
 if (!extension::registerPathWay('sitemap', 'sitemap')) {
     exit("Component sitemap cannot be registered!");
 }

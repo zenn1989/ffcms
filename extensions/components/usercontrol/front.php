@@ -1,4 +1,10 @@
 <?php
+// --------------------------------------//
+// THIS SOFTWARE USE GNU GPL V3 LICENSE //
+// AUTHOR: zenn, Pyatinsky Mihail.     //
+// Official website: www.ffcms.ru     //
+// ----------------------------------//
+
 // регистрируем компонент
 if (!extension::registerPathWay(array('login', 'register', 'recovery', 'logout', 'aprove', 'user', 'message', 'settings'), 'usercontrol')) {
     exit("Component usercontrol cannot be registered!");

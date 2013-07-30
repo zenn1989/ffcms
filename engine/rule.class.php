@@ -1,4 +1,9 @@
 <?php
+// --------------------------------------//
+// THIS SOFTWARE USE GNU GPL V3 LICENSE //
+// AUTHOR: zenn, Pyatinsky Mihail.     //
+// Official website: www.ffcms.ru     //
+// ----------------------------------//
 
 /**
  * Класс реализующий правила и их обработку в шаблонах. Пример: {$if rule}some data{/$if}

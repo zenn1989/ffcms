@@ -1,4 +1,9 @@
 <?php
+// --------------------------------------//
+// THIS SOFTWARE USE GNU GPL V3 LICENSE //
+// AUTHOR: zenn, Pyatinsky Mihail.     //
+// Official website: www.ffcms.ru     //
+// ----------------------------------//
 
 class system
 {
@@ -12,11 +17,21 @@ class system
         $this->get_data = $_GET;
     }
 
+    /**
+     * Получение входящей переменной $_POST по значению $key с отбросом {$params} от пользователя
+     * @param null $key
+     * @return array|mixed
+     */
     public function post($key = null)
     {
         return $key == null ? $this->post_data : $this->noParam($this->post_data[$key]);
     }
 
+    /**
+     * Получение входящих данных из $_GET строки по значению $key с использованием urldecode()
+     * @param $key
+     * @return string
+     */
     public function get($key)
     {
         return urldecode($this->get_data[$key]);

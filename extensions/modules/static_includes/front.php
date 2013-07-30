@@ -1,5 +1,9 @@
 <?php
-
+// --------------------------------------//
+// THIS SOFTWARE USE GNU GPL V3 LICENSE //
+// AUTHOR: zenn, Pyatinsky Mihail.     //
+// Official website: www.ffcms.ru     //
+// ----------------------------------//
 
 // Отображение статичных блоков из /templates/tpl_name/positions/*
 class mod_static_includes_front implements mod_front

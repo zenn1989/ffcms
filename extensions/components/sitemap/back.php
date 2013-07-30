@@ -1,4 +1,10 @@
 <?php
+// --------------------------------------//
+// THIS SOFTWARE USE GNU GPL V3 LICENSE //
+// AUTHOR: zenn, Pyatinsky Mihail.     //
+// Official website: www.ffcms.ru     //
+// ----------------------------------//
+
 class com_sitemap_back implements backend
 {
     public function load() {

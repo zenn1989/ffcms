@@ -1,5 +1,11 @@
 <?php
 
+// --------------------------------------//
+// THIS SOFTWARE USE GNU GPL V3 LICENSE //
+// AUTHOR: zenn, Pyatinsky Mihail.     //
+// Official website: www.ffcms.ru     //
+// ----------------------------------//
+
 /**
  * Класс отвечающий за проверку одиночных файлов и всех файлов системы на наличие вредоностного кода.
  * Class antivirus

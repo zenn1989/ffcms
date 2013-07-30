@@ -1,4 +1,10 @@
 <?php
+// --------------------------------------//
+// THIS SOFTWARE USE GNU GPL V3 LICENSE //
+// AUTHOR: zenn, Pyatinsky Mihail.     //
+// Official website: www.ffcms.ru     //
+// ----------------------------------//
+
 /**
  * класс управляющий языками отображения сайта
  */
@@ -41,6 +47,7 @@ class language
             }
         }
         $this->additionalLoad();
+        $this->themeLanguageLoad();
     }
 
     public function getCustom()
@@ -92,6 +99,28 @@ class language
         } else {
             $file = $constant->root . '/language/'. $this->use_lang . '.front.addition.lang';
             $this->load_add_front = true;
+        }
+        if($file != null && file_exists($file)) {
+            $con = file_get_contents($file);
+            $add_array = explode("\n", $con);
+            foreach($add_array as $line) {
+                if(strlen($line) > 4) {
+                    list($tag, $value) = explode("<=>", $line);
+                    if(!$system->prefixEquals($tag, '#'))
+                        $this->lang[$tag] = $value;
+                }
+            }
+        }
+    }
+
+    private function themeLanguageLoad()
+    {
+        global $constant, $system;
+        $file = null;
+        if(loader == "back") {
+            $file = $constant->root . $constant->ds . $constant->tpl_dir . "/admin/" . $this->use_lang . '.language.lang';
+        } else {
+            $file = $constant->root . $constant->ds . $constant->tpl_dir .$constant->ds . $constant->tpl_name . $constant->ds . $this->use_lang . '.language.lang';
         }
         if($file != null && file_exists($file)) {
             $con = file_get_contents($file);

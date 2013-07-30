@@ -1,4 +1,9 @@
 <?php
+// --------------------------------------//
+// THIS SOFTWARE USE GNU GPL V3 LICENSE //
+// AUTHOR: zenn, Pyatinsky Mihail.     //
+// Official website: www.ffcms.ru     //
+// ----------------------------------//
 
 if (!extension::registerPathWay('news', 'news')) {
     exit("Component static cannot be registered!");
