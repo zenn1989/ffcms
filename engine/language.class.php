@@ -21,9 +21,10 @@ class language
         global $constant, $system;
         $this->loadAvailableLanguages();
         $this->use_lang = $constant->lang;
-        if($_COOKIE['ffcms_lang'] != null && $this->canUseLanguage($_COOKIE['ffcms_lang']))
-        {
+        if($_COOKIE['ffcms_lang'] != null && $this->canUseLanguage($_COOKIE['ffcms_lang'])) {
             $this->use_lang = $_COOKIE['ffcms_lang'];
+        } elseif($_SERVER['HTTP_ACCEPT_LANGUAGE'] != null && $this->canUseLanguage(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2))) {
+            $this->use_lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
         }
         $file = null;
         if (loader == "back") {

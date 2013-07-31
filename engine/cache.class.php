@@ -79,8 +79,8 @@ class cache
      */
     private function pathHash()
     {
-        global $constant, $page;
-        return $constant->root . "/cache/" . md5($page->getStrPathway());
+        global $constant, $page, $language;
+        return $constant->root . "/cache/" . $language->getCustom() . "_" . md5($page->getStrPathway());
     }
 
     public function setNoExist($boolean)
@@ -101,6 +101,9 @@ class cache
     public function saveBlock($name, $data)
     {
         global $constant;
+        if(!file_exists($constant->root . "/cache/block/")) {
+            mkdir($constant->root . "/cache/block/");
+        }
         $fname = $constant->root . "/cache/block/" . $name . ".cache";
         @file_put_contents($fname, $data, LOCK_EX);
     }

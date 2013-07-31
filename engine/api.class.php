@@ -57,6 +57,9 @@ class api
             case "apicallback":
                 return $this->apiCallBack();
                 break;
+            case "lang":
+                return $this->changeLanguage();
+                break;
             default:
                 break;
         }
@@ -81,6 +84,16 @@ class api
             }
         }
         return;
+    }
+
+    private function changeLanguage()
+    {
+        global $language, $system;
+        $lang = $system->get('lang');
+        if($lang != null && in_array($lang, $language->getAvailable())) {
+            setcookie('ffcms_lang', $lang);
+        }
+        $system->redirect();
     }
 
     private function addBookMark()

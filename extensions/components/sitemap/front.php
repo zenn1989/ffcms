@@ -55,7 +55,7 @@ class com_sitemap_front implements com_front
             $loader->add("user/id".$result['id'], date('c'), 'weekly', '0.2');
         }
         $stmt = null;
-        $stmt = $database->con()->prepare("SELECT a.path, b.`date` FROM `ffcms_com_news_category` a, `ffcms_com_news_entery` b WHERE a.category_id = b.category ORDER BY b.`date` DESC");
+        $stmt = $database->con()->prepare("SELECT a.path, b.`date` FROM `{$constant->db['prefix']}_com_news_category` a, `{$constant->db['prefix']}_com_news_entery` b WHERE a.category_id = b.category ORDER BY b.`date` DESC");
         $stmt->execute();
         while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $loader->add("news/".$result['path'], date('c', $result['date']), 'weekly', '0.3');
