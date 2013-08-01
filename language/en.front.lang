@@ -39,6 +39,7 @@ usercontrol_recovery_mail_description<=>You or someone else make query to recove
 usercontrol_recovery_mail_footer<=>If you didnt make recovery query - ignore this latter.
 usercontrol_recovery_button<=>Send mail
 usercontrol_recovery_mail_unknown<=>Account with this data not founded
+usercontrol_recovery_mail_sended<=>On your email we send aprove message with account recovery information
 usercontrol_mail_link_text<=><a href="{$recovery_url}">Aprove recovery</a>
 usercontrol_profile_name_unknown<=>No name
 usercontrol_profile_sex_man<=>Male

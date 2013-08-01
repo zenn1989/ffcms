@@ -1092,7 +1092,8 @@ class com_usercontrol_front
 
                         $mail_body = $template->get('mail');
                         $mail_body = $template->assign(array('title', 'description', 'text', 'footer'), array($language->get('usercontrol_recovery_mail_title'), $recovery_desc, $recovery_link, $language->get('usercontrol_recovery_mail_footer')), $mail_body);
-                        $mail->send($email, $language->get('usercontrol_recovery_mail_title'), $mail_body, $nickname);
+                        $send = $mail->send($email, $language->get('usercontrol_recovery_mail_title'), $mail_body, $nickname);
+                        $notify = $template->stringNotify('success', $language->get('usercontrol_recovery_mail_sended'));
                     }
                 }
             }
