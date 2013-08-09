@@ -266,7 +266,14 @@ class template
         preg_match_all('/{\$cssurl (.*?)}/s', $this->content, $cssurl_matches);
         $cssurl_array = $system->nullArrayClean($cssurl_matches[1]);
         foreach ($cssurl_array as $cssurl) {
-            $compiled_header .= "<link href=\"$cssurl\" rel=\"stylesheet\" />\r\n";
+            if($system->prefixEquals($cssurl, $constant->url)) {
+                $check_path_css = $system->removeCharsFromString($constant->url, $cssurl, 1);
+                if(file_exists($constant->root . $check_path_css)) {
+                    $compiled_header .= "<link href=\"$cssurl\" rel=\"stylesheet\" />\r\n";
+                }
+            } else {
+                $compiled_header .= "<link href=\"$cssurl\" rel=\"stylesheet\" />\r\n";
+            }
         }
         $compiled_header .= "</head>";
         $this->content = str_replace('</head>', $compiled_header, $this->content);

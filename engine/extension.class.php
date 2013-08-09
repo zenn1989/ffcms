@@ -48,7 +48,7 @@ class extension
         $stmt = null;
     }
 
-    /**h
+    /**
      * Регистрация путей для компонентов
      * Для первого параметра(пути) возможен массив путей registerPathWay(array('login', 'registration', 'recovery), 'usercontrol')
      */
@@ -190,6 +190,15 @@ class extension
             return $system->toInt($configs[$name]);
         }
         return $configs[$name];
+    }
+
+    /**
+     * Перезагрузка конфигураций в случае если таковые были изменены в процессе работы
+     */
+    public function overloadAllExtensionConfigs()
+    {
+        $this->config_extension = null;
+        $this->loadAllExtensionConfigs();
     }
 
     /**

@@ -966,7 +966,7 @@ class admin
      */
     public function trySaveConfigs()
     {
-        global $system, $database, $constant;
+        global $system, $database, $constant, $extension;
         // увы, но PHP::PDO не хочет в prepared указывать аргумент имени таблицы :( поэтому ручками
         $table_name = $constant->db['prefix'] . "_";
         switch ($this->object) {
@@ -990,8 +990,9 @@ class admin
             $stmt->bindParam(2, $this->id, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $s) {
-            return FALSE;
+            return false;
         }
+        $extension->overloadAllExtensionConfigs();
         return true;
     }
 

@@ -26,6 +26,13 @@ class framework
         return $this;
     }
 
+    public function fromPost($post_key_name)
+    {
+        global $system;
+        $this->object = $system->post($post_key_name);
+        return $this;
+    }
+
     public function get()
     {
         $result = $this->object;
@@ -52,6 +59,12 @@ class framework
         global $system;
         $this->object = $system->altsubstr($this->object, $start, $end);
         return $this;
+    }
+
+    public function length()
+    {
+        global $system;
+        return $system->length($this->object);
     }
 
 
