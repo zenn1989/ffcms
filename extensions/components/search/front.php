@@ -31,7 +31,7 @@ class com_search_front implements com_front
         global $database, $constant, $language, $template, $framework;
         $theme_body = $template->get('search_body', 'components/search/');
         $queryBuild = '%'.$query.'%';
-        $stmt = $database->con()->prepare("SELECT a.title,a.text,a.link,a.category,b.category_id,b.path FROM {$constant->db['prefix']}_com_news_entery a, {$constant->db['prefix']}_com_news_category b WHERE a.text like ? OR a.title like ? LIMIT 50");
+        $stmt = $database->con()->prepare("SELECT a.title,a.text,a.link,a.category,b.category_id,b.path FROM {$constant->db['prefix']}_com_news_entery a, {$constant->db['prefix']}_com_news_category b WHERE a.category = b.category_id AND (a.text like ? OR a.title like ?) LIMIT 50");
         $stmt->bindParam(1, $queryBuild, PDO::PARAM_STR);
         $stmt->bindParam(2, $queryBuild, PDO::PARAM_STR);
         $stmt->execute();

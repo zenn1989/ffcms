@@ -67,5 +67,12 @@ class framework
         return $system->length($this->object);
     }
 
+    public function toInt()
+    {
+        global $system;
+        $this->object = $system->toInt($this->object);
+        return $this;
+    }
+
 
 }
