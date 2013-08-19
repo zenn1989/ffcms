@@ -5,7 +5,8 @@
     <li><a href="{$url}/recovery">{$lang::usercontrol_recovery_header}</a></li>
 </ul>
 {$notify}
-<form class="form-horizontal" method="post" action="">
+<div class="span5">
+    <form class="form-horizontal" method="post" action="">
     <div class="control-group">
         <label class="control-label" for="inputEmail">{$lang::usercontrol_auth_login}</label>
 
@@ -51,4 +52,14 @@
             <input type="submit" name="submit" class="btn btn-inverse" value="{$lang::usercontrol_reg_button}"/>
         </div>
     </div>
-</form>
+    </form>
+</div>
+<div class="span3">
+    {$if com.usercontrol.use_openid}
+    <p>{$lang::usercontrol_openid_desc}</p>
+    <script src="http://loginza.ru/js/widget.js" type="text/javascript"></script>
+    <a href="http://loginza.ru/api/widget?token_url={$openid_url}" class="loginza">
+        <img src="http://loginza.ru/img/sign_in_button_gray.gif" alt="Use social network" />
+    </a>
+    {$/if}
+</div>

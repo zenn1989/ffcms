@@ -6,7 +6,7 @@
 // ----------------------------------//
 
 // регистрируем компонент
-if (!extension::registerPathWay(array('login', 'register', 'recovery', 'logout', 'aprove', 'user', 'message', 'settings'), 'usercontrol')) {
+if (!extension::registerPathWay(array('login', 'register', 'recovery', 'logout', 'aprove', 'user', 'message', 'settings', 'openid'), 'usercontrol')) {
     exit("Component usercontrol cannot be registered!");
 }
 page::setNoCache('login');
@@ -17,6 +17,7 @@ page::setNoCache('aprove');
 page::setNoCache('user');
 page::setNoCache('message');
 page::setNoCache('settings');
+page::setNoCache('openid');
 
 class com_usercontrol_front
 {
@@ -31,6 +32,7 @@ class com_usercontrol_front
         $hook->before();
         $rule->add('com.usercontrol.login_captcha', $extension->getConfig('login_captcha', 'usercontrol', 'components', 'boolean'));
         $rule->add('com.usercontrol.register_captcha', $extension->getConfig('register_captcha', 'usercontrol', 'components', 'boolean'));
+        $rule->add('com.usercontrol.use_openid', $extension->getConfig('use_openid', 'usercontrol', 'components', 'boolean'));
         switch ($way[0]) {
             case "login":
                 $this->loginComponent();
@@ -56,8 +58,115 @@ class com_usercontrol_front
             case "settings":
                 $this->userPersonalSettings();
                 break;
+            case "openid":
+                $this->loginOpenId();
+                break;
             default:
                 break;
+        }
+    }
+
+    private function loginOpenId()
+    {
+        global $system, $database, $constant, $template, $page, $language, $mail, $extension;
+        $token = $system->post('token');
+        if(!$extension->getConfig('use_openid', 'usercontrol', 'components', 'boolean')) {
+            $page->setContentPosition('body', $template->compile404());
+            return;
+        }
+        if($token != null) {
+            $query = file_get_contents('http://loginza.ru/api/authinfo?token='.$token);
+            $result = json_decode($query, true);
+            $openidIdentifity = $result['identity'];
+            if($openidIdentifity == null || $system->length($openidIdentifity) < 1)
+                $system->redirect('/login');
+            // используется ли данный identity у пользователей ?
+            $stmt = $database->con()->prepare("SELECT COUNT(*), email, pass FROM {$constant->db['prefix']}_user WHERE openid = ?");
+            $stmt->bindParam(1, $openidIdentifity, PDO::PARAM_STR);
+            $stmt->execute();
+            $checkRes = $stmt->fetch();
+            $stmt = null;
+            // пользователь найден
+            if($checkRes[0] == 1) {
+                $dbemail = $checkRes['email'];
+                $md5token = $system->md5random();
+                $nixtime = time();
+                $stmt2 = $database->con()->prepare("UPDATE {$constant->db['prefix']}_user SET token = ?, token_start = ? WHERE openid = ?");
+                $stmt2->bindParam(1, $md5token, PDO::PARAM_STR, 32);
+                $stmt2->bindParam(2, $nixtime, PDO::PARAM_INT);
+                $stmt2->bindParam(3, $openidIdentifity, PDO::PARAM_STR);
+                $stmt2->execute();
+
+                setcookie('person', $dbemail, null, '/', null, null, true);
+                setcookie('token', $md5token, null, '/', null, null, true);
+                $system->redirect();
+            } else {
+            // это первая авторизация с этого identity
+                $_SESSION['openid_token'] = $token;
+                $_SESSION['openid_person'] = $openidIdentifity;
+                $openid_login = $result['nickname'];
+                $openid_email = $result['email'];
+                $openid_pseudoname = $result['name']['first_name'];
+                $theme_openid = $template->get('openid', 'components/usercontrol/');
+                $page->setContentPosition('body', $template->assign(array('openid_email', 'openid_login', 'openid_nick', 'openid_session'), array($openid_email, $openid_login, $openid_pseudoname, $token), $theme_openid));
+            }
+        } else {
+            if($system->post('submit') && $_SESSION['openid_token'] != null && $_SESSION['openid_token'] == $system->post('openid_token')) {
+                // пользователь добавил необходимые данные. Токен валиден.
+                $notify = null;
+                $token = $_SESSION['openid_token'];
+                $nickname = $system->nohtml($system->post('nick'));
+                $email = $system->post('email');
+                $login = $system->post('login');
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $notify .= $template->stringNotify('error', $language->get('usercontrol_invalid_email_error'));
+                }
+                if ($this->mailExists($email)) {
+                    $notify .= $template->stringNotify('error', $language->get('usercontrol_mail_exist'));
+                }
+                if ($this->loginIsIncorrent($login)) {
+                    $notify .= $template->stringNotify('error', $language->get('usercontrol_login_exist'));
+                }
+                if (strlen($nickname) < 3 || strlen($nickname) > 64) {
+                    $notify .= $template->stringNotify('error', $language->get('usercontrol_nick_incorrent'));
+                }
+                if($notify == null) {
+                    $validate = 0;
+                    $pwd = $system->randomString(rand(8,12));
+                    $md5pwd = $system->doublemd5($pwd);
+                    $rand_token = $system->md5random();
+                    $time = time();
+                    $stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user (`login`, `email`, `nick`, `pass`, `aprove`, `openid`, `token`, `token_start`) VALUES (?,?,?,?,?,?,?,?)");
+                    $stmt->bindParam(1, $login, PDO::PARAM_STR, 64);
+                    $stmt->bindParam(2, $email, PDO::PARAM_STR);
+                    $stmt->bindParam(3, $nickname, PDO::PARAM_STR);
+                    $stmt->bindParam(4, $md5pwd, PDO::PARAM_STR, 32);
+                    $stmt->bindParam(5, $validate, PDO::PARAM_STR, 32);
+                    $stmt->bindParam(6, $_SESSION['openid_person'], PDO::PARAM_STR);
+                    $stmt->bindParam(7, $rand_token, PDO::PARAM_STR, 32);
+                    $stmt->bindParam(8, $time, PDO::PARAM_INT);
+                    $stmt->execute();
+                    $user_obtained_id = $database->con()->lastInsertId();
+                    $stmt = null;
+                    $stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user_custom (`id`) VALUES (?)");
+                    $stmt->bindParam(1, $user_obtained_id, PDO::PARAM_INT);
+                    $stmt->execute();
+                    $stmt = null;
+                    $openid_desc_mail = $language->get('usercontrol_openid_reg_mail_desc').$pwd;
+                    $link = '<a href="'.$constant->url.'">'.$language->get('usercontrol_openid_reg_link').'</a>';
+                    $mail_body = $template->get('mail');
+                    $mail_body = $template->assign(array('title', 'description', 'text', 'footer'), array($language->get('usercontrol_openid_reg_mail_title'), $openid_desc_mail, $link, $language->get('usercontrol_reg_mail_footer')), $mail_body);
+                    $mail->send($email, $language->get('usercontrol_reg_mail_title'), $mail_body, $nickname);
+                    setcookie('person', $email, null, '/', null, null, true);
+                    setcookie('token', $rand_token, null, '/', null, null, true);
+                    $system->redirect();
+                } else {
+                    $theme_openid = $template->get('openid', 'components/usercontrol/');
+                    $page->setContentPosition('body', $template->assign(array('openid_email', 'openid_login', 'openid_nick', 'openid_session', 'notify'), array($email, $login, $nickname, $token, $notify), $theme_openid));
+                }
+            } else {
+                $system->redirect('/login');
+            }
         }
     }
 
@@ -944,7 +1053,8 @@ class com_usercontrol_front
         }
         $theme = $template->get('login', 'components/usercontrol/');
         $captcha = $hook->get('captcha')->show();
-        $theme = $template->assign(array('captcha', 'notify'), array($captcha, $notify), $theme);
+        $openid_url = urlencode($constant->url."/openid/");
+        $theme = $template->assign(array('captcha', 'notify', 'openid_url'), array($captcha, $notify, $openid_url), $theme);
         $page->setContentPosition('body', $theme);
     }
 
@@ -1027,7 +1137,8 @@ class com_usercontrol_front
         }
         $theme = $template->get('register', 'components/usercontrol/');
         $captcha = $hook->get('captcha')->show();
-        $theme = $template->assign(array('captcha', 'notify'), array($captcha, $notify), $theme);
+        $openid_url = urlencode($constant->url."/openid/");
+        $theme = $template->assign(array('captcha', 'notify', 'openid_url'), array($captcha, $notify, $openid_url), $theme);
         $page->setContentPosition('body', $theme);
 
     }

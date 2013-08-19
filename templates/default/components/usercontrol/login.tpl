@@ -7,6 +7,7 @@
     <li><a href="{$url}/recovery">{$lang::usercontrol_recovery_header}</a></li>
 </ul>
 {$notify}
+<div class="span5">
 <form class="form-horizontal" method="post" action="">
     <div class="control-group">
         <label class="control-label">{$lang::usercontrol_auth_email_or_login}</label>
@@ -40,3 +41,13 @@
         </div>
     </div>
 </form>
+</div>
+<div class="span3">
+    {$if com.usercontrol.use_openid}
+    <p>{$lang::usercontrol_openid_desc}</p>
+    <script src="http://loginza.ru/js/widget.js" type="text/javascript"></script>
+    <a href="http://loginza.ru/api/widget?token_url={$openid_url}" class="loginza">
+        <img src="http://loginza.ru/img/sign_in_button_gray.gif" alt="Use social network" />
+    </a>
+    {$/if}
+</div>
