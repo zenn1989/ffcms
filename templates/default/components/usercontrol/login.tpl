@@ -23,15 +23,25 @@
             <input type="password" name="password" placeholder="Password" required>
         </div>
     </div>
-    {$if com.usercontrol.login_captcha}
+    {$if com.usercontrol.login_captcha && !com.usercontrol.captcha_full}
     <div class="control-group">
-        <label class="control-label">{$lang::usercontrol_auth_captcha}</label>
+        <label class="control-label" for="inputPassword">{$lang::usercontrol_auth_captcha}</label>
 
         <div class="controls">
-            <img src="{$captcha}" id="captcha"/><a href="#"
-                                                   onclick="document.getElementById('captcha').src='{$captcha}?'+Math.random();"><i
-                        class="icon-refresh"></i></a><br/>
+            <img src="{$captcha}" id="captcha"/><a href="#" onclick="document.getElementById('captcha').src='{$captcha}?'+Math.random();"><i class="icon-refresh"></i></a><br/>
             <input type="text" name="captcha" required>
+        </div>
+    </div>
+    {$/if}
+    {$if com.usercontrol.login_captcha && com.usercontrol.captcha_full}
+    <script>
+        var RecaptchaOptions = { theme : 'white' };
+    </script>
+    <div class="control-group">
+        <label class="control-label" for="inputPassword">{$lang::usercontrol_auth_captcha}</label>
+
+        <div class="controls">
+            {$captcha}
         </div>
     </div>
     {$/if}

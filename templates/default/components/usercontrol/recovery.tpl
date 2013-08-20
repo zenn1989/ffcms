@@ -13,16 +13,28 @@
             <input name="email" type="text" placeholder="ivan.petrov@gmail.com">
         </div>
     </div>
+    {$if !com.usercontrol.captcha_full}
     <div class="control-group">
         <label class="control-label" for="inputPassword">{$lang::usercontrol_auth_captcha}</label>
 
         <div class="controls">
-            <img src="{$captcha}" id="captcha"/><a href="#"
-                                                   onclick="document.getElementById('captcha').src='{$captcha}?'+Math.random();"><i
-                        class="icon-refresh"></i></a><br/>
-            <input type="text" name="captcha">
+            <img src="{$captcha}" id="captcha"/><a href="#" onclick="document.getElementById('captcha').src='{$captcha}?'+Math.random();"><i class="icon-refresh"></i></a><br/>
+            <input type="text" name="captcha" required>
         </div>
     </div>
+    {$/if}
+    {$if com.usercontrol.captcha_full}
+    <script>
+        var RecaptchaOptions = { theme : 'white' };
+    </script>
+    <div class="control-group">
+        <label class="control-label" for="inputPassword">{$lang::usercontrol_auth_captcha}</label>
+
+        <div class="controls">
+            {$captcha}
+        </div>
+    </div>
+    {$/if}
     <div class="control-group">
         <div class="controls">
             <input type="submit" name="submit" class="btn btn-inverse" value="{$lang::usercontrol_recovery_button}"/>

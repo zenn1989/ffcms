@@ -33,6 +33,7 @@ class com_usercontrol_front
         $rule->add('com.usercontrol.login_captcha', $extension->getConfig('login_captcha', 'usercontrol', 'components', 'boolean'));
         $rule->add('com.usercontrol.register_captcha', $extension->getConfig('register_captcha', 'usercontrol', 'components', 'boolean'));
         $rule->add('com.usercontrol.use_openid', $extension->getConfig('use_openid', 'usercontrol', 'components', 'boolean'));
+        $rule->add('com.usercontrol.captcha_full', $extension->getConfig('captcha_type', 'captcha', 'hooks') == "recaptcha" ? true : false);
         switch ($way[0]) {
             case "login":
                 $this->loginComponent();
