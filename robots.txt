@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /api.php?action=redirect
+Disallow: /search/
+Disallow: /login/
+Disallow: /register/
+Disallow: /recovery/
+Disallow: /openid/
+Crawl-delay: 0.3
