@@ -29,7 +29,7 @@ class hook_captcha_front implements hook_front
             return $resp->is_valid;
         }
         $session_value = $_SESSION['captcha'];
-        //return (strlen($session_value) > 0 && strtolower($session_value) == strtolower($postdata)) ? true : false;
+        return (strlen($session_value) > 0 && strtolower($session_value) == strtolower($postdata)) ? true : false;
     }
 
     public function show()
