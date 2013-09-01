@@ -18,6 +18,7 @@ class com_search_front implements com_front
         $theme_head = $template->get('search_head', 'components/search/');
         $way = $page->getPathway();
         $query = $system->nohtml(urldecode($way[1]));
+        $query = str_replace(array('"', "'"), "", $query);
         if($system->length($query) > 3) {
             $rule->add('com.search.query_make', true);
         }
