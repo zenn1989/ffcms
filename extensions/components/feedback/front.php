@@ -14,8 +14,9 @@ class com_feedback_front implements com_front
 {
     public function load()
     {
-        global $page, $template, $system, $user, $meta, $database, $constant, $hook, $language;
+        global $page, $template, $system, $user, $meta, $database, $constant, $hook, $language, $rule, $extension;
         $notify = null;
+        $rule->add('com.feedback.captcha_full', $extension->getConfig('captcha_type', 'captcha', 'hooks') == "recaptcha" ? true : false);
         if($system->post('dofeedback')) {
             $poster_name = $system->nohtml($system->post('topic_name'));
             $topic_title = $system->nohtml($system->post('topic_title'));

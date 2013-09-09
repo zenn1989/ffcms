@@ -38,16 +38,28 @@
             </div>
         </div>
         {$/if}
+        {$if !com.feedback.captcha_full}
         <div class="control-group">
             <label class="control-label">{$lang::feedback_form_captcha_label}</label>
 
             <div class="controls">
-                <img src="{$captcha}" id="captcha"/><a href="#" onclick="document.getElementById('captcha').src='{$captcha}?'+Math.random();"><i
-                            class="icon-refresh"></i></a><br/>
+                <img src="{$captcha}" id="captcha"/><a href="#" onclick="document.getElementById('captcha').src='{$captcha}?'+Math.random();"><i class="icon-refresh"></i></a><br/>
                 <input type="text" name="captcha" required>
-                <p class="help-block">{$lang::feedback_form_captcha_desc}</p>
             </div>
         </div>
+        {$/if}
+        {$if com.feedback.captcha_full}
+        <script>
+            var RecaptchaOptions = { theme : 'white' };
+        </script>
+        <div class="control-group">
+            <label class="control-label">{$lang::feedback_form_captcha_label}</label>
+
+            <div class="controls">
+                {$captcha}
+            </div>
+        </div>
+        {$/if}
         <div class="control-group">
             <div class="controls">
                 <input type="submit" name="dofeedback" value="{$lang::feedback_form_send_button}" class="btn btn-danger" />
