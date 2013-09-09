@@ -1,0 +1,3 @@
+ALTER TABLE `{$db_prefix}_user` ADD `openid` varchar(512) NOT NULL DEFAULT '';
+UPDATE `{$db_prefix}_hooks` SET configs = 'a:3:{s:12:"captcha_type";s:9:"recaptcha";s:17:"captcha_publickey";s:40:"6Lf5V-YSAAAAAHjZXfPuyetxodstkHEkIn621OdE";s:18:"captcha_privatekey";s:40:"6Lf5V-YSAAAAACmTdU4Fd0uUbLTdMtI4rYGenl-X";}' WHERE `type` = 'captcha';
+UPDATE `{$db_prefix}_components` SET configs = 'a:11:{s:13:"login_captcha";s:1:"0";s:16:"register_captcha";s:1:"1";s:15:"register_aprove";s:1:"1";s:10:"use_openid";s:1:"1";s:12:"profile_view";s:1:"1";s:15:"wall_post_count";s:1:"5";s:16:"marks_post_count";s:1:"5";s:17:"friend_page_count";s:2:"20";s:15:"wall_post_delay";s:2:"30";s:8:"pm_count";s:1:"5";s:14:"userlist_count";s:2:"10";}' WHERE `dir` = 'usercontrol';

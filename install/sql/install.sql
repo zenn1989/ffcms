@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}_components` (
 
 INSERT INTO `{$db_prefix}_components` VALUES
 (1, '', 'static', 1),
-(2, 'a:10:{s:13:"login_captcha";s:1:"0";s:16:"register_captcha";s:1:"1";s:15:"register_aprove";s:1:"0";s:12:"profile_view";s:1:"1";s:15:"wall_post_count";s:1:"5";s:16:"marks_post_count";s:1:"5";s:17:"friend_page_count";s:2:"20";s:15:"wall_post_delay";s:2:"30";s:8:"pm_count";s:1:"5";s:14:"userlist_count";s:2:"10";}', 'usercontrol', 1),
+(2, 'a:11:{s:13:"login_captcha";s:1:"0";s:16:"register_captcha";s:1:"1";s:15:"register_aprove";s:1:"1";s:10:"use_openid";s:1:"1";s:12:"profile_view";s:1:"1";s:15:"wall_post_count";s:1:"5";s:16:"marks_post_count";s:1:"5";s:17:"friend_page_count";s:2:"20";s:15:"wall_post_delay";s:2:"30";s:8:"pm_count";s:1:"5";s:14:"userlist_count";s:2:"10";}', 'usercontrol', 1),
 (3, 'a:5:{s:17:"delay_news_public";s:1:"1";s:15:"count_news_page";s:1:"5";s:17:"short_news_length";s:3:"200";s:14:"multi_category";s:1:"1";s:11:"enable_tags";s:1:"1";}', 'news', 1),
 (6, '', 'sitemap', 1),
 (7, '', 'feedback', 1),
@@ -100,8 +100,8 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}_hooks` (
   KEY `id` (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
-INSERT INTO `{$db_prefix}_hooks` VALUES
-(1, '', 'captcha', 'captcha', 1),
+INSERT INTO `{$db_prefix}_hooks` (`id`, `configs`, `dir`, `type`, `enabled`) VALUES
+(1, 'a:3:{s:12:"captcha_type";s:9:"recaptcha";s:17:"captcha_publickey";s:40:"6Lf5V-YSAAAAAHjZXfPuyetxodstkHEkIn621OdE";s:18:"captcha_privatekey";s:40:"6Lf5V-YSAAAAACmTdU4Fd0uUbLTdMtI4rYGenl-X";}', 'captcha', 'captcha', 1),
 (2, '', 'profile', 'profile', 0),
 (3, '', 'bbtohtml', 'bbtohtml', 1),
 (4, '', 'comment', 'comment', 1);
@@ -164,6 +164,7 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}_user` (
   `token` varchar(32) NOT NULL,
   `token_start` int(16) NOT NULL,
   `aprove` varchar(32) NOT NULL DEFAULT '0',
+  `openid` varchar(512) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
