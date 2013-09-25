@@ -29,11 +29,6 @@ class database
         return $this->con;
     }
 
-    private function prepare($query)
-    {
-
-    }
-
     public function totalQueryCount()
     {
         return $this->queries;

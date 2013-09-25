@@ -6,7 +6,7 @@ session_start();
 // задаем глобальную корня
 define('root', $_SERVER['DOCUMENT_ROOT']);
 // версия системы (api.major.minor)
-define('version', '1.0.0');
+define('version', '1.1.0');
 // указатель интерфейса
 define('loader', 'front');
 

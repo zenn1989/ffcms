@@ -155,8 +155,34 @@ $config[\'password_salt\'] = "'.$random_password_salt.'";
 
     private function showUpdater()
     {
-        global $language;
-        return $language->get('install_updates_noexist');
+        global $language, $database, $constant, $template, $system;
+        if(!file_exists($constant->root . "/install/.update-".version)) {
+            return $template->stringNotify('error', $template->assign('version', version, $language->get('install_update_notify_to_version')));
+        }
+        $install_log = file_get_contents($constant->root . "/install/.update-".version);
+        if($install_log == "locked") {
+            return $template->stringNotify('error', $template->assign('version', version, $language->get('install_update_notify_locked')));
+        }
+        $database = new database();
+        $stmt = $database->con()->query("SELECT `version` FROM `{$constant->db['prefix']}_version` LIMIT 1");
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        $usedVersion = $res['version'];
+        $updateQuery = null;
+        if($usedVersion === "1.0.0") {
+            if(file_exists($constant->root . '/install/sql/update-1.0.0-to-1.1.0.sql'))
+                $updateQuery .= $template->assign('db_prefix', $constant->db['prefix'], file_get_contents($constant->root . '/install/sql/update-1.0.0-to-1.1.0.sql'));
+        }
+        if($updateQuery != null) {
+            if($system->post('startupdate')) {
+                $database->con()->exec($updateQuery);
+                $theme_update = $template->stringNotify('success', $language->get('install_update_success_notify').version);
+            } else {
+                $theme_update = $template->assign('update_version', version, $template->get('update'));
+            }
+            return $theme_update;
+        } else {
+            return $language->get('install_updates_noexist');
+        }
     }
 }
 
