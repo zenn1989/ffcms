@@ -179,6 +179,24 @@ class file
         return false;
     }
 
+    public function archiveupload($file, $dir = "/upload/files/")
+    {
+        global $constant;
+        if($this->validArchive($file)) {
+            if(!file_exists($constant->root . $dir))
+                mkdir($constant->root . $dir);
+            $object = explode(".", $file['name']);
+            $extension = array_pop($object);
+            if($extension === "zip" || $extension === "rar" || $extension === "gz") {
+
+            }
+        }
+    }
+
+    private function validArchive($file) {
+        return true;
+    }
+
     private function analiseImageName($name, $xt, $dir, $recursive = false)
     {
         global $system, $constant;
