@@ -19,11 +19,13 @@ class antivirus
     private $notexist_check_md5 = array();
     private $wrong_check_md5 = array();
     private $hack_check = array();
+    private $excluded_directory = array();
 
     public function doFullScan()
     {
         global $system;
         $this->loadVersionMd5List();
+        $this->loadExcludedDirectory();
         $this->recursiveScanDir();
         // файл исходных контрольных сумм не скомпроментирован
         if (sizeof($this->version_md5) > 0) {
@@ -42,6 +44,15 @@ class antivirus
         }
         $this->scan_md5 = null;
         $this->version_md5 = null;
+    }
+
+    private function loadExcludedDirectory()
+    {
+        global $system, $constant;
+        if(file_exists($constant->root."/cache/.antivir_exclude")) {
+            $prepared_file = file_get_contents($constant->root."/cache/.antivir_exclude");
+            $this->excluded_directory = $system->altexplode('<=>', $prepared_file);
+        }
     }
 
     private function recursiveScanDir($dir = null)
@@ -65,8 +76,16 @@ class antivirus
                         $this->recursiveScanDir($dir . '/' . $item);
                 }
             }
-            if ($md5sum != null)
-                $this->scan_md5[$dir . '/' . $item] = $md5sum;
+            if ($md5sum != null) {
+                $tmp_name = $dir . '/' . $item;
+                $is_excluded = false;
+                foreach($this->excluded_directory as $excluded_start) {
+                    if($system->prefixEquals($tmp_name, substr($excluded_start, 1)))
+                        $is_excluded = true;
+                }
+                if(!$is_excluded)
+                    $this->scan_md5[$tmp_name] = $md5sum;
+            }
         }
     }
 

@@ -1,5 +1,7 @@
 <form action="" method="post">
-    <input type="submit" name="submit" value="{$lang::admin_antivirus_rescan}" class="pull-right btn btn-success"/>
+    <div class="pull-right">
+        <a href="?object=antivirus&action=exclude" class="btn btn-danger">Исключения</a> <input type="submit" name="submit" value="{$lang::admin_antivirus_rescan}" class="btn btn-success"/>
+    </div>
 </form>
 <br/><br/>
 <h5>{$lang::admin_antivirus_injected_h5}</h5>

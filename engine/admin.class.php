@@ -134,41 +134,76 @@ class admin
 
     private function loadAntiVirus()
     {
-        global $template, $language, $antivirus, $system, $constant;
+        global $template, $language, $antivirus, $system, $constant, $framework;
         $action_page_title = $language->get('admin_nav_li_avir');
         $menu_link = $this->loadSystemMenuPositions();
-        $work_body = $template->get('antivirus');
-        $clear_files = null;
-        $unknown_files = null;
-        $wrong_files = null;
-        $hack_files = null;
-        if ($system->post('submit') || !file_exists($constant->root . "/cache/.avir_scan")) {
-            $antivirus->doFullScan();
-            foreach ($antivirus->getClearList() as $file => $md5) {
-                $clear_files .= $template->stringNotify('success', $file . " => " . $md5, true);
+        if($this->getAction() == "exclude") {
+            $work_body = $template->get('antivirus_exclude');
+            $work_table = null;
+            $table_theme = $template->get('antivirus_exclude_tbody');
+            if($this->add != null && file_exists($constant->root."/cache/.antivir_exclude")) {
+                $exc_array = $system->altexplode('<=>', file_get_contents($constant->root."/cache/.antivir_exclude"));
+                foreach($exc_array as $exc_key => $exc_value) {
+                    if($exc_value == $this->add)
+                        unset($exc_array[$exc_key]);
+                }
+                file_put_contents($constant->root."/cache/.antivir_exclude", $system->altimplode('<=>', $exc_array));
             }
-            foreach ($antivirus->getUnknownList() as $file => $md5) {
-                $unknown_files .= $template->stringNotify('warning', $file . " => " . $md5, true);
+            if($system->post('antivir_exclude') && $framework->fromPost('antivir_dir')->length() > 2) {
+                $exclude_dir = $system->post('antivir_dir');
+                if(!$system->suffixEquals($exclude_dir, '/'))
+                    $exclude_dir .= "/";
+                // существует ли такая директория?
+                if(file_exists($constant->root.$exclude_dir)) {
+                    file_put_contents($constant->root."/cache/.antivir_exclude", $exclude_dir."<=>", FILE_APPEND);
+                    $work_body .= $template->stringNotify('success', 'Директория успешно добавлена в исключения антивируса');
+                } else {
+                    // если нет - уведомляем о добавлении несуществующей директории
+                    $work_body .= $template->stringNotify('error', 'Такая директория не существует!');
+                }
             }
-            foreach ($antivirus->getWrongList() as $file => $md5) {
-                $wrong_files .= $template->stringNotify('error', $file . " => " . $md5, true);
+            if(file_exists($constant->root."/cache/.antivir_exclude")) {
+                $exclude_cache = file_get_contents($constant->root."/cache/.antivir_exclude");
+                $exclude_array = $system->altexplode('<=>', $exclude_cache);
+                foreach($exclude_array as $exclude) {
+                    $work_table .= $template->assign(array('root_directory', 'excluded_directory'), array($constant->root, $exclude), $table_theme);
+                }
+                $work_body = $template->assign('antivirus_exclude_body', $work_table, $work_body);
             }
-            foreach ($antivirus->getHackList() as $file => $md5) {
-                $hack_files .= $template->stringNotify('error', $file . " => " . $md5, true);
-            }
-            if ($hack_files == null) {
-                $hack_files = $template->stringNotify('success', $language->get('admin_antivirus_cleaall'));
-            }
-            if ($wrong_files == null) {
-                $wrong_files = $template->stringNotify('success', $language->get('admin_antivirus_cleaall'));
-            }
-            if ($unknown_files == null) {
-                $unknown_files = $template->stringNotify('success', $language->get('admin_antivirus_cleaall'));
-            }
-            $work_body = $template->assign(array('avir_clear', 'avir_unknown', 'avir_wrong', 'avir_injected'), array($clear_files, $unknown_files, $wrong_files, $hack_files), $work_body);
-            file_put_contents($constant->root . "/cache/.avir_scan", $work_body);
         } else {
-            $work_body = file_get_contents($constant->root . "/cache/.avir_scan");
+            $work_body = $template->get('antivirus_list');
+            $clear_files = null;
+            $unknown_files = null;
+            $wrong_files = null;
+            $hack_files = null;
+            if ($system->post('submit') || !file_exists($constant->root . "/cache/.avir_scan")) {
+                $antivirus->doFullScan();
+                foreach ($antivirus->getClearList() as $file => $md5) {
+                    $clear_files .= $template->stringNotify('success', $file . " => " . $md5, true);
+                }
+                foreach ($antivirus->getUnknownList() as $file => $md5) {
+                    $unknown_files .= $template->stringNotify('warning', $file . " => " . $md5, true);
+                }
+                foreach ($antivirus->getWrongList() as $file => $md5) {
+                    $wrong_files .= $template->stringNotify('error', $file . " => " . $md5, true);
+                }
+                foreach ($antivirus->getHackList() as $file => $md5) {
+                    $hack_files .= $template->stringNotify('error', $file . " => " . $md5, true);
+                }
+                if ($hack_files == null) {
+                    $hack_files = $template->stringNotify('success', $language->get('admin_antivirus_cleaall'));
+                }
+                if ($wrong_files == null) {
+                    $wrong_files = $template->stringNotify('success', $language->get('admin_antivirus_cleaall'));
+                }
+                if ($unknown_files == null) {
+                    $unknown_files = $template->stringNotify('success', $language->get('admin_antivirus_cleaall'));
+                }
+                $work_body = $template->assign(array('avir_clear', 'avir_unknown', 'avir_wrong', 'avir_injected'), array($clear_files, $unknown_files, $wrong_files, $hack_files), $work_body);
+                file_put_contents($constant->root . "/cache/.avir_scan", $work_body);
+            } else {
+                $work_body = file_get_contents($constant->root . "/cache/.avir_scan");
+            }
         }
         $body_form = $template->assign(array('ext_configs', 'ext_menu', 'ext_action_title'), array($work_body, $menu_link, $action_page_title), $template->get('config_head'));
         return $body_form;
