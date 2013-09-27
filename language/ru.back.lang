@@ -440,3 +440,4 @@ admin_antivirus_exclude_label_dir<=>Директория
 admin_antivirus_exclude_dosubmit<=>Исключить
 admin_antivirus_exclude_th1<=>Исключение
 admin_antivirus_exclude_th2<=>Действие
+admin_antivirus_exclude_onlist<=>Исключения

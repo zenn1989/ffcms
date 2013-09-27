@@ -1,6 +1,6 @@
 <form action="" method="post">
     <div class="pull-right">
-        <a href="?object=antivirus&action=exclude" class="btn btn-danger">Исключения</a> <input type="submit" name="submit" value="{$lang::admin_antivirus_rescan}" class="btn btn-success"/>
+        <a href="?object=antivirus&action=exclude" class="btn btn-danger">{$lang::admin_antivirus_exclude_onlist}</a> <input type="submit" name="submit" value="{$lang::admin_antivirus_rescan}" class="btn btn-success"/>
     </div>
 </form>
 <br/><br/>

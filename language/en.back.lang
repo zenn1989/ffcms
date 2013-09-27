@@ -439,3 +439,4 @@ admin_antivirus_exclude_label_dir<=>Directory
 admin_antivirus_exclude_dosubmit<=>Exclude
 admin_antivirus_exclude_th1<=>Excluded
 admin_antivirus_exclude_th2<=>Action
+admin_antivirus_exclude_onlist<=>Exclude DIR
