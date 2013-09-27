@@ -172,32 +172,35 @@ class file
             }
             $object_pharse = explode(".", $file['name']);
             $image_extension = array_pop($object_pharse);
-            $image_save_name = $this->analiseImageName(implode('', $object_pharse), $image_extension, $dir);
+            $image_save_name = $this->analiseUploadName(implode('', $object_pharse), $image_extension, $dir);
             move_uploaded_file($file['tmp_name'], $constant->root . $dir . $image_save_name . "." . $image_extension);
             return $image_save_name . "." .$image_extension;
         }
         return false;
     }
 
+    /**
+     * Загрузка архива $file в указанную директорию на сайте $dir
+     * @param $file
+     * @param string $dir
+     * @return bool|string
+     */
     public function archiveupload($file, $dir = "/upload/files/")
     {
         global $constant;
-        if($this->validArchive($file)) {
-            if(!file_exists($constant->root . $dir))
-                mkdir($constant->root . $dir);
-            $object = explode(".", $file['name']);
-            $extension = array_pop($object);
-            if($extension === "zip" || $extension === "rar" || $extension === "gz") {
-
-            }
+        if(!file_exists($constant->root . $dir))
+            mkdir($constant->root . $dir);
+        $object = explode(".", $file['name']);
+        $extension = array_pop($object);
+        if($extension === "zip" || $extension === "rar" || $extension === "gz") {
+            $archive_name = $this->analiseUploadName(implode('', $object), $extension, $dir);
+            move_uploaded_file($file['tmp_name'], $constant->root . $dir . $archive_name . "." . $extension);
+            return $archive_name . "." . $extension;
         }
+        return false;
     }
 
-    private function validArchive($file) {
-        return true;
-    }
-
-    private function analiseImageName($name, $xt, $dir, $recursive = false)
+    private function analiseUploadName($name, $xt, $dir, $recursive = false)
     {
         global $system, $constant;
         $latin_data = preg_replace('/[^a-z0-9_]/i', '', $name);
@@ -209,7 +212,7 @@ class file
         $full_path = $constant->root . $dir . $result_file . "." . $xt;
         // рекурсия - это не хорошо, однако перезапись существующего файла - тоже.
         if (file_exists($full_path)) {
-            $result_file = $this->analiseImageName($name, $xt, $dir, true);
+            $result_file = $this->analiseUploadName($name, $xt, $dir, true);
         }
         return $result_file;
     }
