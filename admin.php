@@ -2,7 +2,7 @@
 error_reporting(E_ERROR);
 define('root', $_SERVER['DOCUMENT_ROOT']);
 // версия системы (api.major.minor)
-define('version', '1.0.0');
+define('version', '1.1.0');
 // указатель на админ-интерфейс
 define('loader', 'back');
 // указатель позволяющий изменить имя скрипта

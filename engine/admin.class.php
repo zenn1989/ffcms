@@ -156,10 +156,10 @@ class admin
                 // существует ли такая директория?
                 if(file_exists($constant->root.$exclude_dir)) {
                     file_put_contents($constant->root."/cache/.antivir_exclude", $exclude_dir."<=>", FILE_APPEND);
-                    $work_body .= $template->stringNotify('success', 'Директория успешно добавлена в исключения антивируса');
+                    $work_body .= $template->stringNotify('success', $language->get('admin_antivirus_exclude_notify_successadd'));
                 } else {
                     // если нет - уведомляем о добавлении несуществующей директории
-                    $work_body .= $template->stringNotify('error', 'Такая директория не существует!');
+                    $work_body .= $template->stringNotify('error', $language->get('admin_antivirus_exclude_notify_notfound'));
                 }
             }
             if(file_exists($constant->root."/cache/.antivir_exclude")) {

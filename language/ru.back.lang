@@ -441,3 +441,5 @@ admin_antivirus_exclude_dosubmit<=>Исключить
 admin_antivirus_exclude_th1<=>Исключение
 admin_antivirus_exclude_th2<=>Действие
 admin_antivirus_exclude_onlist<=>Исключения
+admin_antivirus_exclude_notify_successadd<=>Директория успешно добавлена в исключения антивируса
+admin_antivirus_exclude_notify_notfound<=>Такая директория не существует!

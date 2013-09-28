@@ -440,3 +440,5 @@ admin_antivirus_exclude_dosubmit<=>Exclude
 admin_antivirus_exclude_th1<=>Excluded
 admin_antivirus_exclude_th2<=>Action
 admin_antivirus_exclude_onlist<=>Exclude DIR
+admin_antivirus_exclude_notify_successadd<=>The directory are success added in excludes
+admin_antivirus_exclude_notify_notfound<=>Directory are not detected in file system
