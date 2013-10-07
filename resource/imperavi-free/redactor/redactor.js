@@ -1377,14 +1377,8 @@ var RLANG = {
 		// TEXTAREA CODE FORMATTING
 		formattingRemove: function(html)
 		{
-			html = html.replace(/\s{2,}/g, ' ');
-			html = html.replace(/\n/g, ' ');	
-			html = html.replace(/[\t]*/g, '');
-			html = html.replace(/\n\s*\n/g, "\n");
-			html = html.replace(/^[\s\n]*/g, '');
-			html = html.replace(/[\s\n]*$/g, '');	
-			html = html.replace(/>\s+</g, '><');
-			
+            html = html.replace(/>\s+</g, '><');
+
 			return html;		
 		},
 		formattingIndenting: function(html)

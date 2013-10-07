@@ -38,7 +38,7 @@
     <script type="text/javascript" src="{$url}/resource/elfinder/js/i18n/elfinder.ru.js"></script>
 
     <link rel="stylesheet" href="{$url}/resource/imperavi-free/redactor/css/redactor.css" />
-    <script src="{$url}/resource/imperavi-free/redactor/redactor.min.js"></script>
+    <script src="{$url}/resource/imperavi-free/redactor/redactor.js"></script>
 
     {$jsurl {$url}/resource/imperavi-free/redactor/langs/{$language}.js}
 
