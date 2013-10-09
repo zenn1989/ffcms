@@ -196,3 +196,4 @@ search_form_pages<=>Pages
 search_form_no_query<=>Make you search query in form
 global_404_title<=>Page not found
 global_404_desc<=>This page not founded on our website. Return <a href="/">to main</a>
+fileupload_api_error<=>Upload error are happend

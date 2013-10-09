@@ -13,17 +13,17 @@
 class file
 {
 
-    public function imperaviLoad()
+    public function ckeditorLoad()
     {
-        global $user, $constant;
-        if ($user->get('access_to_admin') < 1 || $_FILES['file'] == null)
+        global $user, $constant, $language;
+        if($user->get('access_to_admin') < 1 || $_FILES['upload'] == null)
             return;
-        $file = $_FILES['file'];
-        $result = $this->imageupload($file);
-        $json_resp = array(
-            'filelink' => $constant->url.'/upload/images/'.$result
-        );
-        return stripslashes(json_encode($json_resp));
+        $result = $this->imageupload($_FILES['upload']);
+        if(!$result) {
+            return '<html><body><script type="text/javascript">window.parent.CKEDITOR.tools.callFunction("'.$_GET['CKEditorFuncNum'].'", "", "'.$language->get('fileupload_api_error').'");</script></body></html>';
+        } else {
+            return '<html><body><script type="text/javascript">window.parent.CKEDITOR.tools.callFunction("'.$_GET['CKEditorFuncNum'].'", "'.$constant->url . '/upload/images/'.$result.'");</script></body></html>';
+        }
     }
 
     public function commentUserUpload()

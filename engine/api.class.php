@@ -21,8 +21,11 @@ class api
             case "adminfiles":
                 return $file->elfinderForAdmin();
                 break;
-            case "imperaviimageload":
-                return $file->imperaviLoad();
+            case "ckeditorload":
+                return $file->ckeditorLoad();
+                break;
+            case "ckeditorbrowse":
+                return $this->ckeditorBrowser();
                 break;
             case "commentupload":
                 return $file->commentUserUpload();
@@ -65,6 +68,14 @@ class api
         }
         $apiresult = $template->ruleCheck($apiresult);
         return $language->set($apiresult);
+    }
+
+    private function ckeditorBrowser()
+    {
+        global $constant;
+        if(file_exists($constant->root . "/resource/ckeditor/browser.php")) {
+            require_once($constant->root . "/resource/ckeditor/browser.php");
+        }
     }
 
     private function apiCallBack()

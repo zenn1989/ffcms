@@ -37,23 +37,13 @@
     <script type="text/javascript" src="{$url}/resource/elfinder/js/elfinder.min.js"></script>
     <script type="text/javascript" src="{$url}/resource/elfinder/js/i18n/elfinder.ru.js"></script>
 
-    <link rel="stylesheet" href="{$url}/resource/imperavi-free/redactor/css/redactor.css" />
-    <script src="{$url}/resource/imperavi-free/redactor/redactor.js"></script>
-
-    {$jsurl {$url}/resource/imperavi-free/redactor/langs/{$language}.js}
-
-
+    <script type="text/javascript" src="{$url}/resource/ckeditor/ckeditor.js"></script>
+    <script src="{$url}/resource/ckeditor/adapters/jquery.js"></script>
     <script type="text/javascript">
         $(document).ready(
                 function()
                 {
-                    $('.wysi').redactor({
-                        imageUpload: '{$url}/api.php?action=imperaviimageload',
-                        convertDivs: false,
-                        focus: true,
-                        fixed: true,
-                        lang: '{$language}'
-                    });
+                    $('.wysi').ckeditor();
                 }
         );
     </script>
