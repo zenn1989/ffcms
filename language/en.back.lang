@@ -182,6 +182,7 @@ admin_component_static_edit_page_button_save<=>Save
 admin_component_static_edit_page_keybutton_gen<=>Automatic
 admin_component_static_search_button<=>Search
 admin_component_static_language_alert<=>You can write many different languages to this page and user with custom language can read he language variable of this page.
+admin_component_static_edit_page_current_date<=>Current date?
 admin_component_usercontrol_manage<=>User management
 admin_component_usercontrol_group<=>Group management
 admin_component_usercontrol_serviceban<=>Extended ban

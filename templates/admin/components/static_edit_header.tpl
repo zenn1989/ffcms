@@ -14,7 +14,8 @@
         </div>
         <div class="span4">
             <h5>{$lang::admin_component_static_edit_page_date_text}</h5>
-            <input type="text" name="date" class="input-block-level" value="{$static_date}"/>
+            <input type="text" name="date" id="datefield" value="{$static_date}"/>
+            <input type="checkbox" id="setcurrentdate" name="current_date"/> {$lang::admin_component_news_edit_page_current_date}
             <span class="help-block">{$lang::admin_component_static_edit_page_date_desc}</span>
         </div>
     </div>

@@ -183,6 +183,7 @@ admin_component_static_edit_page_button_save<=>Сохранить
 admin_component_static_edit_page_keybutton_gen<=>Авто
 admin_component_static_search_button<=>Поиск
 admin_component_static_language_alert<=>Ниже вы можете наполнить содержимым различные языковые версии страницы. Обязательным для наполнения является основная языковая версия вашего сайта указанная в конфигурациях. Пользователи с различной языковой локалью смогут прочесть различные версии данной страницы.
+admin_component_static_edit_page_current_date<=>Текущая дата?
 admin_component_usercontrol_manage<=>Управление пользователями
 admin_component_usercontrol_group<=>Управление группами
 admin_component_usercontrol_serviceban<=>Расширеная блокировка

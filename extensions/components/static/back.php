@@ -60,7 +60,7 @@ class com_static_back
                 $page_text = serialize($system->post('text'));
                 $page_description = serialize($system->nohtml($system->post('description')));
                 $page_keywords = serialize($system->nohtml($system->post('keywords')));
-                $page_date = $system->toUnixTime($system->post('date'));
+                $page_date = $system->post('current_date') == "on" ? time() : $system->toUnixTime($system->post('date'));
                 if ($this->check_pageway($page_way, $page_id)) {
                     $stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_com_static SET title = ?, text = ?, pathway = ?, description = ?, keywords = ?, date = ? WHERE id = ?");
                     $stmt->bindParam(1, $page_title, PDO::PARAM_STR);
@@ -129,7 +129,7 @@ class com_static_back
                 $page_text = $system->post('text');
                 $page_description = $system->nohtml($system->post('description'));
                 $page_keywords = $system->nohtml($system->post('keywords'));
-                $page_date = $system->toUnixTime($system->post('date'));
+                $page_date = $system->post('current_date') == "on" ? time() : $system->toUnixTime($system->post('date'));
                 $page_owner = $user->get('id');
                 if (strlen($page_title[$constant->lang]) < 1) {
                     $notify .= $template->stringNotify('error', $language->get('admin_component_static_page_titlenull'));

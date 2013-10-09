@@ -72,7 +72,9 @@ class api
 
     private function ckeditorBrowser()
     {
-        global $constant;
+        global $constant, $user;
+        if($user->get('access_to_admin') < 1)
+            return;
         if(file_exists($constant->root . "/resource/ckeditor/browser.php")) {
             require_once($constant->root . "/resource/ckeditor/browser.php");
         }
