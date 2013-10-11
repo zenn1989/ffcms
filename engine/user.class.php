@@ -267,6 +267,50 @@ class user
         $count = $rowFetch[0];
         return $count > 0 ? true : false;
     }
+
+    /**
+     * Get current user balance in type Decimal length (12,2)
+     * @param int $userid
+     * @return decimal mixed
+     */
+    public function getBalance($userid = 0)
+    {
+        return $this->get('balance', $userid);
+    }
+
+    /**
+     * Add money $count to user $userid balance
+     * @param decimal $count
+     * @param int $userid
+     */
+    public function addBalance($count, $userid = 0)
+    {
+        global $database, $constant;
+        $id = $userid == 0 ? $this->get('id') : $userid;
+        if($id < 1)
+            return;
+        $stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_user SET balance = balance+? WHERE id = ?");
+        $stmt->bindParam(1, $count, PDO::PARAM_STR);
+        $stmt->bindParam(2, $id, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+    /**
+     * Reduce balance $userid to $count
+     * @param deciaml $count
+     * @param int $userid
+     */
+    public function reduceBalance($count, $userid = 0)
+    {
+        global $database, $constant;
+        $id = $userid == 0 ? $this->get('id') : $userid;
+        if($id < 1)
+            return;
+        $stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_user SET balance = balance-? WHERE id = ?");
+        $stmt->bindParam(1, $count, PDO::PARAM_STR);
+        $stmt->bindParam(2, $id, PDO::PARAM_INT);
+        $stmt->execute();
+    }
 }
 
 ?>
