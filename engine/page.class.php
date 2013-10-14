@@ -32,46 +32,46 @@ class page
      */
     public function doload()
     {
-        global $template, $system, $cache, $user, $extension, $meta, $constant, $database;
+        global $engine;
         $isComponent = false;
         // база данны недоступна? Выходим, на template::compile() отобразим кеш если есть или 404
-        if($database->isDown())
+        if($engine->database->isDown())
         {
             return;
         }
         // пользователь пермаментно заблокирован?
-        if ($user->isPermaBan()) {
-            $template->overloadCarcase('permaban');
-            $template->globalset('admin_email', $constant->mail['from_email']);
+        if ($engine->user->isPermaBan()) {
+            $engine->template->overloadCarcase('permaban');
+            $engine->template->globalset('admin_email', $engine->constant->mail['from_email']);
             return;
         }
-        $meta->set('title', $constant->seo_meta['title']);
-        $meta->set('generator', 'Fast Flexible CMS - http://ffcms.ru');
+        $engine->meta->set('title', $engine->constant->seo_meta['title']);
+        $engine->meta->set('generator', 'Fast Flexible CMS - http://ffcms.ru');
         // если пользователь не авторизован и есть полный кеш страницы - выходим, на template::compile() отобразим
-        if ($user->get('id') < 1 && $cache->check()) {
+        if ($engine->user->get('id') < 1 && $engine->cache->check()) {
             return;
         }
         // если размер пачвея более 0
         if (sizeof($this->pathway) > 0) {
-            $isComponent = $extension->initComponent();
+            $isComponent = $engine->extension->initComponent();
         }
         // вхождение по урлам не найдено. Кхм!
         if (!$isComponent) {
             // может быть это главная страничка?
-            if (sizeof($this->pathway) == 0 || $system->contains('index.', $this->pathway[0])) {
-                $meta->set('description', $constant->seo_meta['description']);
-                $meta->set('keywords', $constant->seo_meta['keywords']);
+            if (sizeof($this->pathway) == 0 || $engine->system->contains('index.', $this->pathway[0])) {
+                $engine->meta->set('description', $engine->constant->seo_meta['description']);
+                $engine->meta->set('keywords', $engine->constant->seo_meta['keywords']);
                 $this->isMainPage = true;
             } // Нет? Не главная? Скомпилим 404
             else {
                 $this->isNullPage = true;
-                $cache->setNoExist(true);
-                $this->content_position['body'][0] = $template->compile404();
+                $engine->cache->setNoExist(true);
+                $this->content_position['body'][0] = $engine->template->compile404();
             }
         }
-        $extension->modules_before_load();
-        $meta->compile();
-        $template->init();
+        $engine->extension->modules_before_load();
+        $engine->meta->compile();
+        $engine->template->init();
     }
 
     /**
@@ -90,7 +90,7 @@ class page
      */
     public function findRuleInteration($rule_way)
     {
-        global $system;
+        global $engine;
         $rule_split = explode("/", $rule_way);
         for ($i = 0; $i <= sizeof($rule_split); $i++) {
             // если уровень правила содержит * - возвращаем истину
@@ -104,7 +104,7 @@ class page
                 // если уровень правила и пачвея совпали
                 if ($rule_split[$i] == $this->pathway[$i]) {
                     // если это последний элемент пачвея
-                    if ($system->contains('.html', $this->pathway[$i])) {
+                    if ($engine->system->contains('.html', $this->pathway[$i])) {
                         return true;
                     }
                     // иначе - крутим дальше цикл
@@ -214,7 +214,7 @@ class page
      */
     public function hashFromPathway($additional = null)
     {
-        global $system;
+        global $engine;
         $array_object = array();
         if ($additional != null) {
             // нулевой элемент
@@ -228,7 +228,7 @@ class page
         }
         $string = null;
         for ($i = 1; $i <= sizeof($array_object); $i++) {
-            if ($system->extensionEquals($array_object[$i], '.html')) {
+            if ($engine->system->extensionEquals($array_object[$i], '.html')) {
                 $string .= $array_object[$i];
                 continue;
             } elseif ($array_object[$i] != null) {

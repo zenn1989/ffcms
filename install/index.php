@@ -19,6 +19,7 @@ require_once(root . "/engine/page.class.php");
 require_once(root . "/engine/template.class.php");
 require_once(root . "/engine/system.class.php");
 require_once(root . "/engine/install.class.php");
+require_once(root . "/engine/engine.class.php");
 
 $constant = new constant();
 $system = new system();
@@ -26,6 +27,8 @@ $language = new language();
 $template = new template();
 $page = new page();
 $install = new install();
+$engine = new engine();
+$engine->load();
 
 echo $install->make();
 

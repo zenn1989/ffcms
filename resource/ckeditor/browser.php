@@ -31,7 +31,7 @@ $cols = 4;          /* thumbnails per row */
 
     <?php
 
-    $dir = $constant->root."/upload/images/";
+    $dir = $engine->constant->root."/upload/images/";
 
     $dir = rtrim($dir, '/'); // the script will add the ending slash when appropriate
 
@@ -44,7 +44,7 @@ $cols = 4;          /* thumbnails per row */
         if( !preg_match('/\.(jpg|jpeg|png|gif)$/i', $file) )
             continue;
         $file_insystem = $dir . '/' . $file;
-        $image_link = $constant->url . "/upload/images/" . $file;
+        $image_link = $engine->constant->url . "/upload/images/" . $file;
 
         $image_info = getimagesize($file_insystem);
         $_w = $image_info[0];
@@ -127,7 +127,7 @@ $cols = 4;          /* thumbnails per row */
             if( tgt.nodeName != 'IMG' )
                 return;
 
-            url = '<?php echo $constant->url . "/upload/images";?>' + '/' + tgt.title;
+            url = '<?php echo $engine->constant->url . "/upload/images";?>' + '/' + tgt.title;
 
             this.onclick = null;
 

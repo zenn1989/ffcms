@@ -57,10 +57,10 @@ class user
 
     private function set($id)
     {
-        global $database, $constant;
+        global $engine;
         if (!array_key_exists($id, $this->userparam)) {
-            $query = "SELECT * FROM {$constant->db['prefix']}_user a, {$constant->db['prefix']}_user_access_level b WHERE a.id = ? AND a.aprove = 0 AND a.access_level = b.group_id";
-            $stmt = $database->con()->prepare($query);
+            $query = "SELECT * FROM {$engine->constant->db['prefix']}_user a, {$engine->constant->db['prefix']}_user_access_level b WHERE a.id = ? AND a.aprove = 0 AND a.access_level = b.group_id";
+            $stmt = $engine->database->con()->prepare($query);
             $stmt->bindParam(1, $id, PDO::PARAM_INT);
             $stmt->execute();
             if ($stmt->rowCount() == 1) {
@@ -105,7 +105,7 @@ class user
 
     private function customset($id)
     {
-        global $database, $constant;
+        global $constant, $database;
         // если случилась какая то херня или криворукий мудак пишет плагин без проверки oid
         if ($id < 1 || array_key_exists($id, $this->customparam)) {
             return;
@@ -146,10 +146,10 @@ class user
      */
     public function useroverload($id)
     {
-        global $database, $constant;
+        global $engine;
         if ($id < 1 || !$this->userparam[$id])
             return;
-        $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user a, {$constant->db['prefix']}_user_access_level b WHERE a.id = ? AND a.access_level = b.group_id");
+        $stmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_user a, {$engine->constant->db['prefix']}_user_access_level b WHERE a.id = ? AND a.access_level = b.group_id");
         $stmt->bindParam(1, $id, PDO::PARAM_INT);
         $stmt->execute();
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -164,12 +164,12 @@ class user
      */
     public function customoverload($id)
     {
-        global $database, $constant;
+        global $engine;
         // если id пуст или 0 или такой параметр еще не выставлен - возврат
         if ($id < 1 || !$this->customparam[$id]) {
             return;
         }
-        $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_custom WHERE id = ?");
+        $stmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_user_custom WHERE id = ?");
         $stmt->bindParam(1, $id, PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -185,16 +185,16 @@ class user
      */
     public function listload($list)
     {
-        global $database, $constant, $system;
+        global $engine;
         if (is_array($list)) {
-            $list = $system->altimplode(',', $list);
+            $list = $engine->system->altimplode(',', $list);
         }
-        if (!$system->isIntList($list) || strlen($list) < 1) {
+        if (!$engine->system->isIntList($list) || strlen($list) < 1) {
             return;
         }
         // это запросто делается и 1 запросом, однако разграничить как-либо дефалт и кустом параметры - невозможно, а делать жесткую привязку к колонкам еще больший дебилизм
-        $stmt1 = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user WHERE id in($list)");
-        $stmt2 = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_custom WHERE id in($list)");
+        $stmt1 = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_user WHERE id in($list)");
+        $stmt2 = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_user_custom WHERE id in($list)");
         $stmt1->execute();
         $stmt2->execute();
         $result_list_standart = $stmt1->fetchAll(PDO::FETCH_ASSOC);
@@ -218,8 +218,8 @@ class user
      */
     public function exists($userid)
     {
-        global $database, $constant;
-        $stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user WHERE id = ?");
+        global $engine;
+        $stmt = $engine->database->con()->prepare("SELECT COUNT(*) FROM {$engine->constant->db['prefix']}_user WHERE id = ?");
         $stmt->bindParam(1, $userid, PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetch();
@@ -234,8 +234,8 @@ class user
      */
     public function buildAvatar($type = "small", $userid)
     {
-        global $constant;
-        $filepath = $constant->root . "/upload/user/avatar/$type/avatar_$userid.jpg";
+        global $engine;
+        $filepath = $engine->constant->root . "/upload/user/avatar/$type/avatar_$userid.jpg";
         if (!file_exists($filepath)) {
             return "noavatar.jpg";
         }
@@ -246,19 +246,19 @@ class user
 
     public function isPermaBan()
     {
-        global $database, $constant, $system;
+        global $engine;
         $stmt = null;
-        $ip = $system->getRealIp();
+        $ip = $engine->system->getRealIp();
         $time = time();
         $userid = $this->get('id');
         if ($userid > 0) {
-            $stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user_block WHERE (user_id = ? or ip = ?) AND express > ?");
+            $stmt = $engine->database->con()->prepare("SELECT COUNT(*) FROM {$engine->constant->db['prefix']}_user_block WHERE (user_id = ? or ip = ?) AND express > ?");
             $stmt->bindParam(1, $userid, PDO::PARAM_INT);
             $stmt->bindParam(2, $ip, PDO::PARAM_STR);
             $stmt->bindParam(3, $time, PDO::PARAM_INT);
             $stmt->execute();
         } else {
-            $stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user_block WHERE ip = ? AND express > ?");
+            $stmt = $engine->database->con()->prepare("SELECT COUNT(*) FROM {$engine->constant->db['prefix']}_user_block WHERE ip = ? AND express > ?");
             $stmt->bindParam(1, $ip, PDO::PARAM_STR);
             $stmt->bindParam(2, $time, PDO::PARAM_INT);
             $stmt->execute();
@@ -283,15 +283,24 @@ class user
      * @param decimal $count
      * @param int $userid
      */
-    public function addBalance($count, $userid = 0)
+    public function addBalance($count, $userid = 0, $message = 'user->addBalance()')
     {
-        global $database, $constant;
+        global $engine;
         $id = $userid == 0 ? $this->get('id') : $userid;
         if($id < 1)
             return;
-        $stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_user SET balance = balance+? WHERE id = ?");
+        $stmt = $engine->database->con()->prepare("UPDATE {$engine->constant->db['prefix']}_user SET balance = balance+? WHERE id = ?");
         $stmt->bindParam(1, $count, PDO::PARAM_STR);
         $stmt->bindParam(2, $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt = null;
+        $time = time();
+        $logparams = serialize(array('operation_type' => 'in', 'price' => $count));
+        $stmt = $engine->database->con()->prepare("INSERT INTO {$engine->constant->db['prefix']}_user_log (`owner`, `type`, `params`, `message`, `time`) VALUES (?, 'BALANCE', ?, ?, ?)");
+        $stmt->bindParam(1, $id, PDO::PARAM_INT);
+        $stmt->bindParam(2, $logparams, PDO::PARAM_STR);
+        $stmt->bindParam(3, $message, PDO::PARAM_STR);
+        $stmt->bindParam(4, $time, PDO::PARAM_INT);
         $stmt->execute();
     }
 
@@ -300,15 +309,24 @@ class user
      * @param deciaml $count
      * @param int $userid
      */
-    public function reduceBalance($count, $userid = 0)
+    public function reduceBalance($count, $userid = 0, $message = 'user->reduceBalance()')
     {
-        global $database, $constant;
+        global $engine;
         $id = $userid == 0 ? $this->get('id') : $userid;
         if($id < 1)
             return;
-        $stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_user SET balance = balance-? WHERE id = ?");
+        $stmt = $engine->database->con()->prepare("UPDATE {$engine->constant->db['prefix']}_user SET balance = balance-? WHERE id = ?");
         $stmt->bindParam(1, $count, PDO::PARAM_STR);
         $stmt->bindParam(2, $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt = null;
+        $time = time();
+        $logparams = serialize(array('operation_type' => 'out', 'price' => $count));
+        $stmt = $engine->database->con()->prepare("INSERT INTO {$engine->constant->db['prefix']}_user_log (`owner`, `type`, `params`, `message`, `time`) VALUES (?, 'BALANCE', ?, ?, ?)");
+        $stmt->bindParam(1, $id, PDO::PARAM_INT);
+        $stmt->bindParam(2, $logparams, PDO::PARAM_STR);
+        $stmt->bindParam(3, $message, PDO::PARAM_STR);
+        $stmt->bindParam(4, $time, PDO::PARAM_INT);
         $stmt->execute();
     }
 }

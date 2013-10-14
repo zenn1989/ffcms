@@ -148,7 +148,7 @@ class language
      */
     public function addLinesLanguage($line_array, $isback = false)
     {
-        global $constant;
+        global $engine;
         foreach($line_array as $lang=>$lines) {
             $toWriteString = "\r\n";
             foreach($lines as $param=>$value) {
@@ -156,9 +156,9 @@ class language
             }
             $file = null;
             if($isback) {
-                $file = $constant->root . "/language/" . $lang . ".back.addition.lang";
+                $file = $engine->constant->root . "/language/" . $lang . ".back.addition.lang";
             } else {
-                $file = $constant->root . "/language/" . $lang . ".front.addition.lang";
+                $file = $engine->constant->root . "/language/" . $lang . ".front.addition.lang";
             }
             file_put_contents($file, $toWriteString, FILE_APPEND | LOCK_EX);
         }

@@ -17,13 +17,13 @@ class cache
 
     public function check($site_down = false)
     {
-        global $page, $constant;
-        if ($constant->debug_no_cache) {
+        global $engine;
+        if ($engine->constant->debug_no_cache) {
             return false;
         }
-        $way = $page->getPathway();
+        $way = $engine->page->getPathway();
         // анализируем базовые нулевые пачвеи на список игнора кеша
-        if (in_array($way[0], $page->getNoCache())) {
+        if (in_array($way[0], $engine->page->getNoCache())) {
             return false;
         }
         // получаем путь к файлу кеша
@@ -31,7 +31,7 @@ class cache
         if (file_exists($file)) {
             $filetime = filemtime($file);
             // если файл пролежал меньше, чем указано в конфиге или база данных недоступна в текущий момент
-            if ((time() - $filetime) < $constant->cache_interval || $site_down) {
+            if ((time() - $filetime) < $engine->constant->cache_interval || $site_down) {
                 $this->static_always_loaded = true;
                 return true;
             }
@@ -54,18 +54,18 @@ class cache
 
     public function save($data)
     {
-        global $page, $user;
+        global $engine;
         // не сохраняем для авторизованных пользователей
-        if ($user->get('id') != NULL) {
+        if ($engine->user->get('id') != NULL) {
             return;
         }
         // Не сохраняем 404 ошибки как кеш
         if ($this->noexist) {
             return;
         }
-        $way = $page->getPathway();
+        $way = $engine->page->getPathway();
         // если кеш запрещен - не сохраняем
-        if (in_array($way[0], $page->getNoCache())) {
+        if (in_array($way[0], $engine->page->getNoCache())) {
             return;
         }
         $place = $this->pathHash();
@@ -74,13 +74,13 @@ class cache
 
     /**
      * Хеш-функция, указывает на полный адрес файла в папке cache
-     * Возможны коллизии, если $page->getStrPathway() > 32 символов, однако
+     * Возможны коллизии, если $engine->page->getStrPathway() > 32 символов, однако
      * данные колизии не критичны в данном случае.
      */
     private function pathHash()
     {
-        global $constant, $page, $language;
-        return $constant->root . "/cache/" . $language->getCustom() . "_" . md5($page->getStrPathway());
+        global $engine;
+        return $engine->constant->root . "/cache/" . $engine->language->getCustom() . "_" . md5($engine->page->getStrPathway());
     }
 
     public function setNoExist($boolean)
@@ -100,11 +100,11 @@ class cache
      */
     public function saveBlock($name, $data)
     {
-        global $constant;
-        if(!file_exists($constant->root . "/cache/block/")) {
-            mkdir($constant->root . "/cache/block/");
+        global $engine;
+        if(!file_exists($engine->constant->root . "/cache/block/")) {
+            mkdir($engine->constant->root . "/cache/block/");
         }
-        $fname = $constant->root . "/cache/block/" . $name . ".cache";
+        $fname = $engine->constant->root . "/cache/block/" . $name . ".cache";
         @file_put_contents($fname, $data, LOCK_EX);
     }
 
@@ -116,8 +116,8 @@ class cache
      */
     public function getBlock($name, $time = 120)
     {
-        global $constant;
-        $fname = $constant->root . "/cache/block/" . $name . ".cache";
+        global $engine;
+        $fname = $engine->constant->root . "/cache/block/" . $name . ".cache";
         if(!file_exists($fname))
             return null;
         $ftime = filemtime($fname);

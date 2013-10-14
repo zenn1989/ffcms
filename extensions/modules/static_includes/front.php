@@ -10,15 +10,15 @@ class mod_static_includes_front implements mod_front
 {
     public function before()
     {
-        global $constant, $page, $template, $system;
-        $scandir = scandir($constant->root . "/" . $constant->tpl_dir . "/" . $constant->tpl_name . "/positions/");
-        $allowedPositions = $template->allowedPositions();
+        global $engine;
+        $scandir = scandir($engine->constant->root . "/" . $engine->constant->tpl_dir . "/" . $engine->constant->tpl_name . "/positions/");
+        $allowedPositions = $engine->template->allowedPositions();
         foreach($scandir as $files) {
-            if(!$system->prefixEquals($files, '.') && $system->suffixEquals($files, '.tpl')) {
-                list($position, $index) = $system->altexplode('_', $files);
+            if(!$engine->system->prefixEquals($files, '.') && $engine->system->suffixEquals($files, '.tpl')) {
+                list($position, $index) = $engine->system->altexplode('_', $files);
                 $index = strstr($index, '.', true);
-                if(in_array($position, $allowedPositions) && $system->isInt($index)) {
-                    $page->setContentPosition($position, $template->get(strstr($files, '.', true), 'positions/'), $index);
+                if(in_array($position, $allowedPositions) && $engine->system->isInt($index)) {
+                    $engine->page->setContentPosition($position, $engine->template->get(strstr($files, '.', true), 'positions/'), $index);
                 }
             }
         }

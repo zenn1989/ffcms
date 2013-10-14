@@ -34,8 +34,8 @@ $this->preg_autolinks = array(
         "'[\w]+[\w\-\.]+@[\w\-\.]+\.[\w]+'si",
     ),
     'replacement' => array(
-        '<a href="'.$constant->url.'/api.php?action=redirect&url=$0" target="_blank">$0</a>',
-        '$1<a href="'.$constant->url.'/api.php?action=redirect&url=$2" target="_blank">$2</a>',
+        '<a href="'.$engine->constant->url.'/api.php?action=redirect&url=$0" target="_blank">$0</a>',
+        '$1<a href="'.$engine->constant->url.'/api.php?action=redirect&url=$2" target="_blank">$2</a>',
         '<a href="mailto:$0" rel="nofollow">$0</a>',
     ),
     'highlight' => array(
@@ -46,7 +46,7 @@ $this->preg_autolinks = array(
 );
 
 // Формируем набор смайликов
-$path = $constant->url . "/resource/xbbcode/images/smiles/";
+$path = $engine->constant->url . "/resource/xbbcode/images/smiles/";
 $pak = file($this->_current_path . 'images/smiles/Set_Smiles_YarNET.pak');
 $smiles = array();
 foreach ($pak as $val) {

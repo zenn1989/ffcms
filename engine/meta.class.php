@@ -52,14 +52,14 @@ class meta
      */
     public function compile()
     {
-        global $template, $system, $constant;
-        $template->globalset('keywords', $system->altimplode(", ", $this->keywords));
-        $template->globalset('description', $system->altimplode(". ", $this->description));
-        if ($constant->seo_meta['multi_title'])
-            $template->globalset('title', $system->altimplode(" - ", array_reverse($this->title)));
+        global $engine;
+        $engine->template->globalset('keywords', $engine->system->altimplode(", ", $this->keywords));
+        $engine->template->globalset('description', $engine->system->altimplode(". ", $this->description));
+        if ($engine->constant->seo_meta['multi_title'])
+            $engine->template->globalset('title', $engine->system->altimplode(" - ", array_reverse($this->title)));
         else
-            $template->globalset('title', array_pop($this->title));
-        $template->globalset('generator', $system->altimplode(' ', $this->generator));
+            $engine->template->globalset('title', array_pop($this->title));
+        $engine->template->globalset('generator', $engine->system->altimplode(' ', $this->generator));
     }
 
 }

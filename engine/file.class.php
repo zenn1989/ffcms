@@ -15,28 +15,31 @@ class file
 
     public function ckeditorLoad()
     {
-        global $user, $constant, $language;
-        if($user->get('access_to_admin') < 1 || $_FILES['upload'] == null)
+        global $engine;
+        if($engine->user->get('access_to_admin') < 1 || $_FILES['upload'] == null)
             return;
         $result = $this->imageupload($_FILES['upload']);
         if(!$result) {
-            return '<html><body><script type="text/javascript">window.parent.CKEDITOR.tools.callFunction("'.$_GET['CKEditorFuncNum'].'", "", "'.$language->get('fileupload_api_error').'");</script></body></html>';
+            return '<html><body><script type="text/javascript">window.parent.CKEDITOR.tools.callFunction("'.$_GET['CKEditorFuncNum'].'", "", "'.$engine->language->get('fileupload_api_error').'");</script></body></html>';
         } else {
-            return '<html><body><script type="text/javascript">window.parent.CKEDITOR.tools.callFunction("'.$_GET['CKEditorFuncNum'].'", "'.$constant->url . '/upload/images/'.$result.'");</script></body></html>';
+            return '<html><body><script type="text/javascript">window.parent.CKEDITOR.tools.callFunction("'.$_GET['CKEditorFuncNum'].'", "'.$engine->constant->url . '/upload/images/'.$result.'");</script></body></html>';
         }
     }
 
     public function commentUserUpload()
     {
-        global $user, $constant;
-        if ($user->get('id') < 1 || $_FILES['img'] == null)
+        global $engine;
+        if ($engine->user->get('id') < 1 || $_FILES['img'] == null)
             return;
         $isIframe = ($_POST["iframe"]) ? true : false;
         $idarea = $_POST["idarea"];
         $result = $this->imageupload($_FILES['img'], '/upload/comment/');
-        $fulllink = $constant->url . "/upload/comment/" .$result;
+        $fulllink = $engine->constant->url . "/upload/comment/" .$result;
         if($isIframe) {
-            return '<html><body>OK<script>window.parent.$("#' . $idarea . '").insertImage("' . $fulllink . '","' . $fulllink . '").closeModal().updateUI();</script></body></html>';
+            if($result != null)
+                return '<html><body>OK<script>window.parent.$("#' . $idarea . '").insertImage("' . $fulllink . '","' . $fulllink . '").closeModal().updateUI();</script></body></html>';
+            else
+                return '<html><body>ERROR<script>window.parent.alert("Image upload error.");</script></body></html>';
         } else {
             header("Content-type: text/javascript");
             $json_response = array(
@@ -51,14 +54,14 @@ class file
 
     public function elfinderForAdmin()
     {
-        global $constant, $user;
-        if ($user->get('access_to_admin') < 1) {
+        global $engine;
+        if ($engine->user->get('access_to_admin') < 1) {
             return;
         }
-        include_once $constant->root . '/resource/elfinder/php/elFinderConnector.class.php';
-        include_once $constant->root . '/resource/elfinder/php/elFinder.class.php';
-        include_once $constant->root . '/resource/elfinder/php/elFinderVolumeDriver.class.php';
-        include_once $constant->root . '/resource/elfinder/php/elFinderVolumeLocalFileSystem.class.php';
+        include_once $engine->constant->root . '/resource/elfinder/php/elFinderConnector.class.php';
+        include_once $engine->constant->root . '/resource/elfinder/php/elFinder.class.php';
+        include_once $engine->constant->root . '/resource/elfinder/php/elFinderVolumeDriver.class.php';
+        include_once $engine->constant->root . '/resource/elfinder/php/elFinderVolumeLocalFileSystem.class.php';
         function access($attr, $path, $data, $volume)
         {
             return strpos(basename($path), '.') === 0 // if file/folder begins with '.' (dot)
@@ -71,8 +74,8 @@ class file
             'roots' => array(
                 array(
                     'driver' => 'LocalFileSystem', // driver for accessing file system (REQUIRED)
-                    'path' => $constant->root . '/upload/', // path to files (REQUIRED)
-                    'URL' => $constant->url . '/upload/', // URL to files (REQUIRED)
+                    'path' => $engine->constant->root . '/upload/', // path to files (REQUIRED)
+                    'URL' => $engine->constant->url . '/upload/', // URL to files (REQUIRED)
                     'accessControl' => 'access', // disable and hide dot starting files (OPTIONAL)
                 )
             )
@@ -89,12 +92,12 @@ class file
      */
     public function useravatarupload($file)
     {
-        global $constant, $user;
-        $userid = $user->get('id');
+        global $engine;
+        $userid = $engine->user->get('id');
         if (!$this->validImage($file) || $userid < 1) {
             return false;
         }
-        $dir_original = $constant->root . "/upload/user/avatar/original/";
+        $dir_original = $engine->constant->root . "/upload/user/avatar/original/";
         $tmp_arr = explode(".", $file['name']);
         $image_extension = array_pop($tmp_arr);
         $file_save_original = "avatar_$userid.$image_extension";
@@ -134,9 +137,9 @@ class file
         imagecopyresized($image_medium_truecolor, $image_buffer, 0, 0, 0, 0, $image_medium_dx, $image_medium_dy, $image_ox, $image_oy);
         imagecopyresized($image_small_truecolor, $image_buffer, 0, 0, 0, 0, $image_small_dx, $image_small_dy, $image_ox, $image_oy);
 
-        imagejpeg($image_big_truecolor, $constant->root . "/upload/user/avatar/big/$file_save_min_jpg");
-        imagejpeg($image_medium_truecolor, $constant->root . "/upload/user/avatar/medium/$file_save_min_jpg");
-        imagejpeg($image_small_truecolor, $constant->root . "/upload/user/avatar/small/$file_save_min_jpg");
+        imagejpeg($image_big_truecolor, $engine->constant->root . "/upload/user/avatar/big/$file_save_min_jpg");
+        imagejpeg($image_medium_truecolor, $engine->constant->root . "/upload/user/avatar/medium/$file_save_min_jpg");
+        imagejpeg($image_small_truecolor, $engine->constant->root . "/upload/user/avatar/small/$file_save_min_jpg");
 
         imagedestroy($image_big_truecolor);
         imagedestroy($image_medium_truecolor);
@@ -146,12 +149,12 @@ class file
 
     private function validImage($file)
     {
-        global $constant;
+        global $engine;
         $mime_type = array("image/gif", "image/jpeg", "image/jpg", "image/png", "image/bmp");
         $file_infofunction = getimagesize($file['tmp_name']);
         $image_name_split = explode('.', $file['name']);
         $image_extension = array_pop($image_name_split);
-        if (in_array($file['type'], $mime_type) && in_array($file_infofunction['mime'], $mime_type) && $file['size'] > 0 && $file['size'] < $constant->upload_img_max_size * 1024 && $this->validImageExtension($image_extension)) {
+        if (in_array($file['type'], $mime_type) && in_array($file_infofunction['mime'], $mime_type) && $file['size'] > 0 && $file['size'] < $engine->constant->upload_img_max_size * 1024 && $this->validImageExtension($image_extension)) {
             return true;
         }
         return false;
@@ -165,15 +168,15 @@ class file
      */
     public function imageupload($file, $dir = "/upload/images/")
     {
-        global $constant, $system;
+        global $engine;
         if ($this->validImage($file)) {
-            if(!file_exists($constant->root . $dir)) {
-                mkdir($constant->root . $dir);
+            if(!file_exists($engine->constant->root . $dir)) {
+                mkdir($engine->constant->root . $dir);
             }
             $object_pharse = explode(".", $file['name']);
             $image_extension = array_pop($object_pharse);
             $image_save_name = $this->analiseUploadName(implode('', $object_pharse), $image_extension, $dir);
-            move_uploaded_file($file['tmp_name'], $constant->root . $dir . $image_save_name . "." . $image_extension);
+            move_uploaded_file($file['tmp_name'], $engine->constant->root . $dir . $image_save_name . "." . $image_extension);
             return $image_save_name . "." .$image_extension;
         }
         return false;
@@ -187,14 +190,14 @@ class file
      */
     public function archiveupload($file, $dir = "/upload/files/")
     {
-        global $constant;
-        if(!file_exists($constant->root . $dir))
-            mkdir($constant->root . $dir);
+        global $engine;
+        if(!file_exists($engine->constant->root . $dir))
+            mkdir($engine->constant->root . $dir);
         $object = explode(".", $file['name']);
         $extension = array_pop($object);
         if($extension === "zip" || $extension === "rar" || $extension === "gz") {
             $archive_name = $this->analiseUploadName(implode('', $object), $extension, $dir);
-            move_uploaded_file($file['tmp_name'], $constant->root . $dir . $archive_name . "." . $extension);
+            move_uploaded_file($file['tmp_name'], $engine->constant->root . $dir . $archive_name . "." . $extension);
             return $archive_name . "." . $extension;
         }
         return false;
@@ -202,14 +205,14 @@ class file
 
     private function analiseUploadName($name, $xt, $dir, $recursive = false)
     {
-        global $system, $constant;
+        global $engine;
         $latin_data = preg_replace('/[^a-z0-9_]/i', '', $name);
-        if ($system->length($latin_data) < 3 || $recursive) {
-            $result_file = $system->randomInt(4) . "_" . $system->randomString(rand(6, 10));
+        if ($engine->system->length($latin_data) < 3 || $recursive) {
+            $result_file = $engine->system->randomInt(4) . "_" . $engine->system->randomString(rand(6, 10));
         } else {
-            $result_file = $system->randomInt(4) . "_" . $name;
+            $result_file = $engine->system->randomInt(4) . "_" . $name;
         }
-        $full_path = $constant->root . $dir . $result_file . "." . $xt;
+        $full_path = $engine->constant->root . $dir . $result_file . "." . $xt;
         // рекурсия - это не хорошо, однако перезапись существующего файла - тоже.
         if (file_exists($full_path)) {
             $result_file = $this->analiseUploadName($name, $xt, $dir, true);

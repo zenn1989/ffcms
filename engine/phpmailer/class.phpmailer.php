@@ -457,7 +457,7 @@ class PHPMailer
      * @var array An array of available languages
      * @access protected
      */
-    protected $language = array();
+    protected $engine->language-> = array();
     /**
      * @var integer The number of errors encountered
      * @access protected
@@ -2701,7 +2701,7 @@ class PHPMailer
      * Set (or reset) Class Objects (variables)
      *
      * Usage Example:
-     * $page->set('X-Priority', '3');
+     * $engine->page->set('X-Priority', '3');
      *
      * @access public
      * @param string $name Parameter Name

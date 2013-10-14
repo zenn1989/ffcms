@@ -9,9 +9,9 @@ class api
 {
     public function load()
     {
-        global $system, $file, $language, $template;
+        global $engine;
         $apiresult = null;
-        switch ($system->get('action')) {
+        switch ($engine->system->get('action')) {
             case "readwall":
                 $apiresult = $this->loadUserWall();
                 break;
@@ -19,16 +19,16 @@ class api
                 $apiresult = $this->doPostWall();
                 break;
             case "adminfiles":
-                return $file->elfinderForAdmin();
+                return $engine->file->elfinderForAdmin();
                 break;
             case "ckeditorload":
-                return $file->ckeditorLoad();
+                return $engine->file->ckeditorLoad();
                 break;
             case "ckeditorbrowse":
                 return $this->ckeditorBrowser();
                 break;
             case "commentupload":
-                return $file->commentUserUpload();
+                return $engine->file->commentUserUpload();
                 break;
             case "redirect":
                 $apiresult = $this->userLeaveRedirect();
@@ -64,27 +64,28 @@ class api
                 return $this->changeLanguage();
                 break;
             default:
+                return $engine->system->redirect();
                 break;
         }
-        $apiresult = $template->ruleCheck($apiresult);
-        return $language->set($apiresult);
+        $apiresult = $engine->template->ruleCheck($apiresult);
+        return $engine->language->set($apiresult);
     }
 
     private function ckeditorBrowser()
     {
-        global $constant, $user;
-        if($user->get('access_to_admin') < 1)
+        global $engine;
+        if($engine->user->get('access_to_admin') < 1)
             return;
-        if(file_exists($constant->root . "/resource/ckeditor/browser.php")) {
-            require_once($constant->root . "/resource/ckeditor/browser.php");
+        if(file_exists($engine->constant->root . "/resource/ckeditor/browser.php")) {
+            require_once($engine->constant->root . "/resource/ckeditor/browser.php");
         }
     }
 
     private function apiCallBack()
     {
-        global $constant, $system;
-        $name = $system->get('object');
-        $file = $constant->root . "/extensions/apicallback/" . $name . "/front.php";
+        global $engine;
+        $name = $engine->system->get('object');
+        $file = $engine->constant->root . "/extensions/apicallback/" . $name . "/front.php";
         if(file_exists($file))
         {
             require_once($file);
@@ -101,32 +102,32 @@ class api
 
     private function changeLanguage()
     {
-        global $language, $system;
-        $lang = $system->get('lang');
-        if($lang != null && in_array($lang, $language->getAvailable())) {
+        global $engine;
+        $lang = $engine->system->get('lang');
+        if($lang != null && in_array($lang, $engine->language->getAvailable())) {
             setcookie('ffcms_lang', $lang);
         }
-        $system->redirect();
+        $engine->system->redirect();
     }
 
     private function addBookMark()
     {
-        global $database, $constant, $system, $user;
-        if($user->get('id') < 1) {
+        global $engine;
+        if($engine->user->get('id') < 1) {
             return;
         }
-        $title = $system->nohtml($system->post('title'));
-        $url = $system->nohtml($system->post('url'));
-        $userid = $user->get('id');
-        if($system->prefixEquals($url, $constant->url)) {
-            $stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_user_bookmarks WHERE target = ? AND href = ?");
+        $title = $engine->system->nohtml($engine->system->post('title'));
+        $url = $engine->system->nohtml($engine->system->post('url'));
+        $userid = $engine->user->get('id');
+        if($engine->system->prefixEquals($url, $engine->constant->url)) {
+            $stmt = $engine->database->con()->prepare("SELECT COUNT(*) FROM {$engine->constant->db['prefix']}_user_bookmarks WHERE target = ? AND href = ?");
             $stmt->bindParam(1, $userid, PDO::PARAM_INT);
             $stmt->bindParam(2, $url, PDO::PARAM_STR);
             $stmt->execute();
             $res = $stmt->fetch();
             if($res[0] == 0) {
                 $stmt = null;
-                $stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user_bookmarks (`target`, `title`, `href`) VALUES (?, ?, ?)");
+                $stmt = $engine->database->con()->prepare("INSERT INTO {$engine->constant->db['prefix']}_user_bookmarks (`target`, `title`, `href`) VALUES (?, ?, ?)");
                 $stmt->bindParam(1, $userid, PDO::PARAM_INT);
                 $stmt->bindParam(2, $title, PDO::PARAM_STR);
                 $stmt->bindParam(3, $url, PDO::PARAM_STR);
@@ -137,23 +138,23 @@ class api
 
     private function showRequestJs()
     {
-        global $system, $constant, $template;
+        global $engine;
         header('Content-Type: text/javascript');
-        $dir = $system->get('dir');
-        $file = $system->get('name');
-        if (file_exists($constant->root . $constant->ds . $constant->tpl_dir . $constant->ds . $constant->tpl_name . $constant->ds . $dir . $constant->ds . $file . ".tpl")) {
-            return $template->get($file, $dir . $constant->ds);
+        $dir = $engine->system->get('dir');
+        $file = $engine->system->get('name');
+        if (file_exists($engine->constant->root . $engine->constant->ds . $engine->constant->tpl_dir . $engine->constant->ds . $engine->constant->tpl_name . $engine->constant->ds . $dir . $engine->constant->ds . $file . ".tpl")) {
+            return $engine->template->get($file, $dir . $engine->constant->ds);
         }
     }
 
     private function deleteComment()
     {
-        global $user, $system, $constant, $database;
-        if($database->isDown())
+        global $engine;
+        if($engine->database->isDown())
             return;
-        if ($user->get('id') > 0 && $user->get('mod_comment_delete') > 0) {
-            $comment_id = (int)$system->get('id');
-            $stmt = $database->con()->prepare("DELETE FROM {$constant->db['prefix']}_mod_comments WHERE id = ?");
+        if ($engine->user->get('id') > 0 && $engine->user->get('mod_comment_delete') > 0) {
+            $comment_id = (int)$engine->system->get('id');
+            $stmt = $engine->database->con()->prepare("DELETE FROM {$engine->constant->db['prefix']}_mod_comments WHERE id = ?");
             $stmt->bindParam(1, $comment_id, PDO::PARAM_INT);
             $stmt->execute();
             $stmt = null;
@@ -163,14 +164,14 @@ class api
 
     private function editPostComment()
     {
-        global $system, $database, $constant, $user;
-        if($database->isDown())
+        global $engine;
+        if($engine->database->isDown())
             return;
-        $comment_id = (int)$system->post('comment_id');
-        if ($user->get('id') > 0 && ($user->get('mod_comment_edit') > 0 || $this->commentEditCondition($comment_id))) {
-            $comment_text = $system->nohtml($system->post('comment_text'));
+        $comment_id = (int)$engine->system->post('comment_id');
+        if ($engine->user->get('id') > 0 && ($engine->user->get('mod_comment_edit') > 0 || $this->commentEditCondition($comment_id))) {
+            $comment_text = $engine->system->nohtml($engine->system->post('comment_text'));
             if ($comment_id > 0 && strlen($comment_text) > 0) {
-                $stmt = $database->con()->prepare("UPDATE {$constant->db['prefix']}_mod_comments set comment = ? where id = ?");
+                $stmt = $engine->database->con()->prepare("UPDATE {$engine->constant->db['prefix']}_mod_comments set comment = ? where id = ?");
                 $stmt->bindParam(1, $comment_text, PDO::PARAM_STR);
                 $stmt->bindParam(2, $comment_id, PDO::PARAM_INT);
                 $stmt->execute();
@@ -182,16 +183,16 @@ class api
 
     private function commentEditCondition($id)
     {
-        global $database, $constant, $user, $extension;
-        if($database->isDown())
+        global $engine;
+        if($engine->database->isDown())
             return;
         if ($id > 0) {
-            $stmt = $database->con()->prepare("SELECT author,time FROM {$constant->db['prefix']}_mod_comments WHERE id = ?");
+            $stmt = $engine->database->con()->prepare("SELECT author,time FROM {$engine->constant->db['prefix']}_mod_comments WHERE id = ?");
             $stmt->bindParam(1, $id, PDO::PARAM_INT);
             $stmt->execute();
             if ($result = $stmt->fetch()) {
-                $editconfig = $extension->getConfig('edit_time', 'comments', 'modules', 'int');
-                if ($result['author'] == $user->get('id') && (time() - $result['time']) <= $editconfig) {
+                $editconfig = $engine->extension->getConfig('edit_time', 'comments', 'modules', 'int');
+                if ($result['author'] == $engine->user->get('id') && (time() - $result['time']) <= $editconfig) {
                     return true;
                 }
             }
@@ -201,18 +202,18 @@ class api
 
     private function editComment()
     {
-        global $system, $template, $database, $constant, $language;
-        if($database->isDown())
+        global $engine;
+        if($engine->database->isDown())
             return;
-        $comment_id = (int)$system->get('id');
-        $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_mod_comments WHERE id = ?");
+        $comment_id = (int)$engine->system->get('id');
+        $stmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_mod_comments WHERE id = ?");
         $stmt->bindParam(1, $comment_id, PDO::PARAM_INT);
         $stmt->execute();
         $content = null;
         if ($result = $stmt->fetch()) {
-            $content = $template->assign(array('comment_id', 'comment_text'), array($comment_id, $system->nohtml($result['comment'])), $template->get('comment_api_edit', 'modules/mod_comments/'));
+            $content = $engine->template->assign(array('comment_id', 'comment_text'), array($comment_id, $engine->system->nohtml($result['comment'])), $engine->template->get('comment_api_edit', 'modules/mod_comments/'));
         } else {
-            $content = $template->stringNotify('error', $language->get('comment_api_edit_nocomment'));
+            $content = $engine->template->stringNotify('error', $engine->language->get('comment_api_edit_nocomment'));
         }
         $stmt = null;
         return $content;
@@ -220,33 +221,33 @@ class api
 
     private function postComment()
     {
-        global $system, $constant, $database, $user, $extension, $template, $language;
-        if($database->isDown())
+        global $engine;
+        if($engine->database->isDown())
             return;
-        $text = $system->nohtml($system->post('comment_message'));
-        $object = $system->post('object');
-        $id = $system->post('id');
-        $hash = $system->post('hash');
-        if ($text != null && $object != null && $id != null && $system->isInt($id) && $hash != null && strlen($hash) == 32) {
+        $text = $engine->system->nohtml($engine->system->post('comment_message'));
+        $object = $engine->system->post('object');
+        $id = $engine->system->post('id');
+        $hash = $engine->system->post('hash');
+        if ($text != null && $object != null && $id != null && $engine->system->isInt($id) && $hash != null && strlen($hash) == 32) {
             $notify = null;
-            if ($user->get('id') > 0 && $user->get('content_post') > 0 && $user->get('mod_comment_add') > 0) {
+            if ($engine->user->get('id') > 0 && $engine->user->get('content_post') > 0 && $engine->user->get('mod_comment_add') > 0) {
                 $time = time();
-                $userid = $user->get('id');
+                $userid = $engine->user->get('id');
                 // узнаем время последнего комментария
-                $stmt = $database->con()->prepare("SELECT `time` FROM {$constant->db['prefix']}_mod_comments WHERE author = ? ORDER BY `time` DESC LIMIT 1");
+                $stmt = $engine->database->con()->prepare("SELECT `time` FROM {$engine->constant->db['prefix']}_mod_comments WHERE author = ? ORDER BY `time` DESC LIMIT 1");
                 $stmt->bindParam(1, $userid, PDO::PARAM_INT);
                 $stmt->execute();
                 if ($result = $stmt->fetch()) {
                     $lastposttime = $result['time'];
-                    if (($time - $lastposttime) < $extension->getConfig('time_delay', 'comments', 'modules', 'int')) {
-                        $notify .= $template->stringNotify('error', $language->get('comments_api_delay_exception'));
+                    if (($time - $lastposttime) < $engine->extension->getConfig('time_delay', 'comments', 'modules', 'int')) {
+                        $notify .= $engine->template->stringNotify('error', $engine->language->get('comments_api_delay_exception'));
                     }
                 }
-                if ($system->length($text) < $extension->getConfig('min_length', 'comments', 'modules', 'int') || $system->length($text) > $extension->getConfig('max_length', 'comments', 'modules', 'int')) {
-                    $notify .= $template->stringNotify('error', $language->get('comments_api_incorrent_length'));
+                if ($engine->system->length($text) < $engine->extension->getConfig('min_length', 'comments', 'modules', 'int') || $engine->system->length($text) > $engine->extension->getConfig('max_length', 'comments', 'modules', 'int')) {
+                    $notify .= $engine->template->stringNotify('error', $engine->language->get('comments_api_incorrent_length'));
                 }
                 if ($notify == null) {
-                    $stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_mod_comments (target_hash, object_name, object_id, comment, author, time)
+                    $stmt = $engine->database->con()->prepare("INSERT INTO {$engine->constant->db['prefix']}_mod_comments (target_hash, object_name, object_id, comment, author, time)
                     VALUES (?, ?, ?, ?, ?, ?)");
                     $stmt->bindParam(1, $hash, PDO::PARAM_STR, 32);
                     $stmt->bindParam(2, $object, PDO::PARAM_STR);
@@ -255,10 +256,10 @@ class api
                     $stmt->bindParam(5, $userid, PDO::PARAM_INT);
                     $stmt->bindParam(6, $time, PDO::PARAM_INT);
                     $stmt->execute();
-                    $notify .= $template->stringNotify('success', $language->get('comments_api_add_success'));
+                    $notify .= $engine->template->stringNotify('success', $engine->language->get('comments_api_add_success'));
                 }
             } else {
-                $notify .= $template->stringNotify('error', $language->get('comments_api_add_fail'));
+                $notify .= $engine->template->stringNotify('error', $engine->language->get('comments_api_add_fail'));
             }
             return $this->viewComment($notify);
         }
@@ -267,21 +268,21 @@ class api
 
     public function viewComment($notify = null)
     {
-        global $system, $database, $constant, $user, $template, $extension, $hook;
-        if($database->isDown())
+        global $engine;
+        if($engine->database->isDown())
             return;
-        $object = $system->post('object');
-        $id = $system->post('id');
-        $hash = $system->post('hash');
-        $position = $system->post('comment_position');
-        if ($object != null && $id != null && $system->isInt($id) && $hash != null && strlen($hash) == 32 && $system->isInt($position)) {
-            $userid = $user->get('id');
-            $config_on_page = $extension->getConfig('comments_count', 'comments', 'modules', 'int');
+        $object = $engine->system->post('object');
+        $id = $engine->system->post('id');
+        $hash = $engine->system->post('hash');
+        $position = $engine->system->post('comment_position');
+        if ($object != null && $id != null && $engine->system->isInt($id) && $hash != null && strlen($hash) == 32 && $engine->system->isInt($position)) {
+            $userid = $engine->user->get('id');
+            $config_on_page = $engine->extension->getConfig('comments_count', 'comments', 'modules', 'int');
             $end_point = $position == 0 ? $config_on_page : $position * $config_on_page + $config_on_page;
-            $theme_list = $template->get('comment_list', 'modules/mod_comments/');
+            $theme_list = $engine->template->get('comment_list', 'modules/mod_comments/');
             $content = null;
             $content .= $notify;
-            $stmt = $database->con()->prepare("SELECT COUNT(*) FROM {$constant->db['prefix']}_mod_comments WHERE target_hash = ? AND object_name = ? AND object_id = ?");
+            $stmt = $engine->database->con()->prepare("SELECT COUNT(*) FROM {$engine->constant->db['prefix']}_mod_comments WHERE target_hash = ? AND object_name = ? AND object_id = ?");
             $stmt->bindParam(1, $hash, PDO::PARAM_STR, 32);
             $stmt->bindParam(2, $object, PDO::PARAM_STR);
             $stmt->bindParam(3, $id, PDO::PARAM_STR);
@@ -289,7 +290,7 @@ class api
             $rowRes = $stmt->fetch();
             $commentCount = $rowRes[0];
             $stmt = null;
-            $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_mod_comments WHERE target_hash = ? AND object_name = ? AND object_id = ? ORDER BY id DESC LIMIT 0,?");
+            $stmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_mod_comments WHERE target_hash = ? AND object_name = ? AND object_id = ? ORDER BY id DESC LIMIT 0,?");
             $stmt->bindParam(1, $hash, PDO::PARAM_STR, 32);
             $stmt->bindParam(2, $object, PDO::PARAM_STR);
             $stmt->bindParam(3, $id, PDO::PARAM_INT);
@@ -297,22 +298,22 @@ class api
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $stmt = null;
-            $user->listload($system->extractFromMultyArray('author', $result));
+            $engine->user->listload($engine->system->extractFromMultyArray('author', $result));
             foreach ($result as $item) {
                 $edit_link = null;
                 $delete_link = null;
                 $poster_id = $item['author'];
-                $editconfig = $extension->getConfig('edit_time', 'comments', 'modules', 'int');
+                $editconfig = $engine->extension->getConfig('edit_time', 'comments', 'modules', 'int');
                 if ($userid > 0) {
-                    if (($poster_id == $userid && (time() - $item['time']) <= $editconfig) || $user->get('mod_comment_edit') > 0) {
-                        $edit_link = $template->assign('comment_id', $item['id'], $template->get('comment_link_edit', 'modules/mod_comments/'));
+                    if (($poster_id == $userid && (time() - $item['time']) <= $editconfig) || $engine->user->get('mod_comment_edit') > 0) {
+                        $edit_link = $engine->template->assign('comment_id', $item['id'], $engine->template->get('comment_link_edit', 'modules/mod_comments/'));
                     }
-                    if ($user->get('mod_comment_delete') > 0) {
-                        $delete_link = $template->assign('comment_id', $item['id'], $template->get('comment_link_delete', 'modules/mod_comments/'));
+                    if ($engine->user->get('mod_comment_delete') > 0) {
+                        $delete_link = $engine->template->assign('comment_id', $item['id'], $engine->template->get('comment_link_delete', 'modules/mod_comments/'));
                     }
                 }
-                $content .= $template->assign(array('poster_id', 'poster_nick', 'poster_avatar', 'comment_text', 'comment_date', 'comment_id', 'comment_link_edit', 'comment_link_delete'),
-                    array($poster_id, $user->get('nick', $poster_id), $user->buildAvatar('small', $poster_id), $hook->get('bbtohtml')->bbcode2html($item['comment']), $system->toDate($item['time'], 'h'), $item['id'], $edit_link, $delete_link),
+                $content .= $engine->template->assign(array('poster_id', 'poster_nick', 'poster_avatar', 'comment_text', 'comment_date', 'comment_id', 'comment_link_edit', 'comment_link_delete'),
+                    array($poster_id, $engine->user->get('nick', $poster_id), $engine->user->buildAvatar('small', $poster_id), $engine->hook->get('bbtohtml')->bbcode2html($item['comment']), $engine->system->toDate($item['time'], 'h'), $item['id'], $edit_link, $delete_link),
                     $theme_list);
             }
             if ($end_point > $commentCount) {
@@ -324,30 +325,30 @@ class api
 
     private function userLeaveRedirect()
     {
-        global $system, $template;
-        return $template->assign('target_url', $system->get('url'), $template->get('redirect'));
+        global $engine;
+        return $engine->template->assign('target_url', $engine->system->get('url'), $engine->template->get('redirect'));
     }
 
     private function userEncodedLeaveRedirect()
     {
-        global $system, $template;
-        $url = base64_decode($system->get('url'));
-        return $template->assign('target_url', $url, $template->get('redirect'));
+        global $engine;
+        $url = base64_decode($engine->system->get('url'));
+        return $engine->template->assign('target_url', $url, $engine->template->get('redirect'));
     }
 
     public function doPostWall()
     {
-        global $system, $user, $database, $constant, $extension;
-        if($database->isDown())
+        global $engine;
+        if($engine->database->isDown())
             return;
-        $root_post_id = $system->get('id');
-        $writer_id = $user->get('id');
-        $message = $system->nohtml($system->post('message'));
+        $root_post_id = $engine->system->get('id');
+        $writer_id = $engine->user->get('id');
+        $message = $engine->system->nohtml($engine->system->post('message'));
         $time = time();
         $limit = false;
-        if ($system->isInt($root_post_id) && strlen($system->post('message')) > 0 && $writer_id > 0) {
-            $time_between_posts = $extension->getConfig('wall_post_delay', 'usercontrol', 'components', 'int');
-            $stmt = $database->con()->prepare("SELECT time FROM {$constant->db['prefix']}_user_wall_answer WHERE poster = ? ORDER BY id DESC LIMIT 1");
+        if ($engine->system->isInt($root_post_id) && strlen($engine->system->post('message')) > 0 && $writer_id > 0) {
+            $time_between_posts = $engine->extension->getConfig('wall_post_delay', 'usercontrol', 'components', 'int');
+            $stmt = $engine->database->con()->prepare("SELECT time FROM {$engine->constant->db['prefix']}_user_wall_answer WHERE poster = ? ORDER BY id DESC LIMIT 1");
             $stmt->bindParam(1, $writer_id, PDO::PARAM_INT);
             $stmt->execute();
             $res = $stmt->fetch();
@@ -355,7 +356,7 @@ class api
             $stmt = null;
             $current_time = time();
             if (($current_time - $last_post_time) >= $time_between_posts) {
-                $stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user_wall_answer (wall_post_id, poster, message, time) VALUES(?, ?, ?, ?)");
+                $stmt = $engine->database->con()->prepare("INSERT INTO {$engine->constant->db['prefix']}_user_wall_answer (wall_post_id, poster, message, time) VALUES(?, ?, ?, ?)");
                 $stmt->bindParam(1, $root_post_id, PDO::PARAM_INT);
                 $stmt->bindParam(2, $writer_id, PDO::PARAM_INT);
                 $stmt->bindParam(3, $message, PDO::PARAM_STR);
@@ -370,27 +371,27 @@ class api
 
     public function loadUserWall($limit = false)
     {
-        global $system, $database, $constant, $user, $language, $template;
-        if($database->isDown())
+        global $engine;
+        if($engine->database->isDown())
             return;
-        $root_post_id = $system->get('id');
-        if ($system->isInt($root_post_id)) {
-            $theme = $template->get('api_wallanswer', 'components/usercontrol/');
+        $root_post_id = $engine->system->get('id');
+        if ($engine->system->isInt($root_post_id)) {
+            $theme = $engine->template->get('api_wallanswer', 'components/usercontrol/');
             $compiled = null;
             if ($limit) {
-                $compiled .= $template->stringNotify('error', $language->get('usercontrol_profile_wall_answer_spamdetect'));
+                $compiled .= $engine->template->stringNotify('error', $engine->language->get('usercontrol_profile_wall_answer_spamdetect'));
             }
-            $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_wall_answer WHERE wall_post_id = ? ORDER BY id DESC");
+            $stmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_user_wall_answer WHERE wall_post_id = ? ORDER BY id DESC");
             $stmt->bindParam(1, $root_post_id, PDO::PARAM_INT);
             $stmt->execute();
             while ($result = $stmt->fetch()) {
                 $from_id = $result['poster'];
-                $compiled .= $template->assign(array('wall_from_id', 'wall_from', 'user_avatar', 'wall_message'),
-                    array($from_id, $user->get('nick', $from_id), $user->buildAvatar('small', $from_id), $result['message']),
+                $compiled .= $engine->template->assign(array('wall_from_id', 'wall_from', 'user_avatar', 'wall_message'),
+                    array($from_id, $engine->user->get('nick', $from_id), $engine->user->buildAvatar('small', $from_id), $result['message']),
                     $theme);
             }
             if ($compiled == null) {
-                $compiled = $language->get('usercontrol_profile_wall_noanswer');
+                $compiled = $engine->language->get('usercontrol_profile_wall_noanswer');
             }
             return $compiled;
         }

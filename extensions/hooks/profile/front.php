@@ -19,10 +19,10 @@ class hook_profile_front implements hook_front
 
     public function before()
     {
-        global $extension, $constant, $user;
-        if ($extension->object['com']['usercontrol']) {
-            $callback = $extension->object['com']['usercontrol'];
-            $callback->hook_item_menu .= "<li><a href='{$constant->url}/user/id{$user->get('id')}/blackjack'>Black jack</a></li>";
+        global $engine;
+        if ($engine->extension->object['com']['usercontrol']) {
+            $callback = $engine->extension->object['com']['usercontrol'];
+            $callback->hook_item_menu .= '<li><a href="'.$engine->constant->url.'/user/id'.$engine->user->get('id').'/blackjack">Black jack</a></li>';
             $callback->hook_item_url['blackjack'] = "Welcome to hook with blackjack and bitches ;D";
         }
     }

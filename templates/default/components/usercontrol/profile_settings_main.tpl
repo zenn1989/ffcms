@@ -1,4 +1,11 @@
 {$notify_messages}
+<p class="pull-right">
+    <a href="{$url}/settings/" class="btn btn-success">{$lang::usercontrol_profile_settings_tab_profile}</a>
+    <a href="{$url}/settings/status" class="btn btn-info">{$lang::usercontrol_profile_settings_tab_status}</a>
+    {$if com.usercontrol.use_balance}
+    <a href="{$url}/settings/balance/" class="btn btn-warning">{$lang::usercontrol_profile_settings_tab_balance}</a>
+    {$/if}
+</p>
 <form method="post" action="" class="form-horizontal">
     <fieldset>
         <h3>{$lang::usercontrol_profile_settings_title_public}</h3>

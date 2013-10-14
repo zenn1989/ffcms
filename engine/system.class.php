@@ -228,8 +228,8 @@ class system
      */
     public function redirect($uri = null)
     {
-        global $constant;
-        header("Location: {$constant->url}{$uri}");
+        global $engine;
+        header("Location: {$engine->constant->url}{$uri}");
         exit();
         return;
     }
@@ -490,8 +490,8 @@ class system
      */
     public function doublemd5($string, $custom_salt = null)
     {
-        global $constant;
-        $salt = $constant->password_salt;
+        global $engine;
+        $salt = $engine->constant->password_salt;
         if($custom_salt != null) {
             $salt = $custom_salt;
         }

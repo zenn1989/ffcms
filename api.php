@@ -22,6 +22,7 @@ require_once(root . "/engine/file.class.php");
 require_once(root . "/engine/user.class.php");
 require_once(root . "/engine/hook.class.php");
 require_once(root . "/engine/rule.class.php");
+require_once(root . "/engine/engine.class.php");
 
 $constant = new constant();
 $system = new system();
@@ -35,10 +36,11 @@ $page = new page();
 $extension = new extension();
 $hook = new hook();
 $rule = new rule();
-
-date_default_timezone_set($constant->time_zone);
-
 $api = new api();
+$engine = new engine();
+
+date_default_timezone_set($engine->constant->time_zone);
+
 echo $api->load();
 
 ?>

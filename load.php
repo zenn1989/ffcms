@@ -21,6 +21,8 @@ require_once(root . "/engine/robot.class.php");
 require_once(root . "/engine/rule.class.php");
 require_once(root . "/engine/antivirus.class.php");
 require_once(root . "/engine/backup.class.php");
+require_once(root . "/engine/engine.class.php");
+require_once(root . "/engine/api.class.php");
 
 $constant = new constant();
 $system = new system();
@@ -42,5 +44,7 @@ $robot = new robot();
 $rule = new rule();
 $antivirus = new antivirus();
 $backup = new backup();
+$api = new api();
+$engine = new engine();
 
 ?>

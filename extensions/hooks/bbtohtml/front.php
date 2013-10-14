@@ -11,9 +11,9 @@ class hook_bbtohtml_front implements hook_front
 
     public function load()
     {
-        global $constant;
+        global $engine;
         if ($this->parser == null) {
-            require_once $constant->root . '/resource/xbbcode/bbcode.lib.php';
+            require_once $engine->constant->root . '/resource/xbbcode/bbcode.lib.php';
             $this->parser = new bbcode;
         }
         return $this;

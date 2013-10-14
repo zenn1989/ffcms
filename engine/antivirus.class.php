@@ -23,7 +23,7 @@ class antivirus
 
     public function doFullScan()
     {
-        global $system;
+        global $engine;
         $this->loadVersionMd5List();
         $this->loadExcludedDirectory();
         $this->recursiveScanDir();
@@ -31,7 +31,7 @@ class antivirus
         if (sizeof($this->version_md5) > 0) {
             foreach ($this->scan_md5 as $found_file => $md5_file) {
                 // TODO: добавить чекер на JS
-                if ($system->suffixEquals($found_file, '.php') || $system->suffixEquals($found_file, '.phtml') || $system->contains('.php', $found_file)) {
+                if ($engine->system->suffixEquals($found_file, '.php') || $engine->system->suffixEquals($found_file, '.phtml') || $engine->system->contains('.php', $found_file)) {
                     if ($this->version_md5[$found_file] == null) {
                         $this->notexist_check_md5[$found_file] = $md5_file;
                     } elseif ($this->version_md5[$found_file] != $md5_file) {
@@ -48,28 +48,28 @@ class antivirus
 
     private function loadExcludedDirectory()
     {
-        global $system, $constant;
-        if(file_exists($constant->root."/cache/.antivir_exclude")) {
-            $prepared_file = file_get_contents($constant->root."/cache/.antivir_exclude");
-            $this->excluded_directory = $system->altexplode('<=>', $prepared_file);
+        global $engine;
+        if(file_exists($engine->constant->root."/cache/.antivir_exclude")) {
+            $prepared_file = file_get_contents($engine->constant->root."/cache/.antivir_exclude");
+            $this->excluded_directory = $engine->system->altexplode('<=>', $prepared_file);
         }
     }
 
     private function recursiveScanDir($dir = null)
     {
-        global $constant, $system;
+        global $engine;
         $dir_scan = null;
         if ($dir == null)
-            $dir_scan = $constant->root . $constant->ds;
+            $dir_scan = $engine->constant->root . $engine->constant->ds;
         else
-            $dir_scan = $constant->root . $constant->ds . $dir . $constant->ds;
+            $dir_scan = $engine->constant->root . $engine->constant->ds . $dir . $engine->constant->ds;
         $objects = scandir($dir_scan);
         foreach ($objects as $item) {
             $md5sum = null;
             if (is_file($dir_scan . $item)) {
                 $md5sum = md5_file($dir_scan . $item);
             } elseif (is_dir($dir_scan . $item)) {
-                if (!$system->prefixEquals($item, ".")) {
+                if (!$engine->system->prefixEquals($item, ".")) {
                     if ($dir == null)
                         $this->recursiveScanDir($item);
                     else
@@ -80,7 +80,7 @@ class antivirus
                 $tmp_name = $dir . '/' . $item;
                 $is_excluded = false;
                 foreach($this->excluded_directory as $excluded_start) {
-                    if($system->prefixEquals($tmp_name, substr($excluded_start, 1)))
+                    if($engine->system->prefixEquals($tmp_name, substr($excluded_start, 1)))
                         $is_excluded = true;
                 }
                 if(!$is_excluded)
@@ -91,8 +91,8 @@ class antivirus
 
     private function loadVersionMd5List()
     {
-        global $constant;
-        $md5file = $constant->root . "/resource/antivirus/.md5sum";
+        global $engine;
+        $md5file = $engine->constant->root . "/resource/antivirus/.md5sum";
         if (file_exists($md5file)) {
             $this->version_md5 = unserialize(file_get_contents($md5file));
         }
@@ -113,9 +113,9 @@ class antivirus
 
     public function getUnknownList()
     {
-        global $constant;
+        global $engine;
         foreach ($this->notexist_check_md5 as $dir => $md5) {
-            $file_root = file_get_contents($constant->root . "/" . $dir);
+            $file_root = file_get_contents($engine->constant->root . "/" . $dir);
             if ($this->containsHackMethods($file_root)) {
                 $this->hack_check[$dir] = $md5;
             }
@@ -125,9 +125,9 @@ class antivirus
 
     public function getWrongList()
     {
-        global $constant;
+        global $engine;
         foreach ($this->wrong_check_md5 as $dir => $md5) {
-            $file_root = file_get_contents($constant->root . "/" . $dir);
+            $file_root = file_get_contents($engine->constant->root . "/" . $dir);
             if ($this->containsHackMethods($file_root)) {
                 $this->hack_check[$dir] = $md5;
             }

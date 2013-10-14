@@ -34,7 +34,7 @@ class extension
      */
     private function rawcomponents()
     {
-        global $constant, $database;
+        global $database, $constant;
         $stmt = $database->con()->query("SELECT * FROM {$constant->db['prefix']}_components WHERE enabled = 1");
         $stmt->execute();
         while ($result = $stmt->fetch()) {
@@ -79,8 +79,8 @@ class extension
      */
     public function modules_before_load()
     {
-        global $constant, $database, $page;
-        $stmt = $database->con()->query("SELECT * FROM {$constant->db['prefix']}_modules WHERE enabled = 1");
+        global $engine;
+        $stmt = $engine->database->con()->query("SELECT * FROM {$engine->constant->db['prefix']}_modules WHERE enabled = 1");
         $stmt->execute();
         $bufferResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt = null;
@@ -97,7 +97,7 @@ class extension
                     // если найдено вхождение, ставим маркер на true
                     // нельзя выставить сразу, т.к. если в дальнейших маршрутах
                     // не будет найдено вхождение, оно перекроет предидущее.
-                    $canwork = $page->findRuleInteration($allowed);
+                    $canwork = $engine->page->findRuleInteration($allowed);
                     if ($canwork) {
                         $work_on_this_path = true;
                     }
@@ -107,16 +107,16 @@ class extension
                 $find_deny = false;
                 $deny_array = explode(';', $result['path_deny']);
                 foreach ($deny_array as $deny) {
-                    if ($page->findRuleInteration($deny)) {
+                    if ($engine->page->findRuleInteration($deny)) {
                         $find_deny = true;
                     }
                 }
                 $work_on_this_path = !$find_deny;
             }
             // если модуль работает в данной позиции, инициируем загрузку before()
-            // которая работает до определения глобальной $template->content суперпозиции
+            // которая работает до определения глобальной $engine->template->content суперпозиции
             if ($work_on_this_path) {
-                $file = $constant->root . '/extensions/modules/' . $result['dir'] . '/front.php';
+                $file = $engine->constant->root . '/extensions/modules/' . $result['dir'] . '/front.php';
                 if (file_exists($file)) {
                     require_once($file);
                     $mod_class = "mod_{$result['dir']}_front";
@@ -161,8 +161,8 @@ class extension
      */
     public function initComponent()
     {
-        global $page;
-        $pathway = $page->getPathway();
+        global $engine;
+        $pathway = $engine->page->getPathway();
         foreach ($this->registeredway as $com_path => $com_dir) {
             if ($pathway[0] == $com_path) {
                 $class_com_name = "com_{$com_dir}_front";
@@ -182,12 +182,12 @@ class extension
      */
     public function getConfig($name, $ext_dir, $object, $var_type = null)
     {
-        global $system;
+        global $engine;
         $configs = unserialize($this->config_extension[$object][$ext_dir]);
         if ($var_type == "boolean") {
             return $configs[$name] == "0" ? false : true;
         } elseif ($var_type == "int") {
-            return $system->toInt($configs[$name]);
+            return $engine->system->toInt($configs[$name]);
         }
         return $configs[$name];
     }

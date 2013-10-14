@@ -21,11 +21,11 @@ class hook_captcha_front implements hook_front
 
     public function validate($postdata)
     {
-        global $extension, $constant;
-        $captcha_type = $extension->getConfig('captcha_type', 'captcha', 'hooks');
+        global $engine;
+        $captcha_type = $engine->extension->getConfig('captcha_type', 'captcha', 'hooks');
         if($captcha_type == "recaptcha") {
-            require_once($constant->root."/resource/recaptcha/recaptchalib.php");
-            $resp = recaptcha_check_answer ($extension->getConfig('captcha_privatekey', 'captcha', 'hooks'), $_SERVER["REMOTE_ADDR"], $_POST["recaptcha_challenge_field"], $_POST["recaptcha_response_field"]);
+            require_once($engine->constant->root."/resource/recaptcha/recaptchalib.php");
+            $resp = recaptcha_check_answer ($engine->extension->getConfig('captcha_privatekey', 'captcha', 'hooks'), $_SERVER["REMOTE_ADDR"], $_POST["recaptcha_challenge_field"], $_POST["recaptcha_response_field"]);
             return $resp->is_valid;
         }
         $session_value = $_SESSION['captcha'];
@@ -34,13 +34,13 @@ class hook_captcha_front implements hook_front
 
     public function show()
     {
-        global $extension, $constant;
-        $captcha_type = $extension->getConfig('captcha_type', 'captcha', 'hooks');
+        global $engine;
+        $captcha_type = $engine->extension->getConfig('captcha_type', 'captcha', 'hooks');
         if($captcha_type == "recaptcha") {
-            require_once($constant->root."/resource/recaptcha/recaptchalib.php");
-            return recaptcha_get_html($extension->getConfig('captcha_publickey', 'captcha', 'hooks'));
+            require_once($engine->constant->root."/resource/recaptcha/recaptchalib.php");
+            return recaptcha_get_html($engine->extension->getConfig('captcha_publickey', 'captcha', 'hooks'));
         }
-        return $constant->url . '/resource/ccaptcha/captcha.php';
+        return $engine->constant->url . '/resource/ccaptcha/captcha.php';
     }
 }
 

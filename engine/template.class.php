@@ -30,15 +30,15 @@ class template
      */
     public function allowedPositions()
     {
-        global $constant, $system;
+        global $engine;
         if(sizeof($this->position_allowed) > 0) {
             return $this->position_allowed;
         }
-        $file = $constant->root . $constant->ds . $constant->tpl_dir . $constant->ds . $constant->tpl_name . $constant->ds . "position.list";
+        $file = $engine->constant->root . $engine->constant->ds . $engine->constant->tpl_dir . $engine->constant->ds . $engine->constant->tpl_name . $engine->constant->ds . "position.list";
         if(!file_exists($file)) {
             $this->position_allowed = array('header', 'left', 'body', 'right', 'bottom', 'footer');
         } else {
-            $this->position_allowed = $system->altexplode('|', file_get_contents($file));
+            $this->position_allowed = $engine->system->altexplode('|', file_get_contents($file));
         }
         return $this->position_allowed;
     }
@@ -49,9 +49,9 @@ class template
      */
     public function init()
     {
-        global $page;
+        global $engine;
         foreach($this->allowedPositions() as $position) {
-            $this->position[$position] = $page->getContentPosition($position);
+            $this->position[$position] = $engine->page->getContentPosition($position);
         }
     }
 
@@ -60,36 +60,36 @@ class template
      */
     public function compile()
     {
-        global $extension, $constant, $cache, $user, $database;
-        if($database->isDown())
+        global $engine;
+        if($engine->database->isDown())
         {
-            if($cache->check(true)) {
-                return $cache->get();
+            if($engine->cache->check(true)) {
+                return $engine->cache->get();
             } else {
                 $this->overloadCarcase('database_down');
-                $this->globalset('admin_email', $constant->mail['from_email']);
+                $this->globalset('admin_email', $engine->constant->mail['from_email']);
             }
         }
-        if($user->get('id') < 1 && $cache->check()) {
-            return $cache->get();
+        if($engine->user->get('id') < 1 && $engine->cache->check()) {
+            return $engine->cache->get();
         }
         foreach($this->allowedPositions() as $position) {
             $this->fortpl($position);
         }
         if (loader == 'front') {
             // инициация пост-загружаемых модулей
-            $extension->moduleAfterLoad();
+            $engine->extension->moduleAfterLoad();
         }
         $this->postcompile();
         $this->language();
         $this->ruleCheck();
         $this->htmlhead();
         $this->cleanvar();
-        if ($constant->do_compress_html && loader == 'front') {
+        if ($engine->constant->do_compress_html && loader == 'front') {
             $this->compress();
         }
-        if(loader == 'front' && !$cache->used())
-            $cache->save($this->content);
+        if(loader == 'front' && !$engine->cache->used())
+            $engine->cache->save($this->content);
         return $this->content;
     }
 
@@ -133,8 +133,8 @@ class template
      */
     private function language()
     {
-        global $language;
-        $this->content = $language->set($this->content);
+        global $engine;
+        $this->content = $engine->language->set($this->content);
     }
 
     /**
@@ -201,12 +201,12 @@ class template
      */
     public function ruleCheck($content = null)
     {
-        global $rule;
+        global $engine;
         if ($content == null) {
             preg_match_all('/{\$if (.+?)}(.*?){\$\/if}/s', $this->content, $matches);
             for ($i = 0; $i < sizeof($matches[1]); $i++) {
                 $theme_result = null;
-                if ($rule->check($matches[1][$i])) {
+                if ($engine->rule->check($matches[1][$i])) {
                     $theme_result = $matches[2][$i];
                 }
                 $this->content = str_replace($matches[0][$i], $theme_result, $this->content);
@@ -215,7 +215,7 @@ class template
             preg_match_all('/{\$if (.+?)}(.*?){\$\/if}/s', $content, $matches);
             for ($i = 0; $i < sizeof($matches[1]); $i++) {
                 $theme_result = null;
-                if ($rule->check($matches[1][$i])) {
+                if ($engine->rule->check($matches[1][$i])) {
                     $theme_result = $matches[2][$i];
                 }
                 $content = str_replace($matches[0][$i], $theme_result, $content);
@@ -226,36 +226,36 @@ class template
 
     private function htmlhead()
     {
-        global $constant, $system;
+        global $engine;
         $compiled_header = null;
         // сборка подключения файлов javascript в шапку, к примеру из тела компонента, когда непосредственного доступа к тегу <head></head> нет.
         // пр: {$jsfile lib/js/script.js} уйдет в <head><script src="url/tpl_dir/tpl_name/lib/js/script.js
         preg_match_all('/{\$jsfile (.*?)}/s', $this->content, $jsfile_matches);
-        $jsfile_array = $system->nullArrayClean(array_unique($jsfile_matches[1]));
+        $jsfile_array = $engine->system->nullArrayClean(array_unique($jsfile_matches[1]));
         foreach ($jsfile_array as $jsfile) {
-            if (file_exists($constant->root . $constant->ds . $constant->tpl_dir . $constant->ds . $constant->tpl_name . $constant->ds . $jsfile))
-                $compiled_header .= "<script type=\"text/javascript\" src=\"{$constant->url}/{$constant->tpl_dir}/{$constant->tpl_name}/{$jsfile}\"></script>\r\n";
+            if (file_exists($engine->constant->root . $engine->constant->ds . $engine->constant->tpl_dir . $engine->constant->ds . $engine->constant->tpl_name . $engine->constant->ds . $jsfile))
+                $compiled_header .= "<script type=\"text/javascript\" src=\"{$engine->constant->url}/{$engine->constant->tpl_dir}/{$engine->constant->tpl_name}/{$jsfile}\"></script>\r\n";
         }
         // сборка подключения CSS файлов в шапку, аналогично JS
         preg_match_all('/{\$cssfile (.*?)}/s', $this->content, $cssfile_matches);
-        $cssfile_array = $system->nullArrayClean($cssfile_matches[1]);
+        $cssfile_array = $engine->system->nullArrayClean($cssfile_matches[1]);
         foreach ($cssfile_array as $cssfile) {
-            if (file_exists($constant->root . $constant->ds . $constant->tpl_dir . $constant->ds . $constant->tpl_name . $constant->ds . $cssfile))
-                $compiled_header .= "<link href=\"{$constant->url}/{$constant->tpl_dir}/{$constant->tpl_name}/{$cssfile}\" rel=\"stylesheet\" />\r\n";
+            if (file_exists($engine->constant->root . $engine->constant->ds . $engine->constant->tpl_dir . $engine->constant->ds . $engine->constant->tpl_name . $engine->constant->ds . $cssfile))
+                $compiled_header .= "<link href=\"{$engine->constant->url}/{$engine->constant->tpl_dir}/{$engine->constant->tpl_name}/{$cssfile}\" rel=\"stylesheet\" />\r\n";
         }
         // сборка подключения JS на api.php, в которых используется преобразование переменных.
         preg_match_all('/{\$jsapi (.*?)}/s', $this->content, $jsapi_matches);
-        $jsapi_array = $system->nullArrayClean(array_unique($jsapi_matches[1]));
+        $jsapi_array = $engine->system->nullArrayClean(array_unique($jsapi_matches[1]));
         foreach ($jsapi_array as $jsapi) {
-            $compiled_header .= "<script type=\"text/javascript\" src=\"{$constant->url}/{$jsapi}\"></script>\r\n";
+            $compiled_header .= "<script type=\"text/javascript\" src=\"{$engine->constant->url}/{$jsapi}\"></script>\r\n";
         }
         // сборка JS URL включений
         preg_match_all('/{\$jsurl (.*?)}/s', $this->content, $jsurl_matches);
-        $jsurl_array = $system->nullArrayClean(array_unique($jsurl_matches[1]));
+        $jsurl_array = $engine->system->nullArrayClean(array_unique($jsurl_matches[1]));
         foreach ($jsurl_array as $jsurl) {
-            if($system->prefixEquals($jsurl, $constant->url)) {
-                $check_path_js = $system->removeCharsFromString($constant->url, $jsurl, 1);
-                if(file_exists($constant->root . $check_path_js)) {
+            if($engine->system->prefixEquals($jsurl, $engine->constant->url)) {
+                $check_path_js = $engine->system->removeCharsFromString($engine->constant->url, $jsurl, 1);
+                if(file_exists($engine->constant->root . $check_path_js)) {
                     $compiled_header .= "<script type=\"text/javascript\" src=\"$jsurl\"></script>\r\n";
                 }
             } else {
@@ -264,11 +264,11 @@ class template
         }
         // сборка CSS URL включений
         preg_match_all('/{\$cssurl (.*?)}/s', $this->content, $cssurl_matches);
-        $cssurl_array = $system->nullArrayClean($cssurl_matches[1]);
+        $cssurl_array = $engine->system->nullArrayClean($cssurl_matches[1]);
         foreach ($cssurl_array as $cssurl) {
-            if($system->prefixEquals($cssurl, $constant->url)) {
-                $check_path_css = $system->removeCharsFromString($constant->url, $cssurl, 1);
-                if(file_exists($constant->root . $check_path_css)) {
+            if($engine->system->prefixEquals($cssurl, $engine->constant->url)) {
+                $check_path_css = $engine->system->removeCharsFromString($engine->constant->url, $cssurl, 1);
+                if(file_exists($engine->constant->root . $check_path_css)) {
                     $compiled_header .= "<link href=\"$cssurl\" rel=\"stylesheet\" />\r\n";
                 }
             } else {
@@ -284,7 +284,7 @@ class template
      */
     public function setDefaults($theme)
     {
-        global $language, $constant, $user, $page, $system;
+        global $constant, $user, $language, $page;
         $template_path = null;
         if (loader == 'back') {
             $template_path = $constant->tpl_dir . $constant->slash . $constant->admin_tpl;
@@ -362,15 +362,15 @@ class template
      */
     public function compile404()
     {
-        global $cache;
-        $cache->setNoExist(true);
+        global $engine;
+        $engine->cache->setNoExist(true);
         return $this->get('404');
     }
 
     public function compileBan()
     {
-        global $cache;
-        $cache->setNoExist(true);
+        global $engine;
+        $engine->cache->setNoExist(true);
         return $this->get('ban');
     }
 

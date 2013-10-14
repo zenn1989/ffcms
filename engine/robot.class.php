@@ -15,25 +15,25 @@ class robot
     // Сбор статистики о текущем пользователе
     public function collect()
     {
-        global $database, $constant, $system, $user;
-        if($database->isDown())
+        global $engine;
+        if($engine->database->isDown())
             return;
-        $realip = $system->getRealIp();
+        $realip = $engine->system->getRealIp();
         $visittime = time();
         $browser = $this->user_browser($_SERVER['HTTP_USER_AGENT']);
         $os = $this->user_os($_SERVER['HTTP_USER_AGENT']);
         $cookie = $_COOKIE['source'];
-        $isreg = $user->get('id') < 1 ? 0 : 1;
-        $userid = $user->get('id') < 1 ? 0 : $user->get('id');
+        $isreg = $engine->user->get('id') < 1 ? 0 : 1;
+        $userid = $engine->user->get('id') < 1 ? 0 : $engine->user->get('id');
         if ($cookie == null) {
             $settime = $visittime + (365 * 24 * 60 * 60);
-            setcookie('source', $system->md5random(), $settime, '/');
+            setcookie('source', $engine->system->md5random(), $settime, '/');
             $cookie = '';
         }
         $referer = $_SERVER['HTTP_REFERER'] == null ? '' : $_SERVER['HTTP_REFERER'];
         $path = $_SERVER['REQUEST_URI'];
-        $query = "INSERT INTO {$constant->db['prefix']}_statistic (ip, cookie, browser, os, time, referer, path, reg_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $database->con()->prepare($query);
+        $query = "INSERT INTO {$engine->constant->db['prefix']}_statistic (ip, cookie, browser, os, time, referer, path, reg_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $engine->database->con()->prepare($query);
         $stmt->bindParam(1, $realip, PDO::PARAM_STR);
         $stmt->bindParam(2, $cookie, PDO::PARAM_STR, 32);
         $stmt->bindParam(3, $browser, PDO::PARAM_STR);

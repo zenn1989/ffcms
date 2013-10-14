@@ -12,9 +12,9 @@ class backup
      */
     public function makeDump()
     {
-        global $constant,$system;
-        $file_mainname = $system->toDate(time(), 'd')."_backup";
-        $this->zipCreate($constant->root, $constant->root . "/backup/".$file_mainname . "_www.zip");
+        global $engine;
+        $file_mainname = $engine->system->toDate(time(), 'd')."_backup";
+        $this->zipCreate($engine->constant->root, $engine->constant->root . "/backup/".$file_mainname . "_www.zip");
         $this->mysqlDump("/backup/".$file_mainname . "_sql.sql.gz");
     }
     /**
@@ -92,10 +92,10 @@ class backup
 
     private function mysqlDump($dumpname)
     {
-        global $constant;
-        require_once($constant->root . "/resource/phpmysqldumper/MySQLDump.php");
-        $dumper = new MySQLDump(new mysqli($constant->db['host'], $constant->db['user'], $constant->db['pass'], $constant->db['db']));
-        $dumper->save($constant->root . $dumpname);
+        global $engine;
+        require_once($engine->constant->root . "/resource/phpmysqldumper/MySQLDump.php");
+        $dumper = new MySQLDump(new mysqli($engine->constant->db['host'], $engine->constant->db['user'], $engine->constant->db['pass'], $engine->constant->db['db']));
+        $dumper->save($engine->constant->root . $dumpname);
     }
 }
 

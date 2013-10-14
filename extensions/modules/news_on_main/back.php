@@ -9,9 +9,9 @@ class mod_news_on_main_back implements backend
 {
     public function load()
     {
-        global $admin;
-        if ($admin->getAction() == "turn") {
-            return $admin->turn();
+        global $engine;
+        if ($engine->admin->getAction() == "turn") {
+            return $engine->admin->turn();
         }
         return;
     }

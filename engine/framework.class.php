@@ -12,13 +12,6 @@
 class framework
 {
     private $object = null;
-    private $system = null;
-
-    public function framework()
-    {
-        global $system;
-        $this->system = $system;
-    }
 
     public function set($object)
     {
@@ -28,8 +21,8 @@ class framework
 
     public function fromPost($post_key_name)
     {
-        global $system;
-        $this->object = $system->post($post_key_name);
+        global $engine;
+        $this->object = $engine->system->post($post_key_name);
         return $this;
     }
 
@@ -42,35 +35,35 @@ class framework
 
     public function nohtml()
     {
-        global $system;
-        $this->object = $system->nohtml($this->object);
+        global $engine;
+        $this->object = $engine->system->nohtml($this->object);
         return $this;
     }
 
     public function altexplode($decimal)
     {
-        global $system;
-        $this->object = $system->altexplode($decimal, $this->object);
+        global $engine;
+        $this->object = $engine->system->altexplode($decimal, $this->object);
         return $this;
     }
 
     public function altsubstr($start, $end)
     {
-        global $system;
-        $this->object = $system->altsubstr($this->object, $start, $end);
+        global $engine;
+        $this->object = $engine->system->altsubstr($this->object, $start, $end);
         return $this;
     }
 
     public function length()
     {
-        global $system;
-        return $system->length($this->object);
+        global $engine;
+        return $engine->system->length($this->object);
     }
 
     public function toInt()
     {
-        global $system;
-        $this->object = $system->toInt($this->object);
+        global $engine;
+        $this->object = $engine->system->toInt($this->object);
         return $this;
     }
 

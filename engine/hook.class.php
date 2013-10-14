@@ -28,13 +28,13 @@ class hook
 
     public function get($type)
     {
-        global $constant;
+        global $engine;
         if ($this->hook_list[$type] == null) {
             return null;
         }
         if($this->hook_link[$type] != null)
             return $this->hook_link[$type];
-        $file = $constant->root . '/extensions/hooks/' . $this->hook_list[$type] . '/front.php';
+        $file = $engine->constant->root . '/extensions/hooks/' . $this->hook_list[$type] . '/front.php';
         if (!file_exists($file)) {
             return null;
         }
@@ -48,9 +48,9 @@ class hook
 
     public function after()
     {
-        global $constant;
+        global $engine;
         foreach ($this->hook_list as $key => $index) {
-            $file = $constant->root . '/extensions/hooks/' . $index . '/front.php';
+            $file = $engine->constant->root . '/extensions/hooks/' . $index . '/front.php';
             if (file_exists($file)) {
                 require_once($file);
                 $class = "hook_{$index}_front";
@@ -66,9 +66,9 @@ class hook
 
     public function before()
     {
-        global $constant;
+        global $engine;
         foreach ($this->hook_list as $key => $index) {
-            $file = $constant->root . '/extensions/hooks/' . $index . '/front.php';
+            $file = $engine->constant->root . '/extensions/hooks/' . $index . '/front.php';
             if (file_exists($file)) {
                 require_once($file);
                 $class = "hook_{$index}_front";
