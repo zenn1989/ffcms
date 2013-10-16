@@ -42,12 +42,19 @@ class file
                 return '<html><body>ERROR<script>window.parent.alert("Image upload error.");</script></body></html>';
         } else {
             header("Content-type: text/javascript");
-            $json_response = array(
-                'status' => '1',
-                'msg' => 'ok',
-                'image_link' => $fulllink,
-                'thumb_link' => $fulllink
-            );
+            if($result != null) {
+                $json_response = array(
+                    'status' => '1',
+                    'msg' => 'ok',
+                    'image_link' => $fulllink,
+                    'thumb_link' => $fulllink
+                );
+            } else {
+                $json_response = array(
+                    'status' => '0',
+                    'msg' => 'error'
+                );
+            }
             return stripslashes(json_encode($json_response));
         }
     }
