@@ -12,6 +12,11 @@ require_once(root . "/config.php");
 
 // подключаем и инициируем все используемые классы движка
 require_once(root . "/load.php");
+require_once(root . "/engine/engine.class.php");
+require_once(root . "/engine/admin.class.php");
+$admin = new admin();
+$engine = new engine();
+
 date_default_timezone_set($engine->constant->time_zone);
 // загрузка интерфейса админ панели
 $engine->admin->doload();

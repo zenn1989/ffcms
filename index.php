@@ -12,6 +12,8 @@ define('loader', 'front');
 
 // подключаем и инициируем все используемые классы движка
 require_once(root . "/load.php");
+require_once(root . "/engine/engine.class.php");
+$engine = new engine();
 // выставляем стандарт времени
 date_default_timezone_set($engine->constant->time_zone);
 

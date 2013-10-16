@@ -15,14 +15,11 @@ require_once(root . "/engine/cache.class.php");
 require_once(root . "/engine/hook.class.php");
 require_once(root . "/engine/file.class.php");
 require_once(root . "/engine/mail.class.php");
-require_once(root . "/engine/admin.class.php");
 require_once(root . "/engine/meta.class.php");
 require_once(root . "/engine/robot.class.php");
 require_once(root . "/engine/rule.class.php");
 require_once(root . "/engine/antivirus.class.php");
 require_once(root . "/engine/backup.class.php");
-require_once(root . "/engine/engine.class.php");
-require_once(root . "/engine/api.class.php");
 
 $constant = new constant();
 $system = new system();
@@ -38,13 +35,10 @@ $cache = new cache();
 $file = new file();
 $hook = new hook();
 $mail = new mail();
-$admin = new admin();
 $meta = new meta();
 $robot = new robot();
 $rule = new rule();
 $antivirus = new antivirus();
 $backup = new backup();
-$api = new api();
-$engine = new engine();
 
 ?>
