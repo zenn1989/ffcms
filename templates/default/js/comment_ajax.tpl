@@ -48,6 +48,13 @@ function(data) {
 $('#comment_list').html(data);
 });
 });
+$('#doLoadAllComment').click(function(e) {
+$.post('{$url}/api.php?action=viewallcomment',
+{object : comment_object, id : comment_id, hash : comment_hash, comment_position : 0 },
+function(data) {
+$('#comment_list').html(data);
+});
+});
 $('#comment_send').click(function(e){
 $('#comment_value').sync();
 var comment_text = $('#comment_value').val();

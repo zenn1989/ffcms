@@ -46,15 +46,16 @@
     <div class="tab-pane active" id="comment_site">
         {$com.comment_form}
         <div id="comment_list">{$com.comment_list}</div>
-        <blockquote class="white" id="loader_comment">
+        <div id="loader_comment">
             <div id="comment_load">
                 <table class="table">
                     <tr>
-                        <td style="text-align: center;"><a href="#comment_load" id="doLoadComment">{$lang::comments_text_loadmore}</a></td>
+                        <td style="text-align: center;" class="alert alert-success"><a href="#comment_load" id="doLoadComment">{$lang::comments_text_loadmore}</a></blockquote></td>
+                        <td style="text-align: center;" class="alert alert-error"><a href="#comment_load" id="doLoadAllComment">{$lang::comments_text_loadall}</a></td>
                     </tr>
                 </table>
             </div>
-        </blockquote>
+        </div>
     </div>
     <!--
     <div class="tab-pane" id="comment_vk">Code vk.com here</div>

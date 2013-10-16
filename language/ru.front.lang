@@ -153,6 +153,7 @@ news_view_countviews<=>Просмотров
 news_tag_search_title<=>Поиск по тегу
 comments_text_title<=>Комментарии
 comments_text_loadmore<=>Загрузить еще...
+comments_text_loadall<=>Показать все
 comments_text_writemsg<=>Написать комментарий
 comments_text_messagefrom<=>Написал(а)
 comments_text_messageon<=>в

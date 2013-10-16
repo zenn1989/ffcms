@@ -153,6 +153,7 @@ news_view_countviews<=>Views
 news_tag_search_title<=>Search by tag
 comments_text_title<=>Comments
 comments_text_loadmore<=>View more...
+comments_text_loadall<=>View all
 comments_text_writemsg<=>Write comment
 comments_text_messagefrom<=>Writed
 comments_text_messageon<=>in

@@ -45,6 +45,9 @@ class api
             case "viewcomment":
                 $apiresult = $this->viewComment();
                 break;
+            case "viewallcomment":
+                $apiresult = $this->viewComment(null, true);
+                break;
             case "commenteditform":
                 $apiresult = $this->editComment();
                 break;
@@ -266,7 +269,7 @@ class api
         return;
     }
 
-    public function viewComment($notify = null)
+    public function viewComment($notify = null, $all = false)
     {
         global $engine;
         if($engine->database->isDown())
@@ -290,11 +293,18 @@ class api
             $rowRes = $stmt->fetch();
             $commentCount = $rowRes[0];
             $stmt = null;
-            $stmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_mod_comments WHERE target_hash = ? AND object_name = ? AND object_id = ? ORDER BY id DESC LIMIT 0,?");
-            $stmt->bindParam(1, $hash, PDO::PARAM_STR, 32);
-            $stmt->bindParam(2, $object, PDO::PARAM_STR);
-            $stmt->bindParam(3, $id, PDO::PARAM_INT);
-            $stmt->bindParam(4, $end_point, PDO::PARAM_INT);
+            if($all) {
+                $stmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_mod_comments WHERE target_hash = ? AND object_name = ? AND object_id = ? ORDER BY id DESC");
+                $stmt->bindParam(1, $hash, PDO::PARAM_STR, 32);
+                $stmt->bindParam(2, $object, PDO::PARAM_STR);
+                $stmt->bindParam(3, $id, PDO::PARAM_INT);
+            } else {
+                $stmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_mod_comments WHERE target_hash = ? AND object_name = ? AND object_id = ? ORDER BY id DESC LIMIT 0,?");
+                $stmt->bindParam(1, $hash, PDO::PARAM_STR, 32);
+                $stmt->bindParam(2, $object, PDO::PARAM_STR);
+                $stmt->bindParam(3, $id, PDO::PARAM_INT);
+                $stmt->bindParam(4, $end_point, PDO::PARAM_INT);
+            }
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $stmt = null;
@@ -316,7 +326,7 @@ class api
                     array($poster_id, $engine->user->get('nick', $poster_id), $engine->user->buildAvatar('small', $poster_id), $engine->hook->get('bbtohtml')->bbcode2html($item['comment']), $engine->system->toDate($item['time'], 'h'), $item['id'], $edit_link, $delete_link),
                     $theme_list);
             }
-            if ($end_point > $commentCount) {
+            if ($end_point > $commentCount || $all) {
                 $content .= '<script>$(\'#loader_comment\').remove();</script>';
             }
             return $content;
