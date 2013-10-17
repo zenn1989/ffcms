@@ -28,7 +28,6 @@ $template = new template();
 $page = new page();
 $install = new install();
 $engine = new engine();
-$engine->load();
 
 echo $install->make();
 
