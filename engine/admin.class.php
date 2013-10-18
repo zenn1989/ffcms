@@ -1064,6 +1064,11 @@ class admin
         return $this->action;
     }
 
+    public function getAdd()
+    {
+        return $this->add;
+    }
+
     public function getPage()
     {
         return $this->page;
