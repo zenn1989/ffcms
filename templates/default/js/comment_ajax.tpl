@@ -61,7 +61,7 @@ var comment_text = $('#comment_value').val();
 if(comment_text.length > 0)
 {
 $.post('{$url}/api.php?action=postcomment',
-{ comment_message : comment_text, object : comment_object, id : comment_id, hash : comment_hash, comment_position : current_point },
+{ comment_message : comment_text, object : comment_object, id : comment_id, hash : comment_hash, comment_position : current_point, pathway : comment_pathway },
 function(data) {
 $('#comment_list').html(data);
 });

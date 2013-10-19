@@ -231,6 +231,8 @@ class api
         $object = $engine->system->post('object');
         $id = $engine->system->post('id');
         $hash = $engine->system->post('hash');
+        $pathway = $engine->system->post('pathway');
+        $referrer = $_SERVER['HTTP_REFERER'];
         if ($text != null && $object != null && $id != null && $engine->system->isInt($id) && $hash != null && strlen($hash) == 32) {
             $notify = null;
             if ($engine->user->get('id') > 0 && $engine->user->get('content_post') > 0 && $engine->user->get('mod_comment_add') > 0) {
@@ -246,18 +248,22 @@ class api
                         $notify .= $engine->template->stringNotify('error', $engine->language->get('comments_api_delay_exception'));
                     }
                 }
+                if($pathway == null || $engine->constant->url . $pathway != $referrer) {
+                    $notify .= $engine->template->stringNotify('error', $engine->language->get('comments_api_check_referrer_exception'));
+                }
                 if ($engine->system->length($text) < $engine->extension->getConfig('min_length', 'comments', 'modules', 'int') || $engine->system->length($text) > $engine->extension->getConfig('max_length', 'comments', 'modules', 'int')) {
                     $notify .= $engine->template->stringNotify('error', $engine->language->get('comments_api_incorrent_length'));
                 }
                 if ($notify == null) {
-                    $stmt = $engine->database->con()->prepare("INSERT INTO {$engine->constant->db['prefix']}_mod_comments (target_hash, object_name, object_id, comment, author, time)
-                    VALUES (?, ?, ?, ?, ?, ?)");
+                    $stmt = $engine->database->con()->prepare("INSERT INTO {$engine->constant->db['prefix']}_mod_comments (target_hash, object_name, object_id, comment, author, time, pathway)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)");
                     $stmt->bindParam(1, $hash, PDO::PARAM_STR, 32);
                     $stmt->bindParam(2, $object, PDO::PARAM_STR);
                     $stmt->bindParam(3, $id, PDO::PARAM_STR);
                     $stmt->bindParam(4, $text, PDO::PARAM_STR);
                     $stmt->bindParam(5, $userid, PDO::PARAM_INT);
                     $stmt->bindParam(6, $time, PDO::PARAM_INT);
+                    $stmt->bindParam(7, $pathway, PDO::PARAM_STR);
                     $stmt->execute();
                     $notify .= $engine->template->stringNotify('success', $engine->language->get('comments_api_add_success'));
                 }

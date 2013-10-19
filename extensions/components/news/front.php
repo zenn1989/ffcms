@@ -126,8 +126,8 @@ class com_news_front implements com_front
                 $vstmt->execute();
             }
             $news_full_text = $engine->system->removeCharsFromString('<hr />', $lang_text[$engine->language->getCustom()], 1);
-            return $engine->template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'js.comment_object', 'js.comment_id', 'js.comment_hash', 'news_tag', 'news_view_count'),
-                array($lang_title[$engine->language->getCustom()], $news_full_text, $engine->system->toDate($result['date'], 'h'), $category_link, $category_text, $result['author'], $engine->user->get('nick', $result['author']), 'news', $result['id'], $engine->page->hashFromPathway(), $tag_text, $result['views']),
+            return $engine->template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'js.comment_object', 'js.comment_id', 'js.comment_hash', 'js.comment_strpathway', 'news_tag', 'news_view_count'),
+                array($lang_title[$engine->language->getCustom()], $news_full_text, $engine->system->toDate($result['date'], 'h'), $category_link, $category_text, $result['author'], $engine->user->get('nick', $result['author']), 'news', $result['id'], $engine->page->hashFromPathway(), $engine->page->getStrPathway(), $tag_text, $result['views']),
                 $news_theme);
         }
         return null;

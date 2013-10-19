@@ -37,10 +37,12 @@
     var comment_object = null;
     var comment_id = null;
     var comment_hash = null;
+    var comment_pathway = null;
     var current_point = 0;
     comment_object = '{$js.comment_object}';
     comment_id = {$js.comment_id};
     comment_hash = '{$js.comment_hash}';
+    comment_pathway = '{$js.comment_strpathway}';
 </script>
 <div class="tab-content">
     <div class="tab-pane active" id="comment_site">
