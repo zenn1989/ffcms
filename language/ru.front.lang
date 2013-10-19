@@ -159,6 +159,7 @@ comments_text_messagefrom<=>Написал(а)
 comments_text_messageon<=>в
 comments_text_answerto<=>Ответить
 comments_api_delay_exception<=>Вы слишком часто отправляете комментарии. Подождите ...
+comments_api_check_referrer_exception<=>Произошла ошибка проверки безопасности комментария
 comments_api_add_success<=>Ваш комментарий успешно добавлен на сайт
 comments_api_add_fail<=>Вы не можете добавлять комментарии на сайт
 comment_api_edit_nocomment<=>Такой комментарий не существует на сайте!
@@ -210,3 +211,7 @@ search_form_no_query<=>Укажите ваш поисковой запрос в 
 global_404_title<=>Страница не найдена
 global_404_desc<=>Такая страница не найдена на нашем сайте. Попробуйте <a href="/">вернуться на главную</a>
 fileupload_api_error<=>При загрузке файла произошла ошибка
+lastcomments_title<=>Последние комментарии
+lastcomments_notfound<=>Комментарии не найдены
+
+

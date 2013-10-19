@@ -159,6 +159,7 @@ comments_text_messagefrom<=>Writed
 comments_text_messageon<=>in
 comments_text_answerto<=>Response
 comments_api_delay_exception<=>You sending commments so fast and it look like a spam. Wait ...
+comments_api_check_referrer_exception<=>Exception found on security reason
 comments_api_add_success<=>Your comment sucessly added on website
 comments_api_add_fail<=>You can not add comments on website
 comment_api_edit_nocomment<=>Comment not founded
@@ -210,3 +211,5 @@ search_form_no_query<=>Make you search query in form
 global_404_title<=>Page not found
 global_404_desc<=>This page not founded on our website. Return <a href="/">to main</a>
 fileupload_api_error<=>Upload error are happend
+lastcomments_title<=>Last comments
+lastcomments_notfound<=>Comments not founded
