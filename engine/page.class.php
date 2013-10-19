@@ -172,7 +172,7 @@ class page
         $split = explode("/", $this->string_pathway);
         foreach ($split as $values) {
             if ($values != null) {
-                $this->pathway[] = $values;
+                $this->pathway[] = urldecode($values);
             }
         }
     }

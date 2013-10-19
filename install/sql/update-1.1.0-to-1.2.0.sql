@@ -10,3 +10,5 @@ CREATE TABLE  `{$db_prefix}_user_log` (
 PRIMARY KEY (  `id` ) ,
 INDEX (  `id` )
 ) ENGINE = MYISAM ;
+UPDATE `{$db_prefix}_components` SET `configs` = 'a:12:{s:13:"login_captcha";s:1:"0";s:16:"register_captcha";s:1:"1";s:15:"register_aprove";s:1:"1";s:10:"use_openid";s:1:"1";s:12:"profile_view";s:1:"1";s:15:"wall_post_count";s:1:"5";s:16:"marks_post_count";s:1:"5";s:17:"friend_page_count";s:2:"20";s:15:"wall_post_delay";s:2:"30";s:8:"pm_count";s:1:"5";s:12:"balance_view";s:1:"1";s:14:"userlist_count";s:2:"10";}' WHERE `dir` = 'usercontrol';
+UPDATE `{$db_prefix}_version` SET `version` = '1.2.0';

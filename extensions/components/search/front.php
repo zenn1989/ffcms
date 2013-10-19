@@ -17,7 +17,7 @@ class com_search_front implements com_front
         $engine->meta->add('title', $engine->language->get('search_seo_title'));
         $theme_head = $engine->template->get('search_head', 'components/search/');
         $way = $engine->page->getPathway();
-        $query = $engine->system->nohtml(urldecode($way[1]));
+        $query = $engine->system->nohtml($way[1]);
         $query = str_replace(array('"', "'"), "", $query);
         if($engine->system->length($query) > 3) {
             $engine->rule->add('com.search.query_make', true);

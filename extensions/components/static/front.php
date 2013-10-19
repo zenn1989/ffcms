@@ -53,7 +53,6 @@ class com_static_front implements com_front
     private function loadSinglePage($pathway)
     {
         global $engine;
-        $pathway = urldecode($pathway);
         $query = "SELECT * FROM {$engine->constant->db['prefix']}_com_static WHERE pathway = ?";
         $stmt = $engine->database->con()->prepare($query);
         $stmt->bindParam(1, $pathway, PDO::PARAM_STR);
