@@ -342,13 +342,19 @@ class api
     private function userLeaveRedirect()
     {
         global $engine;
-        return $engine->template->assign('target_url', $engine->system->get('url'), $engine->template->get('redirect'));
+        $url = $engine->system->nohtml($engine->system->get('url'));
+        if(!filter_var($url, FILTER_VALIDATE_URL)) {
+            $url = $engine->constant->url;
+        }
+        return $engine->template->assign('target_url', $url, $engine->template->get('redirect'));
     }
 
     private function userEncodedLeaveRedirect()
     {
         global $engine;
-        $url = base64_decode($engine->system->get('url'));
+        $url = base64_decode($engine->system->nohtml($engine->system->get('url')));
+        if(!filter_var($url, FILTER_VALIDATE_URL))
+            $url = $engine->constant->url;
         return $engine->template->assign('target_url', $url, $engine->template->get('redirect'));
     }
 
