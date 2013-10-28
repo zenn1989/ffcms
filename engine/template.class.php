@@ -51,7 +51,9 @@ class template
     {
         global $engine;
         foreach($this->allowedPositions() as $position) {
-            $this->position[$position] = $engine->page->getContentPosition($position);
+            $value = $engine->page->getContentPosition($position);
+            ksort($value);
+            $this->position[$position] = $value;
         }
     }
 

@@ -191,7 +191,7 @@ class page
     public function setContentPosition($position, $content, $index = 0)
     {
         if($this->content_position[$position][$index] != null) {
-            return $this->setContentPosition($position, $content, $index+1);
+            return $this->setContentPosition($position, $content, ++$index);
         }
         $this->content_position[$position][$index] = $content;
     }
@@ -228,7 +228,7 @@ class page
         }
         $string = null;
         for ($i = 1; $i <= sizeof($array_object); $i++) {
-            if ($engine->system->extensionEquals($array_object[$i], '.html')) {
+            if ($engine->system->suffixEquals($array_object[$i], '.html')) {
                 $string .= $array_object[$i];
                 continue;
             } elseif ($array_object[$i] != null) {
