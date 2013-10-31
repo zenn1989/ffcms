@@ -43,6 +43,7 @@
         $(document).ready(
                 function()
                 {
+                    CKEDITOR.disableAutoInline = true;
                     $('.wysi').ckeditor();
                 }
         );

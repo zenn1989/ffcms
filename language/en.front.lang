@@ -213,3 +213,6 @@ global_404_desc<=>This page not founded on our website. Return <a href="/">to ma
 fileupload_api_error<=>Upload error are happend
 lastcomments_title<=>Last comments
 lastcomments_notfound<=>Comments not founded
+tagcloud_title<=>Tag cloud
+tagcloud_notfound<=>Tags not founded
+tagcloud_alttext<=>Matches:

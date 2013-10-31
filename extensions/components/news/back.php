@@ -110,6 +110,20 @@ class com_news_back
                     $stmt->bindParam(11, $news_id, PDO::PARAM_INT);
                     $stmt->execute();
                     $stmt = null;
+                    $stmt = $engine->database->con()->prepare("DELETE FROM {$engine->constant->db['prefix']}_mod_tags WHERE `object_type` = 'news' AND `object_id` = ?");
+                    $stmt->bindParam(1, $news_id, PDO::PARAM_INT);
+                    $stmt->execute();
+                    $stmt = null;
+                    foreach($keywords as $keyrow) {
+                        $keyrow_array = $engine->system->altexplode(',', $keyrow);
+                        foreach($keyrow_array as $objectkey) {
+                            $stmt = $engine->database->con()->prepare("INSERT INTO {$engine->constant->db['prefix']}_mod_tags(`object_id`, `object_type`, `tag`) VALUES (?, 'news', ?)");
+                            $stmt->bindParam(1, $news_id, PDO::PARAM_INT);
+                            $stmt->bindParam(2, $objectkey, PDO::PARAM_STR);
+                            $stmt->execute();
+                            $stmt = null;
+                        }
+                    }
                     $notify .= $engine->template->stringNotify('success', $engine->language->get('admin_component_news_edit_notify_success_save'));
                 }
             }
@@ -200,6 +214,18 @@ class com_news_back
                     $stmt->bindParam(9, $display, PDO::PARAM_INT);
                     $stmt->bindParam(10, $important, PDO::PARAM_INT);
                     $stmt->execute();
+                    $new_news_id = $engine->database->con()->lastInsertId();
+                    $stmt = null;
+                    foreach($keywords as $keyrow) {
+                        $keyrow_array = $engine->system->altexplode(',', $keyrow);
+                        foreach($keyrow_array as $objectkey) {
+                            $stmt = $engine->database->con()->prepare("INSERT INTO {$engine->constant->db['prefix']}_mod_tags(`object_id`, `object_type`, `tag`) VALUES (?, 'news', ?)");
+                            $stmt->bindParam(1, $new_news_id, PDO::PARAM_INT);
+                            $stmt->bindParam(2, $objectkey, PDO::PARAM_STR);
+                            $stmt->execute();
+                            $stmt = null;
+                        }
+                    }
                     $engine->system->redirect($_SERVER['PHP_SELF'] . "?object=components&id=" . $engine->admin->getID());
                     return;
                 }
@@ -331,6 +357,10 @@ class com_news_back
             $news_id = $engine->admin->getPage();
             if($engine->system->post('submit')) {
                 $stmt = $engine->database->con()->prepare("DELETE FROM {$engine->constant->db['prefix']}_com_news_entery WHERE id = ?");
+                $stmt->bindParam(1, $news_id, PDO::PARAM_INT);
+                $stmt->execute();
+                $stmt = null;
+                $stmt = $engine->database->con()->prepare("DELETE FROM {$engine->constant->db['prefix']}_mod_tags WHERE object_type = 'news' AND object_id = ?");
                 $stmt->bindParam(1, $news_id, PDO::PARAM_INT);
                 $stmt->execute();
                 $engine->system->redirect($_SERVER['PHP_SELF'] . "?object=components&id=" . $engine->admin->getID());

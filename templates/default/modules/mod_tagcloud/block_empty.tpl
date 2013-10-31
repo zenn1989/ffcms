@@ -1,0 +1,1 @@
+<p class="alert alert-info">{$lang::tagcloud_notfound}</p>
