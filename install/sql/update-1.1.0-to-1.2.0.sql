@@ -1,6 +1,6 @@
 ALTER TABLE  `{$db_prefix}_mod_comments` ADD  `pathway` VARCHAR( 256 ) NOT NULL;
 ALTER TABLE  `{$db_prefix}_user` ADD  `balance` DECIMAL( 12, 2 ) NOT NULL DEFAULT  '0.00';
-CREATE TABLE  `{$db_prefix}_user_log` (
+CREATE TABLE  IF NOT EXISTS `{$db_prefix}_user_log` (
 `id` INT( 36 ) NOT NULL AUTO_INCREMENT ,
 `owner` INT( 36 ) NOT NULL ,
 `type` VARCHAR( 32 ) NOT NULL ,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}_mod_tags` (
   KEY `object_type` (`object_type`),
   KEY `tag` (`tag`)
 ) ENGINE=MyISAM ;
-INSERT INTO `ffcms_modules` (`configs`, `dir`, `enabled`, `path_choice`, `path_allow`, `path_deny`) VALUES
+INSERT INTO `{$db_prefix}_modules` (`configs`, `dir`, `enabled`, `path_choice`, `path_allow`, `path_deny`) VALUES
 ('a:4:{s:10:"last_count";s:1:"5";s:11:"text_length";s:2:"70";s:22:"template_position_name";s:4:"left";s:23:"template_position_index";s:1:"1";}', 'lastcomments', 1, 1, '*', ''),
 ('a:3:{s:9:"tag_count";s:2:"25";s:22:"template_position_name";s:4:"left";s:23:"template_position_index";s:1:"2";}', 'tagcloud', 1, 1, '*', '');
 UPDATE `{$db_prefix}_version` SET `version` = '1.2.0';

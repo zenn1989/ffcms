@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}_components` (
 
 INSERT INTO `{$db_prefix}_components` VALUES
 (1, '', 'static', 1),
-(2, 'a:11:{s:13:"login_captcha";s:1:"0";s:16:"register_captcha";s:1:"1";s:15:"register_aprove";s:1:"1";s:10:"use_openid";s:1:"1";s:12:"profile_view";s:1:"1";s:15:"wall_post_count";s:1:"5";s:16:"marks_post_count";s:1:"5";s:17:"friend_page_count";s:2:"20";s:15:"wall_post_delay";s:2:"30";s:8:"pm_count";s:1:"5";s:14:"userlist_count";s:2:"10";}', 'usercontrol', 1),
+(2, 'a:12:{s:13:"login_captcha";s:1:"0";s:16:"register_captcha";s:1:"1";s:15:"register_aprove";s:1:"1";s:10:"use_openid";s:1:"1";s:12:"profile_view";s:1:"1";s:15:"wall_post_count";s:1:"5";s:16:"marks_post_count";s:1:"5";s:17:"friend_page_count";s:2:"20";s:15:"wall_post_delay";s:2:"30";s:8:"pm_count";s:1:"5";s:12:"balance_view";s:1:"1";s:14:"userlist_count";s:2:"10";}', 'usercontrol', 1),
 (3, 'a:5:{s:17:"delay_news_public";s:1:"1";s:15:"count_news_page";s:1:"5";s:17:"short_news_length";s:3:"200";s:14:"multi_category";s:1:"1";s:11:"enable_tags";s:1:"1";}', 'news', 1),
 (6, '', 'sitemap', 1),
 (7, '', 'feedback', 1),
@@ -123,7 +123,9 @@ INSERT INTO `{$db_prefix}_modules` VALUES
 (2, '', 'news_on_main', 1, 1, 'index', ''),
 (3, 'a:2:{s:7:"news_id";s:1:"2";s:9:"show_date";s:1:"1";}', 'static_on_main', 0, 1, 'index', ''),
 (4, 'a:5:{s:14:"comments_count";s:1:"5";s:10:"time_delay";s:2:"60";s:9:"edit_time";s:2:"30";s:10:"min_length";s:2:"10";s:10:"max_length";s:4:"2000";}', 'comments', 1, 1, 'news/*;static/*', ''),
-(5, '', 'user_notify', 1, 1, '*', '');
+(5, '', 'user_notify', 1, 1, '*', ''),
+(6, 'a:4:{s:10:"last_count";s:1:"5";s:11:"text_length";s:2:"70";s:22:"template_position_name";s:4:"left";s:23:"template_position_index";s:1:"1";}', 'lastcomments', 1, 1, '*', ''),
+(7, 'a:3:{s:9:"tag_count";s:2:"25";s:22:"template_position_name";s:4:"left";s:23:"template_position_index";s:1:"2";}', 'tagcloud', 1, 1, '*', '');
 
 CREATE TABLE IF NOT EXISTS `{$db_prefix}_mod_comments` (
   `id` int(32) NOT NULL AUTO_INCREMENT,
@@ -133,12 +135,13 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}_mod_comments` (
   `comment` varchar(512) NOT NULL,
   `author` int(32) NOT NULL,
   `time` int(16) NOT NULL DEFAULT '0',
+  `pathway` VARCHAR( 256 ) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 INSERT INTO `{$db_prefix}_mod_comments` VALUES
-(1, 'bf31ebf1a2d0c2f3c730521a0b2d2acd', 'news', 1, 'The first test comment from ffcms :)', 1, 1375001386);
+(1, 'bf31ebf1a2d0c2f3c730521a0b2d2acd', 'news', 1, 'The first test comment from ffcms :)', 1, 1375001386, '/news/demo-ffcms.html');
 
 CREATE TABLE IF NOT EXISTS `{$db_prefix}_statistic` (
   `id` int(64) NOT NULL AUTO_INCREMENT,
@@ -165,6 +168,7 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}_user` (
   `token_start` int(16) NOT NULL,
   `aprove` varchar(32) NOT NULL DEFAULT '0',
   `openid` varchar(512) NOT NULL DEFAULT '',
+  `balance` DECIMAL( 12, 2 ) NOT NULL DEFAULT  '0.00',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -273,12 +277,34 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}_user_wall_answer` (
   KEY `id` (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+CREATE TABLE  `{$db_prefix}_user_log` (
+  `id` INT( 36 ) NOT NULL AUTO_INCREMENT ,
+  `owner` INT( 36 ) NOT NULL ,
+  `type` VARCHAR( 32 ) NOT NULL ,
+  `params` TEXT NOT NULL ,
+  `message` VARCHAR( 256 ) NOT NULL ,
+  `time` INT( 16 ) NOT NULL,
+  PRIMARY KEY (  `id` ) ,
+  INDEX (  `id` )
+) ENGINE = MYISAM ;
+
+CREATE TABLE IF NOT EXISTS `{$db_prefix}_mod_tags` (
+  `id` INT(32) NOT NULL AUTO_INCREMENT,
+  `object_type` VARCHAR( 128 ) NOT NULL,
+  `object_id` INT( 32 ) NOT NULL,
+  `tag` varchar(128) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `object_id` (`object_id`),
+  KEY `object_type` (`object_type`),
+  KEY `tag` (`tag`)
+) ENGINE=MyISAM ;
+
 CREATE TABLE IF NOT EXISTS `{$db_prefix}_version` (
   `version` varchar(24) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 INSERT INTO `{$db_prefix}_version` VALUES
-('1.1.0');
+('1.2.0');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
