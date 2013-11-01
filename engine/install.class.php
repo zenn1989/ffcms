@@ -40,7 +40,7 @@ class install
         $notify = null;
         if(file_exists($engine->constant->root.'/install/.lock')) {
             $theme = $engine->template->stringNotify('error', $engine->language->get('install_locked'));
-        } elseif(!is_writable($engine->constant->root . '/config.php')) {
+        } elseif(file_exists($engine->constant->root . '/config.php') && !is_writable($engine->constant->root . '/config.php')) {
             $theme = $engine->template->stringNotify('error', $engine->language->get('install_config_notwritable'));
         } elseif(!is_writable($engine->constant->root . '/install/')) {
             $theme = $engine->template->stringNotify('error', $engine->language->get('install_self_notwritable'));

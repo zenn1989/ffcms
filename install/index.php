@@ -7,10 +7,6 @@ define('version', '1.2.0');
 // указатель интерфейса
 define('loader', 'install');
 
-
-// подключаем файл конфигураций
-require_once(root . "/config.php");
-
 // минимальный набор джентельмена ;D
 require_once(root . "/engine/constant.class.php");
 require_once(root . "/engine/database.class.php");

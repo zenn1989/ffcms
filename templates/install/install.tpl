@@ -84,14 +84,14 @@
     <div class="control-group">
         <label class="control-label">{$lang::install_install_admin_pass_title}</label>
         <div class="controls">
-            <input type="text" placeholder="StrOnGPas1s4ord" name="admin:pass">
+            <input type="password" placeholder="StrOnGPas1s4ord" name="admin:pass">
             <p class="help-block">{$lang::install_install_admin_pass_desc}</p>
         </div>
     </div>
     <div class="control-group">
         <label class="control-label">{$lang::install_install_admin_repass_title}</label>
         <div class="controls">
-            <input type="text" placeholder="StrOnGPas1s4ord" name="admin:repass">
+            <input type="password" placeholder="StrOnGPas1s4ord" name="admin:repass">
             <p class="help-block">{$lang::install_install_admin_repass_desc}</p>
         </div>
     </div>

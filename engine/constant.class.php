@@ -15,7 +15,7 @@ class constant
     public $ds = "/";
     public $slash = "/";
     public $root = null;
-    public $tpl_dir = null;
+    public $tpl_dir = "templates";
     public $tpl_name = null;
     public $url = null;
 
@@ -50,8 +50,10 @@ class constant
     {
         global $config;
         $this->root = root;
-        $this->tpl_dir = $config['tpl_dir'];
-        $this->tpl_name = $config['tpl_name'];
+        if($config['tpl_dir'] != null)
+            $this->tpl_dir = $config['tpl_dir'];
+        if($config['tpl_name'] != null)
+            $this->tpl_name = $config['tpl_name'];
         if(loader == "install") {
             $url = "http://" . $_SERVER['HTTP_HOST'];
             $pathway = explode('/', $_SERVER['PHP_SELF']);

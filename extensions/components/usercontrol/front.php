@@ -609,10 +609,9 @@ class com_usercontrol_front
         }
         $stmt = null;
         $limit_start = $way[1] * $usercount_on_page;
-        $stmt = $engine->database->con()->prepare("SELECT a.id, a.nick, b.regdate FROM {$engine->constant->db['prefix']}_user a, {$engine->constant->db['prefix']}_user_custom b WHERE a.id != ? AND a.id = b.id AND a.aprove = 0 ORDER BY a.id DESC LIMIT ?, ?");
-        $stmt->bindParam(1, $current_user_id, PDO::PARAM_INT);
-        $stmt->bindParam(2, $limit_start, PDO::PARAM_INT);
-        $stmt->bindParam(3, $usercount_on_page, PDO::PARAM_INT);
+        $stmt = $engine->database->con()->prepare("SELECT a.id, a.nick, b.regdate FROM {$engine->constant->db['prefix']}_user a, {$engine->constant->db['prefix']}_user_custom b WHERE a.id = b.id AND a.aprove = 0 ORDER BY a.id DESC LIMIT ?, ?");
+        $stmt->bindParam(1, $limit_start, PDO::PARAM_INT);
+        $stmt->bindParam(2, $usercount_on_page, PDO::PARAM_INT);
         $stmt->execute();
         while ($result = $stmt->fetch()) {
             $compiled_body .= $engine->template->assign(array('target_user_id', 'target_user_name', 'target_user_avatar', 'target_reg_date'), array($result['id'], $result['nick'], $engine->user->buildAvatar('small', $result['id']), $engine->system->toDate($result['regdate'], 'd')), $theme_body);

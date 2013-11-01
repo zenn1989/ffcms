@@ -55,7 +55,7 @@
 		<div class="span8">
 			<div class="well" style="min-height: 600px;">
 				<h4>{$lang::install_switch_header}</h4>
-                <small class="pull-right">{$lang::install_switch_version}: {$ffcms_version}</small><br />
+                <small class="pull-right">{$lang::install_switch_version}: <span class="label label-info">{$ffcms_version}</span></small><br />
 				<hr />
 
 			    {$body}

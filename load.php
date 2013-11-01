@@ -1,6 +1,10 @@
 <?php
-
-require_once(root . "/config.php");
+if(file_exists(root . "/config.php"))
+    require_once(root . "/config.php");
+else {
+    header("Location: /install/");
+    exit("System are not installed. Run <a href='/install/'>install</a>");
+}
 require_once(root . "/engine/constant.class.php");
 require_once(root . "/engine/database.class.php");
 require_once(root . "/engine/language.class.php");
