@@ -65,7 +65,8 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}_com_news_entery` (
   `important` int(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `id` (`id`),
-  FULLTEXT KEY `title` (`title`,`text`)
+  FULLTEXT KEY `title` (`title`),
+  FULLTEXT KEY `text` (`text`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 INSERT INTO `{$db_prefix}_com_news_entery` (`id`, `title`, `text`, `link`, `category`, `date`, `author`, `description`, `keywords`, `views`, `display`, `important`) VALUES

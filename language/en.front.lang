@@ -147,6 +147,7 @@ news_view_publish_date<=>Publish date
 news_view_author<=>Author
 news_view_tags<=>Tags
 news_view_button_more<=>More
+news_view_similar<=>Related articles
 news_not_found<=>News not founded becouse site in developing now.
 news_view_tag_notfind<=>not founded
 news_view_countviews<=>Views

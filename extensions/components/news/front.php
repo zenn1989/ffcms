@@ -99,6 +99,7 @@ class com_news_front implements com_front
             $news_view_id = $result['id'];
             $tag_theme = $engine->template->get('tag_link', 'components/news/');
             $tag_spliter = $engine->template->get('tag_spliter', 'components/news/');
+            $similar_theme = $engine->template->get('news_similar_item', 'components/news/');
             $lang_text = unserialize($result['text']);
             $lang_title = unserialize($result['title']);
             $lang_description = unserialize($result['description']);
@@ -120,14 +121,38 @@ class com_news_front implements com_front
             if($tag_text == null) {
                 $tag_text = $engine->language->get('news_view_tag_notfind');
             }
+            $search_similar_string = $lang_title[$engine->language->getCustom()];
+            $stmt = null;
+            $stmt = $engine->database->con()->prepare("SELECT a.*, b.path, MATCH (a.title) AGAINST (? IN BOOLEAN MODE) AS relevance
+                                        FROM {$engine->constant->db['prefix']}_com_news_entery a,
+                                        {$engine->constant->db['prefix']}_com_news_category b
+                                        WHERE a.category = b.category_id AND a.id != ? AND a.display = 1
+                                        AND MATCH (a.title) AGAINST (? IN BOOLEAN MODE)
+                                        ORDER BY relevance LIMIT 0,5");
+            $stmt->bindParam(1, $search_similar_string, PDO::PARAM_STR);
+            $stmt->bindParam(2, $news_view_id, PDO::PARAM_INT);
+            $stmt->bindParam(3, $search_similar_string, PDO::PARAM_STR);
+            $stmt->execute();
+            $simBody = null;
+            if($stmt->rowCount() > 0) {
+                $engine->rule->add('com.news.have_similar', true);
+                $simRes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                foreach($simRes as $simRow) {
+                    $similar_title = unserialize($simRow['title']);
+                    $similar_path = $simRow['path'];
+                    $similar_full_path = $similar_path == null ? $simRow['link'] : $similar_path . "/" . $simRow['link'];
+                    $simBody .= $engine->template->assign(array('news_similar_url', 'news_similar_title'), array($similar_full_path, $similar_title[$engine->language->getCustom()]), $similar_theme);
+                }
+            }
+
             if($viewCount) {
                 $vstmt = $engine->database->con()->prepare("UPDATE {$engine->constant->db['prefix']}_com_news_entery SET views = views+1 WHERE id = ?");
                 $vstmt->bindParam(1, $news_view_id, PDO::PARAM_INT);
                 $vstmt->execute();
             }
             $news_full_text = $engine->system->removeCharsFromString('<hr />', $lang_text[$engine->language->getCustom()], 1);
-            return $engine->template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'js.comment_object', 'js.comment_id', 'js.comment_hash', 'js.comment_strpathway', 'news_tag', 'news_view_count'),
-                array($lang_title[$engine->language->getCustom()], $news_full_text, $engine->system->toDate($result['date'], 'h'), $category_link, $category_text, $result['author'], $engine->user->get('nick', $result['author']), 'news', $result['id'], $engine->page->hashFromPathway(), $engine->page->getStrPathway(), $tag_text, $result['views']),
+            return $engine->template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'js.comment_object', 'js.comment_id', 'js.comment_hash', 'js.comment_strpathway', 'news_tag', 'news_view_count', 'news_similar_item'),
+                array($lang_title[$engine->language->getCustom()], $news_full_text, $engine->system->toDate($result['date'], 'h'), $category_link, $category_text, $result['author'], $engine->user->get('nick', $result['author']), 'news', $result['id'], $engine->page->hashFromPathway(), $engine->page->getStrPathway(), $tag_text, $result['views'], $simBody),
                 $news_theme);
         }
         return null;
