@@ -3,7 +3,7 @@ error_reporting(E_ERROR);
 // задаем глобальную корня
 define('root', $_SERVER['DOCUMENT_ROOT']);
 // версия системы
-define('version', '1.1.0');
+define('version', '1.2.0');
 // указатель интерфейса
 define('loader', 'install');
 

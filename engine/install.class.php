@@ -108,7 +108,6 @@ $config[\'password_salt\'] = "'.$random_password_salt.'";
                         }
                         $query_dump = $engine->template->assign('db_prefix', $prefix, file_get_contents($engine->constant->root . '/install/sql/install.sql'));
                         $testCon->exec($query_dump);
-                        // $testCon->multiquery();
                         $md5_doublehash = $engine->system->doublemd5($reg_pass, $random_password_salt);
                         $stmt = $testCon->prepare("INSERT INTO {$prefix}_user (`login`, `email`, `nick`, `pass`, `access_level`) VALUES(?, ?, 'admin', ?, '3')");
                         $stmt->bindParam(1, $reg_login, PDO::PARAM_STR);
@@ -169,8 +168,13 @@ $config[\'password_salt\'] = "'.$random_password_salt.'";
         $usedVersion = $res['version'];
         $updateQuery = null;
         if($usedVersion === "1.0.0") {
-            if(file_exists($engine->constant->root . '/install/sql/update-1.0.0-to-1.1.0.sql'))
+            if(file_exists($engine->constant->root . '/install/sql/update-1.0.0-to-1.1.0.sql')) {
                 $updateQuery .= $engine->template->assign('db_prefix', $engine->constant->db['prefix'], file_get_contents($engine->constant->root . '/install/sql/update-1.0.0-to-1.1.0.sql'));
+                $updateQuery .= $engine->template->assign('db_prefix', $engine->constant->db['prefix'], file_get_contents($engine->constant->root . '/install/sql/update-1.1.0-to-1.2.0.sql'));
+            }
+        } elseif($usedVersion === "1.1.0") {
+            if(file_exists($engine->constant->root . '/install/sql/update-1.1.0-to-1.2.0.sql'))
+                $updateQuery .= $engine->template->assign('db_prefix', $engine->constant->db['prefix'], file_get_contents($engine->constant->root . '/install/sql/update-1.1.0-to-1.2.0.sql'));
         }
         if($updateQuery != null) {
             if($engine->system->post('startupdate')) {
