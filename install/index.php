@@ -1,8 +1,5 @@
 <?php
-// Среда работы.
-// work - рабочий проект
-// dev - отладка и разработка
-define('env', 'work');
+error_reporting(0);
 // задаем глобальную корня
 define('root', $_SERVER['DOCUMENT_ROOT']);
 // версия системы
@@ -19,6 +16,10 @@ require_once(root . "/engine/template.class.php");
 require_once(root . "/engine/system.class.php");
 require_once(root . "/engine/install.class.php");
 require_once(root . "/engine/engine.class.php");
+
+// for update reason
+if(file_exists(root . "/config.php"))
+    require_once(root . "/config.php");
 
 $constant = new constant();
 $system = new system();

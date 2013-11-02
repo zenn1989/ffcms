@@ -162,8 +162,8 @@ $config[\'password_salt\'] = "'.$random_password_salt.'";
         if($install_log == "locked") {
             return $engine->template->stringNotify('error', $engine->template->assign('version', version, $engine->language->get('install_update_notify_locked')));
         }
-        $database = new database();
-        $stmt = $engine->database->con()->query("SELECT `version` FROM `{$engine->constant->db['prefix']}_version` LIMIT 1");
+        $tmp_db = new database();
+        $stmt = $tmp_db->con()->query("SELECT `version` FROM `{$engine->constant->db['prefix']}_version` LIMIT 1");
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
         $usedVersion = $res['version'];
         $updateQuery = null;
@@ -178,7 +178,7 @@ $config[\'password_salt\'] = "'.$random_password_salt.'";
         }
         if($updateQuery != null) {
             if($engine->system->post('startupdate')) {
-                $engine->database->con()->exec($updateQuery);
+                $tmp_db->con()->exec($updateQuery);
                 $theme_update = $engine->template->stringNotify('success', $engine->language->get('install_update_success_notify').version);
             } else {
                 $theme_update = $engine->template->assign('update_version', version, $engine->template->get('update'));
