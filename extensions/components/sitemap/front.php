@@ -46,7 +46,7 @@ class com_sitemap_front implements com_front
         $stmt = $engine->database->con()->prepare("SELECT `pathway`, `date` FROM {$engine->constant->db['prefix']}_com_static");
         $stmt->execute();
         while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $loader->add($result['pathway'], date('c', $result['date']), 'weekly', '0.4');
+            $loader->add("static/".$result['pathway'], date('c', $result['date']), 'weekly', '0.4');
         }
         $stmt = null;
         $stmt = $engine->database->con()->prepare("SELECT id FROM {$engine->constant->db['prefix']}_user");
