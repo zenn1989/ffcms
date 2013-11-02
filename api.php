@@ -1,8 +1,5 @@
 <?php
-// Среда работы.
-// work - рабочий проект
-// dev - отладка и разработка
-define('env', 'work');
+error_reporting(E_ERROR);
 // задаем глобальную корня
 define('root', $_SERVER['DOCUMENT_ROOT']);
 // версия системы (api.major.minor)
