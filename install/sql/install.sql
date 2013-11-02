@@ -300,6 +300,13 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}_mod_tags` (
   KEY `tag` (`tag`)
 ) ENGINE=MyISAM ;
 
+INSERT INTO  `{$db_prefix}_mod_tags` (`object_type`, `object_id`, `tag`)  VALUES
+('news', '1', 'ffcms'),
+('news', '1', 'cms'),
+('news', '1', 'fast'),
+('news', '1', 'flexibility'),
+('news', '1', 'php');
+
 CREATE TABLE IF NOT EXISTS `{$db_prefix}_version` (
   `version` varchar(24) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
