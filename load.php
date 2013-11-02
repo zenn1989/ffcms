@@ -1,4 +1,17 @@
 <?php
+
+switch(env) {
+    case "work":
+        error_reporting(E_ERROR);
+        break;
+    case "dev":
+        error_reporting(E_ALL ^ E_NOTICE);
+        break;
+    default:
+        error_reporting(E_ERROR);
+        break;
+}
+
 if(file_exists(root . "/config.php"))
     require_once(root . "/config.php");
 else {

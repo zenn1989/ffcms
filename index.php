@@ -1,5 +1,9 @@
 <?php
-error_reporting(E_ERROR);
+
+// Среда работы.
+// work - рабочий проект
+// dev - отладка и разработка
+define('env', 'work');
 // маркер начала загруки, для отладочной информации.
 $debug_starttime = microtime(true);
 session_start();
