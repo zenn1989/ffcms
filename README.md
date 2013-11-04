@@ -11,10 +11,10 @@ FFCMS can working on next service:
 * php 5.3.2 or newest
 * mysql 5.0 or newest
 * http server (apache2) with mod rewrite
-* 128mb RAM and 500mHz CPU
+* 64mb RAM and 500mHz CPU(for webserver & php)
 
 # Current version
-Current version of ffcms is **1.1.0**. We still working to improve functionality of our system.
+Current version of ffcms is **1.2.0**. We still working to improve functionality of our system.
 
 # Official documentation
 FFCMS is a opensource project and we published documentation to allow you develop your extensions and templates on ffcms 
