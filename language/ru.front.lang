@@ -130,6 +130,7 @@ usercontrol_profile_settings_tab_balance<=>Баланс
 usercontrol_listuser_header_text<=>Список пользователей
 usercontrol_listuser_info_text<=>Информация
 usercontrol_listuser_item_many<=>Сколько нас?
+usercontrol_listuser_info_demography<=>Демография
 usercontrol_listuser_people<=>человек
 usercontrol_listuser_male<=>Мужчин
 usercontrol_listuser_female<=>Женщин

@@ -130,6 +130,7 @@ usercontrol_profile_settings_tab_balance<=>Balance
 usercontrol_listuser_header_text<=>User list
 usercontrol_listuser_info_text<=>Information
 usercontrol_listuser_item_many<=>User count
+usercontrol_listuser_info_demography<=>Demography
 usercontrol_listuser_people<=>people
 usercontrol_listuser_male<=>Male
 usercontrol_listuser_female<=>Female
