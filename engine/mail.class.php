@@ -17,7 +17,7 @@ class mail
     public function send($to, $title, $text, $ownername = "unknown")
     {
         global $engine;
-        require_once($engine->constant->root . '/engine/phpmailer/class.phpmailer.php');
+        require_once($engine->constant->root . '/resource/phpmailer/class.phpmailer.php');
         $mail = new PHPMailer(true);
         if ($engine->constant->mail['smtp_enabled']) {
             $mail->IsSMTP(); // telling the class to use SMTP
