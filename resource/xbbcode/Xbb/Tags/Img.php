@@ -48,7 +48,7 @@ class Xbb_Tags_Img extends bbcode
             }
         }
         $src = $this->checkUrl($src);
-        return '<img src="' . $src . '" ' . $attr . ' />';
+        return '<img class="bbcode-img" src="' . $src . '" ' . $attr . ' />';
     }
 }
 
