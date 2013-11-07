@@ -22,7 +22,7 @@ class mod_lastcomments_front implements mod_front
             $theme_body = $engine->template->get('block_body', 'modules/mod_lastcomments/');
             $result_body = null;
             foreach($res as $result) {
-                $comment_preview_text = $engine->system->altsubstr($result['comment'], 0, $max_comment_char_size);
+                $comment_preview_text = $engine->system->altsubstr($engine->hook->get('bbtohtml')->nobbcode($result['comment']), 0, $max_comment_char_size);
                 $result_body .= $engine->template->assign(array('comment_user_id', 'comment_user_name', 'comment_object_url', 'comment_text'),
                                 array($result['author'], $engine->user->get('nick', $result['author']), $result['pathway'], $comment_preview_text),
                                 $theme_body);
