@@ -5,7 +5,7 @@
 define('env', 'work');
 define('root', $_SERVER['DOCUMENT_ROOT']);
 // версия системы (api.major.minor)
-define('version', '1.2.0');
+define('version', '1.2.1');
 // указатель на админ-интерфейс
 define('loader', 'back');
 // указатель позволяющий изменить имя скрипта

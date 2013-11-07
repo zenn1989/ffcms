@@ -3,7 +3,7 @@ error_reporting(E_ERROR);
 // задаем глобальную корня
 define('root', $_SERVER['DOCUMENT_ROOT']);
 // версия системы (api.major.minor)
-define('version', '1.2.0');
+define('version', '1.2.1');
 // указатель интерфейса
 define('loader', 'api');
 
