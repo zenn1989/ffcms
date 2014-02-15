@@ -1,37 +1,37 @@
 <?php
-// --------------------------------------//
-// THIS SOFTWARE USE GNU GPL V3 LICENSE //
-// AUTHOR: zenn, Pyatinsky Mihail.     //
-// Official website: www.ffcms.ru     //
-// ----------------------------------//
 
-class hook_bbtohtml_front implements hook_front
+class hooks_bbtohtml_front
 {
     private $parser = null;
+    protected static $instance = null;
 
-    public function load()
+    public static function getInstance()
     {
-        global $engine;
-        if ($this->parser == null) {
-            require_once $engine->constant->root . '/resource/xbbcode/bbcode.lib.php';
-            $this->parser = new bbcode;
+        if (is_null(self::$instance)) {
+            self::$instance = new self();
         }
-        return $this;
+        return self::$instance;
     }
 
+    public function make() {}
+
     /**
-     * Преобразование bbcode в html
+     * Parse bbcode to html syntax
      * @param $bbtext
      * @return mixed
      */
     public function bbcode2html($bbtext)
     {
+        if(is_null($this->parser)) {
+            require_once root . '/resource/xbbcode/bbcode.lib.php';
+            $this->parser = new bbcode;
+        }
         $this->parser->parse($bbtext);
         return $this->parser->get_html();
     }
 
     /**
-     * Убрать все bbcode из $bbtext
+     * Remove all bbcodes from $bbtext
      * @param $bbtext
      * @return mixed
      */

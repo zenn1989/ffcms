@@ -1,39 +1,46 @@
 <?php
-// --------------------------------------//
-// THIS SOFTWARE USE GNU GPL V3 LICENSE //
-// AUTHOR: zenn, Pyatinsky Mihail.     //
-// Official website: www.ffcms.ru     //
-// ----------------------------------//
-
 /**
- * Класс занимающийся сбором и обработкой статистических данных.
- * @author zenn
+ * Copyright (C) 2013 ffcms software, Pyatinskyi Mihail
  *
+ * FFCMS is a free software developed under GNU GPL V3.
+ * Official license you can take here: http://www.gnu.org/licenses/
+ *
+ * FFCMS website: http://ffcms.ru
  */
-class robot
-{
-    // Сбор статистики о текущем пользователе
-    public function collect()
-    {
-        global $engine;
-        if($engine->database->isDown())
+namespace engine;
+use PDO;
+
+class robot {
+    protected static $instance = null;
+
+    public static function getInstance() {
+        if(is_null(self::$instance)) {
+            self::collect();
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    private static function collect() {
+        if(database::getInstance()->isDown() || !property::getInstance()->get('collect_statistic'))
             return;
-        $realip = $engine->system->getRealIp();
+        $realip = system::getInstance()->getRealIp();
         $visittime = time();
-        $browser = $this->user_browser($_SERVER['HTTP_USER_AGENT']);
-        $os = $this->user_os($_SERVER['HTTP_USER_AGENT']);
-        $cookie = $_COOKIE['source'];
-        $isreg = $engine->user->get('id') < 1 ? 0 : 1;
-        $userid = $engine->user->get('id') < 1 ? 0 : $engine->user->get('id');
+        $browser = self::user_browser($_SERVER['HTTP_USER_AGENT']);
+        $os = self::user_os($_SERVER['HTTP_USER_AGENT']);
+        $cookie = $_COOKIE['source'] ?: '';
+        $userid = user::getInstance()->get('id');
+        if($userid == null)
+            $userid = 0;
         if ($cookie == null) {
             $settime = $visittime + (365 * 24 * 60 * 60);
-            setcookie('source', $engine->system->md5random(), $settime, '/');
+            setcookie('source', system::getInstance()->md5random(), $settime, '/');
             $cookie = '';
         }
-        $referer = $_SERVER['HTTP_REFERER'] == null ? '' : $_SERVER['HTTP_REFERER'];
-        $path = $_SERVER['REQUEST_URI'];
-        $query = "INSERT INTO {$engine->constant->db['prefix']}_statistic (ip, cookie, browser, os, time, referer, path, reg_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $engine->database->con()->prepare($query);
+        $referer = $_SERVER['HTTP_REFERER'] ?: '';
+        $path = $_SERVER['REQUEST_URI'] ?: '';
+        $query = "INSERT INTO ".property::getInstance()->get('db_prefix')."_statistic (ip, cookie, browser, os, time, referer, path, reg_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = database::getInstance()->con()->prepare($query);
         $stmt->bindParam(1, $realip, PDO::PARAM_STR);
         $stmt->bindParam(2, $cookie, PDO::PARAM_STR, 32);
         $stmt->bindParam(3, $browser, PDO::PARAM_STR);
@@ -43,12 +50,14 @@ class robot
         $stmt->bindParam(7, $path, PDO::PARAM_STR);
         $stmt->bindParam(8, $userid, PDO::PARAM_INT);
         $stmt->execute();
-
     }
 
-    // Функция определения Браузера+версии
-    // Взята из публичного доступа. (c) Гельтищева Нина.
-    private function user_browser($agent)
+    /**
+     * Detect user browser info
+     * @param $agent
+     * @return string
+     */
+    private static function user_browser($agent)
     {
         preg_match("/(MSIE|Opera|Firefox|Chrome|Version|Opera Mini|Netscape|Konqueror|SeaMonkey|Camino|Minefield|Iceweasel|K-Meleon|Maxthon)(?:\/| )([0-9.]+)/", $agent, $browser_info);
         list(, $browser, $version) = $browser_info;
@@ -68,7 +77,12 @@ class robot
         return $browser . ' ' . $version;
     }
 
-    private function user_os($agent)
+    /**
+     * User o.s. information
+     * @param $agent
+     * @return string
+     */
+    private static function user_os($agent)
     {
         if (preg_match('/windows|win32/i', $agent)) {
             return 'windows';
@@ -80,7 +94,9 @@ class robot
             return "unknown";
         }
     }
-
 }
+
+
+
 
 ?>

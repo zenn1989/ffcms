@@ -1,169 +1,93 @@
 <?php
-// --------------------------------------//
-// THIS SOFTWARE USE GNU GPL V3 LICENSE //
-// AUTHOR: zenn, Pyatinsky Mihail.     //
-// Official website: www.ffcms.ru     //
-// ----------------------------------//
 
-/**
- * класс управляющий языками отображения сайта
- */
-class language
-{
-    private $lang = array();
-    private $use_lang = null;
-    private $load_add_front = false;
-    private $load_add_back = false;
-    private $available = array();
+namespace engine;
 
-    function language()
-    {
-        global $constant, $system;
-        $this->loadAvailableLanguages();
-        $this->use_lang = $constant->lang;
-        if($_COOKIE['ffcms_lang'] != null && $this->canUseLanguage($_COOKIE['ffcms_lang'])) {
-            $this->use_lang = $_COOKIE['ffcms_lang'];
-        } elseif($_SERVER['HTTP_ACCEPT_LANGUAGE'] != null && $this->canUseLanguage(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2))) {
-            $this->use_lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+class language extends singleton {
+    protected static $instance = null;
+    protected static $available = array();
+    protected static $userLang = null;
+
+    public static function getInstance() {
+        if(is_null(self::$instance)) {
+            self::loadAvailable();
+            self::loadLanguage();
+            self::$instance = new self();
         }
+        return self::$instance;
+    }
+
+    protected static function loadLanguage() {
+        $lang = property::getInstance()->get('lang');
+        if($_COOKIE['ffcms_lang'] != null && self::canUse($_COOKIE['ffcms_lang']))
+            $lang = $_COOKIE['ffcms_lang'];
+        elseif($_SERVER['HTTP_ACCEPT_LANGUAGE'] != null && self::canUse(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)))
+            $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+        self::$userLang = $lang;
         $file = null;
-        if (loader == "back") {
-            $file = $constant->root . '/language/' . $this->use_lang . '.back.lang';
-        } elseif(loader == "install") {
-            $file = $constant->root . '/language/' . $this->use_lang . '.install.lang';
+        $addfile = null;
+        // default language files
+        if(loader == 'back') {
+            $file = root . '/language/' . $lang . '.back.lang';
+            $addfile = root . '/language/' . $lang . '.back.addition.lang';
+        } elseif(loader == 'install') {
+            $file = root . '/language/' . $lang . '.install.lang';
         } else {
-            $file = $constant->root . '/language/' . $this->use_lang . '.front.lang';
+            $file = root . '/language/' . $lang . '.front.lang';
+            $addfile = root . '/language/' . $lang . '.front.addition.lang';
         }
-
-        if (file_exists($file)) {
-            $con = file_get_contents($file);
-            $lang_array = explode("\n", $con);
-            foreach ($lang_array as $line) {
-                // a<=>b is a min. example
-                if (strlen($line) > 4) {
-                    list($tag, $value) = explode("<=>", $line);
-                    if(!$system->prefixEquals($tag, '#'))
-                        $this->lang[$tag] = $value;
-                }
-            }
+        self::getLanguageFile($file);
+        self::getLanguageFile($addfile);
+        // additional theme lang file
+        if(loader != 'back' && loader != 'front') {
+            $theme_langfile = root . '/' . property::getInstance()->get('tpl_dir') . '/' . property::getInstance()->get('tpl_name') . '/' . $lang . '.lang';
+            self::getLanguageFile($theme_langfile);
         }
-        $this->additionalLoad();
-        $this->themeLanguageLoad();
     }
 
-    public function getCustom()
-    {
-        return $this->use_lang;
-    }
-
-    public function canUseLanguage($lang)
-    {
-        return in_array($lang, $this->available) ? true : false;
-    }
-
-    public function getAvailable()
-    {
-        return $this->available;
-    }
-
-    private function loadAvailableLanguages()
-    {
-        global $constant, $system;
-        $language_files = scandir($constant->root . '/language/');
-        $found_lang = array();
-        foreach($language_files as $file) {
-            if(!$system->prefixEquals('.', $file) && $system->suffixEquals($file, '.lang'))
-                $found_lang = $system->arrayAdd(strstr($file, '.', true), $found_lang);
-        }
-        foreach($found_lang as $found) {
-            if(file_exists($constant->root . '/language/' . $found . '.front.lang') && file_exists($constant->root . '/language/' . $found . '.back.lang') && file_exists($constant->root . '/language/' . $found . '.install.lang')) {
-                $this->available[] = $found;
+    protected static function getLanguageFile($file) {
+        if(!file_exists($file))
+            return;
+        $content = @file_get_contents($file);
+        $lang_array = explode("\n", $content);
+        foreach($lang_array as $lang_line) {
+            if(strlen($lang_line) > 3 && !system::getInstance()->prefixEquals($lang_line, '#')) {
+                list($tag, $value) = explode("<=>", $lang_line);
+                template::getInstance()->set(template::TYPE_LANGUAGE, $tag, $value);
             }
         }
     }
 
-    public function set($data)
-    {
-        foreach ($this->lang as $tag => $value) {
-            $data = str_replace('{$lang::' . $tag . '}', $value, $data);
+    protected static function loadAvailable() {
+        if(!file_exists(root . '/language/'))
+            return;
+        $scan = scandir(root . '/language/');
+        $found_language = array();
+        // get all available
+        foreach($scan as $file) {
+            if(!system::getInstance()->prefixEquals($file, '.') && system::getInstance()->suffixEquals($file, '.lang'))
+                $found_language = system::getInstance()->arrayAdd(strstr($file, '.', true), $found_language);
         }
-        return $data;
-    }
-
-    private function additionalLoad()
-    {
-        global $constant, $system;
-        $file = null;
-        if(loader == "back") {
-            $file = $constant->root . '/language/'. $this->use_lang . '.back.addition.lang';
-            $this->load_add_back = true;
-        } else {
-            $file = $constant->root . '/language/'. $this->use_lang . '.front.addition.lang';
-            $this->load_add_front = true;
-        }
-        if($file != null && file_exists($file)) {
-            $con = file_get_contents($file);
-            $add_array = explode("\n", $con);
-            foreach($add_array as $line) {
-                if(strlen($line) > 4) {
-                    list($tag, $value) = explode("<=>", $line);
-                    if(!$system->prefixEquals($tag, '#'))
-                        $this->lang[$tag] = $value;
-                }
-            }
+        // check if exists all files
+        foreach($found_language as $check_language) {
+            if(file_exists(root . '/language/' . $check_language . '.front.lang') && file_exists(root . '/language/' . $check_language . '.back.lang')
+               && file_exists(root . '/language/' . $check_language . '.install.lang'))
+                self::$available[] = $check_language;
         }
     }
 
-    private function themeLanguageLoad()
-    {
-        global $constant, $system;
-        $file = null;
-        if(loader == "back") {
-            $file = $constant->root . $constant->ds . $constant->tpl_dir . "/admin/" . $this->use_lang . '.language.lang';
-        } else {
-            $file = $constant->root . $constant->ds . $constant->tpl_dir .$constant->ds . $constant->tpl_name . $constant->ds . $this->use_lang . '.language.lang';
-        }
-        if($file != null && file_exists($file)) {
-            $con = file_get_contents($file);
-            $add_array = explode("\n", $con);
-            foreach($add_array as $line) {
-                if(strlen($line) > 4) {
-                    list($tag, $value) = explode("<=>", $line);
-                    if(!$system->prefixEquals($tag, '#'))
-                        $this->lang[$tag] = $value;
-                }
-            }
-        }
+    public function getUseLanguage() {
+        return self::$userLang;
     }
 
-    public function get($data)
-    {
-        return $this->lang[$data];
+    public function getAvailable() {
+        return self::$available;
     }
 
-    /**
-     * Функция добавляет в lang.type.addition.lang значения из массива $line_array
-     * array(ru => array('add.some-string' => 'value this string));
-     * @param $line_array
-     */
-    public function addLinesLanguage($line_array, $isback = false)
-    {
-        global $engine;
-        foreach($line_array as $lang=>$lines) {
-            $toWriteString = "\r\n";
-            foreach($lines as $param=>$value) {
-                $toWriteString .= $param . "<=>" . $value . "\n";
-            }
-            $file = null;
-            if($isback) {
-                $file = $engine->constant->root . "/language/" . $lang . ".back.addition.lang";
-            } else {
-                $file = $engine->constant->root . "/language/" . $lang . ".front.addition.lang";
-            }
-            file_put_contents($file, $toWriteString, FILE_APPEND | LOCK_EX);
-        }
+    public function get($lang) {
+        return template::getInstance()->get(template::TYPE_LANGUAGE, $lang);
     }
 
+    public static function canUse($lang) {
+        return in_array($lang, self::$available);
+    }
 }
-
-?>

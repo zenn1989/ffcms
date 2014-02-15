@@ -1,68 +1,53 @@
 <?php
-// --------------------------------------//
-// THIS SOFTWARE USE GNU GPL V3 LICENSE //
-// AUTHOR: zenn, Pyatinsky Mihail.     //
-// Official website: www.ffcms.ru     //
-// ----------------------------------//
 
-/**
- *
- * @author zenn
- * Класс управляющий мета-данными CMS (title,description,keywords)
- */
-class meta
-{
-    private $title = array();
-    private $description = array();
-    private $keywords = array();
-    private $generator = array();
+namespace engine;
+
+class meta extends singleton {
+    protected static $instance = null;
+    protected static $metadata = array();
 
     /**
-     * Назначение содержимого мета-тега по имени тега
-     * @param String $data - присваиваемое содержимое
-     * @param ENUM $metaname - имя мета-тега
+     * @return meta
      */
-    public function set($metaname, $data)
-    {
-        $this->{$metaname} = null;
-        $this->{$metaname}[] = $data;
+    public static function getInstance() {
+        if(is_null(self::$instance)) {
+            self::initMain();
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
 
     /**
-     * Получение мета-тега по имени
-     * @param ENUM $metaname - имя мета-тега
+     * Default data for main page.
      */
-    public function get($metaname)
-    {
-        return $this->{$metaname};
+    protected static function initMain() {
+        // title is globally also for 404 pages.
+        self::$metadata['title'][] = property::getInstance()->get('seo_title');
+        if(router::getInstance()->isMain()) {
+            self::$metadata['description'][] = property::getInstance()->get('seo_description');
+            self::$metadata['keywords'][] = property::getInstance()->get('seo_keywords');
+        }
     }
 
     /**
-     * Добавление к мета-тегу содержимого по имени
-     * @param String $data
-     * @param ENUM $metaname
+     * Adding meta data values
+     * @param string('title', 'description', 'keywords') $tag
+     * @param string $data
      */
-    public function add($metaname, $data)
-    {
-        $this->{$metaname}[] = $data;
+    public function add($tag, $data) {
+        if(in_array($tag, array('title', 'description', 'keywords')))
+            self::$metadata[$tag][] = $data;
     }
 
-    /**
-     * Сбор мета-тегов и выставление их в суперпозицию
-     */
-    public function compile()
-    {
-        global $engine;
-        $engine->template->globalset('keywords', $engine->system->altimplode(", ", $this->keywords));
-        $engine->template->globalset('description', $engine->system->altimplode(". ", $this->description));
-        if ($engine->constant->seo_meta['multi_title'])
-            $engine->template->globalset('title', $engine->system->altimplode(" - ", array_reverse($this->title)));
+    public function compile() {
+        template::getInstance()->set(template::TYPE_META, 'description', system::getInstance()->altimplode('. ', self::$metadata['description']));
+        template::getInstance()->set(template::TYPE_META, 'keywords', system::getInstance()->altimplode('. ', self::$metadata['keywords']));
+        if(property::getInstance()->get('multi_title'))
+            template::getInstance()->set(template::TYPE_META, 'title', system::getInstance()->altimplode(" - ", array_reverse(self::$metadata['title'])));
         else
-            $engine->template->globalset('title', array_pop($this->title));
-        $engine->template->globalset('generator', $engine->system->altimplode(' ', $this->generator));
+            template::getInstance()->set(template::TYPE_META, 'title', array_pop(self::$metadata['title']));
+        template::getInstance()->set(template::TYPE_META, 'generator', 'FFCMS engine: ffcms.ru. Version: ' . version);
     }
+
 
 }
-
-
-?>

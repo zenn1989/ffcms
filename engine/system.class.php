@@ -1,21 +1,32 @@
 <?php
-// --------------------------------------//
-// THIS SOFTWARE USE GNU GPL V3 LICENSE //
-// AUTHOR: zenn, Pyatinsky Mihail.     //
-// Official website: www.ffcms.ru     //
-// ----------------------------------//
+/**
+ * Copyright (C) 2013 ffcms software, Pyatinskyi Mihail
+ *
+ * FFCMS is a free software developed under GNU GPL V3.
+ * Official license you can take here: http://www.gnu.org/licenses/
+ *
+ * FFCMS website: http://ffcms.ru
+ */
+namespace engine;
+use DateTime;
+use FilesystemIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
-class system
-{
+class system extends singleton {
 
-    public $post_data = array();
-    public $get_data = array();
+    protected static $instance = null;
 
-    function system()
-    {
-        $this->post_data = $_POST;
-        $this->get_data = $_GET;
+    /**
+     * @return system
+     */
+    public static function getInstance() {
+        if(is_null(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
+
 
     /**
      * Получение входящей переменной $_POST по значению $key с отбросом {$params} от пользователя
@@ -24,7 +35,7 @@ class system
      */
     public function post($key = null)
     {
-        return $key == null ? $this->post_data : $this->noParam($this->post_data[$key]);
+        return $key === null ? $_POST : $this->noParam($_POST[$key]);
     }
 
     /**
@@ -32,16 +43,16 @@ class system
      * @param $key
      * @return string
      */
-    public function get($key)
+    public function get($key = null)
     {
-        return urldecode($this->get_data[$key]);
+        return $key === null ? $_GET : urldecode($_GET[$key]);
     }
 
 
     /**
      * Замена глобальных переменных на сущности ANSI там, где они не нужны(USER INPUT данные). Т.к. сущесвуют методы, позволяющие работать
      * в суперпозиции - необходимо очистить вводимый пользователем контент от {$vars} в целях безопасности.
-     * @param unknown_type $data
+     * @param string $data
      * @return mixed
      */
     public function noParam($data)
@@ -207,6 +218,15 @@ class system
     }
 
     /**
+     * Generate random 32..128char string what can be used in urls and posts,
+     * example in register aprove, recovery aprove, etc.
+     * Function return case sensive result.
+     */
+    public function randomSecureString128() {
+        return $this->randomString(rand(16,64)).$this->randomString(rand(16,64));
+    }
+
+    /**
      * Случайная величина отталкиваясь от уникального значения $data
      */
     public function randomWithUnique($data, $min = 16, $max = 30)
@@ -228,10 +248,8 @@ class system
      */
     public function redirect($uri = null)
     {
-        global $engine;
-        header("Location: {$engine->constant->url}{$uri}");
+        header("Location: ".property::getInstance()->get('url').$uri);
         exit();
-        return;
     }
 
     public function isLatinOrNumeric($data)
@@ -241,7 +259,7 @@ class system
 
     /**
      * Длина строки с корректной обработкой UTF-8
-     * @param unknown_type $data
+     * @param int $data
      * @return number
      */
     public function length($data)
@@ -251,9 +269,9 @@ class system
 
     /**
      * Альтернативный substr с учетом UTF-8 символики
-     * @param unknown_type $data
-     * @param unknown_type $start
-     * @param unknown_type $length
+     * @param string $data
+     * @param int $start
+     * @param int $length
      * @return string
      */
     public function altsubstr($data, $start, $length)
@@ -263,20 +281,22 @@ class system
 
     /**
      * Обрезка предложения до плавающей длины $length до вхождения первого пробела
-     * @param unknown_type $sentence
-     * @param unknown_type $length
+     * @param string $sentence
+     * @param int $length
      * @return string
      */
     public function sentenceSub($sentence, $length)
     {
+        if($this->length($sentence) <= $length)
+            return $sentence;
         $end_point = mb_strpos($sentence, " ", $length, "UTF-8");
         return $this->altsubstr($sentence, 0, $end_point);
     }
 
     /**
      * Приведение $data к Integer
-     * @param unknown_type $data
-     * @return mixed
+     * @param string $data
+     * @return int
      */
     public function toInt($data)
     {
@@ -286,7 +306,7 @@ class system
 
     /**
      * Проверка $data на принадлежность к диапазону 0-9
-     * @param unknown_type $data
+     * @param boolean $data
      * @return boolean
      */
     public function isInt($data)
@@ -296,7 +316,8 @@ class system
 
     /**
      * Специфическая проверка на принадлежность $data к "integer string list", к примеру - 1,2,3,8,25,91,105
-     * @param unknown_type $data
+     * @param string $data
+     * @return boolean
      */
     public function isIntList($data)
     {
@@ -305,9 +326,9 @@ class system
 
     /**
      * Удаляет из массива $array значение $value (не ключ!)
-     * @param unknown_type $value
-     * @param unknown_type $array
-     * @return multitype:
+     * @param string $value
+     * @param array $array
+     * @return array:
      */
     public function valueUnsetInArray($value, $array)
     {
@@ -316,9 +337,9 @@ class system
 
     /**
      * Функция альтернативного имплода массива в адекватную строку (без $decimal в конце или первым элементом, отброс null елементов)
-     * @param unknown_type $decimal
-     * @param unknown_type $array
-     * @return NULL|unknown
+     * @param float $decimal
+     * @param array $array
+     * @return array|null
      */
     public function altimplode($decimal, $array)
     {
@@ -337,9 +358,9 @@ class system
 
     /**
      * Альтернативное разрезание строки по $deciaml и отбросом null элементов
-     * @param unknown_type $decimal
-     * @param unknown_type $string
-     * @return Ambigous <multitype:unknown, multitype:unknown >
+     * @param string $decimal
+     * @param string $string
+     * @return array|null
      */
     public function altexplode($decimal, $string)
     {
@@ -349,11 +370,13 @@ class system
 
     /**
      * Отбрасывание null-элементов из массива. Индекс массива не сохраняется.
-     * @param unknown_type $array
-     * @return multitype:unknown
+     * @param array $array
+     * @return array
      */
     public function nullArrayClean($array)
     {
+        if(sizeof($array) < 1)
+            return array();
         $outarray = array();
         foreach ($array as $values) {
             if ($values != null && $values != '') {
@@ -365,8 +388,9 @@ class system
 
     /**
      * Добавление элемента в массив если такой элемент уже НЕ содержиться в массиве.
-     * @param unknown_type $item
-     * @param unknown_type $array
+     * @param string $item
+     * @param array $array
+     * @return array
      */
     public function arrayAdd($item, $array)
     {
@@ -378,9 +402,9 @@ class system
 
     /**
      * Вытаскивание из массива 2го уровня значения ключа с учетом того что массив содержит ряд элементов 2го уровня ([0] => array(a => b), [1] => array(c=>d) ... n)
-     * @param unknown_type $key_name
-     * @param unknown_type $array
-     * @return Ambigous <NULL, unknown>
+     * @param string $key_name
+     * @param array $array
+     * @return array
      */
     public function extractFromMultyArray($key_name, $array)
     {
@@ -396,9 +420,9 @@ class system
     /**
      * Преобразование популярных форматов даты в 1 формат отображения. Формат - d = d.m.Y, h = d.m.Y hh:mm, s = d.m.Y hh:mm:ss.
      * Так же принимаются значения unix time.
-     * @param unknown_type $object
-     * @param unknown_type $out_format
-     * @return Ambigous <NULL, string>
+     * @param string|DateTime|int $object
+     * @param string $out_format
+     * @return string
      */
     public function toDate($object, $out_format)
     {
@@ -406,7 +430,7 @@ class system
         if ($this->isInt($object)) {
             $object = date('d.m.Y H:i:s', $object);
         }
-        $date_object = new DateTime($object);
+        $date_object = new \DateTime($object);
         switch ($out_format) {
             case "h":
                 $result = $date_object->format('d.m.Y H:i');
@@ -423,7 +447,7 @@ class system
 
     /**
      * Приведение форматов дат к представлению Unix Time epoche
-     * @param unknown_type $object
+     * @param array $object
      * @return number
      */
     public function toUnixTime($object)
@@ -442,7 +466,7 @@ class system
 
     /**
      * Проверка формата строки на пренадлежность к телефонному номеру.
-     * @param unknown_type $phone
+     * @param string|int $phone
      * @return boolean
      */
     public function validPhone($phone)
@@ -470,7 +494,7 @@ class system
 
     /**
      * Получение IP-адресса пользователя с учетом возможных проксей и CDN
-     * @return unknown
+     * @return string
      */
     public function getRealIp()
     {
@@ -485,13 +509,12 @@ class system
 
     /**
      * Получение двойного MD5 хеша от строки $string с использованием неслучайной уникальной соли.
-     * @param unknown_type $string
+     * @param string $string
      * @return string
      */
     public function doublemd5($string, $custom_salt = null)
     {
-        global $engine;
-        $salt = $engine->constant->password_salt;
+        $salt = property::getInstance()->get('password_salt');
         if($custom_salt != null) {
             $salt = $custom_salt;
         }
@@ -500,8 +523,8 @@ class system
 
     /**
      * Генерация строки для SQL запроса. Пример: array('length' => '15', 'color' => 'red') будет приобразовано в: `length` = '15', `color` = 'red'
-     * @param unknown_type $keyArray
-     * @return Ambigous <NULL, string>
+     * @param array $keyArray
+     * @return String
      */
     public function prepareKeyDataToDbUpdate($keyArray)
     {
@@ -575,6 +598,39 @@ class system
         return preg_replace('#('.$char.')#', '',$string, $count);
     }
 
-}
+    /**
+    * Get the directory size in byte's
+    * @param directory $directory
+    * @return integer
+    */
+    public function getDirSize($directory) {
+        $size = 0;
+        if(file_exists($directory)) {
+            foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory)) as $file){
+                $size+=$file->getSize();
+            }
+        }
+        return $size;
+    }
 
-?>
+    /**
+     * Remove directory with all files inside.
+     * @param $dir
+     */
+    public function removeDirectory($dir) {
+        if(file_exists($dir)) {
+            foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $path) {
+                $path->isFile() ? @unlink($path->getPathname()) : @rmdir($path->getPathname());
+            }
+            @rmdir($dir);
+        }
+    }
+
+    public function createPrivateDirectory($dir) {
+        if(file_exists($dir))
+            return;
+        @mkdir($dir);
+        $protect = "deny from all";
+        @file_put_contents($dir .'.htaccess', $protect);
+    }
+}

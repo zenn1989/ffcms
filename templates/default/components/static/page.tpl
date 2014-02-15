@@ -1,4 +1,4 @@
-<h2>{$title}</h2>
+<h1>{{ local.title }}</h1>
 <hr/>
-{$text}
-<p style="text-align:right;">{$date}</p>
+{{ local.text }}
+<p style="text-align:right;">{{ local.date }}</p>

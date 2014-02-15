@@ -52,3 +52,7 @@ install_update_button_start<=>Start update
 install_update_notify_to_version<=>System updating is locked. Please create file /install/.update-{$version} with access to read and write.
 install_update_notify_locked<=>System updating to version {$version} already installed! Installer are locked!
 install_update_success_notify<=>FFCMS system are successful updated to version
+install_install_error_mail<=>Admin email is incorrect!
+install_install_error_pass<=>Admin password length is incorrect
+install_install_error_login<=>Admin login length is incorrect
+install_install_error_mathcpass<=>Admin password and repeat is not match

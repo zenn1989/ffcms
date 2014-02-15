@@ -1,31 +1,25 @@
 <?php
-// --------------------------------------//
-// THIS SOFTWARE USE GNU GPL V3 LICENSE //
-// AUTHOR: zenn, Pyatinsky Mihail.     //
-// Official website: www.ffcms.ru     //
-// ----------------------------------//
 
-/**
- * Хук отвечающий за капчу
- * В будующем доработать конфигурации для разных капч (recaptcha, kcaptcha, etc)
- */
+use engine\extension;
+use engine\property;
 
-class hook_captcha_front implements hook_front
+class hooks_captcha_front
 {
+    protected static $instance = null;
 
-    // возвращение себя самого
-    public function load()
+    public static function getInstance()
     {
-        return $this;
+        if(is_null(self::$instance))
+            self::$instance = new self();
+        return self::$instance;
     }
 
     public function validate($postdata)
     {
-        global $engine;
-        $captcha_type = $engine->extension->getConfig('captcha_type', 'captcha', 'hooks');
+        $captcha_type = extension::getInstance()->getConfig('captcha_type', 'captcha', 'hooks');
         if($captcha_type == "recaptcha") {
-            require_once($engine->constant->root."/resource/recaptcha/recaptchalib.php");
-            $resp = recaptcha_check_answer ($engine->extension->getConfig('captcha_privatekey', 'captcha', 'hooks'), $_SERVER["REMOTE_ADDR"], $_POST["recaptcha_challenge_field"], $_POST["recaptcha_response_field"]);
+            require_once(root."/resource/recaptcha/recaptchalib.php");
+            $resp = recaptcha_check_answer (extension::getInstance()->getConfig('captcha_privatekey', 'captcha', 'hooks'), $_SERVER["REMOTE_ADDR"], $_POST["recaptcha_challenge_field"], $_POST["recaptcha_response_field"]);
             return $resp->is_valid;
         }
         $session_value = $_SESSION['captcha'];
@@ -34,13 +28,12 @@ class hook_captcha_front implements hook_front
 
     public function show()
     {
-        global $engine;
-        $captcha_type = $engine->extension->getConfig('captcha_type', 'captcha', 'hooks');
+        $captcha_type = extension::getInstance()->getConfig('captcha_type', 'captcha', 'hooks');
         if($captcha_type == "recaptcha") {
-            require_once($engine->constant->root."/resource/recaptcha/recaptchalib.php");
-            return recaptcha_get_html($engine->extension->getConfig('captcha_publickey', 'captcha', 'hooks'));
+            require_once(root . "/resource/recaptcha/recaptchalib.php");
+            return recaptcha_get_html(extension::getInstance()->getConfig('captcha_publickey', 'captcha', 'hooks'));
         }
-        return $engine->constant->url . '/resource/ccaptcha/captcha.php';
+        return property::getInstance()->get('script_url') . '/resource/ccaptcha/captcha.php';
     }
 }
 

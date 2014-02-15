@@ -1,70 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <title>{$title}</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <meta name="keywords" content="{$keywords}"/>
-    <meta name="description" content="{$description}"/>
-    <meta name="generator" content="{$generator}"/>
-    <meta name="robots" content="all"/>
-    {$cssfile css/bootstrap.css}
-    {$cssfile css/bootstrap-responsive.css}
-    {$cssfile css/docs.css}
-    {$cssfile css/font-awesome.min.css}
-    {$jsfile js/jquery-1.9.1.min.js}
-    {$jsfile js/bootstrap.js}
-    <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    {% block header %}
+        <script type="text/javascript">
+            var host = '{{ system.script_url }}';
+        </script>
+        <meta charset="utf-8"/>
+        <title>{{ meta.title }}</title>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+        <meta name="keywords" content="{{  meta.keywords }}"/>
+        <meta name="description" content="{{ meta.description }}"/>
+        <meta name="generator" content="{{ meta.generator }}"/>
+        <meta name="robots" content="all"/>
+        <link rel="stylesheet" href="{{ system.theme }}/css/bootstrap.css" />
+        <link rel="stylesheet" href="{{ system.theme }}/css/bootstrap-responsive.css" />
+        <link rel="stylesheet" href="{{ system.theme }}/css/docs.css" />
+        <link rel="stylesheet" href="{{ system.theme }}/css/font-awesome.min.css" />
+        <script type="text/javascript" src="{{ system.theme }}/js/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="{{ system.theme }}/js/bootstrap.js"></script>
+        <script type="text/javascript" src="{{ system.theme }}/js/pace.js"></script>
+        <script type="text/javascript" src="{{ system.theme }}/js/ffcms.js"></script>
+        <!--[if lt IE 9]>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    {% endblock %}
 </head>
 <body>
-{$header}
+{% include 'widgets/head_menu.tpl' %}
 <div class="container">
     <div class="row">
         <!-- Logotype -->
         <div class="span7">
             <a href="/">
-                <img src="{$url}/{$tpl_dir}/img/logo.png"/>
+                <img src="{{ system.theme }}/img/logo.png"/>
             </a>
         </div>
         <!-- /Logotype -->
         <!-- search menu -->
-        <div class="span5" align="right">
-            <form id="search" class="form-search">
-                <input class="search-query" id="search-term" placeholder="query..." type="text"/>
-
-                <button class="btn" id="search-submit" type="submit"> {$lang::global_search_button}</button>
-            </form>
-            <script>
-                $('#search').submit(function (e) {
-                    var query = $('#search-term').val();
-                    window.location.replace("{$url}/search/" + query);
-                    return false;
-                });
-            </script>
+        <div class="span5">
+            <div class="pull-right">
+                {% include 'widgets/search_form.tpl' %}
+            </div>
         </div>
         <!-- /search menu -->
     </div>
-    <!-- second navi menu -->
-    {$subheader}
-    <!-- /second navi menu -->
     <div style="padding-top: 10px;"></div>
     <div class="row">
         <div class="span3" id="lnav">
-            {$left}
+            {% include 'widgets/link_menu.tpl' %}
+            {{ module.tag_cloud }}
+            {{ module.lastcomments }}
         </div>
         <div class="span9">
             <div class="well well-500px">
-                {$body}
+                <div class="pull-right">
+                    {% include 'widgets/bookmarks.tpl' %}
+                </div>
+                <br />
+                {% if content.body == null %}
+                    <h3>{{ language.global_404_title }}</h3>
+                    <hr />
+                    <p>{{ language.global_404_desc }}</p>
+                {% else %}
+                    {{ content.body }}
+                {% endif %}
             </div>
         </div>
-        {$right}
     </div>
 </div>
-{$bottom}
+
 <hr class="soften"/>
 
-{$footer}
+{% include 'widgets/footer.tpl' %}
 </body>
 </html>

@@ -1,42 +1,47 @@
 <?php
 
-class mod_lastcomments_front implements mod_front
-{
-    public function before()
-    {
-        global $engine;
-        $comment_count = $engine->extension->getConfig('last_count', 'lastcomments', 'modules', 'int');
-        $stmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_mod_comments WHERE `pathway` != '' ORDER BY `time` DESC LIMIT 0,?");
+use engine\extension;
+use engine\database;
+use engine\property;
+use engine\user;
+use engine\system;
+use engine\template;
+
+class modules_lastcomments_front {
+    protected static $instance = null;
+
+    public static function getInstance() {
+        if(is_null(self::$instance))
+            self::$instance = new self();
+        return self::$instance;
+    }
+
+    public function make() {
+        $comment_count = extension::getInstance()->getConfig('last_count', 'lastcomments', 'modules', 'int');
+        if($comment_count < 1)
+            $comment_count = 1;
+        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE `pathway` != '' ORDER BY `time` DESC LIMIT 0,?");
         $stmt->bindParam(1, $comment_count, PDO::PARAM_INT);
         $stmt->execute();
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt = null;
-        $template_position = $engine->extension->getConfig('template_position_name', 'lastcomments', 'modules');
-        $template_index = $engine->extension->getConfig('template_position_index', 'lastcomments', 'modules', 'int');
         if(sizeof($res) > 0) {
             // have comments in db
-            $max_comment_char_size = $engine->extension->getConfig('text_length', 'lastcomments', 'modules', 'int');
-            $prepared_userlist = $engine->system->extractFromMultyArray('author', $res);
-            $engine->user->listload($prepared_userlist);
-            $theme_head = $engine->template->get('block_head', 'modules/mod_lastcomments/');
-            $theme_body = $engine->template->get('block_body', 'modules/mod_lastcomments/');
-            $result_body = null;
+            $max_comment_char_size = extension::getInstance()->getConfig('text_length', 'lastcomments', 'modules', 'int');
+            $prepared_userlist = system::getInstance()->extractFromMultyArray('author', $res);
+            user::getInstance()->listload($prepared_userlist);
+            $params = array();
             foreach($res as $result) {
-                $comment_preview_text = $engine->system->altsubstr($engine->hook->get('bbtohtml')->nobbcode($result['comment']), 0, $max_comment_char_size);
-                $result_body .= $engine->template->assign(array('comment_user_id', 'comment_user_name', 'comment_object_url', 'comment_text'),
-                                array($result['author'], $engine->user->get('nick', $result['author']), $result['pathway'], $comment_preview_text),
-                                $theme_body);
+                $comment_text = extension::getInstance()->call(extension::TYPE_HOOK, 'bbtohtml')->nobbcode($result['comment']);
+                $params['comment'][] = array(
+                    'user_id' => $result['author'],
+                    'user_name' => user::getInstance()->get('nick', $result['author']),
+                    'uri' => $result['pathway'],
+                    'preview' => system::getInstance()->altsubstr($comment_text, 0, $max_comment_char_size)
+                );
             }
-            $engine->page->setContentPosition($template_position, $engine->template->assign('mod_comments_list', $result_body, $theme_head), $template_index);
-            return;
+            $render = template::getInstance()->twigRender('modules/lastcomments/lastcomments.tpl', array('local' => $params));
+            template::getInstance()->set(template::TYPE_MODULE, 'lastcomments', $render);
         }
-        // comments not founded
-        $engine->page->setContentPosition($template_position, $engine->template->get('block_empty', 'modules/mod_lastcomments/'), $template_index);
     }
-
-    public function after() {}
 }
-
-
-
-?>

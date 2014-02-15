@@ -1,73 +1,79 @@
 <?php
-// --------------------------------------//
-// THIS SOFTWARE USE GNU GPL V3 LICENSE //
-// AUTHOR: zenn, Pyatinsky Mihail.     //
-// Official website: www.ffcms.ru     //
-// ----------------------------------//
+use engine\user;
+use engine\system;
+use engine\extension;
+use engine\router;
+use engine\database;
+use engine\property;
+use engine\template;
+use engine\permission;
 
-class mod_comments_front implements mod_front
-{
-    public function before()
-    {
+class modules_comments_front {
+    protected static $instance = null;
+
+    public static function getInstance() {
+        if(is_null(self::$instance))
+            self::$instance = new self();
+        return self::$instance;
     }
 
-    public function after()
-    {
-        global $engine;
-        if (!$engine->page->isMain() && $engine->template->tagRepeatCount('com.comment_list') == 1 && $engine->template->tagRepeatCount('com.comment_form') == 1 && !$engine->page->isNullPage()) {
-            $engine->template->globalSet('com.comment_list', $this->buildComments());
-            if ($engine->user->get('id') > 0)
-                $engine->template->globalSet('com.comment_form', $this->buildFormAdd());
-            else
-                $engine->template->globalSet('com.comment_form', $engine->template->stringNotify('warning', $engine->language->get('comments_register_msg')));
+    /**
+     * Get comment list
+     * @return array
+     */
+    public function getCommentsParams($way = null, $end = 0, $show_all = false) {
+        $userid = user::getInstance()->get('id');
+        $stmt = null;
+        if(is_null($way))
+            $way = router::getInstance()->getUriString();
+        if($show_all) {
+            $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE pathway = ? ORDER BY id DESC");
+            $stmt->bindParam(1, $way, PDO::PARAM_STR);
+            $stmt->execute();
+        } else {
+            $comment_count = extension::getInstance()->getConfig('comments_count', 'comments', 'modules', 'int');
+            if($end < 1) {
+                $end = 1;
+            }
+            $end *= $comment_count;
+            $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE pathway = ? ORDER BY id DESC LIMIT 0,?");
+            $stmt->bindParam(1, $way, PDO::PARAM_STR);
+            $stmt->bindParam(2, $end, PDO::PARAM_INT);
+            $stmt->execute();
         }
-        return;
-    }
-
-    private function buildComments()
-    {
-        global $engine;
-        $userid = $engine->user->get('id');
-        $theme_list = $engine->template->get('comment_list', 'modules/mod_comments/');
-        $comment_count = $engine->extension->getConfig('comments_count', 'comments', 'modules', 'int');
-        $content = null;
-        $hash = $engine->page->hashFromPathway();
-        $way = $engine->page->getPathway();
-        $object = $way[0];
-        $stmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_mod_comments WHERE target_hash = ? AND object_name = ? ORDER BY id DESC LIMIT 0,?");
-        $stmt->bindParam(1, $hash, PDO::PARAM_STR, 32);
-        $stmt->bindParam(2, $object, PDO::PARAM_STR);
-        $stmt->bindParam(3, $comment_count, PDO::PARAM_STR);
-        $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $engine->user->listload($engine->system->extractFromMultyArray('author', $result));
+        user::getInstance()->listload(system::getInstance()->extractFromMultyArray('author', $result));
+        $params = array();
         foreach ($result as $item) {
-            $edit_link = null;
-            $delete_link = null;
             $poster_id = $item['author'];
-            $editconfig = $engine->extension->getConfig('edit_time', 'comments', 'modules', 'int');
+            $can_edit = false;
+            $can_delete = false;
+            $editconfig = extension::getInstance()->getConfig('edit_time', 'comments', 'modules', 'int');
             if ($userid > 0) {
-                if (($poster_id == $userid && (time() - $item['time']) <= $editconfig) || $engine->user->get('mod_comment_edit') > 0) {
-                    $edit_link = $engine->template->assign('comment_id', $item['id'], $engine->template->get('comment_link_edit', 'modules/mod_comments/'));
+                if (($poster_id == $userid && (time() - $item['time']) <= $editconfig) || permission::getInstance()->have('comment/edit')) {
+                    $can_edit = true;
                 }
-                if ($engine->user->get('mod_comment_delete') > 0) {
-                    $delete_link = $engine->template->assign('comment_id', $item['id'], $engine->template->get('comment_link_delete', 'modules/mod_comments/'));
+                if (permission::getInstance()->have('comment/delete')) {
+                    $can_delete = true;
                 }
             }
-            $content .= $engine->template->assign(array('poster_id', 'poster_nick', 'poster_avatar', 'comment_text', 'comment_date', 'comment_id', 'comment_link_edit', 'comment_link_delete'),
-                array($poster_id, $engine->user->get('nick', $poster_id), $engine->user->buildAvatar('small', $poster_id), $engine->hook->get('bbtohtml')->bbcode2html($item['comment']), $engine->system->toDate($item['time'], 'h'), $item['id'], $edit_link, $delete_link),
-                $theme_list);
+            $params[] = array(
+                'author_id' => $poster_id,
+                'author_nick' => user::getInstance()->get('nick', $poster_id),
+                'author_avatar' => user::getInstance()->buildAvatar('small', $poster_id),
+                'comment_text' => extension::getInstance()->call(extension::TYPE_HOOK, 'bbtohtml')->bbcode2html($item['comment']),
+                'comment_date' => system::getInstance()->toDate($item['time'], 'h'),
+                'comment_id' => $item['id'],
+                'can_edit' => $can_edit,
+                'can_delete' => $can_delete
+            );
         }
         $stmt = null;
-        return $content;
+        return $params;
     }
 
-    private function buildFormAdd()
-    {
-        global $engine;
-        return $engine->template->get('comment_form', 'modules/mod_comments/');
+    public function buildCommentTemplate($way = null, $end = 0, $show_all = false, $add_params = null) {
+        $params = $this->getCommentsParams($way, $end, $show_all);
+        return template::getInstance()->twigRender('modules/comments/comment_list.tpl', array('local' => $params, 'add' => $add_params));
     }
 }
-
-
-?>

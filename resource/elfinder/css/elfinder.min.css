@@ -337,7 +337,7 @@
 .elfinder {
     padding: 0;
     position: relative;
-    display: block
+    display: block,
 }
 
 .elfinder-rtl {
@@ -1608,7 +1608,7 @@ embed.elfinder-quicklook-preview-audio {
     padding: 0;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
-    border-radius: 4px
+    border-radius: 4px;
 }
 
 .elfinder .elfinder-button {
@@ -1619,7 +1619,10 @@ embed.elfinder-quicklook-preview-audio {
     float: left;
     overflow: hidden;
     position: relative;
-    border: 0 solid
+    border: 0 solid;
+    -webkit-box-sizing: content-box !important;
+    -moz-box-sizing: content-box !important;
+    box-sizing: content-box !important;
 }
 
 .elfinder .ui-icon-search {

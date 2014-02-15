@@ -1,0 +1,17 @@
+* New model with namespaces and Singleton programming model
+* Fix language issue in component feedback
+* Fix multi-repeat news category in sitemap
+* Small optimize method logic
+* New system logger
+* System native core changed - as default, provide router (URI worker), template (views and controls), user (controls users), database (control database), system (helper functions), language & meta controllers, extension worker.
+All other thinks like mailer, file controller are moved to hook extensions. From now all extensions can interact with each other using extension class.
+* Fix security reason in register aprove from email (static 32char length moved to dynamic 32-128 length with random salt).
+* Fix security issue in password recovery links (1time worked links)
+* New template engine - twig. All templates are transfered to twig syntax. Class template are support to using twig
+* Admin theme are reworked - now using bootstrap 3 and fully support desktop/mobile
+* Small fixes minor issues in interfaces
+* New cache controller - all template output cache data controlled by twig. Default cache class control only block caching
+* New native CMS function - cache cleanup and statistic cleanup
+* Improved extension system: now it provide next extension type's - components,modules,hooks,apicallback. New CMS model provide bridge to call from 1 extension to other. extension::getInstance()->call(type,object)->method()
+* Improved user access control system and group permissions
+* Optimized many data in database. Count of sql query's is removed.

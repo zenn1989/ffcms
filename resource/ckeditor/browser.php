@@ -1,4 +1,8 @@
 <?php
+if(!defined('root'))
+    exit();
+
+use engine\property;
 header("Content-Type: text/html; charset=utf-8\n");
 header("Cache-Control: no-cache, must-revalidate\n");
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
@@ -31,9 +35,12 @@ $cols = 4;          /* thumbnails per row */
 
     <?php
 
-    $dir = $engine->constant->root."/upload/images/";
+    $dir = root . "/upload/images/";
 
     $dir = rtrim($dir, '/'); // the script will add the ending slash when appropriate
+
+    if(!file_exists($dir))
+        @mkdir($dir);
 
     $files = scandir($dir);
 
@@ -44,7 +51,7 @@ $cols = 4;          /* thumbnails per row */
         if( !preg_match('/\.(jpg|jpeg|png|gif)$/i', $file) )
             continue;
         $file_insystem = $dir . '/' . $file;
-        $image_link = $engine->constant->url . "/upload/images/" . $file;
+        $image_link = property::getInstance()->get('script_url') . "/upload/images/" . $file;
 
         $image_info = getimagesize($file_insystem);
         $_w = $image_info[0];
@@ -127,7 +134,7 @@ $cols = 4;          /* thumbnails per row */
             if( tgt.nodeName != 'IMG' )
                 return;
 
-            url = '<?php echo $engine->constant->url . "/upload/images";?>' + '/' + tgt.title;
+            url = '<?php echo property::getInstance()->get('script_url') . "/upload/images";?>' + '/' + tgt.title;
 
             this.onclick = null;
 

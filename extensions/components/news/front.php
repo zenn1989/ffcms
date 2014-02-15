@@ -1,131 +1,90 @@
 <?php
-// --------------------------------------//
-// THIS SOFTWARE USE GNU GPL V3 LICENSE //
-// AUTHOR: zenn, Pyatinsky Mihail.     //
-// Official website: www.ffcms.ru     //
-// ----------------------------------//
 
-if (!extension::registerPathWay('news', 'news')) {
-    exit("Component static cannot be registered!");
-}
+use engine\template;
+use engine\router;
+use engine\system;
+use engine\database;
+use engine\property;
+use engine\language;
+use engine\extension;
+use engine\meta;
+use engine\user;
 
-class com_news_front implements com_front
-{
-    public function load()
-    {
-        global $engine;
+class components_news_front {
+    protected static $instance = null;
+
+    public static function getInstance() {
+        if(is_null(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    public function make() {
+        template::getInstance()->set(template::TYPE_CONTENT, 'body', $this->buildNews());
+    }
+
+    private function buildNews() {
         $content = null;
-        $way = $engine->page->shiftPathway();
-        // ищем последний элемент
+        $way = router::getInstance()->shiftUriArray();
+        // get latest object
         $last_object = array_pop($way);
-        // на всякий сохраняем массив категорий
+        // save extracted array
         $category_array = $way;
-        if($way[0] == "tag" && $engine->system->suffixEquals($last_object, '.html')) {
+        if($way[0] == "tag" && system::getInstance()->suffixEquals($last_object, '.html')) {
             $content = $this->viewTagList($last_object);
         }
-        // это одиночная статлья
-        elseif ($engine->system->suffixEquals($last_object, '.html')) {
+        // its a single news
+        elseif (system::getInstance()->suffixEquals($last_object, '.html')) {
             $content = $this->viewFullNews($last_object, $category_array);
-        } // иначе это содержимое категории
-        else {
+        } else { // its a category
             $content = $this->viewCategory();
         }
-        if ($content == null)
-            $content = $engine->template->compile404();
-        $engine->page->setContentPosition('body', $content);
+        return $content;
     }
 
-    private function viewTagList($tagname)
+    private function viewFullNews($url, $categories)
     {
-        global $engine;
-        $cleartag = $engine->system->nohtml(substr($tagname, 0, -5));
-        $stmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_com_news_entery a, {$engine->constant->db['prefix']}_com_news_category b WHERE a.category = b.category_id AND a.keywords like ? LIMIT 100");
-        $buildSearch = '%'.$cleartag.'%';
-        $stmt->bindParam(1, $buildSearch, PDO::PARAM_STR);
-        $stmt->execute();
-        if($stmt->rowCount() < 1){
-            return null;
-        }
-        $theme_head = $engine->template->get('tag_search_head', 'components/news/');
-        $theme_body = $engine->template->get('tag_search_body', 'components/news/');
-        $compiled_result = null;
-        while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $news_full_link = null;
-            if ($result['path'] == null) {
-                $news_full_link = $result['link'];
-            } else {
-                $news_full_link = $result['path'] . "/" . $result['link'];
-            }
-            $news_serial_title = unserialize($result['title']);
-            $compiled_result .= $engine->template->assign(array('news_url', 'news_title'), array($news_full_link, $news_serial_title[$engine->language->getCustom()]), $theme_body);
-        }
-        return $engine->template->assign(array('news_tag_name', 'news_tag_entery'), array($cleartag, $compiled_result), $theme_head);
-    }
-
-    public function viewFullNews($url, $categories)
-    {
-        global $engine;
-        $viewTags = $engine->extension->getConfig('enable_tags', 'news', 'components', 'boolean');
-        $viewCount = $engine->extension->getConfig('enable_views_count', 'news', 'components', 'boolean');
+        $viewTags = extension::getInstance()->getConfig('enable_tags', 'news', 'components', 'boolean');
+        $viewCount = extension::getInstance()->getConfig('enable_views_count', 'news', 'components', 'boolean');
         $stmt = null;
         $category_link = null;
         $category_text = null;
-        $link_cat = $engine->system->altimplode("/", $categories);
+        $link_cat = system::getInstance()->altimplode("/", $categories);
         $time = time();
-        if ($link_cat != null) {
-            $engine->rule->add('com.news.have_category', true);
-        }
-        if($viewTags) {
-            $engine->rule->add('com.news.tag', true);
-        }
-        if($viewCount) {
-            $engine->rule->add('com.news.view_count', true);
-        }
-        $catstmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_com_news_category WHERE path = ?");
+        $catstmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_category WHERE path = ?");
         $catstmt->bindParam(1, $link_cat, PDO::PARAM_STR);
         $catstmt->execute();
         if ($catresult = $catstmt->fetch()) {
             $category_link = $catresult['path'];
             $category_serial_text = unserialize($catresult['name']);
-            $category_text = $category_serial_text[$engine->language->getCustom()];
-            $stmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_com_news_entery WHERE link = ? AND category = ? AND display = 1 AND date <= ?");
+            $category_text = $category_serial_text[language::getInstance()->getUseLanguage()];
+            $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE link = ? AND category = ? AND display = 1 AND date <= ?");
             $stmt->bindParam(1, $url, PDO::PARAM_STR);
             $stmt->bindParam(2, $catresult['category_id'], PDO::PARAM_INT);
             $stmt->bindParam(3, $time, PDO::PARAM_INT);
             $stmt->execute();
         }
         if ($stmt != null && $result = $stmt->fetch()) {
-            $news_theme = $engine->template->get('view_full_news', 'components/news/');
             $news_view_id = $result['id'];
-            $tag_theme = $engine->template->get('tag_link', 'components/news/');
-            $tag_spliter = $engine->template->get('tag_spliter', 'components/news/');
-            $similar_theme = $engine->template->get('news_similar_item', 'components/news/');
             $lang_text = unserialize($result['text']);
             $lang_title = unserialize($result['title']);
             $lang_description = unserialize($result['description']);
             $lang_keywords = unserialize($result['keywords']);
-            $engine->meta->add('title', $lang_title[$engine->language->getCustom()]);
-            $engine->meta->set('keywords', $lang_keywords[$engine->language->getCustom()]);
-            $engine->meta->set('description', $lang_description[$engine->language->getCustom()]);
-            $prepareTags = $engine->system->altexplode(',', $lang_keywords[$engine->language->getCustom()]);
-            $tag_text = null;
-            for($i=0;$i<=sizeof($prepareTags);$i++) {
-                $tag_url = urlencode($engine->system->noSpaceOnStartEnd($prepareTags[$i]));
-                if($tag_url != null) {
-                    $tag_text .= $engine->template->assign(array('news_tag_urlencode', 'news_tag_name'), array($tag_url, $engine->system->noSpaceOnStartEnd($prepareTags[$i])), $tag_theme);
-                    if($i < sizeof($prepareTags)-1) {
-                        $tag_text .= $tag_spliter;
-                    }
-                }
+            meta::getInstance()->add('title', $lang_title[language::getInstance()->getUseLanguage()]);
+            meta::getInstance()->add('keywords', $lang_keywords[language::getInstance()->getUseLanguage()]);
+            meta::getInstance()->add('description', $lang_description[language::getInstance()->getUseLanguage()]);
+            $tagPrepareArray = system::getInstance()->altexplode(',', $lang_keywords[language::getInstance()->getUseLanguage()]);
+            $tag_array = array();
+            foreach($tagPrepareArray as $tagItem) {
+                $tag_array[] = system::getInstance()->noSpaceOnStartEnd($tagItem);
             }
-            if($tag_text == null) {
-                $tag_text = $engine->language->get('news_view_tag_notfind');
-            }
-            $search_similar_string = $lang_title[$engine->language->getCustom()];
+            $similar_array = array();
+            $search_similar_string = $lang_title[language::getInstance()->getUseLanguage()];
             $stmt = null;
-            $stmt = $engine->database->con()->prepare("SELECT a.*, b.path, MATCH (a.title) AGAINST (? IN BOOLEAN MODE) AS relevance
-                                        FROM {$engine->constant->db['prefix']}_com_news_entery a,
-                                        {$engine->constant->db['prefix']}_com_news_category b
+            $stmt = database::getInstance()->con()->prepare("SELECT a.*, b.path, MATCH (a.title) AGAINST (? IN BOOLEAN MODE) AS relevance
+                                        FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a,
+                                        ".property::getInstance()->get('db_prefix')."_com_news_category b
                                         WHERE a.category = b.category_id AND a.id != ? AND a.display = 1
                                         AND MATCH (a.title) AGAINST (? IN BOOLEAN MODE)
                                         ORDER BY relevance LIMIT 0,5");
@@ -135,66 +94,105 @@ class com_news_front implements com_front
             $stmt->execute();
             $simBody = null;
             if($stmt->rowCount() > 0) {
-                $engine->rule->add('com.news.have_similar', true);
                 $simRes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 foreach($simRes as $simRow) {
                     $similar_title = unserialize($simRow['title']);
                     $similar_path = $simRow['path'];
                     $similar_full_path = $similar_path == null ? $simRow['link'] : $similar_path . "/" . $simRow['link'];
-                    $simBody .= $engine->template->assign(array('news_similar_url', 'news_similar_title'), array($similar_full_path, $similar_title[$engine->language->getCustom()]), $similar_theme);
+                    $similar_text_serialize = unserialize($simRow['text']);
+                    $similar_text_full = system::getInstance()->nohtml($similar_text_serialize[language::getInstance()->getUseLanguage()]);
+                    $similar_text_short = system::getInstance()->sentenceSub($similar_text_full, 200);
+                    $similar_array[] = array(
+                        'link' => $similar_full_path,
+                        'title' => $similar_title[language::getInstance()->getUseLanguage()],
+                        'preview' => $similar_text_short
+                    );
                 }
             }
 
             if($viewCount) {
-                $vstmt = $engine->database->con()->prepare("UPDATE {$engine->constant->db['prefix']}_com_news_entery SET views = views+1 WHERE id = ?");
+                $vstmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_com_news_entery SET views = views+1 WHERE id = ?");
                 $vstmt->bindParam(1, $news_view_id, PDO::PARAM_INT);
                 $vstmt->execute();
+                $vstmt = null;
             }
-            $news_full_text = $engine->system->removeCharsFromString('<hr />', $lang_text[$engine->language->getCustom()], 1);
-            return $engine->template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'js.comment_object', 'js.comment_id', 'js.comment_hash', 'js.comment_strpathway', 'news_tag', 'news_view_count', 'news_similar_item'),
-                array($lang_title[$engine->language->getCustom()], $news_full_text, $engine->system->toDate($result['date'], 'h'), $category_link, $category_text, $result['author'], $engine->user->get('nick', $result['author']), 'news', $result['id'], $engine->page->hashFromPathway(), $engine->page->getStrPathway(), $tag_text, $result['views'], $simBody),
-                $news_theme);
+            $comment_list = extension::getInstance()->call(extension::TYPE_MODULE, 'comments')->buildCommentTemplate();
+            $theme_array = array(
+                'tags' => $tag_array,
+                'title' => $lang_title[language::getInstance()->getUseLanguage()],
+                'text' => $lang_text[language::getInstance()->getUseLanguage()],
+                'date' => system::getInstance()->toDate($result['date'], 'h'),
+                'category_url' => $category_link,
+                'category_name' => $category_text,
+                'author_id' => $result['author'],
+                'author_nick' => user::getInstance()->get('nick', $result['author']),
+                'view_count' => $result['views'],
+                'similar_items' => $similar_array,
+                'pathway' => router::getInstance()->getUriString(),
+                'cfg' => array(
+                    'view_tags' => $viewTags,
+                    'view_count' => $viewCount
+                )
+            );
+            return template::getInstance()->twigRender('components/news/full_view.tpl', array('local' => $theme_array, 'comments' => $comment_list));
         }
         return null;
     }
 
+    private function viewTagList($tagname)
+    {
+        $cleartag = system::getInstance()->nohtml(substr($tagname, 0, -5));
+        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.keywords like ? LIMIT 100");
+        $buildSearch = '%'.$cleartag.'%';
+        $stmt->bindParam(1, $buildSearch, PDO::PARAM_STR);
+        $stmt->execute();
+        if($stmt->rowCount() < 1){
+            return null;
+        }
+        $prepared_array = array('tagname' => $cleartag);
+        while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $news_full_link = null;
+            if ($result['path'] == null) {
+                $news_full_link = $result['link'];
+            } else {
+                $news_full_link = $result['path'] . "/" . $result['link'];
+            }
+            $news_serial_title = unserialize($result['title']);
+            $prepared_array['newsinfo'][] = array('link' => $news_full_link, 'title' => $news_serial_title[language::getInstance()->getUseLanguage()]);
+        }
+        return template::getInstance()->twigRender('components/news/tag_view.tpl', array('local' => $prepared_array));
+    }
+
     public function viewCategory()
     {
-        global $engine;
-        $viewTags = $engine->extension->getConfig('enable_tags', 'news', 'components', 'boolean');
-        $viewCount = $engine->extension->getConfig('enable_views_count', 'news', 'components', 'boolean');
-        $way = $engine->page->shiftPathway();
-        $content = null;
+        $viewTags = extension::getInstance()->getConfig('enable_tags', 'news', 'components', 'boolean');
+        $viewCount = extension::getInstance()->getConfig('enable_views_count', 'news', 'components', 'boolean');
+        $way = router::getInstance()->shiftUriArray();
         $pop_array = $way;
         $last_item = array_pop($pop_array);
         $page_index = 0;
-        $page_news_count = $engine->extension->getConfig('count_news_page', 'news', 'components', 'int');
+        $page_news_count = extension::getInstance()->getConfig('count_news_page', 'news', 'components', 'int');
         $total_news_count = 0;
         $cat_link = null;
-        if($viewTags) {
-            $engine->rule->add('com.news.tag', true);
-        }
-        if($viewCount) {
-            $engine->rule->add('com.news.view_count', true);
-        }
-        if ($engine->system->isInt($last_item)) {
+        if (system::getInstance()->isInt($last_item)) {
             $page_index = $last_item;
-            $cat_link = $engine->system->altimplode("/", $pop_array);
+            $cat_link = system::getInstance()->altimplode("/", $pop_array);
         } else {
-            $cat_link = $engine->system->altimplode("/", $way);
+            $cat_link = system::getInstance()->altimplode("/", $way);
         }
         $select_coursor_start = $page_index * $page_news_count;
 
         $category_select_array = array();
         $category_list = null;
         $fstmt = null;
-        if ($engine->extension->getConfig('multi_category', 'news', 'components', 'boolean')) {
-            $fstmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_com_news_category WHERE path like ?");
+        $page_title = null;
+        if (extension::getInstance()->getConfig('multi_category', 'news', 'components', 'boolean')) {
+            $fstmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_category WHERE path like ?");
             $path_swarm = "$cat_link%";
             $fstmt->bindParam(1, $path_swarm, PDO::PARAM_STR);
             $fstmt->execute();
         } else {
-            $fstmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_com_news_category WHERE path = ?");
+            $fstmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_category WHERE path = ?");
             $fstmt->bindParam(1, $cat_link, PDO::PARAM_STR);
             $fstmt->execute();
         }
@@ -202,103 +200,88 @@ class com_news_front implements com_front
             $category_select_array[] = $fresult['category_id'];
             if ($cat_link == $fresult['path']) {
                 $serial_name = unserialize($fresult['name']);
-                $engine->meta->add('title', $serial_name[$engine->language->getCustom()]);
+                meta::getInstance()->add('title', $page_title = language::getInstance()->get('news_view_category').': '.$serial_name[language::getInstance()->getUseLanguage()]);
             }
         }
-        $category_list = $engine->system->altimplode(',', $category_select_array);
+        $category_list = system::getInstance()->altimplode(',', $category_select_array);
+        $theme_array = array();
         $fstmt = null;
-        if ($engine->system->isIntList($category_list)) {
-            $short_theme = $engine->template->get('view_short_news', 'components/news/');
-            $max_preview_length = $engine->extension->getConfig('short_news_length', 'news', 'components', 'int');
+        if (system::getInstance()->isIntList($category_list)) {
+            $max_preview_length = extension::getInstance()->getConfig('short_news_length', 'news', 'components', 'int');
             $time = time();
+            $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE category in ($category_list) AND date <= ?");
+            $stmt->bindParam(1, $time, PDO::PARAM_INT);
+            $stmt->execute();
+            if ($countRows = $stmt->fetch()) {
+                $total_news_count = $countRows[0];
+            }
             $stmt = null;
-            $cstmt = null;
-            if ($engine->extension->getConfig('delay_news_public', 'news', 'components', 'boolean')) {
-                $stmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_com_news_entery a,
-												  {$engine->constant->db['prefix']}_com_news_category b
-												  WHERE a.category in ($category_list) AND a.date <= ? 
+            // TODO: remove delay_news_public from admin panel!!!
+            $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a,
+												  ".property::getInstance()->get('db_prefix')."_com_news_category b
+												  WHERE a.category in ($category_list) AND a.date <= ?
 												  AND a.category = b.category_id
 												  AND a.display = 1
 												  ORDER BY a.important DESC, a.date DESC LIMIT ?,?");
-                $stmt->bindParam(1, $time, PDO::PARAM_INT);
-                $stmt->bindParam(2, $select_coursor_start, PDO::PARAM_INT);
-                $stmt->bindParam(3, $page_news_count, PDO::PARAM_INT);
-                $stmt->execute();
-                $cstmt = $engine->database->con()->prepare("SELECT COUNT(*) FROM {$engine->constant->db['prefix']}_com_news_entery WHERE category in ($category_list) AND date <= ?");
-                $cstmt->bindParam(1, $time, PDO::PARAM_INT);
-                $cstmt->execute();
-                if ($countRows = $cstmt->fetch()) {
-                    $total_news_count = $countRows[0];
-                }
-                $cstmt = null;
-            } else {
-                $stmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_com_news_entery a,
-												  {$engine->constant->db['prefix']}_com_news_category b
-												  WHERE a.category in ($category_list)
-												  AND a.category = b.category_id
-												  AND a.display = 1
-												  ORDER BY a.important DESC, a.id DESC LIMIT ?,?");
-                $stmt->bindParam(1, $select_coursor_start, PDO::PARAM_INT);
-                $stmt->bindParam(2, $page_news_count, PDO::PARAM_INT);
-                $stmt->execute();
-
-                $cstmt = $engine->database->con()->prepare("SELECT COUNT(*) FROM {$engine->constant->db['prefix']}_com_news_entery WHERE category in ($category_list)");
-                $cstmt->execute();
-                if ($countRows = $cstmt->fetch()) {
-                    $total_news_count = $countRows[0];
-                }
-                $cstmt = null;
-            }
+            $stmt->bindParam(1, $time, PDO::PARAM_INT);
+            $stmt->bindParam(2, $select_coursor_start, PDO::PARAM_INT);
+            $stmt->bindParam(3, $page_news_count, PDO::PARAM_INT);
+            $stmt->execute();
             if (sizeof($category_select_array) > 0) {
-                $tag_theme = $engine->template->get('tag_link', 'components/news/');
-                $tag_spliter = $engine->template->get('tag_spliter', 'components/news/');
                 while ($result = $stmt->fetch()) {
                     $lang_text = unserialize($result['text']);
                     $lang_title = unserialize($result['title']);
                     $lang_keywords = unserialize($result['keywords']);
-                    $news_short_text = $lang_text[$engine->language->getCustom()];
-                    if ($engine->system->contains('<hr />', $news_short_text)) {
+                    $news_short_text = $lang_text[language::getInstance()->getUseLanguage()];
+                    if (system::getInstance()->contains('<hr />', $news_short_text)) {
                         $news_short_text = strstr($news_short_text, '<hr />', true);
-                    } elseif ($engine->system->length($news_short_text) > $max_preview_length) {
-                        $news_short_text = $engine->system->sentenceSub($news_short_text, $max_preview_length) . "...";
+                    } elseif (system::getInstance()->length($news_short_text) > $max_preview_length) {
+                        $news_short_text = system::getInstance()->sentenceSub($news_short_text, $max_preview_length) . "...";
                     }
                     if ($result['path'] == null) {
                         $news_full_link = $result['link'];
                     } else {
                         $news_full_link = $result['path'] . "/" . $result['link'];
                     }
-                    $prepareTags = $engine->system->altexplode(',', $lang_keywords[$engine->language->getCustom()]);
-                    $tag_text = null;
-                    for($i=0;$i<=sizeof($prepareTags);$i++) {
-                        $tag_url = urlencode($engine->system->noSpaceOnStartEnd($prepareTags[$i]));
-                        if($tag_url != null) {
-                            $tag_text .= $engine->template->assign(array('news_tag_urlencode', 'news_tag_name'), array($tag_url, $engine->system->noSpaceOnStartEnd($prepareTags[$i])), $tag_theme);
-                            if($i < sizeof($prepareTags)-1) {
-                                $tag_text .= $tag_spliter;
-                            }
-                        }
+                    $tagPrepareArray = system::getInstance()->altexplode(',', $lang_keywords[language::getInstance()->getUseLanguage()]);
+                    $tag_array = array();
+                    foreach($tagPrepareArray as $tagItem) {
+                        $tag_array[] = system::getInstance()->noSpaceOnStartEnd($tagItem);
                     }
-                    if($tag_text == null) {
-                        $tag_text = $engine->language->get('news_view_tag_notfind');
-                    }
-                    $hashWay = $engine->page->hashFromPathway($engine->system->altexplode('/', $news_full_link));
-                    $comment_count = $engine->hook->get('comment')->getCount($hashWay);
+                    $comment_count = 0;
+                    if(is_object(extension::getInstance()->call(extension::TYPE_HOOK, 'comment')))
+                        $comment_count = extension::getInstance()->call(extension::TYPE_HOOK, 'comment')->getCount('/news/'.$news_full_link);
                     $cat_serial_text = unserialize($result['name']);
-                    $content .= $engine->template->assign(array('news_title', 'news_text', 'news_date', 'news_category_url', 'news_category_text', 'author_id', 'author_nick', 'news_full_link', 'news_comment_count', 'news_tag', 'news_view_count'),
-                        array($lang_title[$engine->language->getCustom()], $news_short_text, $engine->system->toDate($result['date'], 'h'), $result['path'], $cat_serial_text[$engine->language->getCustom()], $result['author'], $engine->user->get('nick', $result['author']), $news_full_link, $comment_count, $tag_text, $result['views']),
-                        $short_theme);
+                    $theme_array[] = array(
+                        'tags' => $tag_array,
+                        'title' => $lang_title[language::getInstance()->getUseLanguage()],
+                        'text' => $news_short_text,
+                        'date' => system::getInstance()->toDate($result['date'], 'h'),
+                        'category_url' => $result['path'],
+                        'category_name' => $cat_serial_text[language::getInstance()->getUseLanguage()],
+                        'author_id' => $result['author'],
+                        'author_nick' => user::getInstance()->get('nick', $result['author']),
+                        'full_news_uri' => $news_full_link,
+                        'comment_count' => $comment_count,
+                        'view_count' => $result['views']
+                    );
                 }
             }
             $stmt = null;
         }
-        $cstmt = null;
-        if ($content != null) {
-            $category_theme = $engine->template->get('view_category', 'components/news/');
-            $page_link = $cat_link == null ? "news/" : "news/" . $cat_link . "/";
-            $content = $engine->template->assign(array('news_body', 'pagination'), array($content, $engine->template->drowNumericPagination($page_index, $page_news_count, $total_news_count, $page_link)), $category_theme);
-        }
-        return $content;
+        $page_link = $cat_link == null ? "news" : "news/" . $cat_link;
+        $pagination = template::getInstance()->showFastPagination($page_index, $page_news_count, $total_news_count, $page_link);
+        return template::getInstance()->twigRender('/components/news/short_view.tpl',
+            array('local' => $theme_array,
+                'pagination' => $pagination,
+                'cfg' => array(
+                    'view_tags' => $viewTags,
+                    'view_count' => $viewCount
+                ),
+                'page_title' => $page_title
+            )
+        );
     }
-}
 
-?>
+
+}

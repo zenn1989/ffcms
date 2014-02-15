@@ -1,38 +1,47 @@
 <?php
-// --------------------------------------//
-// THIS SOFTWARE USE GNU GPL V3 LICENSE //
-// AUTHOR: zenn, Pyatinsky Mihail.     //
-// Official website: www.ffcms.ru     //
-// ----------------------------------//
 
-if (!extension::registerPathWay('search', 'search')) {
-    exit("Component search cannot be registered!");
-}
+use engine\property;
+use engine\database;
+use engine\system;
+use engine\language;
+use engine\router;
+use engine\meta;
+use engine\template;
 
-class com_search_front implements com_front
-{
-    public function load()
-    {
-        global $engine;
-        $engine->meta->add('title', $engine->language->get('search_seo_title'));
-        $theme_head = $engine->template->get('search_head', 'components/search/');
-        $way = $engine->page->getPathway();
-        $query = $engine->system->nohtml($way[1]);
-        $query = str_replace(array('"', "'"), "", $query);
-        if($engine->system->length($query) > 3) {
-            $engine->rule->add('com.search.query_make', true);
+class components_search_front {
+
+    protected static $instance = null;
+    public static function getInstance() {
+        if(is_null(self::$instance))
+            self::$instance = new self();
+        return self::$instance;
+    }
+
+    public function make() {
+        $params = array();
+        meta::getInstance()->add('title', language::getInstance()->get('search_seo_title'));
+        $way = router::getInstance()->shiftUriArray();
+        $query = system::getInstance()->nohtml($way[0]);
+        $params['query'] = $query;
+        if(system::getInstance()->length($query) > 2) {
+            $params['search'] = array_merge($this->searchOnNews($query), $this->searchOnPage($query));
         }
-        $newsSearch = $this->searchOnNews($query);
-        $pageSearch = $this->searchOnPage($query);
-        $engine->page->setContentPosition('body', $engine->template->assign(array('search_query', 'search_news', 'search_pages'), array($query, $newsSearch, $pageSearch), $theme_head));
+        $render = template::getInstance()->twigRender(
+            'components/search/search.tpl',
+            array('local' => $params)
+        );
+        template::getInstance()->set(template::TYPE_CONTENT, 'body', $render);
     }
 
     private function searchOnNews($query)
     {
-        global $engine;
-        $theme_body = $engine->template->get('search_body', 'components/search/');
+        $params = array();
         $queryBuild = '%'.$query.'%';
-        $stmt = $engine->database->con()->prepare("SELECT a.title,a.text,a.link,a.category,b.category_id,b.path FROM {$engine->constant->db['prefix']}_com_news_entery a, {$engine->constant->db['prefix']}_com_news_category b WHERE a.category = b.category_id AND (a.text like ? OR a.title like ?) LIMIT 50");
+        $stmt = database::getInstance()->con()->prepare(
+        "SELECT a.title,a.text,a.link,a.category,b.category_id,b.path FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a,
+        ".property::getInstance()->get('db_prefix')."_com_news_category b
+        WHERE a.category = b.category_id AND (a.text like ? OR a.title like ?) LIMIT 50"
+        );
         $stmt->bindParam(1, $queryBuild, PDO::PARAM_STR);
         $stmt->bindParam(2, $queryBuild, PDO::PARAM_STR);
         $stmt->execute();
@@ -40,26 +49,27 @@ class com_search_front implements com_front
         while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $title = unserialize($result['title']);
             $serial_text = unserialize($result['text']);
-            $text = $engine->framework->set($serial_text[$engine->language->getCustom()])->nohtml()->altsubstr(0, 200)->get();
+            $text = system::getInstance()->altsubstr(system::getInstance()->nohtml($serial_text[language::getInstance()->getUseLanguage()]), 0, 200);
             $link = "news/";
             if($result['path'] != null) {
                 $link .= $result['path']."/";
             }
             $link .= $result['link'];
-            $compiled_body .= $engine->template->assign(array('search_link', 'search_title', 'search_snippet'), array($link, $title[$engine->language->getCustom()], $text), $theme_body);
+            $params['news'][] = array(
+                'link' => $link,
+                'title' => $title[language::getInstance()->getUseLanguage()],
+                'snippet' => $text
+            );
         }
-        if($compiled_body == null) {
-            $compiled_body = $engine->template->stringNotify('error', $engine->language->get('search_nothing_found'));
-        }
-        return $compiled_body;
+        $stmt = null;
+        return $params;
     }
 
     private function searchOnPage($query)
     {
-        global $engine;
-        $theme_body = $engine->template->get('search_body', 'components/search/');
+        $params = array();
         $queryBuild = '%'.$query.'%';
-        $stmt = $engine->database->con()->prepare("SELECT title,text,pathway FROM {$engine->constant->db['prefix']}_com_static WHERE text like ? OR title like ? LIMIT 50");
+        $stmt = database::getInstance()->con()->prepare("SELECT title,text,pathway FROM ".property::getInstance()->get('db_prefix')."_com_static WHERE text like ? OR title like ? LIMIT 50");
         $stmt->bindParam(1, $queryBuild, PDO::PARAM_STR);
         $stmt->bindParam(2, $queryBuild, PDO::PARAM_STR);
         $stmt->execute();
@@ -67,17 +77,14 @@ class com_search_front implements com_front
         while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $title = unserialize($result['title']);
             $serial_text = unserialize($result['text']);
-            $text = $engine->framework->set($serial_text[$engine->language->getCustom()])->nohtml()->altsubstr(0, 200)->get();
+            $text = system::getInstance()->altsubstr(system::getInstance()->nohtml($serial_text[language::getInstance()->getUseLanguage()]), 0, 200);
             $link = "static/".$result['pathway'];
-            $compiled_body .= $engine->template->assign(array('search_link', 'search_title', 'search_snippet'), array($link, $title[$engine->language->getCustom()], $text), $theme_body);
+            $params['static'][] = array(
+                'link' => $link,
+                'title' => $title[language::getInstance()->getUseLanguage()],
+                'snippet' => $text
+            );
         }
-        if($compiled_body == null) {
-            $compiled_body = $engine->template->stringNotify('error', $engine->language->get('search_nothing_found'));
-        }
-        return $compiled_body;
-
+        return $params;
     }
 }
-
-
-?>

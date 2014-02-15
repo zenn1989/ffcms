@@ -1,137 +1,129 @@
-<!doctype html>
-<!--[if lt IE 7]>
-<html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>
-<html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>
-<html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!-->
-<html class="no-js" lang="en"> <!--<![endif]-->
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>{$lang::admin_page_title}</title>
-
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-    <meta name="author" content="zenn">
+    <title>{{ language.admin_page_title }}</title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- Bootstrap core CSS -->
+    <link href="{{ system.theme }}/css/bootstrap.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="{$url}/{$tpl_dir}/css/font-awesome.css">
+    <!-- Add custom CSS here -->
+    <link href="{{ system.theme }}/css/sb-admin.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ system.theme }}/font-awesome/css/font-awesome.min.css">
 
-    <link rel="stylesheet" href="{$url}/{$tpl_dir}/css/bootstrap.css">
-    <link rel="stylesheet" href="{$url}/{$tpl_dir}/css/bootstrap-responsive.css">
-
-    <link rel="stylesheet" href="{$url}/{$tpl_dir}/css/application.css">
-
-    <link rel="stylesheet" href="{$url}/resource/elrte/css/smoothness/jquery-ui-1.8.13.custom.css" type="text/css" media="screen">
-
-
-    <link rel="stylesheet" type="text/css" media="screen" href="{$url}/resource/elfinder/css/elfinder.min.css">
-    <link rel="stylesheet" type="text/css" media="screen" href="{$url}/resource/elfinder/css/theme.css">
-
-    <script src="{$url}/{$tpl_dir}/js/jquery.min.js"></script>
-    <script src="{$url}/resource/elrte/js/jquery-ui.min.js" type="text/javascript"></script>
-    <script src="{$url}/{$tpl_dir}/js/bootstrap.min.js"></script>
-
-    <script type="text/javascript" src="{$url}/resource/elfinder/js/elfinder.min.js"></script>
-    <script type="text/javascript" src="{$url}/resource/elfinder/js/i18n/elfinder.ru.js"></script>
-
-    <script type="text/javascript" src="{$url}/resource/ckeditor/ckeditor.js"></script>
-    <script src="{$url}/resource/ckeditor/adapters/jquery.js"></script>
-    <script type="text/javascript">
-        $(document).ready(
-                function()
-                {
-                    CKEDITOR.disableAutoInline = true;
-                    $('.wysi').ckeditor();
-                }
-        );
-    </script>
+    <script src="{{ system.theme }}/js/jquery-1.10.2.js"></script>
+    <script src="{{ system.theme }}/js/bootstrap.js"></script>
+    <script src="{{ system.theme }}/js/ffcms.js"></script>
 </head>
 
 <body>
 
 <div id="wrapper">
 
-    <div id="topbar">
-
-        <div class="container">
-
-            <div id="top-nav">
-
-                <ul>
-                    <li class="dropdown">
-                        <a href="{$url}" target="_blank">{$lang::admin_open_site_link}</a>
-                        <i class="icon-arrow-up"></i>
-                    </li>
-                </ul>
-
-                <ul class="pull-right">
-                    <li><i class="icon-user"></i> {$lang::admin_welcome_msg} {$username}</li>
-                    <li><a href="{$url}/logout">{$lang::admin_exit_link}</a></li>
-                </ul>
-
-            </div>
-            <!-- /#top-nav -->
-
+    <!-- Sidebar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ system.url }}/{{ system.file_name }}"><i class="fa fa-globe"></i> FFCMS ADMIN</a>
         </div>
-        <!-- /.container -->
 
-    </div>
-    <!-- /#topbar -->
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav side-nav">
+                <li><a href="{{ system.url }}/{{ system.file_name }}"><i class="fa fa-home"></i> {{ language.admin_main_link }}</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fire"></i> {{ language.admin_nav_system }} <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="?object=settings"><i class="fa fa-cogs"></i> {{ language.admin_nav_li_settings }}</a></li>
+                        <li><a href="?object=filemanager"><i class="fa fa-file-o"></i> {{ language.admin_nav_li_filemanager }}</a></li>
+                        <li><a href="?object=antivirus"><i class="fa fa-shield"></i> {{ language.admin_nav_li_avir }}</a></li>
+                        <li><a href="?object=dump"><i class="fa fa-floppy-o"></i> {{ language.admin_nav_li_backup }}</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-table"></i> {{ language.admin_nav_modules }} <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        {% for module_data in content.modmenu.modules %}
+                            <li><a href="?object=modules&action={{ module_data.dir }}">{{ module_data.lang|default(module_data.dir) }}</a></li>
+                        {% endfor %}
+                        <li><a href="?object=modules"><i class="fa fa-code-fork"></i> {{ language.admin_nav_more_link }}</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-book"></i> {{ language.admin_nav_components }} <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        {% for component_data in content.modmenu.components %}
+                            <li><a href="?object=components&action={{ component_data.dir }}">{{ component_data.lang|default(component_data.dir) }}</a></li>
+                        {% endfor %}
+                        <li><a href="?object=components"><i class="fa fa-code-fork"></i> {{ language.admin_nav_more_link }}</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-puzzle-piece"></i> {{ language.admin_nav_hooks }} <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        {% for hook_data in content.modmenu.hooks %}
+                            <li><a href="?object=hooks&action={{ hook_data.dir }}">{{ hook_data.lang|default(hook_data.dir) }}</a></li>
+                        {% endfor %}
+                        <li><a href="?object=hooks"><i class="fa fa-code-fork"></i> {{ language.admin_nav_more_link }}</a></li>
+                    </ul>
+                </li>
+            </ul>
 
-    {$header}
+            <ul class="nav navbar-nav navbar-right navbar-user">
+                <li class="dropdown messages-dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bolt"></i> {{ language.admin_fastaccess_title }} <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li class="message-preview">
+                            <a href="?object=components&action=news&make=add">
+                                <span class="avatar"><i class="fa fa-plus fa-4x"></i></span>
+                                <span class="name">{{ language.admin_fastaccess_addnews_title }}</span>
+                                <span class="message">{{ language.admin_fastaccess_addnews_desc }}</span>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li class="message-preview">
+                            <a href="?object=components&action=static&make=add">
+                                <span class="avatar"><i class="fa fa-list-alt fa-4x"></i></span>
+                                <span class="name">{{ language.admin_fastaccess_addpage_title }}</span>
+                                <span class="message">{{ language.admin_fastaccess_addpage_desc }}</span>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li class="message-preview">
+                            <a href="?object=components&action=feedback">
+                                <span class="avatar"><i class="fa fa-envelope fa-4x"></i></span>
+                                <span class="name">{{ language.admin_fastaccess_feedback_title }}</span>
+                                <span class="message">{{ language.admin_fastaccess_feedback_desc }}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li><a href="{{ system.script_url }}" target="_blank"><i class="fa fa-arrow-right"></i> {{ language.admin_open_site_link }}</a></li>
+                <li><a href="{{ system.script_url }}/user/logout.html"><i class="fa fa-sign-out"></i> {{ language.admin_exit_link }}</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </nav>
 
-    <div id="masthead">
-
-        <div class="container">
-
-            <div class="masthead-pad">
-
-                <div class="masthead-text">
-                    <h2>{$lang::admin_panel_header}</h2>
-
-                    <p>{$lang::admin_panel_msg_welcome}</p>
-                </div>
-                <!-- /.masthead-text -->
-
-            </div>
-
-        </div>
-        <!-- /.container -->
-
-    </div>
-    <!-- /#masthead -->
-
-
-    <div id="content">
-        {$body}
-    </div>
-    <!-- /#content -->
-
-</div>
-<!-- /#wrapper -->
-
-
-<div id="footer">
-
-    <div class="container">
+    <div id="page-wrapper">
 
         <div class="row">
-
-            <div class="span6">
-                © 2012 <a href="http://ffcms.ru">ffcms</a>, all rights reserved.
+            <div class="col-lg-12">
+                {{ content.body }}
             </div>
-            <!-- /span6 -->
+        </div><!-- /.row -->
 
-        </div>
-        <!-- /row -->
+    </div><!-- /#page-wrapper -->
+</div><!-- /#wrapper -->
 
-    </div>
-    <!-- /container -->
-
-</div>
-<!-- /#footer -->
 </body>
 </html>

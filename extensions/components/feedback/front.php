@@ -1,62 +1,63 @@
 <?php
-// --------------------------------------//
-// THIS SOFTWARE USE GNU GPL V3 LICENSE //
-// AUTHOR: zenn, Pyatinsky Mihail.     //
-// Official website: www.ffcms.ru     //
-// ----------------------------------//
-if (!extension::registerPathWay('feedback', 'feedback')) {
-    exit("Component feedback cannot be registered!");
-}
-page::setNoCache('feedback');
 
+use engine\user;
+use engine\system;
+use engine\extension;
+use engine\database;
+use engine\property;
+use engine\meta;
+use engine\language;
+use engine\template;
 
-class com_feedback_front implements com_front
-{
-    public function load()
-    {
-        global $engine;
-        $notify = null;
-        $engine->rule->add('com.feedback.captcha_full', $engine->extension->getConfig('captcha_type', 'captcha', 'hooks') == "recaptcha" ? true : false);
-        if($engine->system->post('dofeedback')) {
-            $poster_name = $engine->system->nohtml($engine->system->post('topic_name'));
-            $topic_title = $engine->system->nohtml($engine->system->post('topic_title'));
-            $topic_text = $engine->system->nohtml($engine->system->post('topic_body'));
-            $poster_email = $engine->user->get('id') > 0 ? $engine->user->get('email') : $engine->system->post('topic_email');
-            $captcha = $engine->system->post('captcha');
+class components_feedback_front {
+    protected static $instance = null;
+
+    public static function getInstance() {
+        if(is_null(self::$instance))
+            self::$instance = new self();
+        return self::$instance;
+    }
+
+    public function make() {
+        $params = array();
+        $params['captcha_full'] = extension::getInstance()->getConfig('captcha_type', 'captcha', 'hooks') == "recaptcha" ? true : false;
+        $params['captcha'] = extension::getInstance()->call(extension::TYPE_HOOK, 'captcha')->show();
+        if(system::getInstance()->post('dofeedback')) {
+            $poster_name = system::getInstance()->nohtml(system::getInstance()->post('topic_name'));
+            $topic_title = system::getInstance()->nohtml(system::getInstance()->post('topic_title'));
+            $topic_text = system::getInstance()->nohtml(system::getInstance()->post('topic_body'));
+            $poster_email = user::getInstance()->get('id') > 0 ? user::getInstance()->get('email') : system::getInstance()->post('topic_email');
+            $captcha = system::getInstance()->post('captcha');
             $date = time();
             if(!filter_var($poster_email, FILTER_VALIDATE_EMAIL)) {
-                $notify .= $engine->template->stringNotify('error', $engine->language->get('feedback_error_email'));
+                $params['notify']['wrong_captcha'] = true;
             }
-            if($engine->system->length($topic_title) < 3 || $engine->system->length($topic_title) > 70) {
-                $notify .= $engine->template->stringNotify('error', $engine->language->get('feedback_error_title'));
+            if(system::getInstance()->length($topic_title) < 3 || system::getInstance()->length($topic_title) > 70) {
+                $params['notify']['wrong_title'] = true;
             }
-            if($engine->system->length($poster_name) < 3 || $engine->system->length($poster_name) > 50) {
-                $notify .= $engine->template->stringNotify('error', $engine->language->get('feedback_error_name'));
+            if(system::getInstance()->length($poster_name) < 3 || system::getInstance()->length($poster_name) > 50) {
+                $params['notify']['wrong_name'] = true;
             }
-            if($engine->system->length($topic_text) < 10) {
-                $notify .= $engine->template->stringNotify('error', $engine->language->get('feedback_error_text'));
+            if(system::getInstance()->length($topic_text) < 10) {
+                $params['notify']['wrong_text'] = true;
             }
-            if(!$engine->hook->get('captcha')->validate($captcha)) {
-                $notify .= $engine->template->stringNotify('error', $engine->language->get('feedback_error_captcha'));
+            if(!extension::getInstance()->call(extension::TYPE_HOOK, 'captcha')->validate($captcha)) {
+                $params['notify']['wrong_captcha'] = true;
             }
 
-            if($notify == null) {
-                $stmt = $engine->database->con()->prepare("INSERT INTO {$engine->constant->db['prefix']}_com_feedback (`from_name`, `from_email`, `title`, `text`, `time`) VALUES (?, ?, ?, ?, ?)");
+            if(sizeof($params['notify']) == 0) {
+                $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_com_feedback (`from_name`, `from_email`, `title`, `text`, `time`) VALUES (?, ?, ?, ?, ?)");
                 $stmt->bindParam(1, $poster_name, PDO::PARAM_STR);
                 $stmt->bindParam(2, $poster_email, PDO::PARAM_STR);
                 $stmt->bindParam(3, $topic_title, PDO::PARAM_STR);
                 $stmt->bindParam(4, $topic_text, PDO::PARAM_STR);
                 $stmt->bindParam(5, $date, PDO::PARAM_INT);
                 $stmt->execute();
-                $notify = $engine->template->stringNotify('success', $engine->language->get('feedback_success_send'));
+                $params['notify']['success'] = true;
             }
         }
-        $theme = $engine->template->get('form', 'components/feedback/');
-        $engine->page->setContentPosition('body', $engine->template->assign(array('notify', 'captcha'), array($notify, $engine->hook->get('captcha')->show()), $theme));
-        $engine->meta->add('title', 'Обратная связь');
+        meta::getInstance()->add('title', language::getInstance()->get('feedback_form_title'));
+        $render = template::getInstance()->twigRender('components/feedback/form.tpl', array('local' => $params));
+        template::getInstance()->set(template::TYPE_CONTENT, 'body', $render);
     }
-
 }
-
-
-?>

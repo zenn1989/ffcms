@@ -1,42 +1,35 @@
 <?php
-// --------------------------------------//
-// THIS SOFTWARE USE GNU GPL V3 LICENSE //
-// AUTHOR: zenn, Pyatinsky Mihail.     //
-// Official website: www.ffcms.ru     //
-// ----------------------------------//
 
-/**
- * Класс отвечающий за пользовательские данные
- */
-class user
-{
-    private $userparam = array();
-    private $userindex = null;
-    private $custominit = false;
-    private $customparam = array();
+namespace engine;
+use PDO;
 
-    function user()
-    {
-        global $database;
-        if($database->isDown())
-            return;
-        $this->auth();
-    }
+class user extends singleton {
+    protected static $instance = null;
+    protected static $userdata = array();
+    protected static $userindex = 0;
 
     /**
-     * Анализ пользовательских данных, установка параметров если пользователь авторизован.
+     * @return user
      */
-    private function auth()
-    {
-        global $database, $constant, $system;
-        // необходимая пара для анализа авторизован ли пользователь
-        // pesonal id может быть как логином так и почтой
+    public static function getInstance() {
+        if(is_null(self::$instance)) {
+            self::preload();
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    protected static function preload() {
         $token = $_COOKIE['token'];
         $personal_id = $_COOKIE['person'];
-        // данные удовлетворяют шаблон
-        if (strlen($token) == 32 && (filter_var($personal_id, FILTER_VALIDATE_EMAIL) || (strlen($personal_id) > 0 && $system->isLatinOrNumeric($personal_id)))) {
-            $query = "SELECT * FROM {$constant->db['prefix']}_user a, {$constant->db['prefix']}_user_access_level b WHERE (a.email = ? OR a.login = ?) AND a.token = ? AND a.aprove = 0 AND a.access_level = b.group_id";
-            $stmt = $database->con()->prepare($query);
+        // data 1st raw check before sql is used
+        if (strlen($token) == 32 && (filter_var($personal_id, FILTER_VALIDATE_EMAIL) || (strlen($personal_id) > 0 && system::getInstance()->isLatinOrNumeric($personal_id)))) {
+            $query = "SELECT * FROM
+            ".property::getInstance()->get('db_prefix')."_user a,
+            ".property::getInstance()->get('db_prefix')."_user_access_level b,
+            ".property::getInstance()->get('db_prefix')."_user_custom c
+            WHERE (a.email = ? OR a.login = ?) AND a.token = ? AND a.aprove = 0 AND a.access_level = b.group_id AND a.id = c.id";
+            $stmt = database::getInstance()->con()->prepare($query);
             $stmt->bindParam(1, $personal_id, PDO::PARAM_STR);
             $stmt->bindParam(2, $personal_id, PDO::PARAM_STR);
             $stmt->bindParam(3, $token, PDO::PARAM_STR, 32);
@@ -44,291 +37,152 @@ class user
             if ($stmt->rowCount() == 1) {
                 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $stmt = null;
-                if ((time() - $result[0]['token_start']) < $constant->token_time) {
-                    $this->userindex = $result[0]['id'];
+                if ((time() - $result[0]['token_start']) < property::getInstance()->get('token_time')) {
+                    self::$userindex = $result[0]['id'];
                     foreach ($result[0] as $column_index => $column_data) {
-                        $this->userparam[$result[0]['id']][$column_index] = $column_data;
+                        self::$userdata[self::$userindex][$column_index] = $column_data;
                     }
-                    $this->customset($result[0]['id']);
                 }
             }
         }
     }
 
-    private function set($id)
-    {
-        global $engine;
-        if (!array_key_exists($id, $this->userparam)) {
-            $query = "SELECT * FROM {$engine->constant->db['prefix']}_user a, {$engine->constant->db['prefix']}_user_access_level b WHERE a.id = ? AND a.aprove = 0 AND a.access_level = b.group_id";
-            $stmt = $engine->database->con()->prepare($query);
-            $stmt->bindParam(1, $id, PDO::PARAM_INT);
-            $stmt->execute();
-            if ($stmt->rowCount() == 1) {
-                $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                foreach ($result[0] as $column_index => $column_data) {
-                    $this->userparam[$result[0]['id']][$column_index] = $column_data;
-                }
-            }
-        }
-    }
-
-    /**
-     * Получение определенных пользовательских данных - аналогично названию в таблицах user / user_access_level
-     * @param unknown_type $param
-     * @param unknown_type $id - получение данных другого пользователя.
-     */
-    public function get($param, $id = 0)
-    {
-        // это запрос не для текущего авторизованого пользоваетеля.
-        if ($id > 0) {
-            $this->set($id);
-            return $this->userparam[$id][$param];
-        } // иначе отдаем данные текущего объекта
-        else {
-            return $this->userparam[$this->userindex][$param];
-        }
-    }
-
-    /**
-     * Получение дополнительных полей пользовательских данных из таблицы ffcms_user_custom
-     * @param unknown_type $param
-     * @return multitype:
-     */
-    public function customget($param, $id = 0)
-    {
-        if ($id < 1) {
-            $id = $this->get('id');
-        }
-        $this->customset($id);
-        return $this->customparam[$id][$param];
-    }
-
-    private function customset($id)
-    {
-        global $constant, $database;
-        // если случилась какая то херня или криворукий мудак пишет плагин без проверки oid
-        if ($id < 1 || array_key_exists($id, $this->customparam)) {
+    private function set($userid, $overload = false) {
+        if(!$overload && array_key_exists($userid, self::$userdata))
             return;
-        }
-        $stmt = $database->con()->prepare("SELECT * FROM {$constant->db['prefix']}_user_custom WHERE id = ?");
-        $stmt->bindParam(1, $id, PDO::PARAM_INT);
+        if($userid < 1)
+            return;
+        $query = "SELECT * FROM
+            ".property::getInstance()->get('db_prefix')."_user a,
+            ".property::getInstance()->get('db_prefix')."_user_access_level b,
+            ".property::getInstance()->get('db_prefix')."_user_custom c
+            WHERE a.id = ? AND a.aprove = 0 AND a.access_level = b.group_id AND a.id = c.id";
+        $stmt = database::getInstance()->con()->prepare($query);
+        $stmt->bindParam(1, $userid, PDO::PARAM_INT);
         $stmt->execute();
-        if ($stmt->rowCount() == 0) {
-            // доп. поля не были инициированы. Инициируем.
-            $stmt = null;
-            $stmt = $database->con()->prepare("INSERT INTO {$constant->db['prefix']}_user_custom (id) VALUES (?)");
-            $stmt->bindParam(1, $id, PDO::PARAM_INT);
-            $stmt->execute();
-            // рекурсивно переопределяем данные (:
-            return $this->customset($id);
-        } else {
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            foreach ($result[0] as $index => $data) {
-                $this->customparam[$id][$index] = $data;
-            }
-        }
-
-    }
-
-    /**
-     * Перезагрузка всех пользовательских данных
-     * @param unknown_type $id
-     */
-    public function fulluseroverload($id)
-    {
-        $this->useroverload($id);
-        $this->customoverload($id);
-    }
-
-    /**
-     * Перезагрузка основных пользовательских данных если они были изменены в процессе обработки
-     * @param unknown_type $id
-     */
-    public function useroverload($id)
-    {
-        global $engine;
-        if ($id < 1 || !$this->userparam[$id])
+        if($stmt->rowCount() < 1)
             return;
-        $stmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_user a, {$engine->constant->db['prefix']}_user_access_level b WHERE a.id = ? AND a.access_level = b.group_id");
-        $stmt->bindParam(1, $id, PDO::PARAM_INT);
-        $stmt->execute();
-        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($res[0] as $index => $data) {
-            $this->userparam[$id][$index] = $data;
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = null;
+        foreach($result as $key=>$value) {
+            self::$userdata[$userid][$key] = $value;
         }
     }
 
-    /**
-     * Перезагрузка кастомных данных после того как они уже были выгружены и были изменены в процессе работы.
-     * @param unknown_type $id
-     */
-    public function customoverload($id)
-    {
-        global $engine;
-        // если id пуст или 0 или такой параметр еще не выставлен - возврат
-        if ($id < 1 || !$this->customparam[$id]) {
-            return;
+    public function overload($userid) {
+        $this->set($userid, true);
+    }
+
+    public function get($param, $userid = 0) {
+        // current user, is always loaded on getInstance()
+        if($userid === 0) {
+            return self::$userdata[self::$userindex][$param];
         }
-        $stmt = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_user_custom WHERE id = ?");
-        $stmt->bindParam(1, $id, PDO::PARAM_INT);
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($result[0] as $index => $data) {
-            $this->customparam[$id][$index] = $data;
-        }
+        // custom user, make load
+        $this->set($userid);
+        return self::$userdata[$userid][$param];
     }
 
     /**
-     * Если необходимо в дальнейшем использовать данные большого числа пользователей
-     * мы рекомендуем выгрузить их с помощью данного метода, дабы не выгружать каждого пользователя отдельным SQL запросом
-     * @param String $list - example 1,2,5,19,201
-     */
-    public function listload($list)
-    {
-        global $engine;
-        if (is_array($list)) {
-            $list = $engine->system->altimplode(',', $list);
-        }
-        if (!$engine->system->isIntList($list) || strlen($list) < 1) {
-            return;
-        }
-        // это запросто делается и 1 запросом, однако разграничить как-либо дефалт и кустом параметры - невозможно, а делать жесткую привязку к колонкам еще больший дебилизм
-        $stmt1 = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_user WHERE id in($list)");
-        $stmt2 = $engine->database->con()->prepare("SELECT * FROM {$engine->constant->db['prefix']}_user_custom WHERE id in($list)");
-        $stmt1->execute();
-        $stmt2->execute();
-        $result_list_standart = $stmt1->fetchAll(PDO::FETCH_ASSOC);
-        $result_list_custom = $stmt2->fetchAll(PDO::FETCH_ASSOC);
-
-        //var_dump($result_list_standart);
-        foreach ($result_list_standart as $array_data) {
-            foreach ($array_data as $key => $data) {
-                $this->userparam[$array_data['id']][$key] = $data;
-            }
-        }
-        foreach ($result_list_custom as $array_data) {
-            foreach ($array_data as $key => $data) {
-                $this->customparam[$array_data['id']][$key] = $data;
-            }
-        }
-    }
-
-    /**
-     * Существует ли пользователь, по ID
+     * Check user exist using ID
+     * @param $userid
+     * @return bool
      */
     public function exists($userid)
     {
-        global $engine;
-        $stmt = $engine->database->con()->prepare("SELECT COUNT(*) FROM {$engine->constant->db['prefix']}_user WHERE id = ?");
+        $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_user WHERE id = ?");
         $stmt->bindParam(1, $userid, PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetch();
-        return $result[0];
+        return $result[0] > 0 ? true : false;
     }
 
     /**
-     * Построение имени аватара пользователя. Вернет noavatar.jpg в случае отсутствия.
-     * @param unknown_type $type
-     * @param unknown_type $userid
+     * Load user data in memory from list $idlist (array or string list like 1,5,7,8)
+     * @param $idlist
+     */
+    public function listload($idlist) {
+        if (is_array($idlist)) {
+            $idlist = system::getInstance()->altimplode(',', $idlist);
+        }
+        if (!system::getInstance()->isIntList($idlist) || strlen($idlist) < 1) {
+            return;
+        }
+        $query = "SELECT * FROM
+            ".property::getInstance()->get('db_prefix')."_user a,
+            ".property::getInstance()->get('db_prefix')."_user_access_level b,
+            ".property::getInstance()->get('db_prefix')."_user_custom c
+            WHERE a.id in ($idlist) AND a.aprove = 0 AND a.access_level = b.group_id AND a.id = c.id";
+        $query = database::getInstance()->con()->query($query);
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+        foreach($result as $item) {
+            foreach($item as $param => $data) {
+                self::$userdata[$item['id']][$param] = $data;
+            }
+        }
+    }
+
+    /**
+     * Make & check user avatar is exist and return full image path without domain
+     * @param string('small, 'medium', 'big') $type
+     * @param int $userid
      * @return string
      */
     public function buildAvatar($type = "small", $userid)
     {
-        global $engine;
-        $filepath = $engine->constant->root . "/upload/user/avatar/$type/avatar_$userid.jpg";
+        $filepath = root . "/upload/user/avatar/$type/avatar_$userid.jpg";
         if (!file_exists($filepath)) {
-            return "noavatar.jpg";
+            return 'resource/cmscontent/noavatar_'.$type.'.jpg';
         }
-        // делаем динамический ?mtime=время чтобы кеширование браузера работало верно для измененных аватаров
+        // dynamic adding file make time
         $filetime = filemtime($filepath);
-        return "avatar_$userid.jpg?mtime=$filetime";
+        $result = "upload/user/avatar/$type/avatar_$userid.jpg?mtime=".$filetime;
+        return $result;
     }
 
-    public function isPermaBan()
+    /**
+     * Check is $mail exists in db
+     * @param $mail
+     * @return bool
+     */
+    public function mailIsExists($mail)
     {
-        global $engine;
-        $stmt = null;
-        $ip = $engine->system->getRealIp();
-        $time = time();
-        $userid = $this->get('id');
-        if ($userid > 0) {
-            $stmt = $engine->database->con()->prepare("SELECT COUNT(*) FROM {$engine->constant->db['prefix']}_user_block WHERE (user_id = ? or ip = ?) AND express > ?");
-            $stmt->bindParam(1, $userid, PDO::PARAM_INT);
-            $stmt->bindParam(2, $ip, PDO::PARAM_STR);
-            $stmt->bindParam(3, $time, PDO::PARAM_INT);
-            $stmt->execute();
-        } else {
-            $stmt = $engine->database->con()->prepare("SELECT COUNT(*) FROM {$engine->constant->db['prefix']}_user_block WHERE ip = ? AND express > ?");
-            $stmt->bindParam(1, $ip, PDO::PARAM_STR);
-            $stmt->bindParam(2, $time, PDO::PARAM_INT);
-            $stmt->execute();
+        $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_user WHERE email = ?");
+        $stmt->bindParam(1, $mail, PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        return $result[0] > 0;
+    }
+
+    /**
+     * Check $login is exist
+     * @param $login
+     * @return bool
+     */
+    public function loginIsExists($login)
+    {
+        if (strlen($login) < 3 || strlen($login) > 64) {
+            return true;
         }
-        $rowFetch = $stmt->fetch();
-        $count = $rowFetch[0];
-        return $count > 0 ? true : false;
+        $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_user WHERE login = ?");
+        $stmt->bindParam(1, $login, PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        return $result[0] > 0;
     }
 
     /**
-     * Get current user balance in type Decimal length (12,2)
-     * @param int $userid
-     * @return decimal mixed
+     * Get user id by email
+     * @param $email
+     * @return null|string
      */
-    public function getBalance($userid = 0)
-    {
-        return $this->get('balance', $userid);
+    public function getIdByEmail($email) {
+        $stmt = database::getInstance()->con()->prepare("SELECT id FROM ".property::getInstance()->get('db_prefix')."_user WHERE email = ?");
+        $stmt->bindParam(1, $email, PDO::PARAM_STR);
+        $stmt->execute();
+        if($rset = $stmt->fetch(PDO::FETCH_ASSOC))
+            return $rset['id'];
+        return null;
     }
 
-    /**
-     * Add money $count to user $userid balance
-     * @param decimal $count
-     * @param int $userid
-     */
-    public function addBalance($count, $userid = 0, $message = 'user->addBalance()')
-    {
-        global $engine;
-        $id = $userid == 0 ? $this->get('id') : $userid;
-        if($id < 1)
-            return;
-        $stmt = $engine->database->con()->prepare("UPDATE {$engine->constant->db['prefix']}_user SET balance = balance+? WHERE id = ?");
-        $stmt->bindParam(1, $count, PDO::PARAM_STR);
-        $stmt->bindParam(2, $id, PDO::PARAM_INT);
-        $stmt->execute();
-        $stmt = null;
-        $time = time();
-        $logparams = serialize(array('operation_type' => 'in', 'price' => $count));
-        $stmt = $engine->database->con()->prepare("INSERT INTO {$engine->constant->db['prefix']}_user_log (`owner`, `type`, `params`, `message`, `time`) VALUES (?, 'BALANCE', ?, ?, ?)");
-        $stmt->bindParam(1, $id, PDO::PARAM_INT);
-        $stmt->bindParam(2, $logparams, PDO::PARAM_STR);
-        $stmt->bindParam(3, $message, PDO::PARAM_STR);
-        $stmt->bindParam(4, $time, PDO::PARAM_INT);
-        $stmt->execute();
-    }
-
-    /**
-     * Reduce balance $userid to $count
-     * @param deciaml $count
-     * @param int $userid
-     */
-    public function reduceBalance($count, $userid = 0, $message = 'user->reduceBalance()')
-    {
-        global $engine;
-        $id = $userid == 0 ? $this->get('id') : $userid;
-        if($id < 1)
-            return;
-        $stmt = $engine->database->con()->prepare("UPDATE {$engine->constant->db['prefix']}_user SET balance = balance-? WHERE id = ?");
-        $stmt->bindParam(1, $count, PDO::PARAM_STR);
-        $stmt->bindParam(2, $id, PDO::PARAM_INT);
-        $stmt->execute();
-        $stmt = null;
-        $time = time();
-        $logparams = serialize(array('operation_type' => 'out', 'price' => $count));
-        $stmt = $engine->database->con()->prepare("INSERT INTO {$engine->constant->db['prefix']}_user_log (`owner`, `type`, `params`, `message`, `time`) VALUES (?, 'BALANCE', ?, ?, ?)");
-        $stmt->bindParam(1, $id, PDO::PARAM_INT);
-        $stmt->bindParam(2, $logparams, PDO::PARAM_STR);
-        $stmt->bindParam(3, $message, PDO::PARAM_STR);
-        $stmt->bindParam(4, $time, PDO::PARAM_INT);
-        $stmt->execute();
-    }
 }
-
-?>

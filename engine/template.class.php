@@ -1,479 +1,194 @@
 <?php
-// --------------------------------------//
-// THIS SOFTWARE USE GNU GPL V3 LICENSE //
-// AUTHOR: zenn, Pyatinsky Mihail.     //
-// Official website: www.ffcms.ru     //
-// ----------------------------------//
+namespace engine;
 
-/**
- * Класс шаблонизатора системы
- */
-class template
-{
-    private $position = array();
-    private $content = null;
-    private $debug_readcount = 0;
-    private $position_allowed = array();
+class template extends singleton {
 
-    private $precompile_tag = array();
+    protected static $twig_file = null;
+    protected static $twig_string = null;
+    protected static $instance = null;
+    protected static $variables = array();
 
-    function template()
-    {
-        if (loader == 'front' || loader == 'back') {
-            $this->content = $this->getCarcase();
+    // twig variables type
+    const TYPE_CONTENT = 'content';
+    const TYPE_LANGUAGE = 'language';
+    const TYPE_SYSTEM = 'system';
+    const TYPE_USER = 'user';
+    const TYPE_MODULE = 'module';
+    const TYPE_META = 'meta';
+
+    /**
+     * @return template
+     */
+    public static function getInstance() {
+        if(is_null(self::$instance)) {
+            self::$instance = new self();
+            self::twigLoader();
         }
+        return self::$instance;
+    }
+
+    protected static function twigLoader() {
+        $twig_cache = root . '/cache/';
+        $tpl_name = self::getIfaceTemplate();
+        $userid = user::getInstance()->get('id');
+        switch(loader) {
+            case 'front':
+            case 'api':
+                $twig_cache .= $userid < 1 ? 'guest' : 'uid'.$userid;
+                break;
+            case 'back':
+                $twig_cache .= 'admintmp';
+                break;
+            case 'install':
+                $twig_cache .= 'installtmp';
+                break;
+        }
+        require_once(root . "/resource/twig/Autoloader.php");
+        \Twig_Autoloader::register();
+        self::$twig_file = new \Twig_Environment(
+            new \Twig_Loader_Filesystem(root . '/' . property::getInstance()->get('tpl_dir') . '/' . $tpl_name),
+            array(
+                'cache' => $twig_cache,
+                'auto_reload' => true,
+                'charset' => 'utf-8',
+                'autoescape' => false
+            )
+        );
+        self::$twig_string = new \Twig_Environment(new \Twig_Loader_String());
+        self::twigDefaultVariables();
+    }
+
+    protected static function getIfaceTemplate() {
+        $tpl_dir = null;
+        switch(loader) {
+            case 'front':
+            case 'api':
+                $tpl_dir = property::getInstance()->get('tpl_name');
+                break;
+            case 'back':
+                $tpl_dir = property::getInstance()->get('admin_tpl');
+                break;
+            case 'install':
+                $tpl_dir = property::getInstance()->get('install_tpl');
+                break;
+        }
+        return $tpl_dir;
+    }
+
+    protected static function twigDefaultVariables() {
+        // system
+        self::$variables[self::TYPE_SYSTEM]['url'] = property::getInstance()->get('url');
+        self::$variables[self::TYPE_SYSTEM]['script_url'] = property::getInstance()->get('script_url');
+        self::$variables[self::TYPE_SYSTEM]['theme'] = property::getInstance()->get('script_url') . '/' . property::getInstance()->get('tpl_dir') . '/' . self::getIfaceTemplate();
+        self::$variables[self::TYPE_SYSTEM]['lang'] = language::getInstance()->getUseLanguage();
+        self::$variables[self::TYPE_SYSTEM]['self_url'] = property::getInstance()->get('url').router::getInstance()->getUriString();
+        self::$variables[self::TYPE_SYSTEM]['title'] = property::getInstance()->get('seo_title');
+        self::$variables[self::TYPE_SYSTEM]['file_name'] = basename($_SERVER['PHP_SELF']);
+        self::$variables[self::TYPE_SYSTEM]['version'] = version;
+        // user
+        self::$variables[self::TYPE_USER]['id'] = user::getInstance()->get('id');
+        self::$variables[self::TYPE_USER]['name'] = user::getInstance()->get('nick');
+        self::$variables[self::TYPE_USER]['admin'] = permission::getInstance()->have('global/owner');
     }
 
     /**
-     * Допустимые позиции в шаблоне. В дальнейшем - сделать конфигурабельно относительно шаблонов
-     * @return array
+     * @return \Twig_Environment
      */
-    public function allowedPositions()
-    {
-        global $engine;
-        if(sizeof($this->position_allowed) > 0) {
-            return $this->position_allowed;
-        }
-        $file = $engine->constant->root . $engine->constant->ds . $engine->constant->tpl_dir . $engine->constant->ds . $engine->constant->tpl_name . $engine->constant->ds . "position.list";
-        if(!file_exists($file)) {
-            $this->position_allowed = array('header', 'left', 'body', 'right', 'bottom', 'footer');
-        } else {
-            $this->position_allowed = $engine->system->altexplode('|', file_get_contents($file));
-        }
-        return $this->position_allowed;
+    public function twig() {
+        return self::$twig_file;
     }
 
     /**
-     * Инициация шаблонизатора. Загрузка стандартных блоков.
-     * Данные по каждой позиции расположены в page.class.php
+     * @return \Twig_Environment
      */
-    public function init()
-    {
-        global $engine;
-        foreach($this->allowedPositions() as $position) {
-            $value = $engine->page->getContentPosition($position);
-            ksort($value);
-            $this->position[$position] = $value;
-        }
+    public function twigString() {
+        return self::$twig_string;
     }
 
     /**
-     * Сборка и отображение шаблона
+     * Add to rendering variable with value. If add is true value not be replaced, added.
+     * @param $type ['content', 'language', 'system']
+     * @param $variable
+     * @param $value
+     * @param bool $add
      */
-    public function compile()
-    {
-        global $engine;
-        if($engine->database->isDown())
-        {
-            if($engine->cache->check(true)) {
-                return $engine->cache->get();
-            } else {
-                $this->overloadCarcase('database_down');
-                $this->globalset('admin_email', $engine->constant->mail['from_email']);
-            }
-        }
-        if($engine->user->get('id') < 1 && $engine->cache->check()) {
-            return $engine->cache->get();
-        }
-        foreach($this->allowedPositions() as $position) {
-            $this->fortpl($position);
-        }
-        if (loader == 'front') {
-            // инициация пост-загружаемых модулей
-            $engine->extension->moduleAfterLoad();
-        }
-        $this->postcompile();
-        $this->language();
-        $this->ruleCheck();
-        $this->htmlhead();
-        $this->cleanvar();
-        if ($engine->constant->do_compress_html && loader == 'front') {
-            $this->compress();
-        }
-        if(loader == 'front' && !$engine->cache->used())
-            $engine->cache->save($this->content);
-        return $this->content;
-    }
-
-    /**
-     * Пост-компиляция массива заданных тегов
-     */
-    private function postcompile()
-    {
-        foreach ($this->precompile_tag as $tag => $value) {
-            $this->set($tag, $value);
-        }
-    }
-
-    /**
-     * Пост компиляция тегов, после сборки шаблона
-     * @param String $tag
-     * @param String $value
-     */
-    public function globalset($tag, $value)
-    {
-        $this->precompile_tag[$tag] = $value;
-    }
-
-    /**
-     * Установка всех значений 1 блока по имени блока.
-     */
-    private function fortpl($position_name)
-    {
-        $result = null;
-        $sort_entery = $this->position[$position_name];
-        if (count($sort_entery) > 0) {
-            foreach ($sort_entery as $enteries) {
-                $result .= $enteries;
-            }
-        }
-        $this->set($position_name, $result);
-    }
-
-    /**
-     * Установка языковых переменных
-     */
-    private function language()
-    {
-        global $engine;
-        $this->content = $engine->language->set($this->content);
-    }
-
-    /**
-     * Загрузка основного каркаса шаблона, main.tpl
-     */
-    private function getCarcase()
-    {
-        return $this->get('main');
-    }
-
-    /**
-     * Перезагрузка супер-позиции шаблона на указанный
-     * @param $theme
-     */
-    public function overloadCarcase($theme = null)
-    {
-        $this->content = null;
-        if($theme != null) {
-            $this->content = $this->get($theme);
-        }
-    }
-
-    /**
-     * Назначение переменной в супер-позиции $content
-     * @param unknown_type $var
-     * @param unknown_type $value
-     */
-    public function set($var, $value)
-    {
-        if (is_array($var)) {
-            for ($i = 0; $i <= sizeof($var); $i++) {
-                $this->content = str_replace('{$' . $var[$i] . '}', $value[$i], $this->content);
-            }
-        } else {
-            $this->content = str_replace('{$' . $var . '}', $value, $this->content);
-        }
-    }
-
-    /**
-     * Очистка от {$__?___} в результате.
-     * Для контента, обязательно использовать эквивалент -> $ = &#36;
-     */
-    private function cleanvar()
-    {
-        $this->content = preg_replace('/{\$(.*?)}/s', '', $this->content);
-    }
-
-    /**
-     * Сжатие страницы путем удаления излишних переносов строк. Алгоритм героинский, но работает исправно и не бьет юзерский JS в коде шаблонов.
-     */
-    private function compress()
-    {
-        $compressed = null;
-        preg_match_all('/(.*?)\n/s', $this->content, $matches);
-        foreach ($matches[0] as $string) {
-            if (preg_match('/[^\s]/s', $string))
-                $compressed .= $string;
-        }
-        $this->content = $compressed;
-    }
-
-    /**
-     * Функция для обработки условий {$if условие}содержимое{/$if} в шаблонах
-     */
-    public function ruleCheck($content = null)
-    {
-        global $engine;
-        if ($content == null) {
-            preg_match_all('/{\$if (.+?)}(.*?){\$\/if}/s', $this->content, $matches);
-            for ($i = 0; $i < sizeof($matches[1]); $i++) {
-                $theme_result = null;
-                if ($engine->rule->check($matches[1][$i])) {
-                    $theme_result = $matches[2][$i];
+    public function set($type, $variable, $value, $add = false) {
+        if(is_array($variable)) {
+            foreach($variable as $single_var) {
+                if($add || is_null(self::$variables[$type][$single_var])) {
+                    if($add)
+                        self::$variables[$type][$single_var] .= $value[$single_var];
+                    else
+                        self::$variables[$type][$single_var] = $value[$single_var];
                 }
-                $this->content = str_replace($matches[0][$i], $theme_result, $this->content);
             }
         } else {
-            preg_match_all('/{\$if (.+?)}(.*?){\$\/if}/s', $content, $matches);
-            for ($i = 0; $i < sizeof($matches[1]); $i++) {
-                $theme_result = null;
-                if ($engine->rule->check($matches[1][$i])) {
-                    $theme_result = $matches[2][$i];
-                }
-                $content = str_replace($matches[0][$i], $theme_result, $content);
-            }
-            return $content;
-        }
-    }
-
-    private function htmlhead()
-    {
-        global $engine;
-        $compiled_header = null;
-        // сборка подключения файлов javascript в шапку, к примеру из тела компонента, когда непосредственного доступа к тегу <head></head> нет.
-        // пр: {$jsfile lib/js/script.js} уйдет в <head><script src="url/tpl_dir/tpl_name/lib/js/script.js
-        preg_match_all('/{\$jsfile (.*?)}/s', $this->content, $jsfile_matches);
-        $jsfile_array = $engine->system->nullArrayClean(array_unique($jsfile_matches[1]));
-        foreach ($jsfile_array as $jsfile) {
-            if (file_exists($engine->constant->root . $engine->constant->ds . $engine->constant->tpl_dir . $engine->constant->ds . $engine->constant->tpl_name . $engine->constant->ds . $jsfile))
-                $compiled_header .= "<script type=\"text/javascript\" src=\"{$engine->constant->url}/{$engine->constant->tpl_dir}/{$engine->constant->tpl_name}/{$jsfile}\"></script>\r\n";
-        }
-        // сборка подключения CSS файлов в шапку, аналогично JS
-        preg_match_all('/{\$cssfile (.*?)}/s', $this->content, $cssfile_matches);
-        $cssfile_array = $engine->system->nullArrayClean($cssfile_matches[1]);
-        foreach ($cssfile_array as $cssfile) {
-            if (file_exists($engine->constant->root . $engine->constant->ds . $engine->constant->tpl_dir . $engine->constant->ds . $engine->constant->tpl_name . $engine->constant->ds . $cssfile))
-                $compiled_header .= "<link href=\"{$engine->constant->url}/{$engine->constant->tpl_dir}/{$engine->constant->tpl_name}/{$cssfile}\" rel=\"stylesheet\" />\r\n";
-        }
-        // сборка подключения JS на api.php, в которых используется преобразование переменных.
-        preg_match_all('/{\$jsapi (.*?)}/s', $this->content, $jsapi_matches);
-        $jsapi_array = $engine->system->nullArrayClean(array_unique($jsapi_matches[1]));
-        foreach ($jsapi_array as $jsapi) {
-            $compiled_header .= "<script type=\"text/javascript\" src=\"{$engine->constant->url}/{$jsapi}\"></script>\r\n";
-        }
-        // сборка JS URL включений
-        preg_match_all('/{\$jsurl (.*?)}/s', $this->content, $jsurl_matches);
-        $jsurl_array = $engine->system->nullArrayClean(array_unique($jsurl_matches[1]));
-        foreach ($jsurl_array as $jsurl) {
-            if($engine->system->prefixEquals($jsurl, $engine->constant->url)) {
-                $check_path_js = $engine->system->removeCharsFromString($engine->constant->url, $jsurl, 1);
-                if(file_exists($engine->constant->root . $check_path_js)) {
-                    $compiled_header .= "<script type=\"text/javascript\" src=\"$jsurl\"></script>\r\n";
-                }
-            } else {
-                $compiled_header .= "<script type=\"text/javascript\" src=\"$jsurl\"></script>\r\n";
+            if($add || is_null(self::$variables[$type][$variable])) {
+                if($add)
+                    self::$variables[$type][$variable] .= $value;
+                else
+                    self::$variables[$type][$variable] = $value;
             }
         }
-        // сборка CSS URL включений
-        preg_match_all('/{\$cssurl (.*?)}/s', $this->content, $cssurl_matches);
-        $cssurl_array = $engine->system->nullArrayClean($cssurl_matches[1]);
-        foreach ($cssurl_array as $cssurl) {
-            if($engine->system->prefixEquals($cssurl, $engine->constant->url)) {
-                $check_path_css = $engine->system->removeCharsFromString($engine->constant->url, $cssurl, 1);
-                if(file_exists($engine->constant->root . $check_path_css)) {
-                    $compiled_header .= "<link href=\"$cssurl\" rel=\"stylesheet\" />\r\n";
-                }
-            } else {
-                $compiled_header .= "<link href=\"$cssurl\" rel=\"stylesheet\" />\r\n";
-            }
-        }
-        $compiled_header .= "</head>";
-        $this->content = str_replace('</head>', $compiled_header, $this->content);
     }
 
     /**
-     * Установка стандартных шаблоных переменных. Пример: {$url} => http://ffcms.ru
+     * Get template variable by type and name
+     * @param $type
+     * @param $variable
+     * @return string
      */
-    public function setDefaults($theme)
-    {
-        global $constant, $user, $language, $page;
-        $template_path = null;
-        if (loader == 'back') {
-            $template_path = $constant->tpl_dir . $constant->slash . $constant->admin_tpl;
-        } elseif(loader == 'install') {
-            $template_path = $constant->tpl_dir . $constant->slash . $constant->install_tpl;
-        } else {
-            $template_path = $constant->tpl_dir . $constant->slash . $constant->tpl_name;
-        }
-
-
-        return $this->assign(array('url', 'tpl_dir', 'user_id', 'user_nick', 'ffcms_version', 'self_url', 'language'),
-            array($constant->url, $template_path, loader == 'install' ? null : $user->get('id'), loader == 'install' ? null : $user->get('nick'), version, $constant->url.$page->getStrPathway(), $language->getCustom()),
-            $theme);
-    }
-
-    public function get($tplname, $customdirectory = null)
-    {
-        global $constant;
-        if(loader == 'back') {
-            $file = $constant->root . $constant->ds . $constant->tpl_dir . $constant->ds . $constant->admin_tpl . $constant->ds . $customdirectory . $tplname . ".tpl";
-        } elseif(loader == 'install') {
-            $file = $constant->root . $constant->ds . $constant->tpl_dir . $constant->ds . $constant->install_tpl . $constant->ds . $customdirectory . $tplname . ".tpl";
-        } else {
-            $file = $constant->root . $constant->ds . $constant->tpl_dir . $constant->ds . $constant->tpl_name . $constant->ds . $customdirectory . $tplname . ".tpl";
-        }
-        if (file_exists($file)) {
-            $this->debug_readcount++;
-            return $this->setDefaults(file_get_contents($file));
-        }
-        return $this->tplException($tplname);
+    public function get($type, $variable) {
+        return self::$variables[$type][$variable];
     }
 
     /**
-     * Назначение тегу значения (краткий аналог str_replace)
-     * @param unknown_type $tag
-     * @param unknown_type $data
-     * @param unknown_type $where
-     * @return mixed
+     * Render function for extensions.
+     * @param $tpl
+     * @param $variables array
+     * @return string
      */
-    public function assign($tag, $data, $where)
-    {
-        if (is_array($tag)) {
-            $copy = array();
-            foreach ($tag as $entery) {
-                $copy[] = '{$' . $entery . '}';
-            }
-            return str_replace($copy, $data, $where);
-        }
-        return str_replace('{$' . $tag . '}', $data, $where);
+    public function twigRender($tpl, $variables) {
+        $renderArray = array_merge(self::$variables, $variables);
+        return $this->twig()->render($tpl, $renderArray);
+    }
+
+    public function make() {
+        return $this->twig()->render('main.tpl', self::$variables);
     }
 
     /**
-     * Выход при отсутствии файлов шаблона
+     * Print content without compiling main template.
+     * @param $content
      */
-    private function tplException($tpl)
-    {
-        exit("Template file not founded: " . $tpl);
+    public function justPrint($content) {
+        $render = $this->twigString()->render($content, self::$variables);
+        exit($render);
     }
 
     /**
-     * Возвращает блок уведомлений
-     * @param ENUM('error', 'info', 'success') $type
-     * @param String $message
-     * @param Boolean $isadmin
-     * @return mixed
+     * Display fast pagination based on input data like index, item count, total count and prepend link
+     * @param $index
+     * @param $count
+     * @param $total
+     * @param $link
+     * @return null|string
      */
-    public function stringNotify($type, $content, $isadmin = false)
+    public function showFastPagination($index, $count, $total, $link)
     {
-        $theme = $this->get("notify_string_{$type}", null);
-        return $this->assign('content', $content, $theme);
-    }
-
-    /**
-     * Ошибка 404 для пользователей
-     */
-    public function compile404()
-    {
-        global $engine;
-        $engine->cache->setNoExist(true);
-        return $this->get('404');
-    }
-
-    public function compileBan()
-    {
-        global $engine;
-        $engine->cache->setNoExist(true);
-        return $this->get('ban');
-    }
-
-    /**
-     * Отладочная информация о кол-ве считанных шаблонов
-     */
-    public function getReadCount()
-    {
-        return $this->debug_readcount;
-    }
-
-    /**
-     * Очистка всех позиций. Возможна повторная выгрузка другого шаблона.
-     */
-    public function cleanafterprint()
-    {
-        unset($this->content);
-        unset($this->position);
-    }
-
-    public function drowNumericPagination($index, $count, $total, $link)
-    {
-        $theme_head = $this->get('pagination_head');
-        $theme_active = $this->get('pagination_active_item');
-        $theme_inactive = $this->get('pagination_inactive_item');
-        $theme_spliter = $this->get('pagination_split_item');
-
-        // если все записи вмещены на 1 странице - пагинация не нужна.
         if ($total <= $count) {
-            return;
+            return null;
         }
-
         $compiled_items = null;
-        $last_page = (int)$total / $count;
-        // если всего планируется более 10 страничек с итемами
-        if ($total / $count > 10) {
-            // если это начало списка
-            if ($index < 5) {
-                for ($i = 0; $i <= 8; $i++) {
-                    if ($i == $index) {
-                        $di = ($i == 0) ? null : $i;
-                        $compiled_items .= $this->assign(array('item_link', 'item_name'), array($link . $di, $i + 1), $theme_active);
-                    } else {
-                        $di = ($i == 0) ? null : $i;
-                        $compiled_items .= $this->assign(array('item_link', 'item_name'), array($link . $di, $i + 1), $theme_inactive);
-                    }
-                }
-                $compiled_items .= $theme_spliter;
-                $compiled_items .= $this->assign(array('item_link', 'item_name'), array($link . $last_page, $last_page + 1), $theme_inactive);
-            } // это конец списка
-            elseif ($last_page - $index < 5) {
-                $compiled_items .= $this->assign(array('item_link', 'item_name'), array($link . '0', 1), $theme_inactive);
-                $compiled_items .= $theme_spliter;
-                for ($i = $last_page - 8; $i <= $last_page; $i++) {
-                    if ($i == $index) {
-                        $compiled_items .= $this->assign(array('item_link', 'item_name'), array($link . $i, $i + 1), $theme_active);
-                    } else {
-                        $compiled_items .= $this->assign(array('item_link', 'item_name'), array($link . $i, $i + 1), $theme_inactive);
-                    }
-                }
-            } // это середина списка
-            else {
-                $compiled_items .= $this->assign(array('item_link', 'item_name'), array($link . '0', 1), $theme_inactive);
-                $compiled_items .= $theme_spliter;
-                for ($i = $index - 3; $i <= $index; $i++) {
-                    if ($i == $index) {
-                        $compiled_items .= $this->assign(array('item_link', 'item_name'), array($link . $i, $i + 1), $theme_active);
-                    } else {
-                        $compiled_items .= $this->assign(array('item_link', 'item_name'), array($link . $i, $i + 1), $theme_inactive);
-                    }
-                }
-                for ($i = $index + 1; $i <= $index + 3; $i++) {
-                    $compiled_items .= $this->assign(array('item_link', 'item_name'), array($link . $i, $i + 1), $theme_inactive);
-                }
-                $compiled_items .= $theme_spliter;
-                $compiled_items .= $this->assign(array('item_link', 'item_name'), array($link . $last_page, $last_page + 1), $theme_inactive);
-            }
-        } // иначе все просто, генерируем до предела
-        else {
-            // от 0 до прогнозируемого кол-ва страниц
-            for ($i = 0; $i < $total / $count; $i++) {
-                if ($i == $index) {
-                    if ($i == 0) $i = null;
-                    $compiled_items .= $this->assign(array('item_link', 'item_name'), array($link . $i, $i + 1), $theme_active);
-                } else {
-                    if ($i == 0) $i = null;
-                    $compiled_items .= $this->assign(array('item_link', 'item_name'), array($link . $i, $i + 1), $theme_inactive);
-                }
-            }
-        }
-        return $this->assign('li_items', $compiled_items, $theme_head);
+        $last_page = (int)(($total-1) / $count); // -1 for int collision, ex: 20/10 = 2 (0..2) or 21/10 ~= 2 (0..2) - cleanup useless pag. items
+        $params = array(
+            'index' => $index,
+            'count' => $count,
+            'total' => $total,
+            'link' => $link,
+            'lastpage' => $last_page
+        );
+        return $this->twigRender('pagination.tpl', array('local' => $params));
     }
 
-    /**
-     * Возвращает количество вхождений тега $tag в глобальном шаблоне $content.
-     * @param $tag
-     */
-    public function tagRepeatCount($tag)
-    {
-        return substr_count($this->content, '{$' . $tag . '}');
-    }
 }
-
-?>

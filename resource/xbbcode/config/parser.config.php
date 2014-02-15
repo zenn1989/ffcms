@@ -1,4 +1,5 @@
 <?php
+use engine\property;
 /******************************************************************************
  *                                                                            *
  *   parser.config.php, v 0.02 2007/07/18 - This is part of xBB library       *
@@ -34,8 +35,8 @@ $this->preg_autolinks = array(
         "'[\w]+[\w\-\.]+@[\w\-\.]+\.[\w]+'si",
     ),
     'replacement' => array(
-        '<a href="'.$engine->constant->url.'/api.php?action=redirect&url=$0" target="_blank">$0</a>',
-        '$1<a href="'.$engine->constant->url.'/api.php?action=redirect&url=$2" target="_blank">$2</a>',
+        '<a href="'.property::getInstance()->get('url').'/api.php?action=redirect&url=$0" target="_blank">$0</a>',
+        '$1<a href="'.property::getInstance()->get('url').'/api.php?action=redirect&url=$2" target="_blank">$2</a>',
         '<a href="mailto:$0" rel="nofollow">$0</a>',
     ),
     'highlight' => array(
@@ -46,7 +47,7 @@ $this->preg_autolinks = array(
 );
 
 // Формируем набор смайликов
-$path = $engine->constant->url . "/resource/xbbcode/images/smiles/";
+$path = property::getInstance()->get('url') . "/resource/xbbcode/images/smiles/";
 $pak = file($this->_current_path . 'images/smiles/Set_Smiles_YarNET.pak');
 $smiles = array();
 foreach ($pak as $val) {
