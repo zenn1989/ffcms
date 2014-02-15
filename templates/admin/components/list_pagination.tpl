@@ -1,1 +1,0 @@
-<li><a href="{$ext_pagination_href}">{$ext_pagination_index}</a></li>

@@ -1,1 +1,0 @@
-<li {$is_active_element}><a href="#{$current_language}" data-toggle="tab">{$lang::language}: {$current_language}</a></li>

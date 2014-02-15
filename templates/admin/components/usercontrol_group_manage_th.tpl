@@ -1,1 +1,0 @@
-<a href="#" rel="tooltip" title="{$group_column_helptext}">{$group_column_name}</a>

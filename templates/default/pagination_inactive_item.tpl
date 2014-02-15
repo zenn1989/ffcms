@@ -1,1 +1,0 @@
-<li><a href="{$url}/{$item_link}">{$item_name}</a></li>

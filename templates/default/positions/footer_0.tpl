@@ -1,1 +1,0 @@
-<footer style="text-align: center;padding-bottom: 15px;">Powered by <a href="http://ffcms.ru" target="_blank">ffcms.ru</a></footer>

@@ -1,1 +1,0 @@
-<a title="{$lang::admin_tab_th_install}" href="{$ext_turn_link}"><i class="icon-wrench icon-large"></i></a>

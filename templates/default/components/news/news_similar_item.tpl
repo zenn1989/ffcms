@@ -1,1 +1,0 @@
-<li><a href="{$url}/news/{$news_similar_url}">{$news_similar_title}</a></li>

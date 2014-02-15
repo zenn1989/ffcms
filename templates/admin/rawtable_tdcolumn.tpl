@@ -1,1 +1,0 @@
-<td>{$this_td}</td>
