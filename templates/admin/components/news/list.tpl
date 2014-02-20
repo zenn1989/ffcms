@@ -45,6 +45,5 @@
     <input type="submit" name="deleteSelected" value="{{ language.admin_checkbox_delselect }}" class="btn btn-danger" />
     {{ scriptdata.checkjs('#checkAll', '.check_array') }}
 </form>
-
-    {{ pagination }}
+{{ pagination }}
 {% endif %}

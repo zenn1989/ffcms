@@ -693,7 +693,7 @@ html {
 }
 
 #wbbmodal  .wbbm .wbbm-tablist ul li {
-    height: 14px;
+    /**height: 14px;*/
     padding: 10px 10px 10px 20px;
     cursor: pointer;
     margin: 5px 0;

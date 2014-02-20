@@ -27,6 +27,6 @@
         <h2>{{ language.admin_component_usercontrol_thred_data }}</h2>
         <hr />
         {{ settingstpl.textgroup('userlist_count', config.userlist_count, language.admin_component_usercontrol_config_userlist_count_name, language.admin_component_usercontrol_config_userlist_count_desc ) }}
-        <input type="submit" name="submit" value="{{ language.admin_component_usercontrol_save_button }}" class="btn btn-success"/>
+        <input type="submit" name="submit" value="{{ language.admin_extension_save_button }}" class="btn btn-success"/>
     </fieldset>
 </form>

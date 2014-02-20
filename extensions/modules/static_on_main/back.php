@@ -41,7 +41,6 @@ class modules_static_on_main_back {
                 'title' => $serial_title[language::getInstance()->getUseLanguage()]
             );
         }
-        $params['pages']['list'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt = null;
 
 

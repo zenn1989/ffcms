@@ -20,6 +20,6 @@
     <h2>{{ language.admin_component_news_settings_tags }}</h2>
     <hr />
         {{ settingstpl.selectYNgroup('enable_tags', config.enable_tags, language.admin_component_news_config_tag_title, language.admin_component_news_config_tag_desc, _context) }}
-    <input type="submit" name="submit" value="{{ language.admin_component_usercontrol_save_button }}" class="btn btn-success"/>
+    <input type="submit" name="submit" value="{{ language.admin_extension_save_button }}" class="btn btn-success"/>
     </fieldset>
 </form>
