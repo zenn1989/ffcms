@@ -30,7 +30,7 @@ class components_static_front {
      * Set in body position static page for $pathway
      * @param $pathway
      */
-    public function display($pathway, $id = null) {
+    public function display($pathway, $id = null, $show_date = true) {
         $stmt = null;
         if(is_null($id)) {
             $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_static WHERE pathway = ?");
@@ -52,7 +52,8 @@ class components_static_front {
             $params = array(
                 'title' => $serial_title[language::getInstance()->getUseLanguage()],
                 'text' => $serial_text[language::getInstance()->getUseLanguage()],
-                'date' => system::getInstance()->toDate($result['date'], 'd')
+                'date' => system::getInstance()->toDate($result['date'], 'd'),
+                'show_date' => $show_date
             );
             return template::getInstance()->twigRender('components/static/page.tpl', array('local' => $params));
         }

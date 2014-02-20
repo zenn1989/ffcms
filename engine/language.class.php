@@ -52,6 +52,7 @@ class language extends singleton {
         foreach($lang_array as $lang_line) {
             if(strlen($lang_line) > 3 && !system::getInstance()->prefixEquals($lang_line, '#')) {
                 list($tag, $value) = explode("<=>", $lang_line);
+                $value = str_replace(array("\r\n","\r"), '', $value); // js issue with illegal
                 template::getInstance()->set(template::TYPE_LANGUAGE, $tag, $value);
             }
         }

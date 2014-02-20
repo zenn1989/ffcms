@@ -411,6 +411,17 @@ class components_news_back {
 
     private function viewNewsList() {
         $params = array();
+
+        if(system::getInstance()->post('deleteSelected')) {
+            $toDelete = system::getInstance()->post('check_array');
+            if(is_array($toDelete) && sizeof($toDelete) > 0) {
+                $listDelete = system::getInstance()->altimplode(',', $toDelete);
+                if(system::getInstance()->isIntList($listDelete)) {
+                    database::getInstance()->con()->query("DELETE FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE id IN (".$listDelete.")");
+                }
+            }
+        }
+
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
         $params['search']['value'] = system::getInstance()->nohtml(system::getInstance()->post('search'));
         $index_start = (int)system::getInstance()->get('index');

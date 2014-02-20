@@ -6,6 +6,9 @@ admin_goback<=><a onclick="return window.history.back();">Return</a>
 admin_menu_word<=>Menu
 admin_welcome_msg<=>Welcome
 admin_exit_link<=>Logout
+admin_checkbox_all<=>Check all
+admin_checkbox_delselect<=>Delete selected
+admin_onsubmit_warning<=>Are you sure to do this?
 admin_fastaccess_title<=>Fast access
 admin_fastaccess_addnews_title<=>Add news
 admin_fastaccess_addnews_desc<=>With this function, you can quickly add news to the website

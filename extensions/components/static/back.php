@@ -159,6 +159,17 @@ class components_static_back {
 
     private function viewStaticList() {
         $params = array();
+
+        if(system::getInstance()->post('deleteSelected')) {
+            $toDelete = system::getInstance()->post('check_array');
+            if(is_array($toDelete) && sizeof($toDelete) > 0) {
+                $listDelete = system::getInstance()->altimplode(',', $toDelete);
+                if(system::getInstance()->isIntList($listDelete)) {
+                    database::getInstance()->con()->query("DELETE FROM ".property::getInstance()->get('db_prefix')."_com_static WHERE id IN (".$listDelete.")");
+                }
+            }
+        }
+
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
         $index_start = (int)system::getInstance()->get('index');
         $db_index = $index_start * self::ITEM_PER_PAGE;
@@ -192,6 +203,7 @@ class components_static_back {
         $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_com_static");
         $stmt->execute();
         $result = $stmt->fetch();
+        $stmt = null;
         return $result[0];
     }
 

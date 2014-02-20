@@ -1,3 +1,4 @@
+{% import 'macro/scriptdata.tpl' as scriptdata %}
 <h1>{{ extension.title }}<small>{{ language.admin_component_static_control }}</small></h1>
 <hr />
 {% include 'components/static/menu_include.tpl' %}
@@ -16,6 +17,7 @@
     </div>
 </div>
 {% if static %}
+<form action="" method="post" onsubmit="return confirm('{{ language.admin_onsubmit_warning }}');">
 <table class="table table-bordered table-responsive">
     <thead>
         <tr>
@@ -28,7 +30,7 @@
     <tbody>
     {% for item in static %}
         <tr>
-            <td>{{ item.id }}</td>
+            <td><input type="checkbox" name="check_array[]" class="check_array" value="{{ item.id }}"/> {{ item.id }}</td>
             <td><a href="?object=components&action=static&make=edit&id={{ item.id }}">{{ item.title }}</a></td>
             <td><a href="{{ system.url }}/static/{{ item.path }}" target="_blank">/static/{{ item.path }}</a></td>
             <td class="text-center">
@@ -39,6 +41,10 @@
     {% endfor %}
     </tbody>
 </table>
+<a id="checkAll" class="btn btn-default">{{ language.admin_checkbox_all }}</a>
+<input type="submit" name="deleteSelected" value="{{ language.admin_checkbox_delselect }}" class="btn btn-danger" />
+{{ scriptdata.checkjs('#checkAll', '.check_array') }}
+</form>
 {{ pagination }}
 {% else %}
 <p>{{ language.admin_component_static_nofound }}</p>
