@@ -71,6 +71,40 @@
     </div>
 </div>
 
+<div class="form-group">
+    <label class="col-lg-3 control-label">{{ language.admin_settings_list_label_statisticuse_title }}</label>
+
+    <div class="col-lg-9">
+        <select name="cfgmain:collect_statistic" class="form-control">
+            <option value="0"{% if config.collect_statistic == 0 %} selected{% endif %}>{{ language.admin_settings_isoff }}</option>
+            <option value="1"{% if config.collect_statistic == 1 %} selected{% endif %}>{{ language.admin_settings_ison }}</option>
+        </select>
+        <p class="help-block">{{ language.admin_settings_list_label_statisticuse_desc }}</p>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-lg-3 control-label">{{ language.admin_settings_list_label_friendurl_title }}</label>
+
+    <div class="col-lg-9">
+        <select name="cfgmain:user_friendly_url" class="form-control">
+            <option value="0"{% if config.user_friendly_url == 0 %} selected{% endif %}>{{ language.admin_settings_isoff }}</option>
+            <option value="1"{% if config.user_friendly_url == 1 %} selected{% endif %}>{{ language.admin_settings_ison }}</option>
+        </select>
+        <p class="help-block">{{ language.admin_settings_list_label_friendurl_desc }}</p>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-lg-3 control-label">{{ language.admin_settings_list_label_multilang_title }}</label>
+
+    <div class="col-lg-9">
+        <select name="cfgmain:use_multi_language" class="form-control">
+            <option value="0"{% if config.use_multi_language == 0 %} selected{% endif %}>{{ language.admin_settings_isoff }}</option>
+            <option value="1"{% if config.use_multi_language == 1 %} selected{% endif %}>{{ language.admin_settings_ison }}</option>
+        </select>
+        <p class="help-block">{{ language.admin_settings_list_label_multilang_desc }}</p>
+    </div>
+</div>
+
 <h2>{{ language.admin_settings_list_seo_block }}</h2>
 <hr/>
 <div class="form-group">

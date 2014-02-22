@@ -34,13 +34,17 @@ class components_sitemap_front {
 
     public function make() {
         $way = router::getInstance()->shiftUriArray();
+        $lang = null;
+        if(property::getInstance()->get('use_multi_language'))
+            $lang = '_' . router::getInstance()->getPathLanguage();
+
         if($way[0] === "sitemap.xml") {
             header("Content-type: text/xml");
-            $render = cache::getInstance()->get('sitemap');
+            $render = cache::getInstance()->get('sitemap'.$lang);
             if(is_null($render)) {
                 $this->loadDefaults();
                 $render = template::getInstance()->twigRender('components/sitemap/map.tpl', array('local' => $this->map));
-                cache::getInstance()->store('sitemap', $render);
+                cache::getInstance()->store('sitemap'.$lang, $render);
             }
             template::getInstance()->justPrint($render);
         }

@@ -48,8 +48,7 @@ class property {
         self::$cfg['user_friendly_url'] = true;
         self::$cfg['use_multi_language'] = true;
         foreach($config as $key=>$value) {
-            if($value != null && $config[$key] != self::$cfg[$key] || self::$cfg[$key] == null)
-                self::$cfg[$key] = $value;
+            self::$cfg[$key] = $value;
         }
     }
 
@@ -58,8 +57,8 @@ class property {
         if(!self::$cfg['user_friendly_url']) {
             self::$cfg['url'] .= '/index.php';
         }
+        self::$cfg['nolang_url'] = self::$cfg['url'];
         if(self::$cfg['use_multi_language'] && loader === 'front') {
-            self::$cfg['nolang_url'] = self::$cfg['url'];
             self::$cfg['url'] .= '/' . router::getInstance()->getPathLanguage();
         }
     }
