@@ -17,15 +17,9 @@ class property {
      * @return property
      */
     public static function getInstance() {
-        global $config;
         if(is_null(self::$instance)) {
-            self::defaultsInit();
-            foreach($config as $key=>$value) {
-                if($value != null && $config[$key] != self::$cfg[$key] || self::$cfg[$key] == null)
-                    self::$cfg[$key] = $value;
-            }
-            self::otherPrepares();
             self::$instance = new self();
+            self::defaultsInit();
         }
         return self::$instance;
     }
@@ -43,6 +37,7 @@ class property {
     }
 
     protected static function defaultsInit() {
+        global $config;
         self::$cfg['ds'] = '/'; // directory separator, but now in all O.S. supported "/" win,nix
         self::$cfg['slash'] = '/'; // web slash, mb someone making amazing ;D
         self::$cfg['admin_tpl'] = 'admin';
@@ -51,12 +46,21 @@ class property {
         self::$cfg['upload_img_max_size'] = 500;
         self::$cfg['tpl_dir'] = 'templates';
         self::$cfg['user_friendly_url'] = true;
+        self::$cfg['use_multi_language'] = true;
+        foreach($config as $key=>$value) {
+            if($value != null && $config[$key] != self::$cfg[$key] || self::$cfg[$key] == null)
+                self::$cfg[$key] = $value;
+        }
     }
 
-    protected static function otherPrepares() {
+    public function dymanicPrepares() {
         self::$cfg['script_url'] = self::$cfg['url'];
         if(!self::$cfg['user_friendly_url']) {
             self::$cfg['url'] .= '/index.php';
+        }
+        if(self::$cfg['use_multi_language'] && loader === 'front') {
+            self::$cfg['nolang_url'] = self::$cfg['url'];
+            self::$cfg['url'] .= '/' . router::getInstance()->getPathLanguage();
         }
     }
 

@@ -233,6 +233,8 @@ class components_news_front {
                     $lang_title = unserialize($result['title']);
                     $lang_keywords = unserialize($result['keywords']);
                     $news_short_text = $lang_text[language::getInstance()->getUseLanguage()];
+                    if(system::getInstance()->length($lang_title[language::getInstance()->getUseLanguage()]) < 1) // do not add the empty title news
+                        continue;
                     if (system::getInstance()->contains('<hr />', $news_short_text)) {
                         $news_short_text = strstr($news_short_text, '<hr />', true);
                     } elseif (system::getInstance()->length($news_short_text) > $max_preview_length) {

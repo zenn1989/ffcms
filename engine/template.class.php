@@ -55,7 +55,6 @@ class template extends singleton {
             )
         );
         self::$twig_string = new \Twig_Environment(new \Twig_Loader_String());
-        self::twigDefaultVariables();
     }
 
     protected static function getIfaceTemplate() {
@@ -75,10 +74,11 @@ class template extends singleton {
         return $tpl_dir;
     }
 
-    protected static function twigDefaultVariables() {
+    public function twigDefaultVariables() {
         // system
         self::$variables[self::TYPE_SYSTEM]['url'] = property::getInstance()->get('url');
         self::$variables[self::TYPE_SYSTEM]['script_url'] = property::getInstance()->get('script_url');
+        self::$variables[self::TYPE_SYSTEM]['nolang_url'] = property::getInstance()->get('nolang_url');
         self::$variables[self::TYPE_SYSTEM]['theme'] = property::getInstance()->get('script_url') . '/' . property::getInstance()->get('tpl_dir') . '/' . self::getIfaceTemplate();
         self::$variables[self::TYPE_SYSTEM]['lang'] = language::getInstance()->getUseLanguage();
         self::$variables[self::TYPE_SYSTEM]['self_url'] = property::getInstance()->get('url').router::getInstance()->getUriString();

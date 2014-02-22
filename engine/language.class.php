@@ -17,19 +17,23 @@ class language extends singleton {
     }
 
     protected static function loadLanguage() {
-        $lang = property::getInstance()->get('lang');
-        if($_COOKIE['ffcms_lang'] != null && self::canUse($_COOKIE['ffcms_lang']))
+        $lang = null;
+        if(loader === 'front' && router::getInstance()->getPathLanguage() != null && self::canUse(router::getInstance()->getPathLanguage())) // did we have language in path for front iface?
+            $lang = router::getInstance()->getPathLanguage();
+        elseif(loader === 'api' && self::canUse($_COOKIE['ffcms_lang'])) // did language defined for API scripts?
             $lang = $_COOKIE['ffcms_lang'];
-        elseif($_SERVER['HTTP_ACCEPT_LANGUAGE'] != null && self::canUse(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)))
+        elseif($_SERVER['HTTP_ACCEPT_LANGUAGE'] != null && self::canUse(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2))) // did we have lang mark in browser?
             $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+        else // no ? then use default language
+            $lang = property::getInstance()->get('lang');
         self::$userLang = $lang;
         $file = null;
         $addfile = null;
         // default language files
-        if(loader == 'back') {
+        if(loader === 'back') {
             $file = root . '/language/' . $lang . '.back.lang';
             $addfile = root . '/language/' . $lang . '.back.addition.lang';
-        } elseif(loader == 'install') {
+        } elseif(loader === 'install') {
             $file = root . '/language/' . $lang . '.install.lang';
         } else {
             $file = root . '/language/' . $lang . '.front.lang';

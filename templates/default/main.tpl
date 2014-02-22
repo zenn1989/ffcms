@@ -16,6 +16,7 @@
         <link rel="stylesheet" href="{{ system.theme }}/css/bootstrap-responsive.css" />
         <link rel="stylesheet" href="{{ system.theme }}/css/docs.css" />
         <link rel="stylesheet" href="{{ system.theme }}/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="{{ system.script_url }}/resource/flags/flags.css" />
         <script type="text/javascript" src="{{ system.theme }}/js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="{{ system.theme }}/js/bootstrap.js"></script>
         <script type="text/javascript" src="{{ system.theme }}/js/pace.js"></script>
@@ -31,7 +32,7 @@
     <div class="row">
         <!-- Logotype -->
         <div class="span7">
-            <a href="/">
+            <a href="{{ system.url }}">
                 <img src="{{ system.theme }}/img/logo.png"/>
             </a>
         </div>

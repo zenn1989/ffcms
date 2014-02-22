@@ -5,7 +5,7 @@
         {% for comment in local.comment %}
         <li>
             <a href="{{ system.url }}/user/id{{ comment.user_id }}">{{ comment.user_name }}</a> <i class="icon-pencil"></i>
-            <a href="{{ system.url }}{{ comment.uri }}#comment_list">{{ comment.preview }}</a>
+            <a href="{{ system.nolang_url }}{{ comment.uri }}#comment_list">{{ comment.preview }}</a>
         </li>
         {% endfor %}
     </ul>

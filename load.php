@@ -24,3 +24,7 @@ require_once(root . '/engine/robot.class.php');
 require_once(root . '/engine/permission.class.php');
 require_once(root . '/engine/cache.class.php');
 require_once(root . '/engine/ban.class.php');
+
+\engine\router::getInstance()->prepareRoutes(); // prepare URI worker
+\engine\property::getInstance()->dymanicPrepares(); // processing of URI for multi-language and friendly url's
+\engine\template::getInstance()->twigDefaultVariables(); // set default template variables according changes in dymanic variables

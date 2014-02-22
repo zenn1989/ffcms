@@ -9,26 +9,39 @@ class router extends singleton {
 
     protected static $ismain = false;
 
+    protected static $path_language = null;
+
     /**
      * @return router
      */
     public static function getInstance() {
         if(is_null(self::$instance)) {
-            self::$pathstring = urldecode($_SERVER['REQUEST_URI']);
-            self::$patharray = explode("/", self::$pathstring);
-            // remove 1st null element
-            array_shift(self::$patharray);
-            // no user-friendy url ? remove index.php from path
-            if(!property::getInstance()->get('user_friendly_url')) {
-                array_shift(self::$patharray);
-                self::$pathstring = substr(self::$pathstring, 10); // remove /index.php from path
-            }
-            // its a main?
-            if(self::$patharray[0] == null || system::getInstance()->prefixEquals(self::$patharray[0], 'index.'))
-                self::$ismain = true;
             self::$instance = new self();
         }
         return self::$instance;
+    }
+
+    public function prepareRoutes() {
+        self::$pathstring = urldecode($_SERVER['REQUEST_URI']);
+        self::$patharray = explode("/", self::$pathstring);
+        // remove 1st null element
+        array_shift(self::$patharray);
+        // no user-friendy url ? remove index.php from path
+        if(!property::getInstance()->get('user_friendly_url')) {
+            array_shift(self::$patharray);
+            self::$pathstring = substr(self::$pathstring, 10); // remove /index.php from path string
+        }
+        if(property::getInstance()->get('use_multi_language') && loader === 'front') { // remove /lang/ from path and notify language of this action
+            self::$path_language = array_shift(self::$patharray);
+            if(!language::getInstance()->canUse(self::$path_language)) // language is not founded?
+                system::getInstance()->redirect('/' . property::getInstance()->get('lang') . '/');
+            elseif($_COOKIE['ffcms_lang'] !== self::$path_language) // set language for api and ajax scripts
+                setcookie('ffcms_lang', self::$path_language, null, '/', null, null, true);
+
+        }
+        // its a main?
+        if(self::$patharray[0] == null || system::getInstance()->prefixEquals(self::$patharray[0], 'index.'))
+            self::$ismain = true;
     }
 
     /**
@@ -70,6 +83,18 @@ class router extends singleton {
         }
     }
 
+    /**
+     * Get language obtained from URI pathway
+     * @return null
+     */
+    public function getPathLanguage() {
+        return self::$path_language;
+    }
+
+    /**
+     * Check this page is main?
+     * @return bool
+     */
     public function isMain() {
         return self::$ismain;
     }
