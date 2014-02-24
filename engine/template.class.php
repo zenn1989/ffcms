@@ -30,11 +30,10 @@ class template extends singleton {
     protected static function twigLoader() {
         $twig_cache = root . '/cache/';
         $tpl_name = self::getIfaceTemplate();
-        $userid = user::getInstance()->get('id');
         switch(loader) {
             case 'front':
             case 'api':
-                $twig_cache .= $userid < 1 ? 'guest' : 'uid'.$userid;
+                $twig_cache .= user::getInstance()->get('id') < 1 ? 'guest' : 'uid'.user::getInstance()->get('id');
                 break;
             case 'back':
                 $twig_cache .= 'admintmp';
@@ -75,7 +74,6 @@ class template extends singleton {
     }
 
     public function twigDefaultVariables() {
-        // system
         self::$variables[self::TYPE_SYSTEM]['url'] = property::getInstance()->get('url');
         self::$variables[self::TYPE_SYSTEM]['script_url'] = property::getInstance()->get('script_url');
         self::$variables[self::TYPE_SYSTEM]['nolang_url'] = property::getInstance()->get('nolang_url');
@@ -85,7 +83,9 @@ class template extends singleton {
         self::$variables[self::TYPE_SYSTEM]['title'] = property::getInstance()->get('seo_title');
         self::$variables[self::TYPE_SYSTEM]['file_name'] = basename($_SERVER['PHP_SELF']);
         self::$variables[self::TYPE_SYSTEM]['version'] = version;
-        // user
+    }
+
+    public function twigUserVariables() {
         self::$variables[self::TYPE_USER]['id'] = user::getInstance()->get('id');
         self::$variables[self::TYPE_USER]['name'] = user::getInstance()->get('nick');
         self::$variables[self::TYPE_USER]['admin'] = permission::getInstance()->have('global/owner');
@@ -154,6 +154,9 @@ class template extends singleton {
     }
 
     public function make() {
+        if($this->get(self::TYPE_CONTENT, 'body') == null) { // set 404 code for browser and search engines
+            header("HTTP/1.0 404 Not Found");
+        }
         return $this->twig()->render('main.tpl', self::$variables);
     }
 

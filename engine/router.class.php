@@ -31,7 +31,7 @@ class router extends singleton {
             array_shift(self::$patharray);
             self::$pathstring = substr(self::$pathstring, 10); // remove /index.php from path string
         }
-        if(property::getInstance()->get('use_multi_language') && loader === 'front') { // remove /lang/ from path and notify language of this action
+        if(property::getInstance()->get('use_multi_language')) { // remove /lang/ from path and notify language of this action
             self::$path_language = array_shift(self::$patharray);
             if(!language::getInstance()->canUse(self::$path_language)) // language is not founded?
                 system::getInstance()->redirect('/' . property::getInstance()->get('lang') . '/');

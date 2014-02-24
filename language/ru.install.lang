@@ -1,11 +1,15 @@
+install_mainpage<=>Главная
 install_mainahref<=>Установка
 install_updatehref<=>Обновление
 install_devlink<=>Сайт разработчиков
+install_langchange_success<=>Язык установщика успешно изменен. Вернитесь на главную страницу установщика.
+install_langchange_fail<=>Такой язык недоступен для применения.
 install_updates_noexist<=>Обновлений для данной версии системы не существует.
 install_sql_not_found<=>Файл импорта баз данных /install/sql/install.sql не найден
 install_locked<=>Установщик заблокирован. Если это произошло ошибочно - удалите файл .lock в директории /install/
 install_config_notwritable<=>Файл конфигураций /config.php недоступен для записи настроек. Проверьте права доступа
 install_self_notwritable<=>Директория установщика /install/ недоступна для записи. Проверьте права доступа
+install_unlock_file_require<=>Для начала установки создайте файл /install/.install с любым содержимым для подтверждения своих прав
 install_db_wrongcon<=>Настройки подключения к базе данных указаны не верно
 install_done_success<=>Установка системы успешно завершена
 install_switch_desc<=>Установщик FFCMS предоставляет 2 вида установки системы

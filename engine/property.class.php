@@ -47,8 +47,10 @@ class property {
         self::$cfg['tpl_dir'] = 'templates';
         self::$cfg['user_friendly_url'] = true;
         self::$cfg['use_multi_language'] = true;
-        foreach($config as $key=>$value) {
-            self::$cfg[$key] = $value;
+        if(is_array($config)) {
+            foreach($config as $key=>$value) {
+                self::$cfg[$key] = $value;
+            }
         }
     }
 

@@ -20,7 +20,7 @@ class language extends singleton {
         $lang = null;
         if(loader === 'front' && router::getInstance()->getPathLanguage() != null && self::canUse(router::getInstance()->getPathLanguage())) // did we have language in path for front iface?
             $lang = router::getInstance()->getPathLanguage();
-        elseif(loader === 'api' && self::canUse($_COOKIE['ffcms_lang'])) // did language defined for API scripts?
+        elseif((loader === 'api' || loader === 'install') && self::canUse($_COOKIE['ffcms_lang'])) // did language defined for API scripts?
             $lang = $_COOKIE['ffcms_lang'];
         elseif($_SERVER['HTTP_ACCEPT_LANGUAGE'] != null && self::canUse(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2))) // did we have lang mark in browser?
             $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);

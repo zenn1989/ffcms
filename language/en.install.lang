@@ -1,11 +1,15 @@
+install_mainpage<=>Main
 install_mainahref<=>Install
 install_updatehref<=>Update
 install_devlink<=>Developer site
+install_langchange_success<=>Language are sucessful changed. Go to main installer page.
+install_langchange_fail<=>This language are not available for using.
 install_updates_noexist<=>Updating for this version is not available now
 install_sql_not_found<=>File of database dump /install/sql/install.sql not founded
 install_locked<=>Installer is blocked. If you want unlock installer remove file .lock in directory /install/
 install_config_notwritable<=>Configuration file /config.php is unavailable to write. Check access rights
 install_self_notwritable<=>Installer directory /install/ is unavailable to write. Check access rights
+install_unlock_file_require<=>Before start install create file /install/.install with any content to aprove your access
 install_db_wrongcon<=>Database connection configurations is wrong! Check it
 install_done_success<=>FFCMS is sucessfull installed!
 install_switch_desc<=>Installer ffcms provide 2 type of installing

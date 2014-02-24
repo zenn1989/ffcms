@@ -15,3 +15,6 @@ All other thinks like mailer, file controller are moved to hook extensions. From
 * Improved extension system: now it provide next extension type's - components,modules,hooks,apicallback. New CMS model provide bridge to call from 1 extension to other. extension::getInstance()->call(type,object)->method()
 * Improved user access control system and group permissions
 * Optimized many data in database. Count of sql query's is removed.
+* New language divide engine based on URI (not on cookie as in previous version)
+* New system improved settings
+* New CSS resource for fast drow country and language flags (icon)
