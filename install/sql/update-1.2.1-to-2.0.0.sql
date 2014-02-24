@@ -48,4 +48,8 @@ INSERT INTO `{$db_prefix}_user_access_level` (`group_id`, `group_name`, `permiss
   (5,	'Banned',	''),
   (4,	'Only Read',	'global/read;');
 
+DROP TABLE IF EXISTS `{$db_prefix}_components`;
+DROP TABLE IF EXISTS `{$db_prefix}_modules`;
+DROP TABLE IF EXISTS `{$db_prefix}_hooks`;
+
 UPDATE `{$db_prefix}_version` SET `version` = '2.0.0';
