@@ -6,9 +6,6 @@ if(file_exists(root . '/config.php')) // mb its a update action?
     require_once(root . '/config.php');
 require_once(root . '/engine/property.class.php');
 
-// default timezone from configs
-date_default_timezone_set(\engine\property::getInstance()->get('time_zone'));
-
 // other system class & api
 require_once(root . '/engine/template.class.php');
 require_once(root . '/engine/router.class.php');

@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ERROR);
 
 define('version', '2.0.0');
 

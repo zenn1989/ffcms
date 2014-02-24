@@ -7,8 +7,9 @@
                     <li><a href="{{ system.url }}/news/"> {{ language.position_header_news }}</a></li>
                     <li><a href="{{ system.url }}/user"> {{ language.position_header_users }}</a></li>
                     <li><a href="{{ system.url }}/feedback/">{{ language.feedback_form_title }}</a></li>
-                    <li><a href="{{ system.script_url }}/api.php?iface=front&object=changelanguage&to=en"><img class="flag flag-en" src="{{ system.script_url }}/resource/flags/blank.gif" /></a></li>
-                    <li><a href="{{ system.script_url }}/api.php?iface=front&object=changelanguage&to=ru"><img class="flag flag-ru" src="{{ system.script_url }}/resource/flags/blank.gif" /></a></li>
+                    {% for langitem in system.languages %}
+                        <li><a href="{{ system.script_url }}/api.php?iface=front&object=changelanguage&to={{ langitem }}"><img class="flag flag-{{ langitem }}" src="{{ system.script_url }}/resource/flags/blank.gif" /></a></li>
+                    {% endfor %}
                 </ul>
                 <ul class="nav pull-right">
                     {% if user.id > 0 %}

@@ -42,7 +42,7 @@ class template extends singleton {
                 $twig_cache .= 'installtmp';
                 break;
         }
-        require_once(root . "/resource/twig/Autoloader.php");
+        require_once(root . "/resource/Twig/Autoloader.php");
         \Twig_Autoloader::register();
         self::$twig_file = new \Twig_Environment(
             new \Twig_Loader_Filesystem(root . '/' . property::getInstance()->get('tpl_dir') . '/' . $tpl_name),
@@ -79,6 +79,7 @@ class template extends singleton {
         self::$variables[self::TYPE_SYSTEM]['nolang_url'] = property::getInstance()->get('nolang_url');
         self::$variables[self::TYPE_SYSTEM]['theme'] = property::getInstance()->get('script_url') . '/' . property::getInstance()->get('tpl_dir') . '/' . self::getIfaceTemplate();
         self::$variables[self::TYPE_SYSTEM]['lang'] = language::getInstance()->getUseLanguage();
+        self::$variables[self::TYPE_SYSTEM]['languages'] = language::getInstance()->getAvailable();
         self::$variables[self::TYPE_SYSTEM]['self_url'] = property::getInstance()->get('url').router::getInstance()->getUriString();
         self::$variables[self::TYPE_SYSTEM]['title'] = property::getInstance()->get('seo_title');
         self::$variables[self::TYPE_SYSTEM]['file_name'] = basename($_SERVER['PHP_SELF']);
