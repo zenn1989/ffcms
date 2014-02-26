@@ -58,6 +58,13 @@ a.blacklnk {
     color: #414141;
 }
 
+img.image_poster {
+    margin: 6px 6px 6px 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 
 /* Faded out hr */
 hr.soften {

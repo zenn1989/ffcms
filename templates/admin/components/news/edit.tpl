@@ -1,15 +1,32 @@
 {% import 'macro/notify.tpl' as notifytpl %}
+<link rel="stylesheet" href="{{ system.theme }}/css/fileupload/jquery.fileupload.css">
 <script type="text/javascript" src="{{ system.script_url }}/resource/ckeditor/ckeditor.js"></script>
 <script src="{{ system.script_url }}/resource/ckeditor/adapters/jquery.js"></script>
 <script type="text/javascript">
     $(document).ready(
             function()
             {
+                // prepare ckeditor
                 CKEDITOR.disableAutoInline = true;
                 $('.wysi').ckeditor();
+                // prepare jquery image uploader
+                $.getJSON("/api.php?iface=back&object=jqueryfile&action=list&id={{ news.id }}",
+                        function (data) {
+                            $.each(data.files, function (index, file) {
+                                $('<p/>').html(
+                                        '<p class="alert alert-success" id="'+file.name+'">'+file.name +
+                                                ' <a href="'+file.url+'" class="label label-info" target="_blank">{{ language.admin_component_news_edit_page_poster_view }}</a>'+
+                                                ' <a href="#gallerytitle" class="label label-danger" onclick="return gallerydel(\''+file.name+'\', {{ news.id }});">{{ language.admin_component_news_edit_page_poster_del }}</a>' +
+                                        '</p>'
+                                ).appendTo('#files');
+                            });
+                        });
             }
     );
 </script>
+<script src="{{ system.theme }}/js/fileupload/vendor/jquery.ui.widget.js"></script>
+<script src="{{ system.theme }}/js/fileupload/jquery.iframe-transport.js"></script>
+<script src="{{ system.theme }}/js/fileupload/jquery.fileupload.js"></script>
 <h1>{{ extension.title }}<small>{{ language.admin_component_news_modedit_title }}</small></h1>
 <hr />
 {% include 'components/news/menu_include.tpl' %}
@@ -28,7 +45,10 @@
 {% if notify.success %}
     {{ notifytpl.success(language.admin_component_news_edit_notify_success_save) }}
 {% endif %}
-<form action="" method="post" class="form-horizontal" role="form">
+<form action="" method="post" class="form-horizontal" role="form" enctype="multipart/form-data">
+    {% if news.action_add %}
+    <input type="hidden" name="news_gallery_id" value="{{ news.id }}" />
+    {% endif %}
     <div class="row">
         <div class="col-lg-6">
             <h2>{{ language.admin_component_news_edit_page_pathway_title }}</h2>
@@ -87,6 +107,37 @@
     </div>
     <div class="row">
         <div class="col-lg-6">
+            <h2 id="postertitle">{{ language.admin_component_news_edit_page_poster_title }}</h2>
+            {% if news.poster_path %}
+                <p class="alert alert-success" id="posterobject"><i class="fa fa-picture-o"></i> {{ news.poster_name }}
+                    <a href="#postertitle" data-toggle="modal" data-target="#posterview" class="label label-info" target="_blank">{{ language.admin_component_news_edit_page_poster_view }}</a>
+                    <a href="#postertitle" onclick="return posterDelete({{ news.id }});" class="label label-danger">{{ language.admin_component_news_edit_page_poster_del }}</a></p>
+            {% endif %}
+            <input type="file" name="newsimage">
+            <span class="help-block">{{ language.admin_component_news_edit_page_poster_desc }}</span>
+        </div>
+        <div class="col-lg-6">
+            <h2 id="gallerytitle">{{ language.admin_component_news_edit_page_mediagallery_title }}</h2>
+            <!-- The fileinput-button span is used to style the file input field as button -->
+            <span class="btn btn-success fileinput-button">
+                <i class="glyphicon glyphicon-plus"></i>
+                <span>{{ language.admin_component_news_edit_page_mediagallery_addbutton }}</span>
+                <!-- The file input field used as target for the file upload widget -->
+                <input id="fileupload" type="file" name="files">
+            </span>
+            <br>
+            <br>
+            <!-- The global progress bar -->
+            <div id="progress" class="progress">
+                <div class="progress-bar progress-bar-success"></div>
+            </div>
+            <!-- The container for the uploaded files -->
+            <div id="files" class="files"></div>
+            <span class="help-block">{{ language.admin_component_news_edit_page_mediagallery_desc }}</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
             <h2>{{ language.admin_component_news_edit_page_category_name }}</h2>
 
             <div>
@@ -114,3 +165,52 @@
         </div>
     </div>
 </form>
+{% if news.poster_path %}
+    <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" id="posterview" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Small modal</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <!-- no browser cache :D -->
+                        <script>
+                            document.write('<img src="{{ system.script_url }}{{ news.poster_path }}?rnd='+Math.random()+'"/>');
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+<script>
+    $(function () {
+        'use strict';
+        var url = '/api.php?iface=back&object=jqueryfile&action=upload&id={{ news.id }}';
+        $('#fileupload').fileupload({
+            url: url,
+            dataType: 'json',
+            done: function (e, data) {
+                $.each(data.result.files, function (index, file) {
+                    $('<p/>').html(
+                            '<p class="alert alert-success" id="'+file.name+'">'+file.name +
+                                    ' <a href="'+file.url+'" class="label label-info" target="_blank">{{ language.admin_component_news_edit_page_poster_view }}</a>'+
+                                    ' <a href="#gallerytitle" class="label label-danger" onclick="return gallerydel(\''+file.name+'\', {{ news.id }});">{{ language.admin_component_news_edit_page_poster_del }}</a>' +
+                                    '</p>'
+                    ).appendTo('#files');
+                });
+            },
+            progressall: function (e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                $('#progress .progress-bar').css(
+                        'width',
+                        progress + '%'
+                );
+            }
+        }).prop('disabled', !$.support.fileInput)
+                .parent().addClass($.support.fileInput ? undefined : 'disabled');
+    });
+</script>

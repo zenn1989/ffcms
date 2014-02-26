@@ -9,7 +9,7 @@
     {{ ntpl.success(language.install_update_success_notify) }}
 {% endif %}
 {% if notify.nosql_data %}
-    {{ language.install_updates_noexist }}
+    {{ ntpl.error(language.install_updates_noexist) }}
 {% endif %}
 <p class="alert alert-info">
     {{ language.install_update_text_info }} <strong>{{ system.version }}</strong>

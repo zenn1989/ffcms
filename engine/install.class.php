@@ -48,11 +48,12 @@ class install extends singleton {
         $updateQuery = null;
         if(sizeof($params['notify']) == 0) {
             if(system::getInstance()->post('startupdate')) {
-                if($usedVersion === "1.2.1" && file_exists(root . '/install/sql/update-1.2.1-to-2.0.0.sql'))
+                if(($usedVersion === "1.2.1" || $usedVersion === "1.2.0") && file_exists(root . '/install/sql/update-1.2.1-to-2.0.0.sql'))
                     $updateQuery .= str_replace('{$db_prefix}', property::getInstance()->get('db_prefix'), file_get_contents(root . '/install/sql/update-1.2.1-to-2.0.0.sql'));
                 // elseif($usedVersion === other) $updateQuery .= ...
                 if($updateQuery != null) {
                     database::getInstance()->con()->exec($updateQuery);
+                    @file_put_contents(root . "/install/.update-".version, 'locked'); // only 1 run
                     $params['notify']['success'] = true;
                 } else {
                     $params['notify']['nosql_data'] = true;

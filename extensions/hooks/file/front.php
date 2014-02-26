@@ -31,7 +31,7 @@ class hooks_file_front {
         move_uploaded_file($file['tmp_name'], $file_original_fullpath);
         $file_infofunction = getimagesize($file_original_fullpath);
         $image_buffer = null;
-        if ($file_infofunction['mine'] == "image/jpg" || $file_infofunction['mime'] == "image/jpeg") {
+        if ($file_infofunction['mime'] == "image/jpg" || $file_infofunction['mime'] == "image/jpeg") {
             $image_buffer = imagecreatefromjpeg($file_original_fullpath);
         } elseif ($file_infofunction['mime'] == "image/gif") {
             $image_buffer = imagecreatefromgif($file_original_fullpath);
@@ -77,6 +77,79 @@ class hooks_file_front {
     }
 
     /**
+     * Upload and resize image to filesystem. if $dy is undefined - dynamic selection based on original dx/dy.
+     * $static_name - static name of jpg file, ex: image1.jpg (if undefined - return dynamic free name in folder)
+     * @param string $dir
+     * @param array|string $file
+     * @param int $dx
+     * @param bool|int $dy
+     * @param bool|string $static_name
+     * @return bool|null|string
+     */
+    public function uploadResizedImage($dir = '/images/', $file, $dx, $dy = false, $static_name = false) {
+        $full_dir = root . $this->directory . $dir;
+        // make directory for upload if it dosnt exists
+        if(!file_exists($full_dir)) {
+            system::getInstance()->createDirectory($full_dir);
+        }
+        $file_path = null;
+        if(is_array($file)) {
+            if($file['size'] < 1 || $file['tmp_name'] == null || !$this->validImageMime($file)) {
+                return false;
+            }
+            $file_path = $file['tmp_name'];
+        } else {
+            if(!file_exists($file))
+                return false;
+            $file_path = $file;
+        }
+
+        $file_infofunction = getimagesize($file_path);
+
+        $image_buffer = null;
+        if ($file_infofunction['mime'] == "image/jpg" || $file_infofunction['mime'] == "image/jpeg") {
+            $image_buffer = imagecreatefromjpeg($file_path);
+        } elseif ($file_infofunction['mime'] == "image/gif") {
+            $image_buffer = imagecreatefromgif($file_path);
+        } elseif ($file_infofunction['mime'] == "image/png") {
+            $image_buffer = imagecreatefrompng($file_path);
+        } else {
+            return false;
+        }
+
+        $image_dx = imagesx($image_buffer);
+        $image_dy = imagesy($image_buffer);
+        // if use dynamic dy
+        if(!$dy) {
+            $dy = floor($image_dy * ($dx / $image_dx));
+        }
+
+        // create blank template and resize original to snap blank
+        $true_color_snap = imagecreatetruecolor($dx, $dy);
+        imagecopyresized($true_color_snap, $image_buffer, 0, 0, 0, 0, $dx, $dy, $image_dx, $image_dy);
+
+        // save data and cleanup mem
+        $save_name = null;
+        $clear_name = null;
+        if($static_name) {
+            $save_name = $this->directory . $dir . $static_name;
+            $clear_name = $static_name;
+        } else {
+            $object_pharse = explode(".", is_array($file) ? $file['name'] : $file); // filename after array_pop
+            $image_extension = array_pop($object_pharse); // file extension
+            $image_new_name = $this->analiseUploadName(implode('', $object_pharse), $image_extension, $full_dir);
+            $save_name = $this->directory . $dir .  $image_new_name . "." .$image_extension;
+            $clear_name = $image_new_name . "." .$image_extension;
+        }
+        if(file_exists(root . $save_name))
+            @unlink(root . $save_name);
+        imagejpeg($true_color_snap, root . $save_name);
+        imagedestroy($true_color_snap);
+
+        return $clear_name;
+    }
+
+    /**
      * Upload image to folder /upload/. Return image file name or false if upload is failed.
      * @param string $dir
      * @param $file
@@ -86,12 +159,7 @@ class hooks_file_front {
         $full_dir = root . $this->directory . $dir;
         // make directory for upload if it dosnt exists
         if(!file_exists($full_dir)) {
-            try {
-                mkdir($full_dir);
-            } catch(Exception $e) {
-                logger::getInstance()->log(logger::LEVEL_ERR, "Failed to create folder: ".$full_dir.". Message: ".$e->getMessage());
-                return false;
-            }
+            system::getInstance()->createDirectory($full_dir);
         }
         // shit happends ...
         if($file['size'] < 1 || $file['tmp_name'] == null || !$this->validImageMime($file)) {
@@ -126,6 +194,7 @@ class hooks_file_front {
         $file_infofunction = getimagesize($file['tmp_name']);
         $image_name_split = explode('.', $file['name']);
         $image_extension = array_pop($image_name_split);
+
         if (in_array($file['type'], $mime_type) && in_array($file_infofunction['mime'], $mime_type)
             && $file['size'] > 0 && $file['size'] < property::getInstance()->get('upload_img_max_size') * 1024
             && in_array(strtolower($image_extension), $ext_image)) {

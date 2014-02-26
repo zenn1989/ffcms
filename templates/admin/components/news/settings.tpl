@@ -20,6 +20,11 @@
     <h2>{{ language.admin_component_news_settings_tags }}</h2>
     <hr />
         {{ settingstpl.selectYNgroup('enable_tags', config.enable_tags, language.admin_component_news_config_tag_title, language.admin_component_news_config_tag_desc, _context) }}
+    <h2>{{ language.admin_component_news_settings_images }}</h2>
+        {{ settingstpl.textgroup('poster_dx', config.poster_dx, language.admin_component_news_config_poster_dx_title, language.admin_component_news_config_poster_dx_desc) }}
+        {{ settingstpl.textgroup('poster_dy', config.poster_dy, language.admin_component_news_config_poster_dy_title, language.admin_component_news_config_poster_dy_desc) }}
+        {{ settingstpl.textgroup('gallery_dx', config.gallery_dx, language.admin_component_news_config_gallery_dx_title, language.admin_component_news_config_gallery_dx_desc) }}
+        {{ settingstpl.textgroup('gallery_dy', config.gallery_dy, language.admin_component_news_config_gallery_dy_title, language.admin_component_news_config_gallery_dy_desc) }}
     <input type="submit" name="submit" value="{{ language.admin_extension_save_button }}" class="btn btn-success"/>
     </fieldset>
 </form>

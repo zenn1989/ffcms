@@ -626,11 +626,23 @@ class system extends singleton {
         }
     }
 
-    public function createPrivateDirectory($dir) {
-        if(file_exists($dir))
-            return;
-        @mkdir($dir);
+    public function createPrivateDirectory($dir, $chmod = 0755) {
+        $this->createDirectory($dir, $chmod);
         $protect = "deny from all";
         @file_put_contents($dir .'.htaccess', $protect);
+    }
+
+    /**
+     * Create directory in CMS root folder using path. Recursive is supported.
+     * Example: system::getInstance()->createDirectory(root . '/upload/test/testother/')
+     * @param $path
+     * @param int $chmod
+     */
+    public function createDirectory($path, $chmod = 0755) {
+        if(!$this->prefixEquals($path, root))
+            $path = root . $path;
+        if(file_exists($path))
+            return;
+        @mkdir($path, $chmod, true);
     }
 }

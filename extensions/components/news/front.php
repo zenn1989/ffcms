@@ -116,6 +116,25 @@ class components_news_front {
                 $vstmt->execute();
                 $vstmt = null;
             }
+            $image_poster_root = root . '/upload/news/poster_' . $news_view_id . '.jpg';
+            $image_poster_url = false;
+            if(file_exists($image_poster_root)) {
+                $image_poster_url = property::getInstance()->get('script_url') . '/upload/news/poster_' . $news_view_id . '.jpg';
+            }
+            $image_gallery_root = root . '/upload/news/gallery/' . $news_view_id . '/';
+            $image_gallery_array = array();
+            if(file_exists($image_gallery_root)) {
+                foreach(scandir($image_gallery_root . 'orig/') as $image_item) {
+                    $file_array = explode(".", $image_item);
+                    $file_ext = array_pop($file_array);
+                    if(in_array($file_ext, array('jpg', 'gif', 'png', 'bmp', 'jpeg'))) {
+                        $image_gallery_array[] = array(
+                            'full' => property::getInstance()->get('script_url') . '/upload/news/gallery/' . $news_view_id . '/orig/' . $image_item,
+                            'thumb' => property::getInstance()->get('script_url') . '/upload/news/gallery/' . $news_view_id . '/thumb/' . $image_item
+                        );
+                    }
+                }
+            }
             $comment_list = extension::getInstance()->call(extension::TYPE_MODULE, 'comments')->buildCommentTemplate();
             $theme_array = array(
                 'tags' => $tag_array,
@@ -132,7 +151,9 @@ class components_news_front {
                 'cfg' => array(
                     'view_tags' => $viewTags,
                     'view_count' => $viewCount
-                )
+                ),
+                'gallery' => $image_gallery_array,
+                'poster' => $image_poster_url
             );
             return template::getInstance()->twigRender('components/news/full_view.tpl', array('local' => $theme_array, 'comments' => $comment_list));
         }
@@ -254,6 +275,12 @@ class components_news_front {
                     if(is_object(extension::getInstance()->call(extension::TYPE_HOOK, 'comment')))
                         $comment_count = extension::getInstance()->call(extension::TYPE_HOOK, 'comment')->getCount('/news/'.$news_full_link);
                     $cat_serial_text = unserialize($result['name']);
+                    $news_view_id = $result['id'];
+                    $image_poster_root = root . '/upload/news/poster_' . $news_view_id . '.jpg';
+                    $image_poster_url = false;
+                    if(file_exists($image_poster_root)) {
+                        $image_poster_url = property::getInstance()->get('script_url') . '/upload/news/poster_' . $news_view_id . '.jpg';
+                    }
                     $theme_array[] = array(
                         'tags' => $tag_array,
                         'title' => $lang_title[language::getInstance()->getUseLanguage()],
@@ -265,7 +292,8 @@ class components_news_front {
                         'author_nick' => user::getInstance()->get('nick', $result['author']),
                         'full_news_uri' => $news_full_link,
                         'comment_count' => $comment_count,
-                        'view_count' => $result['views']
+                        'view_count' => $result['views'],
+                        'poster' => $image_poster_url
                     );
                 }
             }

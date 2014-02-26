@@ -61,6 +61,12 @@ class modules_news_on_main_front {
             if(is_object(extension::getInstance()->call(extension::TYPE_HOOK, 'comment')))
                 $comment_count = extension::getInstance()->call(extension::TYPE_HOOK, 'comment')->getCount('/news/'.$news_full_link);
             $cat_serial_text = unserialize($result['name']);
+            $news_view_id = $result['id'];
+            $image_poster_root = root . '/upload/news/poster_' . $news_view_id . '.jpg';
+            $image_poster_url = false;
+            if(file_exists($image_poster_root)) {
+                $image_poster_url = property::getInstance()->get('script_url') . '/upload/news/poster_' . $news_view_id . '.jpg';
+            }
             $params[] = array(
                 'tags' => $tag_array,
                 'title' => $lang_title[language::getInstance()->getUseLanguage()],
@@ -72,7 +78,8 @@ class modules_news_on_main_front {
                 'author_nick' => user::getInstance()->get('nick', $result['author']),
                 'full_news_uri' => $news_full_link,
                 'comment_count' => $comment_count,
-                'view_count' => $result['views']
+                'view_count' => $result['views'],
+                'poster' => $image_poster_url
             );
         }
         $total_news_count = $this->totalNewsCount();

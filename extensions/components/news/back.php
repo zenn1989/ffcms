@@ -122,15 +122,12 @@ class components_news_back {
             $cat_path = system::getInstance()->post('category_path');
             if(!system::getInstance()->isInt($cat_id) || $cat_id < 1) {
                 $params['notify']['owner_notselect'] = true;
-                //$notify .= template::stringNotify('error', language::get('admin_component_news_category_notify_noselectcat'));
             }
             if(strlen($cat_name[property::getInstance()->get('lang')]) < 1) {
                 $params['notify']['noname'] = true;
-                //$notify .= template::stringNotify('error', language::get('admin_component_news_category_notify_noname'));
             }
             if (!$this->checkCategoryWay($cat_path, $cat_id)) {
                 $params['notify']['wrongpath'] = true;
-                //$notify .= template::stringNotify('error', language::get('admin_component_news_category_notify_pathwrong'));
             }
             if (sizeof($params['notify']) == 0) {
                 $stmt = database::getInstance()->con()->prepare("SELECT path FROM ".property::getInstance()->get('db_prefix')."_com_news_category WHERE category_id  = ?");
@@ -179,6 +176,10 @@ class components_news_back {
         $params['config']['enable_views_count'] = extension::getInstance()->getConfig('enable_views_count', 'news', extension::TYPE_COMPONENT, 'int');
         $params['config']['multi_category'] = extension::getInstance()->getConfig('multi_category', 'news', extension::TYPE_COMPONENT, 'int');
         $params['config']['enable_tags'] = extension::getInstance()->getConfig('enable_tags', 'news', extension::TYPE_COMPONENT, 'int');
+        $params['config']['poster_dx'] = extension::getInstance()->getConfig('poster_dx', 'news', extension::TYPE_COMPONENT, 'int');
+        $params['config']['poster_dy'] = extension::getInstance()->getConfig('poster_dy', 'news', extension::TYPE_COMPONENT, 'int');
+        $params['config']['gallery_dx'] = extension::getInstance()->getConfig('gallery_dx', 'news', extension::TYPE_COMPONENT, 'int');
+        $params['config']['gallery_dy'] = extension::getInstance()->getConfig('gallery_dy', 'news', extension::TYPE_COMPONENT, 'int');
 
         return template::getInstance()->twigRender('components/news/settings.tpl', $params);
     }
@@ -221,6 +222,8 @@ class components_news_back {
         $params['langs']['all'] = language::getInstance()->getAvailable();
         $params['langs']['current'] = property::getInstance()->get('lang');
         $params['news']['categorys'] = $this->getCategoryArray();
+        $params['news']['id'] = $this->searchFreeId(); // for jquery ajax gallery images
+        $params['news']['action_add'] = true;
         if(system::getInstance()->post('save')) {
             $editor_id = user::getInstance()->get('id');
             $params['news']['title'] = system::getInstance()->nohtml(system::getInstance()->post('title'));
@@ -246,7 +249,7 @@ class components_news_back {
             if (strlen($params['news']['text'][property::getInstance()->get('lang')]) < 1) {
                 $params['notify']['notext'] = true;
             }
-            if (sizeof($params['notify']) < 1) {
+            if (sizeof($params['notify']) == 0) {
                 $serial_title = serialize($params['news']['title']);
                 $serial_text = serialize($params['news']['text']);
                 $serial_description = serialize($params['news']['description']);
@@ -277,6 +280,17 @@ class components_news_back {
                         $stmt = null;
                     }
                 }
+                // image poster for news
+                if($_FILES['newsimage']['size'] > 0) {
+                    $save_name = 'poster_' . $new_news_id . '.jpg';
+                    $dx = extension::getInstance()->getConfig('poster_dx', 'news', extension::TYPE_COMPONENT, 'int');
+                    $dy = extension::getInstance()->getConfig('poster_dy', 'news', extension::TYPE_COMPONENT, 'int');
+                    extension::getInstance()->call(extension::TYPE_HOOK, 'file')->uploadResizedImage('/news/', $_FILES['newsimage'], $dx, $dy, $save_name);
+                }
+                $gallery_folder = (int)system::getInstance()->post('news_gallery_id');
+                $full_gallery_path = root . '/upload/news/gallery/';
+                if(file_exists($full_gallery_path . $gallery_folder . '/'))
+                    rename($full_gallery_path . $gallery_folder . '/', $full_gallery_path . $new_news_id . '/');
                 system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=news");
             }
         }
@@ -314,7 +328,7 @@ class components_news_back {
             if (strlen($text[property::getInstance()->get('lang')]) < 1) {
                 $params['notify']['notext'] = true;
             }
-            if(sizeof($params['notify']) < 1) {
+            if(sizeof($params['notify']) == 0) {
                 $serial_title = serialize($title);
                 $serial_text = serialize($text);
                 $serial_description = serialize($description);
@@ -349,6 +363,12 @@ class components_news_back {
                     }
                 }
                 $params['notify']['success'] = true;
+                if($_FILES['newsimage']['size'] > 0) {
+                    $dx = extension::getInstance()->getConfig('poster_dx', 'news', extension::TYPE_COMPONENT, 'int');
+                    $dy = extension::getInstance()->getConfig('poster_dy', 'news', extension::TYPE_COMPONENT, 'int');
+                    $save_name = 'poster_' . $news_id . '.jpg';
+                    extension::getInstance()->call(extension::TYPE_HOOK, 'file')->uploadResizedImage('/news/', $_FILES['newsimage'], $dx, $dy, $save_name);
+                }
             }
         }
 
@@ -357,6 +377,7 @@ class components_news_back {
         $stmt->execute();
 
         if($result = $stmt->fetch()) {
+            $params['news']['id'] = $news_id;
             $params['news']['title'] = unserialize($result['title']);
             $params['news']['text'] = unserialize($result['text']);
             $params['news']['pathway'] = system::getInstance()->noextention($result['link']);
@@ -366,6 +387,10 @@ class components_news_back {
             $params['news']['keywords'] = unserialize($result['keywords']);
             $params['news']['display'] = $result['display'];
             $params['news']['important'] = $result['important'];
+            if(file_exists(root . '/upload/news/poster_' . $news_id . '.jpg')) {
+                $params['news']['poster_path'] = '/upload/news/poster_' . $news_id . '.jpg';
+                $params['news']['poster_name'] = 'poster_' . $news_id . '.jpg';
+            }
         } else {
             system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=static');
         }
@@ -502,5 +527,14 @@ class components_news_back {
         $result = $stmt->fetch();
         $stmt = null;
         return $result[0];
+    }
+
+    public function searchFreeId($i = 10) {
+        $news_id = system::getInstance()->randomInt($i);
+        $folder = root . '/upload/news/gallery/' . $news_id . '/';
+        if(file_exists($folder)) {
+            return $this->searchFreeId(++$i);
+        }
+        return $news_id;
     }
 }

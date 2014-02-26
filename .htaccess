@@ -5,7 +5,7 @@ RewriteEngine On
 RewriteBase /
 RewriteRule ^.htaccess$ - [F]
 
-RewriteCond %{REQUEST_URI} !\.(ico|css|js|txt)$ [NC]
+RewriteCond %{REQUEST_URI} !\.(ico|css|js|txt|jpg|png|bmp|jpeg|eot|svg|ttf|woff)$ [NC]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 

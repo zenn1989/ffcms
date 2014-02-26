@@ -9,13 +9,20 @@ $(document).ready(function () {
             $('#datefield').removeAttr("disabled");
         }
     });
-});
-$(document).ready(function() {
     var df = $('#out').val();
     if(df != null && df.length > 0) {
         changed_path = true;
     }
 });
+function posterDelete(id) {
+    $.get('/api.php?iface=back&object=newsposterdelete&id='+id, function(){
+        $('#posterobject').remove();
+    });
+}
+function gallerydel(name, id) {
+    $.get('/api.php?iface=back&object=jqueryfile&action=delete&name='+name+'&id='+id);
+    document.getElementById(name).remove();
+}
 function pathCallback()
 {
     changed_path = true;

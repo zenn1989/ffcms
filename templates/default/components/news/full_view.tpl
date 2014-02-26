@@ -1,3 +1,13 @@
+<link rel="stylesheet" href="{{ system.script_url }}/resource/fancybox/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
+<script type="text/javascript" src="{{ system.script_url }}/resource/fancybox/jquery.fancybox.pack.js?v=2.1.5"></script>
+<script>
+    $(document).ready(function() {
+        $(".fancybox").fancybox({
+            openEffect	: 'elastic',
+            closeEffect	: 'elastic'
+        });
+    });
+</script>
 <div class="well-item">
     <h1>{{ local.title }}</a></h1>
 
@@ -12,8 +22,16 @@
         {% endif %}
     </div>
     <br/><hr/>
+    {% if local.poster %}
+        <img src="{{ local.poster }}" class="image_poster"/>
+    {% endif %}
+    {{ local.text }}
     <div>
-        {{ local.text }}
+        {% for image in local.gallery %}
+            <a class="fancybox" rel="gallery" href="{{ image.full }}" title="{{ local.title }}">
+                <img src="{{ image.thumb }}" alt="" style="max-width: 120px" />
+            </a>
+        {% endfor %}
     </div>
     <div class="pull-right">
         {% if local.tags and local.cfg.view_tags %}

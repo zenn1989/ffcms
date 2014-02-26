@@ -14,9 +14,10 @@
              <a href="{{ system.url }}/news/{{ newsdata.full_news_uri }}#comment_load" class="btn btn-small"><i class="icon-comment"></i> {{ language.comments_text_title }}: {{ newsdata.comment_count }}</a>
         </div>
         <br /><hr/>
-        <div>
+            {% if newsdata.poster %}
+                <img src="{{ newsdata.poster }}" class="image_poster" />
+            {% endif %}
             {{ newsdata.text }}
-        </div>
         <br/>
         <div class="pull-left">
         {% if newsdata.tags and cfg.view_tags %}
