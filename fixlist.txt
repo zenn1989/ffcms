@@ -18,3 +18,5 @@ All other thinks like mailer, file controller are moved to hook extensions. From
 * New language divide engine based on URI (not on cookie as in previous version)
 * New system improved settings
 * New CSS resource for fast drow country and language flags (icon)
+* New functions for news component - poster image and image gallery. New settings.
+* Fancybox 2.1.5 in default resources

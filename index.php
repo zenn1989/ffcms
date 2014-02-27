@@ -1,4 +1,5 @@
 <?php
+session_start();
 $debug_starttime = microtime(true);
 define('root', dirname(__FILE__));
 define('loader', 'front');

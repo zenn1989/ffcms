@@ -60,8 +60,11 @@ class property {
             self::$cfg['url'] .= '/index.php';
         }
         self::$cfg['nolang_url'] = self::$cfg['url'];
-        if(self::$cfg['use_multi_language'] && loader === 'front') {
-            self::$cfg['url'] .= '/' . router::getInstance()->getPathLanguage();
+        if(self::$cfg['use_multi_language']) {
+            if(loader === 'front')
+                self::$cfg['url'] .= '/' . router::getInstance()->getPathLanguage();
+            elseif(loader === 'back')
+                self::$cfg['url'] .= '/' . property::getInstance()->get('lang');
         }
     }
 

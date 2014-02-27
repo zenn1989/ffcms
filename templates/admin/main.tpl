@@ -108,8 +108,8 @@
                         </li>
                     </ul>
                 </li>
-                <li><a href="{{ system.script_url }}" target="_blank"><i class="fa fa-arrow-right"></i> {{ language.admin_open_site_link }}</a></li>
-                <li><a href="{{ system.script_url }}/user/logout.html"><i class="fa fa-sign-out"></i> {{ language.admin_exit_link }}</a></li>
+                <li><a href="{{ system.url }}" target="_blank"><i class="fa fa-arrow-right"></i> {{ language.admin_open_site_link }}</a></li>
+                <li><a href="{{ system.url }}/user/logout.html"><i class="fa fa-sign-out"></i> {{ language.admin_exit_link }}</a></li>
             </ul>
         </div><!-- /.navbar-collapse -->
     </nav>
