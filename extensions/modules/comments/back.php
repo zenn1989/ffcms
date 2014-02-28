@@ -52,7 +52,7 @@ class modules_comments_back {
             system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=modules&action=comments");
         }
 
-        $stmt = database::getInstance()->con()->prepare("SELECT comment FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE id = ?");
+        $stmt = database::getInstance()->con()->prepare("SELECT comment,author FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE id = ?");
         $stmt->bindParam(1, $comment_id, PDO::PARAM_INT);
         $stmt->execute();
 

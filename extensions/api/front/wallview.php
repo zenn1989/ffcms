@@ -31,6 +31,7 @@ class api_wallview_front {
                 'time' => system::getInstance()->toDate($item['time'], 'h')
             );
         }
+
         echo template::getInstance()->twigRender('components/user/profile/profile_answer.tpl', array('local' => $params));
     }
 }

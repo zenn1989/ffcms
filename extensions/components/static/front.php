@@ -22,7 +22,7 @@ class components_static_front {
         $path = system::getInstance()->altimplode('/', $way);
         $content = $this->display($path);
         if($content != null) {
-            template::getInstance()->set(template::TYPE_CONTENT, 'body', $this->display($path));
+            template::getInstance()->set(template::TYPE_CONTENT, 'body', $content);
         }
     }
 

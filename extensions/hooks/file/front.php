@@ -25,9 +25,7 @@ class hooks_file_front {
         $file_save_original = "avatar_$userid.$image_extension";
         $file_save_min_jpg = "avatar_$userid.jpg";
         $file_original_fullpath = $dir_original . $file_save_original;
-        if (!file_exists($dir_original)) {
-            @mkdir($dir_original, 0777, true);
-        }
+        system::getInstance()->createDirectory($dir_original);
         move_uploaded_file($file['tmp_name'], $file_original_fullpath);
         $file_infofunction = getimagesize($file_original_fullpath);
         $image_buffer = null;
@@ -60,11 +58,11 @@ class hooks_file_front {
         imagecopyresized($image_small_truecolor, $image_buffer, 0, 0, 0, 0, $image_small_dx, $image_small_dy, $image_ox, $image_oy);
 
         if(!file_exists(root . '/upload/user/avatar/big/'))
-            @mkdir(root . '/upload/user/avatar/big/');
+            system::getInstance()->createDirectory(root . '/upload/user/avatar/big/');
         if(!file_exists(root . '/upload/user/avatar/medium/'))
-            @mkdir(root . '/upload/user/avatar/medium/');
+            system::getInstance()->createDirectory(root . '/upload/user/avatar/medium/');
         if(!file_exists(root . '/upload/user/avatar/small/'))
-            @mkdir(root . '/upload/user/avatar/small/');
+            system::getInstance()->createDirectory(root . '/upload/user/avatar/small/');
 
         imagejpeg($image_big_truecolor, root . "/upload/user/avatar/big/$file_save_min_jpg");
         imagejpeg($image_medium_truecolor, root . "/upload/user/avatar/medium/$file_save_min_jpg");

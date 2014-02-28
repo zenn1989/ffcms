@@ -209,7 +209,6 @@ feedback_form_text_desc<=>Write you message to website administration fully.
 feedback_form_email_label<=>Your email
 feedback_form_email_desc<=>Put your email to answer
 feedback_form_captcha_label<=>Anti robot
-feedback_form_captcha_desc<=>Enter symbols what displayed on image
 feedback_form_send_button<=>Send message
 search_seo_title<=>Search
 search_nothing_found<=>Nothing founded on this query

@@ -8,6 +8,7 @@ use engine\system;
 use engine\extension;
 use engine\database;
 use engine\property;
+use engine\meta;
 
 class components_user_front {
     protected static $instance = null;
@@ -67,6 +68,7 @@ class components_user_front {
         $viewer_id = user::getInstance()->get('id');
         if(!user::getInstance()->exists($target_id))
             return null;
+        meta::getInstance()->add('title', user::getInstance()->get('nick', $target_id));
         $content = null;
         switch($way[1]) {
             case null:
@@ -642,6 +644,7 @@ class components_user_front {
 
     private function viewUserList() {
         $way = router::getInstance()->shiftUriArray();
+        meta::getInstance()->add('title', language::getInstance()->get('seo_title_userlist'));
         $index = $way[0] ?: 0;
         $usercount_on_page = extension::getInstance()->getConfig('userlist_count', 'user', 'components', 'int');
         $totalUsers = $this->totalUserCount();

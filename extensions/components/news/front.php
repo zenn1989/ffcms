@@ -163,6 +163,7 @@ class components_news_front {
     private function viewTagList($tagname)
     {
         $cleartag = system::getInstance()->nohtml(substr($tagname, 0, -5));
+        meta::getInstance()->add('title', $cleartag);
         $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.keywords like ? LIMIT 100");
         $buildSearch = '%'.$cleartag.'%';
         $stmt->bindParam(1, $buildSearch, PDO::PARAM_STR);

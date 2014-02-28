@@ -12,3 +12,6 @@
     </table>
 </blockquote>
 {% endfor %}
+{% if local.answer == null %}
+    {{ language.usercontrol_profile_wall_noanswer }}
+{% endif %}

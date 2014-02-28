@@ -34,13 +34,13 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ system.url }}/{{ system.file_name }}"><i class="fa fa-globe"></i> FFCMS ADMIN</a>
+            <a class="navbar-brand" href="{{ system.script_url }}/{{ system.file_name }}"><i class="fa fa-globe"></i> FFCMS ADMIN</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav side-nav">
-                <li><a href="{{ system.url }}/{{ system.file_name }}"><i class="fa fa-home"></i> {{ language.admin_main_link }}</a></li>
+                <li><a href="{{ system.script_url }}/{{ system.file_name }}"><i class="fa fa-home"></i> {{ language.admin_main_link }}</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fire"></i> {{ language.admin_nav_system }} <b class="caret"></b></a>
                     <ul class="dropdown-menu">

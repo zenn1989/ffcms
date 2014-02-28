@@ -2,6 +2,7 @@
 
 use engine\system;
 use engine\extension;
+use engine\language;
 
 class api_commentview_front {
     protected static $instance = null;
