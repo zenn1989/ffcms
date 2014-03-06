@@ -124,15 +124,18 @@ class install extends singleton {
                         foreach(system::getInstance()->post(null) as $var_name=>$var_value) {
                             if(system::getInstance()->prefixEquals($var_name, 'config:')) {
                                 $var_name = substr($var_name, strlen('config:'));
-                                $configs_data .= '$config[\''.$var_name.'\'] = "'.$var_value.'"'.";\n";
+                                if($var_name === 'seo_title') {
+                                    foreach(language::getInstance()->getAvailable() as $clang) {
+                                        $configs_data .= '$config[\''.$var_name.'\'][\'' . $clang . '\'] = "' . $var_value[$clang] . '";' . "\n";
+                                    }
+                                } else
+                                    $configs_data .= '$config[\''.$var_name.'\'] = "'.$var_value.'"'.";\n";
                             }
                         }
                         $random_password_salt = system::getInstance()->randomString(rand(12,16));
                         $configs_data .= '$config[\'tpl_dir\'] = "templates";
 $config[\'tpl_name\'] = "default";
 $config[\'debug\'] = true;
-$config[\'seo_description\'] = "Demonstration website description";
-$config[\'seo_keywords\'] = "Website, demo";
 $config[\'multi_title\'] = false;
 $config[\'cache_interval\'] = "120";
 $config[\'token_time\'] = "86400";

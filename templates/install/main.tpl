@@ -10,6 +10,8 @@
     <link href="{{ system.theme }}/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ system.theme }}/css/custom.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ system.script_url }}/resource/flags/flags.css" />
+    <script src="{{ system.theme }}/js/jquery.min.js"></script>
+    <script src="{{ system.theme }}/js/bootstrap.min.js"></script>
 </head>
 
 <body>

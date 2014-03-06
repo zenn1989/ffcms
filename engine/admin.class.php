@@ -253,9 +253,13 @@ class admin extends singleton {
             $save_data = "<?php\n";
             foreach (system::getInstance()->post(null) as $var_name => $var_value) {
                 if (system::getInstance()->prefixEquals($var_name, 'cfgmain:')) {
-                    $var_clear_name = str_replace("cfgmain:", "", $var_name);
-                    // boolean type
-                    if ($var_value == "1" || $var_value == "0") {
+                    $var_clear_name = substr($var_name, 8);
+                    $language_depended_params = array('seo_title', 'seo_description', 'seo_keywords');
+                    if(in_array($var_clear_name, $language_depended_params)) {
+                        foreach(language::getInstance()->getAvailable() as $clang) { // array of available languages. Search in post data
+                            $save_data .= '$config[\'' . $var_clear_name . '\'][\'' . $clang . '\'] = "' . $var_value[$clang] . '";' . "\n";
+                        }
+                    } elseif($var_value == "1" || $var_value == "0") { // boolean type
                         $boolean_var = $var_value == "1" ? "true" : "false";
                         $save_data .= '$config[\'' . $var_clear_name . '\'] = ' . $boolean_var . ';' . "\n";
                     } else {

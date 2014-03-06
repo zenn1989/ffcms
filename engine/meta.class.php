@@ -22,10 +22,13 @@ class meta extends singleton {
      */
     protected static function initMain() {
         // title is globally also for 404 pages.
-        self::$metadata['title'][] = property::getInstance()->get('seo_title');
+        $serial_title = property::getInstance()->get('seo_title');
+        $serial_desc = property::getInstance()->get('seo_description');
+        $serial_keywords = property::getInstance()->get('seo_keywords');
+        self::$metadata['title'][] = $serial_title[language::getInstance()->getUseLanguage()];
         if(router::getInstance()->isMain()) {
-            self::$metadata['description'][] = property::getInstance()->get('seo_description');
-            self::$metadata['keywords'][] = property::getInstance()->get('seo_keywords');
+            self::$metadata['description'][] = $serial_desc[language::getInstance()->getUseLanguage()];
+            self::$metadata['keywords'][] = $serial_keywords[language::getInstance()->getUseLanguage()];
         }
     }
 

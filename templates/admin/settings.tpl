@@ -107,28 +107,42 @@
 
 <h2>{{ language.admin_settings_list_seo_block }}</h2>
 <hr/>
-<div class="form-group">
-    <label class="col-lg-3 control-label">{{ language.admin_settings_list_label_title_title }}</label>
+<div class="tabbable" id="contentTab">
+    <ul class="nav nav-tabs">
+        {% for itemlang in system.languages %}
+            <li{% if itemlang == system.lang %} class="active"{% endif %}><a href="#{{ itemlang }}" data-toggle="tab">{{ language.language }}: {{ itemlang|upper }}</a></li>
+        {% endfor %}
+    </ul>
+    <br />
+    <div class="tab-content">
+            {% for itemlang in system.languages %}
+            <div class="tab-pane fade{% if itemlang == system.lang %} in active{% endif %}" id="{{ itemlang }}">
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">{{ language.admin_settings_list_label_title_title }}[{{ itemlang }}]</label>
 
-    <div class="col-lg-9">
-        <input class="form-control" type="text"  name="cfgmain:seo_title" value="{{ config.seo_title }}"/>
-        <p class="help-block">{{ language.admin_settings_list_label_title_desc }}</p>
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-lg-3 control-label">{{ language.admin_settings_list_label_desc_title }}</label>
+                    <div class="col-lg-9">
+                        <input class="form-control" type="text"  name="cfgmain:seo_title[{{ itemlang }}]" value="{{ config.seo_title[itemlang] }}"/>
+                        <p class="help-block">{{ language.admin_settings_list_label_title_desc }}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">{{ language.admin_settings_list_label_desc_title }}[{{ itemlang }}]</label>
 
-    <div class="col-lg-9">
-        <textarea name="cfgmain:seo_description" class="form-control">{{ config.seo_description }}</textarea>
-        <p class="help-block">{{ language.admin_settings_list_label_desc_desc }}</p>
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-lg-3 control-label">{{ language.admin_settings_list_label_keywords_title }}</label>
+                    <div class="col-lg-9">
+                        <textarea name="cfgmain:seo_description[{{ itemlang }}]" class="form-control">{{ config.seo_description[itemlang] }}</textarea>
+                        <p class="help-block">{{ language.admin_settings_list_label_desc_desc }}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">{{ language.admin_settings_list_label_keywords_title }}[{{ itemlang }}]</label>
 
-    <div class="col-lg-9">
-        <textarea name="cfgmain:seo_keywords" class="form-control">{{ config.seo_keywords }}</textarea>
-        <p class="help-block">{{ language.admin_settings_list_label_keywords_desc }}</p>
+                    <div class="col-lg-9">
+                        <textarea name="cfgmain:seo_keywords[{{ itemlang }}]" class="form-control">{{ config.seo_keywords[itemlang] }}</textarea>
+                        <p class="help-block">{{ language.admin_settings_list_label_keywords_desc }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
     </div>
 </div>
 <div class="form-group">

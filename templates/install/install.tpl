@@ -101,13 +101,26 @@
                 <p class="help-block">{{ language.install_install_main_timezone_desc }}</p>
             </div>
         </div>
-        <div class="form-group">
-            <label class="control-label col-lg-3">{{ language.install_install_main_seotitle_title }}</label>
-            <div class="col-lg-9">
-                <input type="text" placeholder="Dart Vader blog" name="config:seo_title" value="{{ cfg.seo_title }}" class="form-control">
-                <p class="help-block">{{ language.install_install_main_seotitle_desc }}</p>
+    <ul class="nav nav-tabs">
+        {% for itemlang in system.languages %}
+            <li{% if itemlang == system.lang %} class="active"{% endif %}><a href="#{{ itemlang }}" data-toggle="tab">{{ language.install_switch_language }}: {{ itemlang|upper }}</a></li>
+        {% endfor %}
+    </ul>
+    <br />
+    <div class="tab-content">
+    {% for itemlang in system.languages %}
+        <div class="tab-pane fade{% if itemlang == system.lang %} in active{% endif %}" id="{{ itemlang }}">
+            <div class="form-group">
+                <label class="control-label col-lg-3">{{ language.install_install_main_seotitle_title }}[{{ itemlang }}]</label>
+                <div class="col-lg-9">
+                    <input type="text" placeholder="Dart Vader blog" name="config:seo_title[{{ itemlang }}]" value="{{ cfg.seo_title[itemlang] }}" class="form-control">
+                    <p class="help-block">{{ language.install_install_main_seotitle_desc }}</p>
+                </div>
             </div>
         </div>
+    {% endfor %}
+    </div>
+
         <p class="alert alert-info">{{ language.install_install_main_notifymore }}</p>
         <h3>{{ language.install_install_admin_title }}</h3>
         <div class="form-group">
