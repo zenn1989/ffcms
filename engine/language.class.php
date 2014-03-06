@@ -42,10 +42,8 @@ class language extends singleton {
         self::getLanguageFile($file);
         self::getLanguageFile($addfile);
         // additional theme lang file
-        if(loader != 'back' && loader != 'front') {
-            $theme_langfile = root . '/' . property::getInstance()->get('tpl_dir') . '/' . property::getInstance()->get('tpl_name') . '/' . $lang . '.lang';
-            self::getLanguageFile($theme_langfile);
-        }
+        $theme_langfile = root . '/' . property::getInstance()->get('tpl_dir') . '/' . property::getInstance()->get('tpl_name') . '/' . $lang . '.language.lang';
+        self::getLanguageFile($theme_langfile);
     }
 
     protected static function getLanguageFile($file) {

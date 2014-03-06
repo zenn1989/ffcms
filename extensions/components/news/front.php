@@ -231,7 +231,7 @@ class components_news_front {
         if (system::getInstance()->isIntList($category_list)) {
             $max_preview_length = extension::getInstance()->getConfig('short_news_length', 'news', 'components', 'int');
             $time = time();
-            $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE category in ($category_list) AND date <= ?");
+            $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE category in ($category_list) AND date <= ? AND display = 1");
             $stmt->bindParam(1, $time, PDO::PARAM_INT);
             $stmt->execute();
             if ($countRows = $stmt->fetch()) {

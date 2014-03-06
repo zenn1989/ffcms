@@ -35,9 +35,9 @@ $this->preg_autolinks = array(
         "'[\w]+[\w\-\.]+@[\w\-\.]+\.[\w]+'si",
     ),
     'replacement' => array(
-        '<a href="'.property::getInstance()->get('url').'/api.php?action=redirect&url=$0" target="_blank">$0</a>',
-        '$1<a href="'.property::getInstance()->get('url').'/api.php?action=redirect&url=$2" target="_blank">$2</a>',
-        '<a href="mailto:$0" rel="nofollow">$0</a>',
+        '<a href="$0" target="_blank" rel="nofollow">$0</a>',
+        '$1<a href="http://$2" target="_blank" rel="nofollow">$2</a>',
+        '<a href="mailto:$0">$0</a>',
     ),
     'highlight' => array(
         '<span class="bb_autolink">$0</span>',
@@ -47,7 +47,7 @@ $this->preg_autolinks = array(
 );
 
 // Формируем набор смайликов
-$path = property::getInstance()->get('url') . "/resource/xbbcode/images/smiles/";
+$path = property::getInstance()->get('script_url') . "/resource/xbbcode/images/smiles/";
 $pak = file($this->_current_path . 'images/smiles/Set_Smiles_YarNET.pak');
 $smiles = array();
 foreach ($pak as $val) {

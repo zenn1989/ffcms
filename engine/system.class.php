@@ -248,7 +248,10 @@ class system extends singleton {
      */
     public function redirect($uri = null)
     {
-        header("Location: ".property::getInstance()->get('url').$uri);
+        if(loader === 'back')
+            header("Location: ".property::getInstance()->get('script_url').$uri);
+        else
+            header("Location: ".property::getInstance()->get('url').$uri);
         exit();
     }
 

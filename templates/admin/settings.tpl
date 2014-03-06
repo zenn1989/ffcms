@@ -12,7 +12,7 @@
     <label class="col-lg-3 control-label">{{ language.admin_settings_list_label_url_title }}</label>
 
     <div class="col-lg-9">
-        <input class="form-control" type="text" name="cfgmain:url" value="{{ config.url }}"/>
+        <input class="form-control" type="text" name="cfgmain:url" value="{{ config.script_url }}"/>
         <p class="help-block">{{ language.admin_settings_list_label_url_desc }}</p>
     </div>
 </div>

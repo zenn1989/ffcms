@@ -9,7 +9,7 @@
     });
 </script>
 <div class="well-item">
-    <h1>{{ local.title }}</a></h1>
+    <h1>{{ local.title }}</h1>
 
     <div class="pull-left">
         <a href="{{ system.url }}/news/{{ local.category_url }}" class="btn btn-small"><i class="icon-list"></i> {{ local.category_name }}</a>

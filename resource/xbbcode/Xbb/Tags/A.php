@@ -56,7 +56,7 @@ class Xbb_Tags_A extends bbcode
             if(system::getInstance()->prefixEquals($href, property::getInstance()->get('url')) || $href == property::getInstance()->get('url')) {
                 $attr .= ' href="' . $href . '"';
             } else {
-                $attr .= ' href="' . property::getInstance()->get('url') . "/api.php?action=encodedredirect&url=" . base64_encode($href) . '"';
+                $attr .= ' href="' . $href . '" rel="nofollow"';
             }
         }
         if (isset($this->attrib['title'])) {

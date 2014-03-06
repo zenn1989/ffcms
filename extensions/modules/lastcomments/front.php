@@ -37,7 +37,8 @@ class modules_lastcomments_front {
                     'user_id' => $result['author'],
                     'user_name' => user::getInstance()->get('nick', $result['author']),
                     'uri' => $result['pathway'],
-                    'preview' => system::getInstance()->altsubstr($comment_text, 0, $max_comment_char_size)
+                    'preview' => system::getInstance()->altsubstr($comment_text, 0, $max_comment_char_size),
+                    'date' => system::getInstance()->toDate($result['time'], 'd')
                 );
             }
             $render = template::getInstance()->twigRender('modules/lastcomments/lastcomments.tpl', array('local' => $params));
