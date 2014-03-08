@@ -612,10 +612,10 @@ class components_user_front {
         $limit = $index * $wall_count;
         // personal info
         $params['wall']['reg_date'] = user::getInstance()->get('regdate', $target);
-        $params['wall']['birthday'] = user::getInstance()->get('birthday');
-        $params['wall']['sex'] = $this->intToSex(user::getInstance()->get('sex'));
-        $params['wall']['phone'] = user::getInstance()->get('phone');
-        $params['wall']['webpage'] = user::getInstance()->get('webpage');
+        $params['wall']['birthday'] = user::getInstance()->get('birthday', $target);
+        $params['wall']['sex'] = $this->intToSex(user::getInstance()->get('sex', $target));
+        $params['wall']['phone'] = user::getInstance()->get('phone', $target);
+        $params['wall']['webpage'] = user::getInstance()->get('webpage', $target);
         // wall posts index & pagination
         $params['wall']['postindex'] = $index;
         $params['wall']['postperpage'] = $wall_count;

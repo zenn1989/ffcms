@@ -46,9 +46,11 @@ class components_static_front {
             $serial_text = unserialize($result['text']);
             $serial_keywords = unserialize($result['keywords']);
             $serial_description = unserialize($result['description']);
-            meta::getInstance()->add('title', $serial_title[language::getInstance()->getUseLanguage()]);
-            meta::getInstance()->add('keywords', $serial_keywords[language::getInstance()->getUseLanguage()]);
-            meta::getInstance()->add('description', $serial_description[language::getInstance()->getUseLanguage()]);
+            if($pathway) {
+                meta::getInstance()->add('title', $serial_title[language::getInstance()->getUseLanguage()]);
+                meta::getInstance()->add('keywords', $serial_keywords[language::getInstance()->getUseLanguage()]);
+                meta::getInstance()->add('description', $serial_description[language::getInstance()->getUseLanguage()]);
+            }
             $params = array(
                 'title' => $serial_title[language::getInstance()->getUseLanguage()],
                 'text' => $serial_text[language::getInstance()->getUseLanguage()],
