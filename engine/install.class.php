@@ -53,7 +53,7 @@ class install extends singleton {
                 // elseif($usedVersion === other) $updateQuery .= ...
                 if($updateQuery != null) {
                     database::getInstance()->con()->exec($updateQuery);
-                    @file_put_contents(root . "/install/.update-".version, 'locked'); // only 1 run
+                    file_put_contents(root . "/install/.update-".version, 'locked'); // only 1 run
                     $params['notify']['success'] = true;
                 } else {
                     $params['notify']['nosql_data'] = true;

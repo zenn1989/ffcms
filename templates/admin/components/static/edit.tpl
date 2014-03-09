@@ -7,8 +7,21 @@
             {
                 CKEDITOR.disableAutoInline = true;
                 $('.wysi').ckeditor();
+                $('.form-horizontal').submit(function(){
+                    window.onbeforeunload = null;
+                });
             }
     );
+    window.onbeforeunload = function (evt) {
+        var message = "{{ language.admin_page_not_saved }}";
+        if (typeof evt == "undefined") {
+            evt = window.event;
+        }
+        if (evt) {
+            evt.returnValue = message;
+        }
+        return message;
+    }
 </script>
 <h1>{{ extension.title }}<small>{{ language.admin_component_static_edit }}</small></h1>
 <hr />

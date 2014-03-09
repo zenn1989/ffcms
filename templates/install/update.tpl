@@ -17,6 +17,8 @@
 <p class="alert alert-warning">
     {{ language.install_update_text_notify }}
 </p>
+{% if not notify %}
 <form action="" method="post">
     <input type="submit" name="startupdate" value="{{ language.install_update_button_start }}" class="btn btn-danger"/>
 </form>
+{% endif %}

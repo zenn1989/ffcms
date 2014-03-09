@@ -22,7 +22,7 @@ class language extends singleton {
             $lang = router::getInstance()->getPathLanguage();
         elseif((loader === 'api' || loader === 'install') && self::canUse($_COOKIE['ffcms_lang'])) // did language defined for API scripts?
             $lang = $_COOKIE['ffcms_lang'];
-        elseif($_SERVER['HTTP_ACCEPT_LANGUAGE'] != null && self::canUse(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2))) // did we have lang mark in browser?
+        elseif($_SERVER['HTTP_ACCEPT_LANGUAGE'] != null && self::canUse(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)) && loader !== 'back') // did we have lang mark in browser?
             $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
         else // no ? then use default language
             $lang = property::getInstance()->get('lang');

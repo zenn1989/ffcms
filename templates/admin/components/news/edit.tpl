@@ -21,8 +21,21 @@
                                 ).appendTo('#files');
                             });
                         });
+                $('.form-horizontal').submit(function(){
+                    window.onbeforeunload = null;
+                });
             }
     );
+    window.onbeforeunload = function (evt) {
+        var message = "{{ language.admin_page_not_saved }}";
+        if (typeof evt == "undefined") {
+            evt = window.event;
+        }
+        if (evt) {
+            evt.returnValue = message;
+        }
+        return message;
+    }
 </script>
 <script src="{{ system.theme }}/js/fileupload/vendor/jquery.ui.widget.js"></script>
 <script src="{{ system.theme }}/js/fileupload/jquery.iframe-transport.js"></script>
@@ -172,7 +185,7 @@
 
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Small modal</h4>
+                    <h4 class="modal-title">{{ language.admin_component_news_edit_page_image_preview }}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="text-center">

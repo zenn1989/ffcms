@@ -32,7 +32,7 @@
             <tr>
                 <td><input type="checkbox" name="check_array[]" class="check_array" value="{{ row.id }}"/> {{ row.id }}</td>
                 <td><a href="?object=components&action=news&make=edit&id={{ row.id }}">{{ row.title }}</a></td>
-                <td><a href="{{ system.script_url }}/news/{{ row.link }}" target="_blank">/news/{{ row.link }}</a></td>
+                <td><a href="{{ system.url }}/news/{{ row.link }}" target="_blank">/news/{{ row.link }}</a></td>
                 <td class="text-center">
                     <a href="?object=components&action=news&make=edit&id={{ row.id }}" title="Edit"><i class="fa fa-pencil-square-o fa-lg"></i></a>
                     <a href="?object=components&action=news&make=delete&id={{ row.id }}" title="Delete"><i class="fa fa-trash-o fa-lg"></i></a>

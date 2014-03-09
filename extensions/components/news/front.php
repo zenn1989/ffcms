@@ -139,7 +139,7 @@ class components_news_front {
             $theme_array = array(
                 'tags' => $tag_array,
                 'title' => $lang_title[language::getInstance()->getUseLanguage()],
-                'text' => $lang_text[language::getInstance()->getUseLanguage()],
+                'text' => system::getInstance()->removeCharsFromString('<hr />', $lang_text[language::getInstance()->getUseLanguage()], 1),
                 'date' => system::getInstance()->toDate($result['date'], 'h'),
                 'category_url' => $category_link,
                 'category_name' => $category_text,
