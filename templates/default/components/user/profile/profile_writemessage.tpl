@@ -10,18 +10,20 @@
 <h3>{{ language.usercontrol_profile_pm_write_header }}</h3>
 <hr/>
 <form action="" method="post">
-    <div class="input-prepend">
-        <span class="add-on">{{ language.usercontrol_profile_pm_write_touser }}: </span>
+    <div class="form-group">
+        <label class="control-label col-lg-3">{{ language.usercontrol_profile_pm_write_touser }} </label>
+
+        <div class="col-lg-9">
         {% if local.message.friend %}
-        <select name="accepterid">
+        <select name="accepterid" class="form-control">
             {% for friend in local.message.friend %}
                 <option value="{{ friend.user_id }}"{% if friend.user_id == local.message.target %} selected{% endif %}>{{ friend.user_name }}</option>
             {% endfor %}
         </select>
-        {% endif %}
+        {% endif %}</div>
     </div>
     <strong>{{ language.usercontrol_profile_pm_write_text }}</strong><br/>
-    <textarea class="input-block-level" name="message" rows="10"></textarea>
+    <textarea class="form-control" name="message" rows="10"></textarea>
 
     <div class="pull-right"><input type="submit" name="sendmessage" value="{{ language.global_send_button }}" class="btn btn-success"/></div>
 </form>

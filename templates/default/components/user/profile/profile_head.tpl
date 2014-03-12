@@ -1,15 +1,18 @@
-<h3>{{ local.profile.user_name }}</h3>
-<i class="pull-right">
-    {{ local.profile.user_status }}
-    {% if local.profile.is_self %}
-    <a href="{{ system.url }}/user/id{{ local.profile.user_id }}/settings/status"><i class="icon-refresh"></i></a>
-    {% endif %}
-</i>
+<div class="row">
+<div class="col-lg-12">
+    <h2>{{ local.profile.user_name }}
+        <small>
+            "{{ local.profile.user_status }}"
+            {% if local.profile.is_self %}<a href="{{ system.url }}/user/id{{ local.profile.user_id }}/settings/status"><i class="fa fa-refresh"></i></a>{% endif %}
+        </small>
+    </h2>
+</div>
+</div>
 <hr/>
 <div class="row">
-    <div class="span3">
-        <img src="{{ system.script_url }}/{{ local.profile.user_avatar }}" /><br/>
-        <ul class="nav nav-tabs nav-stacked">
+    <div class="col-lg-4">
+        <img src="{{ system.script_url }}/{{ local.profile.user_avatar }}" class="img-responsive"/><br/>
+        <ul class="nav nav-pills nav-stacked">
             {% if user.id > 0 %}
                 {% if local.profile.is_self %}
                     <li{% if local.path == 'avatar' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}/avatar"><i class="fa fa-camera"></i> {{ language.usercontrol_profile_mymenu_avachange }}</a></li>
@@ -30,9 +33,9 @@
             {% endif %}
         </ul>
     </div>
-    <div class="span5">
+    <div class="col-lg-8">
         <div class="tabbable">
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-tabs nav-justified">
                 <li{% if local.path == '' or local.path == 'wall' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}"><i class="icon-home"></i> {{ language.usercontrol_profile_menu_wall }}</a></li>
                 <li{% if local.path == 'bookmarks' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}/bookmarks"><i class="icon-pencil"></i> {{ language.usercontrol_profile_menu_marks }}</a></li>
                 <li class="dropdown{% if local.path == 'friends' %} active{% endif %}">
@@ -61,6 +64,7 @@
                 </li>
                 {% endif %}
             </ul>
+            <br />
             {# include sub templates #}
             {% if local.path == '' or local.path == 'wall' %}
                 {% include 'components/user/profile/profile_wall.tpl' %}

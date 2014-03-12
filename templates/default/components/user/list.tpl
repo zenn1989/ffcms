@@ -1,11 +1,11 @@
-<div class="container">
-    <div class="span5">
+<div class="row">
+    <div class="col-lg-8">
         <h2>{{ language.usercontrol_listuser_header_text }}</h2>
         <hr/>
         {% for user in local.user %}
         <div class="row" style="padding-top: 10px">
-            <div class="span1"><img src="{{ system.script_url }}/{{ user.user_avatar }}"/></div>
-            <div class="span4">
+            <div class="col-lg-3"><img src="{{ system.script_url }}/{{ user.user_avatar }}" class="img-responsive"/></div>
+            <div class="col-lg-9">
                 <h3><a href="{{ system.url }}/user/id{{ user.user_id }}">{{ user.user_name }}</a></h3>
 
                 <div class="pull-right">{{ user.user_regdate }}</div>
@@ -13,7 +13,7 @@
         </div>
         {% endfor %}
     </div>
-    <div class="span3">
+    <div class="col-lg-4">
         <h2>{{ language.usercontrol_listuser_info_text }}</h2>
         <hr/>
         <h4>{{ language.usercontrol_listuser_item_many }}</h4>
@@ -30,5 +30,5 @@
         </p>
     </div>
 </div>
-<hr/>
+<br />
 {{ local.pagination }}

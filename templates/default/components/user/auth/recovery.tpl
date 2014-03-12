@@ -5,6 +5,7 @@
     <li><a href="{{ system.url }}/user/register.html">{{ language.usercontrol_reg_header }}</a></li>
     <li class="active"><a href="{{ system.url }}/user/recovery.html">{{ language.usercontrol_recovery_header }}</a></li>
 </ul>
+<br />
 {% if local.submit %}
     {% if local.notify.captcha_error %}
         {{ notify.error(language.usercontrol_captcha_form_error) }}
@@ -20,36 +21,36 @@
     {% endif %}
 {% endif %}
 <form class="form-horizontal" method="post" action="">
-    <div class="control-group">
-        <label class="control-label" for="inputEmail">{{ language.usercontrol_auth_email }}</label>
+    <div class="form-group">
+        <label class="control-label col-lg-3">{{ language.usercontrol_auth_email }}</label>
 
-        <div class="controls">
-            <input name="email" type="text" placeholder="ivan.petrov@gmail.com">
+        <div class="col-lg-9">
+            <input name="email" type="text" placeholder="ivan.petrov@gmail.com" class="form-control">
         </div>
     </div>
     {% if local.cfg.captcha_full %}
         <script>
             var RecaptchaOptions = { theme : 'white' };
         </script>
-        <div class="control-group">
-            <label class="control-label" for="inputPassword">{{ language.usercontrol_auth_captcha }}</label>
+        <div class="form-group">
+            <label class="control-label col-lg-3">{{ language.usercontrol_auth_captcha }}</label>
 
-            <div class="controls">
+            <div class="col-lg-9">
                 {{ local.captcha }}
             </div>
         </div>
     {% else %}
-        <div class="control-group">
-            <label class="control-label" for="inputPassword">{{ language.usercontrol_auth_captcha }}</label>
+        <div class="form-group">
+            <label class="control-label col-lg-3">{{ language.usercontrol_auth_captcha }}</label>
 
-            <div class="controls">
-                <img src="{{ local.captcha }}" id="captcha"/><a href="#" onclick="document.getElementById('captcha').src='{{ local.captcha }}?'+Math.random();"><i class="icon-refresh"></i></a><br/>
-                <input type="text" name="captcha" required>
+            <div class="col-lg-9">
+                <img src="{{ local.captcha }}" id="captcha"/><a href="#" onclick="document.getElementById('captcha').src='{{ local.captcha }}?'+Math.random();"><i class="fa fa-refresh"></i></a>
+                <input type="text" name="captcha" class="form-control" required>
             </div>
         </div>
     {% endif %}
-    <div class="control-group">
-        <div class="controls">
+    <div class="form-group">
+        <div class="col-lg-offset-3 col-lg-9">
             <input type="submit" name="submit" class="btn btn-inverse" value="{{ language.usercontrol_recovery_button }}"/>
         </div>
     </div>

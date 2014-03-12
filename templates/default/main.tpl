@@ -1,77 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% block header %}
-        <script type="text/javascript">
-            var host = '{{ system.script_url }}';
-        </script>
-        <meta charset="utf-8"/>
-        <title>{{ meta.title }}</title>
-        <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-        <meta name="keywords" content="{{  meta.keywords }}"/>
-        <meta name="description" content="{{ meta.description }}"/>
-        <meta name="generator" content="{{ meta.generator }}"/>
-        <meta name="robots" content="all"/>
-        <link rel="stylesheet" href="{{ system.theme }}/css/bootstrap.css" />
-        <link rel="stylesheet" href="{{ system.theme }}/css/bootstrap-responsive.css" />
-        <link rel="stylesheet" href="{{ system.theme }}/css/docs.css" />
-        <link rel="stylesheet" href="{{ system.theme }}/css/font-awesome.min.css" />
-        <link rel="stylesheet" href="{{ system.script_url }}/resource/flags/flags.css" />
-        <script type="text/javascript" src="{{ system.theme }}/js/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="{{ system.theme }}/js/bootstrap.js"></script>
-        <script type="text/javascript" src="{{ system.theme }}/js/pace.js"></script>
-        <script type="text/javascript" src="{{ system.theme }}/js/ffcms.js"></script>
-        <!--[if lt IE 9]>
-        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
-    {% endblock %}
+    <meta charset="utf-8"/>
+    <title>{{ meta.title }}</title>
+    <meta name="keywords" content="{{  meta.keywords }}"/>
+    <meta name="description" content="{{ meta.description }}"/>
+    <meta name="generator" content="{{ meta.generator }}"/>
+    <meta name="robots" content="all"/>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript">
+        var host = '{{ system.script_url }}';
+    </script>
+    <link href="{{ system.theme }}/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ system.theme }}/css/custom.css" rel="stylesheet">
+    <link href="{{ system.theme }}/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ system.script_url }}/resource/flags/flags.css" />
+    <link href="{{ system.script_url }}/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <script src="{{ system.theme }}/js/jquery.min.js"></script>
+    <script src="{{ system.theme }}/js/bootstrap.min.js"></script>
+    <script src="{{ system.theme }}/js/ffcms.js"></script>
+    <!-- DIE OLD IE !111one -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
 </head>
+
 <body>
+
 {% include 'widgets/head_menu.tpl' %}
+
 <div class="container">
+
     <div class="row">
-        <!-- Logotype -->
-        <div class="span7">
-            <a href="{{ system.url }}">
-                <img src="{{ system.theme }}/img/logo.png"/>
-            </a>
+        <div class="col-xs-9">
+            <a href="{{ system.url }}"><img src="{{ system.theme }}/img/logo.png" /></a>
         </div>
-        <!-- /Logotype -->
-        <!-- search menu -->
-        <div class="span5">
-            <div class="pull-right">
-                {% include 'widgets/search_form.tpl' %}
+        <div class="col-xs-3">
+            {% include 'widgets/search_form.tpl' %}
+        </div>
+    </div>
+
+    <div class="row container-content">
+
+        <div class="col-xs-3">
+            {% include 'widgets/left_menu.tpl' %}
+            {{ module.lastcomments }}
+            {{ module.tag_cloud }}
+        </div>
+
+        <div class="col-xs-9">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    {% if content.body == null %}
+                        <h3>{{ language.global_404_title }}</h3>
+                        <hr />
+                        <p>{{ language.global_404_desc }}</p>
+                    {% else %}
+                        <div class="pull-right">
+                            {% include 'widgets/bookmarks.tpl' %}
+                        </div>
+                        {{ content.body }}
+                    {% endif %}
+                </div>
             </div>
         </div>
-        <!-- /search menu -->
+
     </div>
-    <div style="padding-top: 10px;"></div>
-    <div class="row">
-        <div class="span3" id="lnav">
-            {% include 'widgets/link_menu.tpl' %}
-            {{ module.tag_cloud }}
-            {{ module.lastcomments }}
-        </div>
-        <div class="span9">
-            <div class="well well-500px">
-                <div class="pull-right">
-                    {% include 'widgets/bookmarks.tpl' %}
-                </div>
-                <br />
-                {% if content.body == null %}
-                    <h3>{{ language.global_404_title }}</h3>
-                    <hr />
-                    <p>{{ language.global_404_desc }}</p>
-                {% else %}
-                    {{ content.body }}
-                {% endif %}
+
+</div>
+
+<div class="content-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-offset-3 col-lg-9">
+                {% include 'widgets/footer.tpl' %}
             </div>
         </div>
     </div>
 </div>
-
-<hr class="soften"/>
-
-{% include 'widgets/footer.tpl' %}
 </body>
 </html>

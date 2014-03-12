@@ -6,6 +6,7 @@
     <li><a href="{{ system.url }}/user/register.html">{{ language.usercontrol_reg_header }}</a></li>
     <li><a href="{{ system.url }}/user/recovery.html">{{ language.usercontrol_recovery_header }}</a></li>
 </ul>
+<br />
 <!-- notification here -->
 {% if local.submit %}
     {% import 'macro/notify.tpl' as notify %}
@@ -26,57 +27,59 @@
 
     {% endif %}
 {% endif %}
-<div class="span5">
-    <form class="form-horizontal" method="post" action="">
-        <div class="control-group">
-            <label class="control-label">{{ language.usercontrol_auth_email_or_login }}</label>
+<div class="row">
+    <div class="col-lg-8">
+        <form class="form-horizontal" method="post" action="">
+            <div class="form-group">
+                <label class="control-label col-lg-3">{{ language.usercontrol_auth_email_or_login }}</label>
 
-            <div class="controls">
-                <input name="email" type="text" placeholder="ivan.petrov@gmail.com" required>
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label">{{ language.usercontrol_auth_pass }}</label>
-
-            <div class="controls">
-                <input type="password" name="password" placeholder="Password" required>
-            </div>
-        </div>
-        {% if local.cfg.use_captcha %}
-            {% if local.cfg.captcha_full %}
-                <script>
-                    var RecaptchaOptions = { theme : 'white' };
-                </script>
-                <div class="control-group">
-                    <label class="control-label">{{ language.usercontrol_auth_captcha }}</label>
-                    <div class="controls">
-                        {{ local.captcha }}
-                    </div>
+                <div class="col-lg-9">
+                    <input name="email" type="text" placeholder="ivan.petrov@gmail.com" class="form-control" required>
                 </div>
-            {% else %}
-                <div class="control-group">
-                    <label class="control-label">{{ language.usercontrol_auth_captcha }}</label>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-lg-3">{{ language.usercontrol_auth_pass }}</label>
 
-                    <div class="controls">
-                        <img src="{{ local.captcha }}" id="captcha"/><a href="#" onclick="document.getElementById('captcha').src='{{ local.captcha }}?'+Math.random();"><i class="icon-refresh"></i></a><br/>
-                        <input type="text" name="captcha" required>
-                    </div>
+                <div class="col-lg-9">
+                    <input type="password" name="password" placeholder="Password" class="form-control" required>
                 </div>
+            </div>
+            {% if local.cfg.use_captcha %}
+                {% if local.cfg.captcha_full %}
+                    <script>
+                        var RecaptchaOptions = { theme : 'white' };
+                    </script>
+                    <div class="form-group">
+                        <label class="control-label col-lg-3">{{ language.usercontrol_auth_captcha }}</label>
+                        <div class="col-lg-9">
+                            {{ local.captcha }}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="form-group">
+                        <label class="control-label col-lg-3">{{ language.usercontrol_auth_captcha }}</label>
+
+                        <div class="col-lg-9">
+                            <img src="{{ local.captcha }}" id="captcha"/><a href="#" onclick="document.getElementById('captcha').src='{{ local.captcha }}?'+Math.random();"><i class="fa fa-refresh"></i></a><br/>
+                            <input type="text" name="captcha" class="form-control" required>
+                        </div>
+                    </div>
+                {% endif %}
             {% endif %}
-        {% endif %}
-        <div class="control-group">
-            <div class="controls">
-                <input type="submit" name="submit" class="btn btn-inverse" value="{{ language.usercontrol_auth_button }}"/>
+            <div class="form-group">
+                <div class="col-lg-offset-3 col-lg-9">
+                    <input type="submit" name="submit" class="btn btn-inverse" value="{{ language.usercontrol_auth_button }}"/>
+                </div>
             </div>
-        </div>
-    </form>
-</div>
-<div class="span3">
-    {% if local.cfg.use_openid %}
-    <p>{{ language.usercontrol_openid_desc }}</p>
-    <script src="http://loginza.ru/js/widget.js" type="text/javascript"></script>
-    <a href="http://loginza.ru/api/widget?token_url={{ system.url }}/user/openid.html" class="loginza" rel="nofollow">
-        <img src="http://loginza.ru/img/sign_in_button_gray.gif" alt="Use social network" />
-    </a>
-    {% endif %}
+        </form>
+    </div>
+    <div class="col-lg-4">
+        {% if local.cfg.use_openid %}
+            <p>{{ language.usercontrol_openid_desc }}</p>
+            <script src="http://loginza.ru/js/widget.js" type="text/javascript"></script>
+            <a href="http://loginza.ru/api/widget?token_url={{ system.url }}/user/openid.html" class="loginza" rel="nofollow">
+                <img src="http://loginza.ru/img/sign_in_button_gray.gif" alt="Use social network" />
+            </a>
+        {% endif %}
+    </div>
 </div>

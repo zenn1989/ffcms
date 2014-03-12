@@ -49,7 +49,7 @@ $(document).ready(function() {
             {pathway : comment_pathway, comment_all : true},
             function(data) {
                 $('#comment_list').html(data);
-                $('#loader_comment').hide();
+                $('#comment_load').hide();
             });
     });
     $('#comment_send').click(function(e){
@@ -64,6 +64,9 @@ $(document).ready(function() {
                 });
             $('#comment_value').val(null);
         }
+    });
+    $( ".side-links .toggle-children" ).click(function() {
+        $(this).toggleClass('open').next().toggle("slow");
     });
 });
 

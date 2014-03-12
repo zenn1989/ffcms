@@ -4,8 +4,8 @@
 {# local.lastpage - last page of all items [local.total/local.count] #}
 {% import 'macro/list.tpl' as listmacro %}
 {% if local.total > local.count %} {# if pagination must be #}
-<div class="pagination pagination-centered">
-    <ul>
+<div class="text-center">
+    <ul class="pagination pagination-centered">
         {% if local.total/local.count > 10 %} {# more then 10 items available #}
             {% if local.index < 4 %} {# list start #}
                 {% for pageidx in 0..4 %}

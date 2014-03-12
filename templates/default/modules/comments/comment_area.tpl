@@ -32,14 +32,15 @@
         <div id="comment_list" class="well-item">
             {{ comments }}
         </div>
-        <div id="loader_comment">
-            <div id="comment_load">
-                <table class="table">
-                    <tr>
-                        <td style="text-align: center;" class="alert alert-success"><a href="#comment_load" id="doLoadComment">{{ language.comments_text_loadmore }}</a></td>
-                        <td style="text-align: center;" class="alert alert-error"><a href="#comment_load" id="doLoadAllComment">{{ language.comments_text_loadall }}</a></td>
-                    </tr>
-                </table>
+        <br />
+        <div class="row" id="comment_load">
+            <div class="col-lg-6">
+                <a href="#comment_load" class="btn btn-default btn-block"
+                   id="doLoadComment">{{ language.comments_text_loadmore }}</a>
+            </div>
+            <div class="col-lg-6">
+                <a href="#comment_load" class="btn btn-default btn-block"
+                   id="doLoadAllComment">{{ language.comments_text_loadall }}</a>
             </div>
         </div>
     </div>
@@ -49,15 +50,19 @@
 </div>
 
 <!-- Edit comment form pop-up modal. Id #comment-edit-jquery must be setted, used by jquery -->
-<div id="edit-comment" class="modal hide fade large">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3>{{ language.comment_modal_edit_header }}</h3>
-    </div>
-    <div class="modal-body">
-        {% if user.id > 0 and user.admin %}
-        <div class="alert alert-info">{{ language.comment_modal_text_notify }}</div>
-        {% endif %}
-        <div id="comment-edit-jquery">{{ language.comment_modal_edit_loadingnow }}</div>
+<div id="edit-comment" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>{{ language.comment_modal_edit_header }}</h3>
+            </div>
+            <div class="modal-body">
+                {% if user.id > 0 and user.admin %}
+                    <div class="alert alert-info">{{ language.comment_modal_text_notify }}</div>
+                {% endif %}
+                <div id="comment-edit-jquery">{{ language.comment_modal_edit_loadingnow }}</div>
+            </div>
+        </div>
     </div>
 </div>

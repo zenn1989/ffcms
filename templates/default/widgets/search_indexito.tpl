@@ -1,0 +1,2 @@
+<script async="true" type="text/javascript" src="http://servant.indexisto.com/files/searchbox/searchbox.nocache.js?type=edit"></script>
+<input autocomplete="off"  autocorrect="off" id="indx_srchbox_531cd7eb273eb4b94b6efe48" placeholder="Search ..." class="form-control" style="outline-color: transparent; box-sizing: content-box; outline: none;background: #FFF url(http://servant.indexisto.com/files/searchbox/search_icon_21px.png) no-repeat scroll 6px center;padding: 0 0 0 31px;height: 32px;line-height: 23px;color: #abaaaa;" type="text" />

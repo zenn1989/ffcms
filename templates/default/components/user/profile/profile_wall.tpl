@@ -24,52 +24,50 @@
                 {% if local.wall.webpage %}
                 <tr>
                     <td>{{ language.usercontrol_profile_pers_website }}</td>
-                    <td><a href="{{ system.url }}/api.php?iface=front&object=redirect&url={{ local.wall.webpage }}" target="_blank">{{ local.wall.webpage }}</a>
+                    <td><a href="{{ local.wall.webpage }}" target="_blank" rel="nofollow">{{ local.wall.webpage }}</a>
                     </td>
                 </tr>
                 {% endif %}
             </table>
-
             <h3 class="centered">{{ language.usercontrol_profile_pers_wall }}</h3>
             <hr/>
-            {% if user.id > 0 and local.profile.is_friend or local.profile.is_self %}
-                {% if local.wall.dopost %}
-                    {% if local.wall.time_limit %}
-                        {{ notify.error(language.usercontrol_profile_wall_answer_spamdetect) }}
+            <div class="row">
+                <div class="col-lg-12">
+                    {% if user.id > 0 and local.profile.is_friend or local.profile.is_self %}
+                        {% if local.wall.dopost %}
+                            {% if local.wall.time_limit %}
+                                {{ notify.error(language.usercontrol_profile_wall_answer_spamdetect) }}
+                            {% endif %}
+                        {% endif %}
+                        <form action="{{ system.url }}/user/id{{ local.profile.user_id }}" method="post">
+                            <textarea name="wall_text" class="form-control"
+                                      placeHolder="{{ language.usercontrol_profile_pers_form_write }}"></textarea>
+                            <input type="submit" name="wall_post" value="{{ language.global_send_button }}"
+                                   class="btn btn-success pull-right"/>
+                        </form>
                     {% endif %}
-                {% endif %}
-            <form action="{{ system.url }}/user/id{{ local.profile.user_id }}" method="post">
-                <textarea style="width: 100%;" name="wall_text"
-                          placeHolder="{{ language.usercontrol_profile_pers_form_write }}"></textarea>
-                <input type="submit" name="wall_post" value="{{ language.global_send_button }}"
-                       class="btn btn-success pull-right"/>
-            </form>
-            <br/>
-            {% endif %}
-            <div>
-                {% for post in local.post %}
-                <blockquote class="white">
-                    <table class="table">
-                        <tr>
-                            <td></td>
-                            <td><a href="{{ system.url }}/user/id{{ post.caster_id }}">{{ post.caster_name }}</a>, {{ post.time }}</td>
-                        </tr>
-                        <tr>
-                            <td width="20%"><img src="{{ system.script_url }}/{{ post.caster_avatar }}" style="max-width: 60px;"/></td>
-                            <td>{{ post.message }}</td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-lg-12">
+                    {% for post in local.post %}
+                        <div class="media">
+                            <a class="pull-left" href="{{ system.url }}/user/id{{ post.caster_id }}">
+                                <img class="media-object" src="{{ system.script_url }}/{{ post.caster_avatar }}" style="width:64px;height:64px;">
+                            </a>
+                            <div class="media-body">
+                                <h5 class="media-heading"><a href="{{ system.url }}/user/id{{ post.caster_id }}">{{ post.caster_name }}</a>, {{ post.time }}</h5>
+                                {{ post.message }}
+                                <br />
                                 <div class="pull-right">
                                     <a href="#readanswer" class="answershow" id="{{ post.id }}" data-toggle="modal"><i
                                                 class="icon-random"></i> {{ language.usercontrol_profile_wall_answers }}</a>
                                 </div>
-                            </td>
-                        </tr>
-                    </table>
-                </blockquote>
-                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
             <div>
                 <ul class="pager">
@@ -89,22 +87,26 @@
     </div>
 </div>
 {# modal item for reading answers #}
-<div id="readanswer" class="modal hide fade">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3>{{ language.usercontrol_profile_wall_answer_head }}</h3>
-    </div>
-    <div class="modal-body">
-        {% if user.id > 0 %}
-        <div id="requestpost">
-            <textarea class="input-block-level" id="answer"></textarea>
-
-            <div class="pull-right"><a href="#" id="addanswer" class="btn btn-success">{{ language.global_send_button }}</a>
+<div id="readanswer" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>{{ language.usercontrol_profile_wall_answer_head }}</h3>
             </div>
-            <br/>
+            <div class="modal-body">
+                {% if user.id > 0 %}
+                    <div id="requestpost">
+                        <textarea class="form-control" id="answer"></textarea>
+
+                        <div class="pull-right"><a href="#" id="addanswer" class="btn btn-success">{{ language.global_send_button }}</a>
+                        </div>
+                        <br/>
+                    </div>
+                {% endif %}
+                <hr/>
+                <div id="wall-jquery">{{ language.usercontrol_profile_wall_answer_load }}</div>
+            </div>
         </div>
-        {% endif %}
-        <hr/>
-        <div id="wall-jquery">{{ language.usercontrol_profile_wall_answer_load }}</div>
     </div>
 </div>

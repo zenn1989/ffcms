@@ -20,10 +20,14 @@
 </div>
 
 <hr/>
-<form action="" method="post">
-    <textarea name="topicanswer" class="input-block-level"></textarea>
-    <input type="submit" name="newanswer" class="btn btn-success pull-right" value="{{ language.usercontrol_profile_pm_answermsg }}">
-</form>
+<div class="row">
+    <div class="col-lg-12">
+        <form action="" method="post">
+            <textarea name="topicanswer" class="form-control"></textarea>
+            <input type="submit" name="newanswer" class="btn btn-success pull-right" value="{{ language.usercontrol_profile_pm_answermsg }}">
+        </form>
+    </div>
+</div>
 <br/>
 {% for message in local.message.answer %}
     <div class="well">

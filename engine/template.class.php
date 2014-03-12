@@ -42,10 +42,20 @@ class template extends singleton {
                 $twig_cache .= 'installtmp';
                 break;
         }
+        $template_path_root = root . '/' . property::getInstance()->get('tpl_dir') . '/' . $tpl_name;
+        if(!file_exists($template_path_root)) {
+            // mb default template is available ?
+            if(file_exists(root . '/' . property::getInstance()->get('tpl_dir') . '/default') && in_array(loader, array('front', 'api'))) {
+                property::getInstance()->set('tpl_name', 'default');
+                $template_path_root = root . '/' . property::getInstance()->get('tpl_dir') . '/default';
+            } else
+                exit("Template " . $tpl_name . " is not founded! Exit");
+            logger::getInstance()->log(logger::LEVEL_ERR, 'Template ' . $tpl_name . ' is not founded. Use default template.');
+        }
         require_once(root . "/resource/Twig/Autoloader.php");
         \Twig_Autoloader::register();
         self::$twig_file = new \Twig_Environment(
-            new \Twig_Loader_Filesystem(root . '/' . property::getInstance()->get('tpl_dir') . '/' . $tpl_name),
+            new \Twig_Loader_Filesystem($template_path_root),
             array(
                 'cache' => $twig_cache,
                 'auto_reload' => true,
@@ -81,7 +91,8 @@ class template extends singleton {
         self::$variables[self::TYPE_SYSTEM]['lang'] = language::getInstance()->getUseLanguage();
         self::$variables[self::TYPE_SYSTEM]['languages'] = language::getInstance()->getAvailable();
         self::$variables[self::TYPE_SYSTEM]['self_url'] = property::getInstance()->get('url').router::getInstance()->getUriString();
-        self::$variables[self::TYPE_SYSTEM]['title'] = property::getInstance()->get('seo_title');
+        $serial_title = property::getInstance()->get('seo_title');
+        self::$variables[self::TYPE_SYSTEM]['title'] = $serial_title[language::getInstance()->getUseLanguage()];
         self::$variables[self::TYPE_SYSTEM]['file_name'] = basename($_SERVER['PHP_SELF']);
         self::$variables[self::TYPE_SYSTEM]['version'] = version;
     }
