@@ -131,8 +131,32 @@ class components_user_front {
                         break;
                 }
                 break;
+            case 'news':
+                $content = $this->viewUserNews($target_id, $viewer_id);
+                break;
         }
         return $content;
+    }
+
+    private function viewUserNews($target, $viewer) {
+        if($target != $viewer)
+            return null;
+        $params = array();
+        $stmt = database::getInstance()->con()->prepare("SELECT id,title,display,date FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE author = ? ORDER BY date DESC LIMIT 50");
+        $stmt->bindParam(1, $target, PDO::PARAM_INT);
+        $stmt->execute();
+        $resFetch = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = null;
+        foreach($resFetch as $row) {
+            $serial_title = unserialize($row['title']);
+            $params['newslist'][] = array(
+                'id' => $row['id'],
+                'title' => $serial_title[language::getInstance()->getUseLanguage()],
+                'date' => system::getInstance()->toDate($row['date'], 'd'),
+                'display' => $row['display']
+            );
+        }
+        return $this->viewUserProfileHeader($target, $viewer, $params);
     }
 
     private function viewUserProfileHeader($target, $viewer, $addparams = null) {

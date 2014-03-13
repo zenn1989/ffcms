@@ -12,6 +12,7 @@ use engine\user;
 
 class components_news_front {
     protected static $instance = null;
+    const ALLOWED_HTML_TAGS = "<p><a><img><img/><table><tr><td><tbody><thead><th><pre><iframe><span><strong><em><s><blockquote><ul><ol><li><h1><h2><h3><h4><div>";
 
     public static function getInstance() {
         if(is_null(self::$instance)) {
@@ -26,21 +27,191 @@ class components_news_front {
 
     private function buildNews() {
         $content = null;
-        $way = router::getInstance()->shiftUriArray();
+        $way = $source_way = router::getInstance()->shiftUriArray();
         // get latest object
         $last_object = array_pop($way);
-        // save extracted array
-        $category_array = $way;
         if($way[0] == "tag" && system::getInstance()->suffixEquals($last_object, '.html')) {
             $content = $this->viewTagList($last_object);
-        }
-        // its a single news
-        elseif (system::getInstance()->suffixEquals($last_object, '.html')) {
-            $content = $this->viewFullNews($last_object, $category_array);
+        } elseif($source_way[0] == "add" && extension::getInstance()->getConfig('enable_useradd', 'news', extension::TYPE_COMPONENT, 'bol')) {
+            if($last_object < 1)
+                $content = $this->viewUseraddNews();
+            else
+                $content = $this->viewUsereditNews($last_object);
+        } elseif (system::getInstance()->suffixEquals($last_object, '.html')) { // its a single news
+            $content = $this->viewFullNews($last_object, $way);
         } else { // its a category
             $content = $this->viewCategory();
         }
         return $content;
+    }
+
+    private function viewUsereditNews($news_id) {
+        $user_id = user::getInstance()->get('id');
+        if($user_id < 1 || !$this->checkNewsOwnerExist($user_id, $news_id))
+            return null;
+        $params = array();
+
+        if(system::getInstance()->post('save')) {
+            $editor_id = user::getInstance()->get('id');
+            $title = system::getInstance()->nohtml(system::getInstance()->post('title'));
+            $category_id = system::getInstance()->post('category');
+            $pathway = system::getInstance()->nohtml(system::getInstance()->post('pathway')) . ".html";
+            $text = array();
+            foreach(system::getInstance()->post('text') as $news_lang=>$news_text) {
+                $text[$news_lang] = system::getInstance()->safeHtml($news_text, self::ALLOWED_HTML_TAGS);
+            }
+            $description = system::getInstance()->nohtml(system::getInstance()->post('description'));
+            $keywords = system::getInstance()->nohtml(system::getInstance()->post('keywords'));
+            $date = system::getInstance()->post('current_date') == "on" ? time() : system::getInstance()->toUnixTime(system::getInstance()->post('date'));
+            if (strlen($title[property::getInstance()->get('lang')]) < 1) {
+                $params['notify']['notitle'] = true;
+            }
+            if (!system::getInstance()->isInt($category_id)) {
+                $params['notify']['nocat'] = true;
+            }
+            if (strlen($pathway) < 1 || !$this->checkNewsWay($pathway, $news_id, $category_id)) {
+                $params['notify']['wrongway'] = true;
+            }
+            if (strlen($text[property::getInstance()->get('lang')]) < 1) {
+                $params['notify']['notext'] = true;
+            }
+            if(sizeof($params['notify']) == 0) {
+                $serial_title = serialize($title);
+                $serial_text = serialize($text);
+                $serial_description = serialize($description);
+                $serial_keywords = serialize($keywords);
+                $stmt = database::getInstance()->con()->prepare("UPDATE " . property::getInstance()->get('db_prefix') . "_com_news_entery SET title = ?, text = ?, link = ?,
+						category = ?, date = ?, author = ?, description = ?, keywords = ? WHERE id = ?");
+                $stmt->bindParam(1, $serial_title, PDO::PARAM_STR);
+                $stmt->bindParam(2, $serial_text, PDO::PARAM_STR);
+                $stmt->bindParam(3, $pathway, PDO::PARAM_STR);
+                $stmt->bindParam(4, $category_id, PDO::PARAM_INT);
+                $stmt->bindParam(5, $date, PDO::PARAM_INT);
+                $stmt->bindParam(6, $editor_id, PDO::PARAM_INT);
+                $stmt->bindParam(7, $serial_description, PDO::PARAM_STR);
+                $stmt->bindParam(8, $serial_keywords, PDO::PARAM_STR);
+                $stmt->bindParam(9, $news_id, PDO::PARAM_INT);
+                $stmt->execute();
+                $stmt = null;
+                $stmt = database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_mod_tags WHERE `object_type` = 'news' AND `object_id` = ?");
+                $stmt->bindParam(1, $news_id, PDO::PARAM_INT);
+                $stmt->execute();
+                $stmt = null;
+                foreach($keywords as $keyrow) {
+                    $keyrow_array = system::getInstance()->altexplode(',', $keyrow);
+                    foreach($keyrow_array as $objectkey) {
+                        $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_mod_tags(`object_id`, `object_type`, `tag`) VALUES (?, 'news', ?)");
+                        $stmt->bindParam(1, $news_id, PDO::PARAM_INT);
+                        $stmt->bindParam(2, $objectkey, PDO::PARAM_STR);
+                        $stmt->execute();
+                        $stmt = null;
+                    }
+                }
+                $params['notify']['success'] = true;
+                if($_FILES['newsimage']['size'] > 0) {
+                    $dx = extension::getInstance()->getConfig('poster_dx', 'news', extension::TYPE_COMPONENT, 'int');
+                    $dy = extension::getInstance()->getConfig('poster_dy', 'news', extension::TYPE_COMPONENT, 'int');
+                    $save_name = 'poster_' . $news_id . '.jpg';
+                    extension::getInstance()->call(extension::TYPE_HOOK, 'file')->uploadResizedImage('/news/', $_FILES['newsimage'], $dx, $dy, $save_name);
+                }
+            }
+        }
+
+        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE id = ? AND author = ? AND display = 0");
+        $stmt->bindParam(1, $news_id, PDO::PARAM_INT);
+        $stmt->bindParam(2, $user_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        if($result = $stmt->fetch()) {
+            $params['news']['categorys'] = $this->getCategoryArray();
+            $params['news']['id'] = $news_id;
+            $params['news']['title'] = unserialize($result['title']);
+            $params['news']['text'] = unserialize($result['text']);
+            $params['news']['pathway'] = system::getInstance()->noextention($result['link']);
+            $params['news']['cat_id'] = $result['category'];
+            $params['news']['date'] = system::getInstance()->toDate($result['date'], 'h');
+            $params['news']['description'] = unserialize($result['description']);
+            $params['news']['keywords'] = unserialize($result['keywords']);
+            if(file_exists(root . '/upload/news/poster_' . $news_id . '.jpg')) {
+                $params['news']['poster_path'] = '/upload/news/poster_' . $news_id . '.jpg';
+                $params['news']['poster_name'] = 'poster_' . $news_id . '.jpg';
+            }
+        } else {
+            return null;
+        }
+        return template::getInstance()->twigRender('components/news/add_edit.tpl', $params);
+    }
+
+    private function viewUseraddNews() {
+        if(user::getInstance()->get('id') < 1)
+            return null;
+        $params = array();
+        $params['news']['categorys'] = $this->getCategoryArray();
+        if(system::getInstance()->post('save')) {
+            $editor_id = user::getInstance()->get('id');
+            $params['news']['title'] = system::getInstance()->nohtml(system::getInstance()->post('title'));
+            $params['news']['cat_id'] = system::getInstance()->post('category');
+            $params['news']['pathway'] = system::getInstance()->nohtml(system::getInstance()->post('pathway'));
+            $pathway = $params['news']['pathway'] . ".html";
+            foreach(system::getInstance()->post('text') as $news_lang=>$news_text) {
+                $params['news']['text'][$news_lang] = system::getInstance()->safeHtml($news_text, self::ALLOWED_HTML_TAGS);
+            }
+            $params['news']['description'] = system::getInstance()->nohtml(system::getInstance()->post('description'));
+            $params['news']['keywords'] = system::getInstance()->nohtml(system::getInstance()->post('keywords'));
+            $date = system::getInstance()->post('current_date') == "on" ? time() : system::getInstance()->toUnixTime(system::getInstance()->post('date'));
+            $params['news']['date'] = system::getInstance()->toDate($date, 'h');
+            if (strlen($params['news']['title'][property::getInstance()->get('lang')]) < 1) {
+                $params['notify']['notitle'] = true;
+            }
+            if (!system::getInstance()->isInt($params['news']['cat_id'])) {
+                $params['notify']['nocat'] = true;
+            }
+            if (strlen($pathway) < 1 || !$this->checkNewsWay($pathway, 0, $params['news']['cat_id'])) {
+                $params['notify']['wrongway'] = true;
+            }
+            if (strlen($params['news']['text'][property::getInstance()->get('lang')]) < 1) {
+                $params['notify']['notext'] = true;
+            }
+            if (sizeof($params['notify']) == 0) {
+                $serial_title = serialize($params['news']['title']);
+                $serial_text = serialize($params['news']['text']);
+                $serial_description = serialize($params['news']['description']);
+                $serial_keywords = serialize($params['news']['keywords']);
+                $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_com_news_entery
+					(`title`, `text`, `link`, `category`, `date`, `author`, `description`, `keywords`, `display`, `important`) VALUES
+					(?, ?, ?, ?, ?, ?, ?, ?, 0, 0)");
+                $stmt->bindParam(1, $serial_title, PDO::PARAM_STR);
+                $stmt->bindParam(2, $serial_text, PDO::PARAM_STR);
+                $stmt->bindParam(3, $pathway, PDO::PARAM_STR);
+                $stmt->bindParam(4, $params['news']['cat_id'], PDO::PARAM_INT);
+                $stmt->bindParam(5, $date, PDO::PARAM_STR);
+                $stmt->bindParam(6, $editor_id, PDO::PARAM_INT);
+                $stmt->bindParam(7, $serial_description, PDO::PARAM_STR);
+                $stmt->bindParam(8, $serial_keywords, PDO::PARAM_STR);
+                $stmt->execute();
+                $new_news_id = database::getInstance()->con()->lastInsertId();
+                $stmt = null;
+                foreach($params['news']['keywords'] as $keyrow) {
+                    $keyrow_array = system::getInstance()->altexplode(',', $keyrow);
+                    foreach($keyrow_array as $objectkey) {
+                        $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_mod_tags(`object_id`, `object_type`, `tag`) VALUES (?, 'news', ?)");
+                        $stmt->bindParam(1, $new_news_id, PDO::PARAM_INT);
+                        $stmt->bindParam(2, $objectkey, PDO::PARAM_STR);
+                        $stmt->execute();
+                        $stmt = null;
+                    }
+                }
+                // image poster for news
+                if($_FILES['newsimage']['size'] > 0) {
+                    $save_name = 'poster_' . $new_news_id . '.jpg';
+                    $dx = extension::getInstance()->getConfig('poster_dx', 'news', extension::TYPE_COMPONENT, 'int');
+                    $dy = extension::getInstance()->getConfig('poster_dy', 'news', extension::TYPE_COMPONENT, 'int');
+                    extension::getInstance()->call(extension::TYPE_HOOK, 'file')->uploadResizedImage('/news/', $_FILES['newsimage'], $dx, $dy, $save_name);
+                }
+                system::getInstance()->redirect('/user/id' . $editor_id . '/news/');
+            }
+        }
+        return template::getInstance()->twigRender('components/news/add_edit.tpl', $params);
     }
 
     private function viewFullNews($url, $categories)
@@ -314,5 +485,65 @@ class components_news_front {
         );
     }
 
+    /**
+     * Magic and drugs inside (:
+     * @return array
+     */
+    public function getCategoryArray() {
+        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_category ORDER BY `path` ASC");
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = null;
+        $work_data = array();
+        $total_result = array();
+        foreach($result as $item) {
+            $work_data[$item['path']] = array(
+                'id' => $item['category_id'],
+                'name' => $item['name']
+            );
+        }
+        ksort($work_data); // sort
+        foreach($work_data as $path=>$row) {
+            $cname = unserialize($row['name']);
+            $spliter_count = substr_count($path, "/");
+            $add = '';
+            if ($path != null) {
+                for ($i = -1; $i <= $spliter_count; $i++) {
+                    $add .= "-";
+                }
+            } else {
+                $add = "-";
+            }
+            $total_result[] = array(
+                'id' => $row['id'],
+                'name' => $add . ' ' . $cname[language::getInstance()->getUseLanguage()],
+                'path' => $path
+            );
+        }
+        return $total_result;
+    }
 
+    public function checkNewsWay($way, $id = 0, $cat_id)
+    {
+        if (preg_match('/[\'~`\!@#\$%\^&\*\(\)+=\{\}\[\]\|;:"\<\>,\?\\\]/', $way) || $way == "tag") {
+            return false;
+        }
+        $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE link = ? AND category = ? AND id != ?");
+        $stmt->bindParam(1, $way, PDO::PARAM_STR);
+        $stmt->bindParam(2, $cat_id, PDO::PARAM_INT);
+        $stmt->bindParam(3, $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $pRes = $stmt->fetch();
+        $stmt = null;
+        return $pRes[0] > 0 ? false : true;
+    }
+
+    public function checkNewsOwnerExist($owner_id, $news_id) {
+        $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE id = ? AND author = ? AND display = 0");
+        $stmt->bindParam(1, $news_id, PDO::PARAM_INT);
+        $stmt->bindParam(2, $owner_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $res = $stmt->fetch();
+        return $res > 0;
+    }
 }

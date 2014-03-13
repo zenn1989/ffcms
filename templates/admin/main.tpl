@@ -7,6 +7,10 @@
     <meta name="author" content="">
 
     <title>{{ language.admin_page_title }}</title>
+    <script>
+        var host = '{{ system.script_url }}';
+        var loader = '{{ system.loader }}';
+    </script>
 
     <!-- Bootstrap core CSS -->
     <link href="{{ system.theme }}/css/bootstrap.css" rel="stylesheet">

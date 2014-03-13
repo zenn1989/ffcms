@@ -27,6 +27,9 @@
                             <li><a href="{{ system.url }}/user/id{{ user.id }}">{{ language.position_header_toprofile }}</a></li>
                             <li><a href="{{ system.url }}/user/id{{ user.id }}/messages">{{ language.position_header_messages }} ({{ module.message_new_count }})</a></li>
                             <li><a href="{{ system.url }}/user/id{{ user.id }}/friends/request">{{ language.position_header_friendrequests }} ({{ module.friendrequest_new_count }})</a></li>
+                            {% if user.news_add %}
+                            <li><a href="{{ system.url }}/news/add">{{ language.news_add_menu_title }}</a></li>
+                            {% endif %}
                             <li class="divider"></li>
                             <li><a href="{{ system.url }}/user/logout.html">{{ language.usercontrol_menu_exit }}</a></li>
                         </ul>

@@ -56,7 +56,7 @@ class components_news_back {
     private function viewNewsDelCategory() {
         $params = array();
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
-        $params['news']['categorys'] = $this->getCategoryArray();
+        $params['news']['categorys'] = extension::getInstance()->call(extension::TYPE_COMPONENT, 'news')->getCategoryArray();
 
         $cat_id = (int)system::getInstance()->get('id');
 
@@ -112,7 +112,7 @@ class components_news_back {
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
         $params['langs']['all'] = language::getInstance()->getAvailable();
         $params['langs']['current'] = property::getInstance()->get('lang');
-        $params['news']['categorys'] = $this->getCategoryArray();
+        $params['news']['categorys'] = extension::getInstance()->call(extension::TYPE_COMPONENT, 'news')->getCategoryArray();
         $params['news']['selected_category'] = (int)system::getInstance()->get('id');
 
         if (system::getInstance()->post('submit')) {
@@ -158,7 +158,7 @@ class components_news_back {
         $params = array();
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
 
-        $params['news']['categorys'] = $this->getCategoryArray();
+        $params['news']['categorys'] = extension::getInstance()->call(extension::TYPE_COMPONENT, 'news')->getCategoryArray();
 
         return template::getInstance()->twigRender('components/news/category_list.tpl', $params);
     }
@@ -174,6 +174,7 @@ class components_news_back {
         $params['config']['count_news_page'] = extension::getInstance()->getConfig('count_news_page', 'news', extension::TYPE_COMPONENT, 'int');
         $params['config']['short_news_length'] = extension::getInstance()->getConfig('short_news_length', 'news', extension::TYPE_COMPONENT, 'int');
         $params['config']['enable_views_count'] = extension::getInstance()->getConfig('enable_views_count', 'news', extension::TYPE_COMPONENT, 'int');
+        $params['config']['enable_useradd'] = extension::getInstance()->getConfig('enable_useradd', 'news', extension::TYPE_COMPONENT, 'int');
         $params['config']['multi_category'] = extension::getInstance()->getConfig('multi_category', 'news', extension::TYPE_COMPONENT, 'int');
         $params['config']['enable_tags'] = extension::getInstance()->getConfig('enable_tags', 'news', extension::TYPE_COMPONENT, 'int');
         $params['config']['poster_dx'] = extension::getInstance()->getConfig('poster_dx', 'news', extension::TYPE_COMPONENT, 'int');
@@ -196,6 +197,11 @@ class components_news_back {
             $stmt = database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_mod_tags WHERE object_type = 'news' AND object_id = ?");
             $stmt->bindParam(1, $news_id, PDO::PARAM_INT);
             $stmt->execute();
+            // delete image poster and gallery images
+            if(file_exists(root . '/upload/news/poster_' . $news_id . '.jpg'))
+                @unlink(root . '/upload/news/poster_' . $news_id . '.jpg');
+            if(file_exists(root . '/upload/news/gallery/' . $news_id . '/'))
+                system::getInstance()->removeDirectory(root . '/upload/news/gallery/' . $news_id . '/');
             system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=news");
         }
 
@@ -221,7 +227,7 @@ class components_news_back {
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
         $params['langs']['all'] = language::getInstance()->getAvailable();
         $params['langs']['current'] = property::getInstance()->get('lang');
-        $params['news']['categorys'] = $this->getCategoryArray();
+        $params['news']['categorys'] = extension::getInstance()->call(extension::TYPE_COMPONENT, 'news')->getCategoryArray();
         $params['news']['id'] = $this->searchFreeId(); // for jquery ajax gallery images
         $params['news']['action_add'] = true;
         if(system::getInstance()->post('save')) {
@@ -243,7 +249,7 @@ class components_news_back {
             if (!system::getInstance()->isInt($params['news']['cat_id'])) {
                 $params['notify']['nocat'] = true;
             }
-            if (strlen($pathway) < 1 || !$this->checkNewsWay($pathway, 0, $params['news']['cat_id'])) {
+            if (strlen($pathway) < 1 || !extension::getInstance()->call(extension::TYPE_COMPONENT, 'news')->checkNewsWay($pathway, 0, $params['news']['cat_id'])) {
                 $params['notify']['wrongway'] = true;
             }
             if (strlen($params['news']['text'][property::getInstance()->get('lang')]) < 1) {
@@ -303,7 +309,7 @@ class components_news_back {
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
         $params['langs']['all'] = language::getInstance()->getAvailable();
         $params['langs']['current'] = property::getInstance()->get('lang');
-        $params['news']['categorys'] = $this->getCategoryArray();
+        $params['news']['categorys'] = extension::getInstance()->call(extension::TYPE_COMPONENT, 'news')->getCategoryArray();
 
         if(system::getInstance()->post('save')) {
             $editor_id = user::getInstance()->get('id');
@@ -322,7 +328,7 @@ class components_news_back {
             if (!system::getInstance()->isInt($category_id)) {
                 $params['notify']['nocat'] = true;
             }
-            if (strlen($pathway) < 1 || !$this->checkNewsWay($pathway, $news_id, $category_id)) {
+            if (strlen($pathway) < 1 || !extension::getInstance()->call(extension::TYPE_COMPONENT, 'news')->checkNewsWay($pathway, $news_id, $category_id)) {
                 $params['notify']['wrongway'] = true;
             }
             if (strlen($text[property::getInstance()->get('lang')]) < 1) {
@@ -399,50 +405,23 @@ class components_news_back {
         return template::getInstance()->twigRender('components/news/edit.tpl', $params);
     }
 
-    // magic inside (:
-    private function getCategoryArray() {
-        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_category ORDER BY `path` ASC");
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $stmt = null;
-        $work_data = array();
-        $total_result = array();
-        foreach($result as $item) {
-            $work_data[$item['path']] = array(
-                'id' => $item['category_id'],
-                'name' => $item['name']
-            );
-        }
-        ksort($work_data); // sort
-        foreach($work_data as $path=>$row) {
-            $cname = unserialize($row['name']);
-            $spliter_count = substr_count($path, "/");
-            $add = '';
-            if ($path != null) {
-                for ($i = -1; $i <= $spliter_count; $i++) {
-                    $add .= "-";
-                }
-            } else {
-                $add = "-";
-            }
-            $total_result[] = array(
-                'id' => $row['id'],
-                'name' => $add . ' ' . $cname[language::getInstance()->getUseLanguage()],
-                'path' => $path
-            );
-        }
-        return $total_result;
-    }
-
     private function viewNewsList() {
         $params = array();
 
         if(system::getInstance()->post('deleteSelected')) {
             $toDelete = system::getInstance()->post('check_array');
             if(is_array($toDelete) && sizeof($toDelete) > 0) {
+                foreach($toDelete as $news_single_id) { // remove posible poster files and gallery images
+                    if(file_exists(root . '/upload/news/poster_' . $news_single_id . '.jpg'))
+                        @unlink(root . '/upload/news/poster_' . $news_single_id . '.jpg');
+                    if(file_exists(root . '/upload/news/gallery/' . $news_single_id . '/'))
+                        system::getInstance()->removeDirectory(root . '/upload/news/gallery/' . $news_single_id . '/');
+                }
                 $listDelete = system::getInstance()->altimplode(',', $toDelete);
                 if(system::getInstance()->isIntList($listDelete)) {
                     database::getInstance()->con()->query("DELETE FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE id IN (".$listDelete.")");
+                    // drop tags
+                    database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_mod_tags WHERE object_type = 'news' AND object_id IN (".$listDelete.")");
                 }
             }
         }
@@ -482,21 +461,6 @@ class components_news_back {
         $params['pagination'] = template::getInstance()->showFastPagination($index_start, self::ITEM_PER_PAGE, $this->getTotalNewsCount(), '?object=components&action=news&index=');
 
         return template::getInstance()->twigRender('components/news/list.tpl', $params);
-    }
-
-    private function checkNewsWay($way, $id = 0, $cat_id)
-    {
-        if (preg_match('/[\'~`\!@#\$%\^&\*\(\)+=\{\}\[\]\|;:"\<\>,\?\\\]/', $way) || $way == "tag") {
-            return false;
-        }
-        $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE link = ? AND category = ? AND id != ?");
-        $stmt->bindParam(1, $way, PDO::PARAM_STR);
-        $stmt->bindParam(2, $cat_id, PDO::PARAM_INT);
-        $stmt->bindParam(3, $id, PDO::PARAM_INT);
-        $stmt->execute();
-        $pRes = $stmt->fetch();
-        $stmt = null;
-        return $pRes[0] > 0 ? false : true;
     }
 
     private function checkCategoryWay($way, $cat_id)

@@ -15,12 +15,12 @@ $(document).ready(function () {
     }
 });
 function posterDelete(id) {
-    $.get('/api.php?iface=back&object=newsposterdelete&id='+id, function(){
+    $.get(host+'/api.php?iface='+loader+'&object=newsposterdelete&id='+id, function(){
         $('#posterobject').remove();
     });
 }
 function gallerydel(name, id) {
-    $.get('/api.php?iface=back&object=jqueryfile&action=delete&name='+name+'&id='+id);
+    $.get(host+'/api.php?iface='+loader+'&object=jqueryfile&action=delete&name='+name+'&id='+id);
     document.getElementById(name).remove();
 }
 function pathCallback()

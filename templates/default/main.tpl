@@ -12,6 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript">
         var host = '{{ system.script_url }}';
+        var loader = '{{ system.loader }}';
     </script>
     <link href="{{ system.theme }}/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ system.theme }}/css/custom.css" rel="stylesheet">

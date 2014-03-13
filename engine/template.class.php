@@ -95,12 +95,15 @@ class template extends singleton {
         self::$variables[self::TYPE_SYSTEM]['title'] = $serial_title[language::getInstance()->getUseLanguage()];
         self::$variables[self::TYPE_SYSTEM]['file_name'] = basename($_SERVER['PHP_SELF']);
         self::$variables[self::TYPE_SYSTEM]['version'] = version;
+        self::$variables[self::TYPE_SYSTEM]['admin_tpl'] = property::getInstance()->get('script_url') . '/' . property::getInstance()->get('tpl_dir') . '/' . property::getInstance()->get('admin_tpl'); // for script usage
+        self::$variables[self::TYPE_SYSTEM]['loader'] = loader;
     }
 
     public function twigUserVariables() {
         self::$variables[self::TYPE_USER]['id'] = user::getInstance()->get('id');
         self::$variables[self::TYPE_USER]['name'] = user::getInstance()->get('nick');
         self::$variables[self::TYPE_USER]['admin'] = permission::getInstance()->have('global/owner');
+        self::$variables[self::TYPE_USER]['news_add'] = extension::getInstance()->getConfig('enable_useradd', 'news', extension::TYPE_COMPONENT, 'bol');
     }
 
     /**
