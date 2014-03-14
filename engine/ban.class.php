@@ -2,8 +2,6 @@
 
 namespace engine;
 
-use PDO;
-
 class ban extends singleton {
     protected static $instance = null;
 
@@ -24,14 +22,14 @@ class ban extends singleton {
         $userid = user::getInstance()->get('id');
         if ($userid > 0) {
             $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_user_block WHERE (user_id = ? or ip = ?) AND (express > ? OR express = 0)");
-            $stmt->bindParam(1, $userid, PDO::PARAM_INT);
-            $stmt->bindParam(2, $ip, PDO::PARAM_STR);
-            $stmt->bindParam(3, $time, PDO::PARAM_INT);
+            $stmt->bindParam(1, $userid, \PDO::PARAM_INT);
+            $stmt->bindParam(2, $ip, \PDO::PARAM_STR);
+            $stmt->bindParam(3, $time, \PDO::PARAM_INT);
             $stmt->execute();
         } else {
             $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_user_block WHERE ip = ? AND (express > ? OR express = 0)");
-            $stmt->bindParam(1, $ip, PDO::PARAM_STR);
-            $stmt->bindParam(2, $time, PDO::PARAM_INT);
+            $stmt->bindParam(1, $ip, \PDO::PARAM_STR);
+            $stmt->bindParam(2, $time, \PDO::PARAM_INT);
             $stmt->execute();
         }
         $rowFetch = $stmt->fetch();

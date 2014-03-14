@@ -12,7 +12,7 @@
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
                 <li><a href="{{ system.url }}/news/"> {{ language.position_header_news }}</a></li>
-                <li><a href="{{ system.url }}/staic/about.html">{{ language.position_subheader_about }}</a></li>
+                <li><a href="{{ system.url }}/static/about.html">{{ language.position_subheader_about }}</a></li>
                 <li><a href="{{ system.url }}/user"> {{ language.position_header_users }}</a></li>
                 <li><a href="{{ system.url }}/feedback/">{{ language.feedback_form_title }}</a></li>
                 {% for langitem in system.languages %}

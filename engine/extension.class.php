@@ -1,7 +1,7 @@
 <?php
 
 namespace engine;
-use PDO;
+
 class extension extends singleton {
 
     protected static $instance = null;
@@ -124,7 +124,7 @@ class extension extends singleton {
         if(!$all)
             $query .= " WHERE enabled = 1";
         $stmt = database::getInstance()->con()->query($query);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         foreach($result as $row) {
             foreach($row as $key=>$value) {
                 self::$extconfigs[$row['type']][$row['dir']][$key] = $value;

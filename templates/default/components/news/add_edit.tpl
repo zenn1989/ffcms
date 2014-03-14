@@ -39,6 +39,9 @@
 {% if notify.notext %}
     {{ notifytpl.error(language.news_add_edit_notify_text_null) }}
 {% endif %}
+{% if notify.captcha_error %}
+    {{ notifytpl.error(language.news_add_edit_page_captcha_error) }}
+{% endif %}
 {% if notify.success %}
     {{ notifytpl.success(language.news_add_edit_notify_success_save) }}
 {% endif %}
@@ -122,6 +125,22 @@
             <span class="help-block">{{ language.news_add_edit_page_category_desc }}</span>
         </div>
     </div>
+    <div class="row">
+        <div class="col-lg-6">
+            {% if cfg.captcha_full %}
+                <script>
+                    var RecaptchaOptions = { theme : 'white' };
+                </script>
+                <h2>{{ language.news_add_edit_page_captcha_title }}</h2>
+                {{ captcha }}
+            {% else %}
+                <h2>{{ language.news_add_edit_page_captcha_title }}</h2>
+                <img src="{{ captcha }}" id="captcha"/><a href="#captcha" onclick="document.getElementById('captcha').src='{{ captcha }}?'+Math.random();"><i class="fa fa-refresh"></i></a><br/>
+                <input type="text" name="captcha" class="form-control" required>
+            {% endif %}
+        </div>
+    </div>
+    <br />
     <div class="row">
         <div class="col-lg-12">
             <input type="submit" name="save" value="{{ language.news_add_edit_page_button_save }}" class="btn btn-success btn-block"/>

@@ -2,8 +2,6 @@
 
 namespace engine;
 
-use \PDO;
-
 class permission extends singleton {
     protected static $instance = null;
     protected $all_permissions = array();

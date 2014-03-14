@@ -1,14 +1,7 @@
 <?php
-/**
- * Copyright (C) 2013 ffcms software, Pyatinskyi Mihail
- *
- * FFCMS is a free software developed under GNU GPL V3.
- * Official license you can take here: http://www.gnu.org/licenses/
- *
- * FFCMS website: http://ffcms.ru
- */
+
 namespace engine;
-use PDO;
+
 
 class robot {
     protected static $instance = null;
@@ -41,14 +34,14 @@ class robot {
         $path = $_SERVER['REQUEST_URI'] ?: '';
         $query = "INSERT INTO ".property::getInstance()->get('db_prefix')."_statistic (ip, cookie, browser, os, time, referer, path, reg_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = database::getInstance()->con()->prepare($query);
-        $stmt->bindParam(1, $realip, PDO::PARAM_STR);
-        $stmt->bindParam(2, $cookie, PDO::PARAM_STR, 32);
-        $stmt->bindParam(3, $browser, PDO::PARAM_STR);
-        $stmt->bindParam(4, $os, PDO::PARAM_STR);
-        $stmt->bindParam(5, $visittime, PDO::PARAM_INT);
-        $stmt->bindParam(6, $referer, PDO::PARAM_STR);
-        $stmt->bindParam(7, $path, PDO::PARAM_STR);
-        $stmt->bindParam(8, $userid, PDO::PARAM_INT);
+        $stmt->bindParam(1, $realip, \PDO::PARAM_STR);
+        $stmt->bindParam(2, $cookie, \PDO::PARAM_STR, 32);
+        $stmt->bindParam(3, $browser, \PDO::PARAM_STR);
+        $stmt->bindParam(4, $os, \PDO::PARAM_STR);
+        $stmt->bindParam(5, $visittime, \PDO::PARAM_INT);
+        $stmt->bindParam(6, $referer, \PDO::PARAM_STR);
+        $stmt->bindParam(7, $path, \PDO::PARAM_STR);
+        $stmt->bindParam(8, $userid, \PDO::PARAM_INT);
         $stmt->execute();
     }
 

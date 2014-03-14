@@ -2,11 +2,6 @@
 
 namespace engine;
 
-use mysqli;
-use ZipArchive;
-use RecursiveIteratorIterator;
-use RecursiveDirectoryIterator;
-
 class dumper extends singleton {
 
     protected static $instance = null;
@@ -51,15 +46,15 @@ class dumper extends singleton {
             unlink($destination);
         }
 
-        $zip = new ZipArchive();
-        if (!$zip->open($destination, ZIPARCHIVE::CREATE)) {
+        $zip = new \ZipArchive();
+        if (!$zip->open($destination, \ZIPARCHIVE::CREATE)) {
             return false;
         }
         $source = str_replace('\\', '/', realpath($source));
 
         if (is_dir($source) === true) {
 
-            $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source), RecursiveIteratorIterator::SELF_FIRST);
+            $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::SELF_FIRST);
 
             if ($include_dir) {
 
@@ -103,7 +98,7 @@ class dumper extends singleton {
     private function mysqlDump($dumpname)
     {
         require_once(root . "/resource/phpmysqldumper/MySQLDump.php");
-        $dumper = new \MySQLDump(new mysqli(
+        $dumper = new \MySQLDump(new \mysqli(
             property::getInstance()->get('db_host'),
             property::getInstance()->get('db_user'),
             property::getInstance()->get('db_pass'),

@@ -1,12 +1,5 @@
 <?php
-/**
- * Copyright (C) 2013 ffcms software, Pyatinskyi Mihail
- *
- * FFCMS is a free software developed under GNU GPL V3.
- * Official license you can take here: http://www.gnu.org/licenses/
- *
- * FFCMS website: http://ffcms.ru
- */
+
 namespace engine;
 
 class property {

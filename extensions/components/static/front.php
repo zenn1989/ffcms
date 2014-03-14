@@ -46,6 +46,8 @@ class components_static_front {
             $serial_text = unserialize($result['text']);
             $serial_keywords = unserialize($result['keywords']);
             $serial_description = unserialize($result['description']);
+            if(system::getInstance()->length($serial_title[language::getInstance()->getUseLanguage()]) < 1 || system::getInstance()->length($serial_text[language::getInstance()->getUseLanguage()]) < 1)
+                return null;
             if($pathway) {
                 meta::getInstance()->add('title', $serial_title[language::getInstance()->getUseLanguage()]);
                 meta::getInstance()->add('keywords', $serial_keywords[language::getInstance()->getUseLanguage()]);

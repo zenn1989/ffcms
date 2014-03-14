@@ -51,6 +51,9 @@ class components_news_front {
             return null;
         $params = array();
 
+        $params['cfg']['captcha_full'] = extension::getInstance()->getConfig('captcha_type', 'captcha', 'hooks') == "recaptcha" ? true : false;
+        $params['captcha'] = extension::getInstance()->call(extension::TYPE_HOOK, 'captcha')->show();
+
         if(system::getInstance()->post('save')) {
             $editor_id = user::getInstance()->get('id');
             $title = system::getInstance()->nohtml(system::getInstance()->post('title'));
@@ -63,6 +66,9 @@ class components_news_front {
             $description = system::getInstance()->nohtml(system::getInstance()->post('description'));
             $keywords = system::getInstance()->nohtml(system::getInstance()->post('keywords'));
             $date = system::getInstance()->post('current_date') == "on" ? time() : system::getInstance()->toUnixTime(system::getInstance()->post('date'));
+            if (!extension::getInstance()->call(extension::TYPE_HOOK, 'captcha')->validate(system::getInstance()->post('captcha'))) {
+                $params['notify']['captcha_error'] = true;
+            }
             if (strlen($title[property::getInstance()->get('lang')]) < 1) {
                 $params['notify']['notitle'] = true;
             }
@@ -146,6 +152,8 @@ class components_news_front {
         if(user::getInstance()->get('id') < 1)
             return null;
         $params = array();
+        $params['cfg']['captcha_full'] = extension::getInstance()->getConfig('captcha_type', 'captcha', 'hooks') == "recaptcha" ? true : false;
+        $params['captcha'] = extension::getInstance()->call(extension::TYPE_HOOK, 'captcha')->show();
         $params['news']['categorys'] = $this->getCategoryArray();
         if(system::getInstance()->post('save')) {
             $editor_id = user::getInstance()->get('id');
@@ -160,6 +168,9 @@ class components_news_front {
             $params['news']['keywords'] = system::getInstance()->nohtml(system::getInstance()->post('keywords'));
             $date = system::getInstance()->post('current_date') == "on" ? time() : system::getInstance()->toUnixTime(system::getInstance()->post('date'));
             $params['news']['date'] = system::getInstance()->toDate($date, 'h');
+            if (!extension::getInstance()->call(extension::TYPE_HOOK, 'captcha')->validate(system::getInstance()->post('captcha'))) {
+                $params['notify']['captcha_error'] = true;
+            }
             if (strlen($params['news']['title'][property::getInstance()->get('lang')]) < 1) {
                 $params['notify']['notitle'] = true;
             }
@@ -242,6 +253,8 @@ class components_news_front {
             $lang_title = unserialize($result['title']);
             $lang_description = unserialize($result['description']);
             $lang_keywords = unserialize($result['keywords']);
+            if(system::getInstance()->length($lang_title[language::getInstance()->getUseLanguage()]) < 1 || system::getInstance()->length($lang_text[language::getInstance()->getUseLanguage()]) < 1)
+                return null;
             meta::getInstance()->add('title', $lang_title[language::getInstance()->getUseLanguage()]);
             meta::getInstance()->add('keywords', $lang_keywords[language::getInstance()->getUseLanguage()]);
             meta::getInstance()->add('description', $lang_description[language::getInstance()->getUseLanguage()]);

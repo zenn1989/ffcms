@@ -2,8 +2,6 @@
 
 namespace engine;
 
-use \PDO;
-
 class admin extends singleton {
     protected static $instance = null;
     protected $get = array();
@@ -83,14 +81,14 @@ class admin extends singleton {
 
         if(system::getInstance()->post('submit')) {
             $stmt = database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_statistic WHERE `time` < ?");
-            $stmt->bindParam(1, $depricated_time, PDO::PARAM_INT);
+            $stmt->bindParam(1, $depricated_time, \PDO::PARAM_INT);
             $stmt->execute();
             $stmt = null;
             $params['notify']['stat_clear'] = true;
         }
 
         $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_statistic WHERE `time` < ?");
-        $stmt->bindParam(1, $depricated_time, PDO::PARAM_INT);
+        $stmt->bindParam(1, $depricated_time, \PDO::PARAM_INT);
         $stmt->execute();
         $res = $stmt->fetch();
         $depr_count = $res[0];
@@ -167,8 +165,8 @@ class admin extends singleton {
         if(array_key_exists($this->get['action'], $ext_params[$this->get['object']])) // always installed, wtf this man try to do?
             return;
         $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_extensions (`type`, `configs`, `dir`, `enabled`) VALUES (?, '', ?, 0)");
-        $stmt->bindParam(1, $this->get['object'], PDO::PARAM_STR);
-        $stmt->bindParam(2, $this->get['action'], PDO::PARAM_STR);
+        $stmt->bindParam(1, $this->get['object'], \PDO::PARAM_STR);
+        $stmt->bindParam(2, $this->get['action'], \PDO::PARAM_STR);
         $stmt->execute();
         $stmt = null;
         $backend = root . '/extensions/' . $this->get['object'] . '/' . $this->get['action'] . '/back.php';
@@ -186,16 +184,16 @@ class admin extends singleton {
 
     private function disableExtension() {
         $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_extensions SET enabled = 0 WHERE `type` = ? AND `dir` = ?");
-        $stmt->bindParam(1, $this->get['object'], PDO::PARAM_STR);
-        $stmt->bindParam(2, $this->get['action'], PDO::PARAM_STR);
+        $stmt->bindParam(1, $this->get['object'], \PDO::PARAM_STR);
+        $stmt->bindParam(2, $this->get['action'], \PDO::PARAM_STR);
         $stmt->execute();
         $stmt = null;
     }
 
     private function enableExtension() {
         $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_extensions SET enabled = 1 WHERE `type` = ? AND `dir` = ?");
-        $stmt->bindParam(1, $this->get['object'], PDO::PARAM_STR);
-        $stmt->bindParam(2, $this->get['action'], PDO::PARAM_STR);
+        $stmt->bindParam(1, $this->get['object'], \PDO::PARAM_STR);
+        $stmt->bindParam(2, $this->get['action'], \PDO::PARAM_STR);
         $stmt->execute();
         $stmt = null;
     }
@@ -329,9 +327,9 @@ class admin extends singleton {
         if(sizeof($toSave) > 0) {
             $stringcfg = serialize($toSave);
             $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_extensions SET configs = ? WHERE type = ? AND dir = ?");
-            $stmt->bindParam(1, $stringcfg, PDO::PARAM_STR);
-            $stmt->bindParam(2, $this->get['object'], PDO::PARAM_STR);
-            $stmt->bindParam(3, $this->get['action'], PDO::PARAM_STR);
+            $stmt->bindParam(1, $stringcfg, \PDO::PARAM_STR);
+            $stmt->bindParam(2, $this->get['object'], \PDO::PARAM_STR);
+            $stmt->bindParam(3, $this->get['action'], \PDO::PARAM_STR);
             $stmt->execute();
             $stmt = null;
             extension::getInstance()->overloadConfigs();
@@ -370,7 +368,7 @@ class admin extends singleton {
         $params['stat']['graph_data'] = $this->weekData();
         $params['stat']['server_os_type'] = php_uname('s');
         $params['stat']['server_php_ver'] = phpversion();
-        $params['stat']['server_mysql_ver'] = database::getInstance()->con()->getAttribute(PDO::ATTR_SERVER_VERSION);
+        $params['stat']['server_mysql_ver'] = database::getInstance()->con()->getAttribute(\PDO::ATTR_SERVER_VERSION);
         $params['stat']['server_load_avg'] = $this->getLoadAvarage();
         $params['stat']['folder_uploads_access'] = $this->analiseAccess("/upload/", "rw");
         $params['stat']['folder_language_access'] = $this->analiseAccess("/language/", "rw");

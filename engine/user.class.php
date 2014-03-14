@@ -1,7 +1,6 @@
 <?php
 
 namespace engine;
-use PDO;
 
 class user extends singleton {
     protected static $instance = null;
@@ -30,12 +29,12 @@ class user extends singleton {
             ".property::getInstance()->get('db_prefix')."_user_custom c
             WHERE (a.email = ? OR a.login = ?) AND a.token = ? AND a.aprove = 0 AND a.access_level = b.group_id AND a.id = c.id";
             $stmt = database::getInstance()->con()->prepare($query);
-            $stmt->bindParam(1, $personal_id, PDO::PARAM_STR);
-            $stmt->bindParam(2, $personal_id, PDO::PARAM_STR);
-            $stmt->bindParam(3, $token, PDO::PARAM_STR, 32);
+            $stmt->bindParam(1, $personal_id, \PDO::PARAM_STR);
+            $stmt->bindParam(2, $personal_id, \PDO::PARAM_STR);
+            $stmt->bindParam(3, $token, \PDO::PARAM_STR, 32);
             $stmt->execute();
             if ($stmt->rowCount() == 1) {
-                $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
                 $stmt = null;
                 if ((time() - $result[0]['token_start']) < property::getInstance()->get('token_time')) {
                     self::$userindex = $result[0]['id'];
@@ -58,11 +57,11 @@ class user extends singleton {
             ".property::getInstance()->get('db_prefix')."_user_custom c
             WHERE a.id = ? AND a.aprove = 0 AND a.access_level = b.group_id AND a.id = c.id";
         $stmt = database::getInstance()->con()->prepare($query);
-        $stmt->bindParam(1, $userid, PDO::PARAM_INT);
+        $stmt->bindParam(1, $userid, \PDO::PARAM_INT);
         $stmt->execute();
         if($stmt->rowCount() < 1)
             return;
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
         $stmt = null;
         foreach($result as $key=>$value) {
             self::$userdata[$userid][$key] = $value;
@@ -91,7 +90,7 @@ class user extends singleton {
     public function exists($userid)
     {
         $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_user WHERE id = ?");
-        $stmt->bindParam(1, $userid, PDO::PARAM_INT);
+        $stmt->bindParam(1, $userid, \PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetch();
         return $result[0] > 0 ? true : false;
@@ -114,7 +113,7 @@ class user extends singleton {
             ".property::getInstance()->get('db_prefix')."_user_custom c
             WHERE a.id in ($idlist) AND a.aprove = 0 AND a.access_level = b.group_id AND a.id = c.id";
         $query = database::getInstance()->con()->query($query);
-        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+        $result = $query->fetchAll(\PDO::FETCH_ASSOC);
         foreach($result as $item) {
             foreach($item as $param => $data) {
                 self::$userdata[$item['id']][$param] = $data;
@@ -148,7 +147,7 @@ class user extends singleton {
     public function mailIsExists($mail)
     {
         $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_user WHERE email = ?");
-        $stmt->bindParam(1, $mail, PDO::PARAM_STR);
+        $stmt->bindParam(1, $mail, \PDO::PARAM_STR);
         $stmt->execute();
         $result = $stmt->fetch();
         return $result[0] > 0;
@@ -165,7 +164,7 @@ class user extends singleton {
             return true;
         }
         $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_user WHERE login = ?");
-        $stmt->bindParam(1, $login, PDO::PARAM_STR);
+        $stmt->bindParam(1, $login, \PDO::PARAM_STR);
         $stmt->execute();
         $result = $stmt->fetch();
         return $result[0] > 0;
@@ -178,9 +177,9 @@ class user extends singleton {
      */
     public function getIdByEmail($email) {
         $stmt = database::getInstance()->con()->prepare("SELECT id FROM ".property::getInstance()->get('db_prefix')."_user WHERE email = ?");
-        $stmt->bindParam(1, $email, PDO::PARAM_STR);
+        $stmt->bindParam(1, $email, \PDO::PARAM_STR);
         $stmt->execute();
-        if($rset = $stmt->fetch(PDO::FETCH_ASSOC))
+        if($rset = $stmt->fetch(\PDO::FETCH_ASSOC))
             return $rset['id'];
         return null;
     }

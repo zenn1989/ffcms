@@ -1,12 +1,5 @@
 <?php
-/**
- * Copyright (C) 2013 ffcms software, Pyatinskyi Mihail
- *
- * FFCMS is a free software developed under GNU GPL V3.
- * Official license you can take here: http://www.gnu.org/licenses/
- *
- * FFCMS website: http://ffcms.ru
- */
+
 namespace engine;
 use DateTime;
 use FilesystemIterator;
@@ -29,61 +22,27 @@ class system extends singleton {
 
 
     /**
-     * Получение входящей переменной $_POST по значению $key с отбросом {$params} от пользователя
-     * @param null $key
-     * @return array|mixed
+     * Get data from global $_POST with $key. Like $_POST[$key]
+     * @param string|null $key
+     * @return string|null
      */
     public function post($key = null)
     {
-        return $key === null ? $_POST : $this->noParam($_POST[$key]);
+        return $key === null ? $_POST : $_POST[$key];
     }
 
     /**
-     * Получение входящих данных из $_GET строки по значению $key с использованием urldecode()
-     * @param $key
-     * @return string
+     * Get data from global $_GET with $key according urldecode(). Like urldecode($_GET[$key])
+     * @param string $key
+     * @return string|null
      */
     public function get($key = null)
     {
         return $key === null ? $_GET : urldecode($_GET[$key]);
     }
 
-
     /**
-     * Замена глобальных переменных на сущности ANSI там, где они не нужны(USER INPUT данные). Т.к. сущесвуют методы, позволяющие работать
-     * в суперпозиции - необходимо очистить вводимый пользователем контент от {$vars} в целях безопасности.
-     * @param string $data
-     * @return mixed
-     */
-    public function noParam($data)
-    {
-        // если это multiarray $_POST['key1']['key2']['keyN']
-        if (is_array($data)) {
-            $output_data = array();
-            foreach ($data as $key => $value) {
-                // это еще 1 уровень вложенности, используем рекурсию
-                if (is_array($value)) {
-                    $output_data[$key] = $this->noParam($value);
-                } else {
-                    $output_data[$key] = $this->stringNoParam($value);
-                }
-            }
-            return $output_data;
-        }
-        return $this->stringNoParam($data);
-    }
-
-    private function stringNoParam($data)
-    {
-        preg_match_all('/{\$(.*?)}/i', $data, $matches, PREG_PATTERN_ORDER);
-        foreach ($matches[1] as $clear) {
-            $data = preg_replace('/{\$(.*?)}/i', "&#123;&#036;$clear&#125;", $data, 1);
-        }
-        return $data;
-    }
-
-    /**
-     * Функция поиска вхождений в $where по ключу $what
+     * Search entery's in string $where by string $what
      * @param $what
      * @param $where
      * @return bool
@@ -94,7 +53,7 @@ class system extends singleton {
     }
 
     /**
-     * Поиск вхождений с конца строки для $suffix по его длине. Пример: suffixEquals(helloThisWorld, World) вернет true, suffixEquals(helloThisWorld, This) - вернет false
+     * Search entery's in $where by $suffix. Example: suffixEquals('helloThisWorld', 'World') return true, suffixEquals('helloThisWorld', 'This') - return false
      * @param $where
      * @param $suffix
      * @return bool
@@ -108,9 +67,9 @@ class system extends singleton {
     }
 
     /**
-     * Функция обвертка для suffixEquals
-     * @param $where
-     * @param $extension
+     * Like suffixEquals(). Is DEPRICATED!
+     * @param string $where
+     * @param string $extension
      * @return bool
      * @deprecated
      */
@@ -120,9 +79,9 @@ class system extends singleton {
     }
 
     /**
-     * Поиск вхождений с начала строки для $prefix по его длине. Пример: prefixEquals(helloThisWorld, hello) вернет true, prefixEquals(helloThisWorld, This) - вернет false
-     * @param $where
-     * @param $prefix
+     * Search entery's int $where by $prefix. Example: prefixEquals('helloThisWorld', 'hello') will return true, prefixEquals('helloThisWorld', 'This') - return false
+     * @param string $where
+     * @param string $prefix
      * @return bool
      */
     public function prefixEquals($where, $prefix)
@@ -134,8 +93,9 @@ class system extends singleton {
     }
 
     /**
-     * Удаляет расширение у $var (indexxxx.html => index, vasya.exe => vasya)
-     * Не спасет от идиотизма вида index.html.html.ht.html.ml но нам это и не нужно.
+     * Remove last object after dot (.exe .html etc)
+     * @param string $var
+     * @return string
      */
     public function noextention($var)
     {
@@ -146,7 +106,7 @@ class system extends singleton {
 
 
     /**
-     * Безопасный html. Применять к входящим данным от пользователя.
+     * Safe HTML with allowed tags in $allowed. Example: safeHtml("<p><img src='' />Data text</p>", "<p><img>");
      */
     public function safeHtml($data, $allowed = '')
     {
@@ -155,7 +115,9 @@ class system extends singleton {
     }
 
     /**
-     * Удаление html тегов
+     * Remove html entery
+     * @param string $data
+     * @return string
      */
     public function nohtml($data)
     {
@@ -171,9 +133,9 @@ class system extends singleton {
     }
 
     /**
-     * Псевдо-случайная A-Za-z0-9 строка с заданной длиной
-     * Алгоритм достаточно устойчив к бруту, если его длина не менее 16 символов
-     * Однако, для токенов или подобных алгоритмов, рекомендуем функцию md5random()
+     * Pseudo random [A-Za-z0-9] string with length $length
+     * @param int $length
+     * @return string
      */
     public function randomString($length)
     {
@@ -197,7 +159,7 @@ class system extends singleton {
     }
 
     /**
-     * Случайный Integer
+     * Random Integer with $sequence. Ex: randomInt(2) = 1..9 * 10 ^ 2
      * @param Integer $sequence - показатель длины случайного числа
      * @return number
      */
@@ -211,6 +173,9 @@ class system extends singleton {
     /**
      * Случайный md5-хеш на основе функции randomString
      * $min и $max - показатели для выборки случайного размера исходной строки
+     * @param int $min
+     * @param int $max
+     * @return string
      */
     public function md5random($min = 16, $max = 20)
     {
@@ -221,13 +186,18 @@ class system extends singleton {
      * Generate random 32..128char string what can be used in urls and posts,
      * example in register aprove, recovery aprove, etc.
      * Function return case sensive result.
+     * @return string
      */
     public function randomSecureString128() {
         return $this->randomString(rand(16,64)).$this->randomString(rand(16,64));
     }
 
     /**
-     * Случайная величина отталкиваясь от уникального значения $data
+     * Random string(32char length) according unique $data
+     * @param string $data
+     * @param int $min
+     * @param int $max
+     * @return string
      */
     public function randomWithUnique($data, $min = 16, $max = 30)
     {
@@ -244,7 +214,8 @@ class system extends singleton {
     }
 
     /**
-     * Перенаправление пользователей, обязателен корень /
+     * Redirect user on website. Example : system::getInstance()->redirect("/page.html");
+     * @param string $uri
      */
     public function redirect($uri = null)
     {
@@ -255,14 +226,19 @@ class system extends singleton {
         exit();
     }
 
+    /**
+     * Check is $data latin or numeric string
+     * @param $data
+     * @return bool
+     */
     public function isLatinOrNumeric($data)
     {
         return !preg_match('/[^A-Za-z0-9_]/s', $data) && $this->length($data) > 0;
     }
 
     /**
-     * Длина строки с корректной обработкой UTF-8
-     * @param int $data
+     * String length according UTF-8
+     * @param string $data
      * @return number
      */
     public function length($data)
@@ -271,7 +247,7 @@ class system extends singleton {
     }
 
     /**
-     * Альтернативный substr с учетом UTF-8 символики
+     * Alternative function substr according UTF-8 support
      * @param string $data
      * @param int $start
      * @param int $length
@@ -283,7 +259,7 @@ class system extends singleton {
     }
 
     /**
-     * Обрезка предложения до плавающей длины $length до вхождения первого пробела
+     * Sub string to $length before first space detected
      * @param string $sentence
      * @param int $length
      * @return string
@@ -297,7 +273,7 @@ class system extends singleton {
     }
 
     /**
-     * Приведение $data к Integer
+     * Transfer string $data to integer type
      * @param string $data
      * @return int
      */
@@ -308,7 +284,7 @@ class system extends singleton {
     }
 
     /**
-     * Проверка $data на принадлежность к диапазону 0-9
+     * Check $data is in rage 0-9 (integer)
      * @param boolean $data
      * @return boolean
      */
@@ -318,7 +294,7 @@ class system extends singleton {
     }
 
     /**
-     * Специфическая проверка на принадлежность $data к "integer string list", к примеру - 1,2,3,8,25,91,105
+     * Check $data is "integer string list", example - 1,2,3,8,25,91,105
      * @param string $data
      * @return boolean
      */
@@ -328,7 +304,7 @@ class system extends singleton {
     }
 
     /**
-     * Удаляет из массива $array значение $value (не ключ!)
+     * Remove from $array data $value (not a key!)
      * @param string $value
      * @param array $array
      * @return array:
@@ -339,7 +315,7 @@ class system extends singleton {
     }
 
     /**
-     * Функция альтернативного имплода массива в адекватную строку (без $decimal в конце или первым элементом, отброс null елементов)
+     * Alternative implode (without $decimal on end or start, remove null objects)
      * @param float $decimal
      * @param array $array
      * @return array|null
@@ -351,7 +327,7 @@ class system extends singleton {
             return null;
         }
         $output = null;
-        // перебираем исключая последний элемент
+        // exclude last element
         for ($i = 0; $i < sizeof($array) - 1; $i++) {
             $output .= $array[$i] . $decimal;
         }
@@ -360,7 +336,7 @@ class system extends singleton {
     }
 
     /**
-     * Альтернативное разрезание строки по $deciaml и отбросом null элементов
+     * Alternative explode split $deciaml remove null items
      * @param string $decimal
      * @param string $string
      * @return array|null
@@ -372,7 +348,7 @@ class system extends singleton {
     }
 
     /**
-     * Отбрасывание null-элементов из массива. Индекс массива не сохраняется.
+     * Remove null elements from array. Index key is not saved.
      * @param array $array
      * @return array
      */
@@ -390,7 +366,7 @@ class system extends singleton {
     }
 
     /**
-     * Добавление элемента в массив если такой элемент уже НЕ содержиться в массиве.
+     * Add item in array if it not detected always in it
      * @param string $item
      * @param array $array
      * @return array
@@ -404,7 +380,7 @@ class system extends singleton {
     }
 
     /**
-     * Вытаскивание из массива 2го уровня значения ключа с учетом того что массив содержит ряд элементов 2го уровня ([0] => array(a => b), [1] => array(c=>d) ... n)
+     * Extract from array 2nd level elements by key ([0] => array(a => b), [1] => array(c=>d) ... n)
      * @param string $key_name
      * @param array $array
      * @return array
@@ -421,8 +397,8 @@ class system extends singleton {
     }
 
     /**
-     * Преобразование популярных форматов даты в 1 формат отображения. Формат - d = d.m.Y, h = d.m.Y hh:mm, s = d.m.Y hh:mm:ss.
-     * Так же принимаются значения unix time.
+     * Transfer posible object to standart date format. Formats : d = d.m.Y, h = d.m.Y hh:mm, s = d.m.Y hh:mm:ss.
+     * Allow to use object unix timestamp
      * @param string|DateTime|int $object
      * @param string $out_format
      * @return string
@@ -449,7 +425,7 @@ class system extends singleton {
     }
 
     /**
-     * Приведение форматов дат к представлению Unix Time epoche
+     * Transfer date formats to Unix Time epoch
      * @param array $object
      * @return number
      */
@@ -458,17 +434,23 @@ class system extends singleton {
         return strtotime($object);
     }
 
+    /**
+     * Generate array with values from $start to $end
+     * @param int $start
+     * @param int $end
+     * @return array
+     */
     public function generateIntRangeArray($start, $end)
     {
         $output = array();
-        for ($start; $start <= $end; $start++) {
+        for ($start; $start <= $end; $start++) { // pos use foreach(range($start,$end) as $item)
             $output[] = $start;
         }
         return $output;
     }
 
     /**
-     * Проверка формата строки на пренадлежность к телефонному номеру.
+     * Check string as phone format
      * @param string|int $phone
      * @return boolean
      */
@@ -478,7 +460,7 @@ class system extends singleton {
     }
 
     /**
-     * Валидность длины пароля. В дальнейшем вынести в конфиг.
+     * Check password length
      * @param string|array $password
      * @return boolean
      */
@@ -496,22 +478,19 @@ class system extends singleton {
     }
 
     /**
-     * Получение IP-адресса пользователя с учетом возможных проксей и CDN
+     * Get current user IP. Allow CDN cloudflare transaction
      * @return string
      */
     public function getRealIp()
     {
         $ip = $_SERVER['REMOTE_ADDR'];
-        // адаптация для cloudflare
-        if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) {
-            // переопределяем
+        if (isset($_SERVER["HTTP_CF_CONNECTING_IP"]))
             $ip = $_SERVER["HTTP_CF_CONNECTING_IP"];
-        }
         return $ip;
     }
 
     /**
-     * Получение двойного MD5 хеша от строки $string с использованием неслучайной уникальной соли.
+     * Get double md5 crypt from $string according $salt
      * @param string $string
      * @return string
      */
@@ -525,7 +504,7 @@ class system extends singleton {
     }
 
     /**
-     * Генерация строки для SQL запроса. Пример: array('length' => '15', 'color' => 'red') будет приобразовано в: `length` = '15', `color` = 'red'
+     * Generate string list from array to SQL query's. Example: array('length' => '15', 'color' => 'red') transfered in: `length` = '15', `color` = 'red'
      * @param array $keyArray
      * @return String
      */
@@ -544,7 +523,7 @@ class system extends singleton {
     }
 
     /**
-     * Генерация из массива $array списка 'a1', 'a2', 'a3', ... 'an' для SQL запросов
+     * Generate from $array string list 'a1', 'a2', 'a3', ... 'an' for SQL query's
      * @param $array
      * @return null|string
      */
@@ -553,7 +532,7 @@ class system extends singleton {
         $output = null;
         $i = 1;
         foreach($array as $value) {
-            // последний элемент
+            // last object
             if(sizeof($array) == $i) {
                 $output .= "'{$value}'";
             } else {
@@ -565,7 +544,7 @@ class system extends singleton {
     }
 
     /**
-     * Проверка IP на валидность
+     * Validate IP
      * @param $ip
      * @return boolean
      */
@@ -575,7 +554,7 @@ class system extends singleton {
     }
 
     /**
-     * Удаление пробелов с начала и конца строки. Пример String ' Hello ' => 'Hello'
+     * Remove spaces on start/end of string. Example: String ' Hello ' => 'Hello'
      * @param $string
      * @return string
      */
@@ -592,7 +571,7 @@ class system extends singleton {
     }
 
     /**
-     * Удаление из строки $string параметра $char $count-количество (не удаление всех, а до указанного порядкового следования)
+     * Remove from string $string string $char $count number of times
      * @param $char
      * @param $string
      * @param $count
@@ -629,6 +608,11 @@ class system extends singleton {
         }
     }
 
+    /**
+     * Create directory with htaccess "deny from all"
+     * @param $dir
+     * @param int $chmod
+     */
     public function createPrivateDirectory($dir, $chmod = 0755) {
         $this->createDirectory($dir, $chmod);
         $protect = "deny from all";
