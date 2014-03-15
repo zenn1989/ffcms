@@ -17,7 +17,9 @@
                 {% if local.profile.is_self %}
                     <li{% if local.path == 'avatar' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}/avatar"><i class="fa fa-camera"></i> {{ language.usercontrol_profile_mymenu_avachange }}</a></li>
                     <li{% if local.path == 'messages' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}/messages"><i class="fa fa-envelope"></i> {{ language.usercontrol_profile_mymenu_personalmsg }}</a></li>
+                    {% if local.profile.show_usernews %}
                     <li{% if local.path == 'news' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}/news"><i class="fa fa-pencil-square-o"></i> {{ language.usercontrol_profile_mymenu_newspublic }}</a></li>
+                    {% endif %}
                     <li{% if local.path == 'settings' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}/settings"><i class="fa fa-cogs"></i> {{ language.usercontrol_profile_mymenu_settings }}</a></li>
                 {% else %}
                     {% if local.profile.is_friend %}

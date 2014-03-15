@@ -1,4 +1,11 @@
 <?php
+/**
+|==========================================================|
+|========= @copyright Pyatinskii Mihail, 2013-2014 ========|
+|================= @website: www.ffcms.ru =================|
+|========= @license: GNU GPL V3, file: license.txt ========|
+|==========================================================|
+ */
 
 use engine\language;
 use engine\router;
@@ -139,7 +146,7 @@ class components_user_front {
     }
 
     private function viewUserNews($target, $viewer) {
-        if($target != $viewer)
+        if($target != $viewer || !extension::getInstance()->getConfig('enable_useradd', 'news', extension::TYPE_COMPONENT, 'bol'))
             return null;
         $params = array();
         $stmt = database::getInstance()->con()->prepare("SELECT id,title,display,date FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE author = ? ORDER BY date DESC LIMIT 50");
@@ -147,6 +154,7 @@ class components_user_front {
         $stmt->execute();
         $resFetch = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt = null;
+        $params['show_newsmenu'] = extension::getInstance()->getConfig('enable_useradd', 'news', extension::TYPE_COMPONENT, 'bol');
         foreach($resFetch as $row) {
             $serial_title = unserialize($row['title']);
             $params['newslist'][] = array(
@@ -172,6 +180,7 @@ class components_user_front {
         $params['profile']['is_friend'] = $this->inFriendsWith($target, $viewer);
         $params['profile']['is_request_friend'] = $this->inFriendRequestWith($target, $viewer);
         $params['profile']['add_menu'] = $this->add_links;
+        $params['profile']['show_usernews'] = extension::getInstance()->getConfig('enable_useradd', 'news', extension::TYPE_COMPONENT, 'bol');
 
         $params['path'] = $way[1]; // variable for menu active item
         $params['action'] = $way[2]; // action or pagination id
