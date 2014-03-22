@@ -56,8 +56,82 @@ class components_news_back {
             case 'delcategory':
                 $content = $this->viewNewsDelCategory();
                 break;
+            case 'editcategory':
+                $content = $this->viewNewsEditCategory();
+                break;
         }
         template::getInstance()->set(template::TYPE_CONTENT, 'body', $content);
+    }
+
+    private function viewNewsEditCategory() {
+
+        $cat_id = (int)system::getInstance()->get('id');
+        $params = array();
+        $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
+        $params['news']['categorys'] = extension::getInstance()->call(extension::TYPE_COMPONENT, 'news')->getCategoryArray();
+
+        if(system::getInstance()->post('submit')) {
+            $cat_name = system::getInstance()->post('category_name');
+            $cat_path = system::getInstance()->nohtml(system::getInstance()->post('category_path'));
+            $owner_cat_id = (int)system::getInstance()->post('category_owner');
+            if(!system::getInstance()->isInt($cat_id) || $cat_id < 1) {
+                $params['notify']['owner_notselect'] = true;
+            }
+            if(strlen($cat_name[property::getInstance()->get('lang')]) < 1) {
+                $params['notify']['noname'] = true;
+            }
+            if($cat_path != '' && $cat_id != 1 && $cat_id != $owner_cat_id) { // its not a general category?
+                if (!$this->checkCategoryWay($cat_path, $owner_cat_id)) {
+                    $params['notify']['wrongpath'] = true;
+                }
+            }
+            if(sizeof($params['notify']) == 0) {
+                $stmt = database::getInstance()->con()->prepare("SELECT path FROM ".property::getInstance()->get('db_prefix')."_com_news_category WHERE category_id = ?");
+                $stmt->bindParam(1, $owner_cat_id, PDO::PARAM_INT);
+                $stmt->execute();
+                $resMother = $stmt->fetch();
+                $new_category_path = null;
+                if ($resMother['path'] == null) {
+                    $new_category_path = $cat_path;
+                } else {
+                    $new_category_path = $resMother['path'] . "/" . $cat_path;
+                }
+                $serial_name = serialize($cat_name);
+                $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_com_news_category SET path = ?, name = ? WHERE category_id = ?");
+                $stmt->bindParam(1, $new_category_path, PDO::PARAM_STR);
+                $stmt->bindParam(2, $serial_name, PDO::PARAM_STR);
+                $stmt->bindParam(3, $cat_id, PDO::PARAM_INT);
+                $stmt->execute();
+                $stmt = null;
+                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=news&make=category');
+            }
+        }
+
+        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_category WHERE category_id = ?");
+        $stmt->bindParam(1, $cat_id, PDO::PARAM_INT);
+        $stmt->execute();
+        if($res = $stmt->fetch()) {
+            $stmt = null;
+            $path_array = system::getInstance()->altexplode('/', $res['path']);
+            $last_path_name = array_pop($path_array);
+            $owner_path = system::getInstance()->altimplode('/', $path_array);
+            $params['cat'] = array(
+                'name' => unserialize($res['name']),
+                'path' => $last_path_name
+            );
+            $stmt = database::getInstance()->con()->prepare("SELECT category_id FROM ".property::getInstance()->get('db_prefix')."_com_news_category WHERE path = ?");
+            $stmt->bindParam(1, $owner_path, PDO::PARAM_STR);
+            $stmt->execute();
+            if($resOwner = $stmt->fetch()) {
+                $params['news']['selected_category'] = $resOwner['category_id'];
+            }
+            $stmt = null;
+        } else {
+            system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=news&make=category');
+        }
+
+
+        return template::getInstance()->twigRender('components/news/category_add.tpl', $params);
     }
 
     private function viewNewsDelCategory() {

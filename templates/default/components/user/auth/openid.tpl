@@ -25,28 +25,28 @@
 <form class="form-horizontal" method="post" action="">
     <input type="hidden" name="openid_token" value="{{ local.openid.session }}" />
     <div class="form-group">
-        <label class="control-label col-lg-3">{{ language.usercontrol_auth_email }}</label>
+        <label class="control-label col-md-3">{{ language.usercontrol_auth_email }}</label>
 
-        <div class="col-lg-9">
+        <div class="col-md-9">
             <input name="email" type="text" value="{{ local.openid.email }}" class="form-control" required>
         </div>
     </div>
     <div class="form-group">
-        <label class="control-label col-lg-3">{{ language.usercontrol_auth_login }}</label>
+        <label class="control-label col-md-3">{{ language.usercontrol_auth_login }}</label>
 
-        <div class="col-lg-9">
+        <div class="col-md-9">
             <input name="login" type="text" value="{{ local.openid.login }}" class="form-control" autocomplete="off" required>
         </div>
     </div>
     <div class="form-group">
-        <label class="control-label col-lg-3">{{ language.usercontrol_auth_pseudoname }}</label>
+        <label class="control-label col-md-3">{{ language.usercontrol_auth_pseudoname }}</label>
 
-        <div class="col-lg-9">
+        <div class="col-md-9">
             <input name="nick" type="text" value="{{ local.openid.name }}" class="form-control" autocomplete="off" required>
         </div>
     </div>
     <div class="form-group">
-        <div class="col-lg-offset-3 col-lg-9">
+        <div class="col-md-offset-3 col-md-9">
             <input type="submit" name="submit" class="btn btn-inverse" value="{{ language.usercontrol_reg_button }}"/>
         </div>
     </div>

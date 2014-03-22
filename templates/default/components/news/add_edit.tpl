@@ -47,7 +47,7 @@
 {% endif %}
 <form action="" method="post" class="form-horizontal" role="form" enctype="multipart/form-data">
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-md-6">
             <h2>{{ language.news_add_edit_page_pathway_title }}</h2>
 
             <div class="input-group">
@@ -56,7 +56,7 @@
             </div>
             <span class="help-block">{{ language.news_add_edit_page_pathway_desc }}</span>
         </div>
-        <div class="col-lg-6">
+        <div class="col-md-6">
             <h2>{{ language.news_add_edit_page_date_text }}<small><input type="checkbox" id="setcurrentdate" name="current_date"/> {{ language.news_add_edit_page_current_date }}</small></h2>
             <input type="text" name="date" id="datefield" value="{{ news.date }}" class="form-control" />
             <span class="help-block">{{ language.news_add_edit_page_date_desc }}</span>
@@ -72,25 +72,25 @@
             {% for itemlang in system.languages %}
                 <div class="tab-pane fade{% if itemlang == system.lang %} in active{% endif %}" id="{{ itemlang }}">
                     <div class="row">
-                        <div class="col-lg-12">
+                        <div class="col-md-12">
                             <h2>{{ language.news_add_edit_page_title_name }}[{{ itemlang }}]</h2>
                             <input onkeyup="oJS.strNormalize(this)" type="text" name="title[{{ itemlang }}]" class="form-control" value="{{ news.title[itemlang] }}"/>
                             <span class="help-block">{{ language.news_add_edit_page_title_desc }}</span>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-12">
+                        <div class="col-md-12">
                             <h2>{{ language.news_add_edit_page_textarea_title }}[{{ itemlang }}]</h2>
                             <textarea name="text[{{ itemlang }}]" id="textobject{{ itemlang }}" class="wysi form-control">{{ news.text[itemlang] }}</textarea>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-6">
+                        <div class="col-md-6">
                             <h2>{{ language.news_add_edit_page_description }}[{{ itemlang }}]</h2>
                             <input type="text" name="description[{{ itemlang }}]" class="form-control" value="{{ news.description[itemlang] }}"/>
                             <span class="help-block">{{ language.news_add_edit_page_description_desc }}</span>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-md-6">
                             <h2>{{ language.news_add_edit_page_keywords }}[{{ itemlang }}]</h2>
                             <input type="text" id="keywords[{{ itemlang }}]" name="keywords[{{ itemlang }}]" class="form-control" value="{{ news.keywords[itemlang] }}"/>
                             <input class="btn btn-info pull-right" type="button" value="{{ language.news_add_edit_page_keybutton_gen }}" onClick="countKeywords('{{ itemlang }}')">
@@ -102,7 +102,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-md-6">
             <h2 id="postertitle">{{ language.news_add_edit_page_poster_title }}</h2>
             {% if news.poster_path %}
                 <p class="alert alert-success" id="posterobject"><i class="fa fa-picture-o"></i> {{ news.poster_name }}
@@ -112,7 +112,7 @@
             <input type="file" name="newsimage">
             <span class="help-block">{{ language.news_add_edit_page_poster_desc }}</span>
         </div>
-        <div class="col-lg-6">
+        <div class="col-md-6">
             <h2>{{ language.news_add_edit_page_category_name }}</h2>
 
             <div>
@@ -126,7 +126,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-md-6">
             {% if cfg.captcha_full %}
                 <script>
                     var RecaptchaOptions = { theme : 'white' };
@@ -142,7 +142,7 @@
     </div>
     <br />
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-md-12">
             <input type="submit" name="save" value="{{ language.news_add_edit_page_button_save }}" class="btn btn-success btn-block"/>
         </div>
     </div>

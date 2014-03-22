@@ -21,6 +21,7 @@
                 <div class="col-lg-3">
                     <div class="text-center">
                         <a href="?object=components&action=news&make=addcategory&id={{ cat_data.id }}" class="btn btn-success"><i class="fa fa-plus"></i></a>
+                        <a href="?object=components&action=news&make=editcategory&id={{ cat_data.id }}" class="btn btn-warning"><i class="fa fa-pencil"></i></a>
                         <a href="?object=components&action=news&make=delcategory&id={{ cat_data.id }}" class="btn btn-danger"><i class="fa fa-minus"></i></a>
                     </div>
                 </div>

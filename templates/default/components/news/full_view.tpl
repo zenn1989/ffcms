@@ -20,7 +20,7 @@
         {% endif %}
     </div>
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-md-12">
             {% if local.poster %}
                 <img src="{{ local.poster }}" class="image_poster" />
             {% endif %}
@@ -29,9 +29,9 @@
     </div>
     {% if local.gallery %}
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-md-12">
             {% for image in local.gallery %}
-                <div class="col-lg-2">
+                <div class="col-md-2">
                     <a class="fancybox thumbnail" rel="gallery" href="{{ image.full }}" title="{{ local.title }}">
                         <img src="{{ image.thumb }}" alt="" class="img-responsive" />
                     </a>
@@ -42,7 +42,7 @@
     {% endif %}
     {% if local.similar_items %}
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-md-12">
             <h3>{{ language.news_view_similar }}:</h3>
 
             <div class="panel-group" id="accordion">
@@ -57,7 +57,7 @@
                     </div>
                     <div id="collapse{{ loop.index }}" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <a href="{{ similar.link }}">{{ similar.preview }}...</a>
+                            <a href="{{ system.url }}/news/{{ similar.link }}">{{ similar.preview }}...</a>
                         </div>
                     </div>
                 </div>

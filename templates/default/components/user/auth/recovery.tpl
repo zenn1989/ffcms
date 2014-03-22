@@ -22,9 +22,9 @@
 {% endif %}
 <form class="form-horizontal" method="post" action="">
     <div class="form-group">
-        <label class="control-label col-lg-3">{{ language.usercontrol_auth_email }}</label>
+        <label class="control-label col-md-3">{{ language.usercontrol_auth_email }}</label>
 
-        <div class="col-lg-9">
+        <div class="col-md-9">
             <input name="email" type="text" placeholder="ivan.petrov@gmail.com" class="form-control">
         </div>
     </div>
@@ -33,24 +33,24 @@
             var RecaptchaOptions = { theme : 'white' };
         </script>
         <div class="form-group">
-            <label class="control-label col-lg-3">{{ language.usercontrol_auth_captcha }}</label>
+            <label class="control-label col-md-3">{{ language.usercontrol_auth_captcha }}</label>
 
-            <div class="col-lg-9">
+            <div class="col-md-9">
                 {{ local.captcha }}
             </div>
         </div>
     {% else %}
         <div class="form-group">
-            <label class="control-label col-lg-3">{{ language.usercontrol_auth_captcha }}</label>
+            <label class="control-label col-md-3">{{ language.usercontrol_auth_captcha }}</label>
 
-            <div class="col-lg-9">
+            <div class="col-md-9">
                 <img src="{{ local.captcha }}" id="captcha"/><a href="#" onclick="document.getElementById('captcha').src='{{ local.captcha }}?'+Math.random();"><i class="fa fa-refresh"></i></a>
                 <input type="text" name="captcha" class="form-control" required>
             </div>
         </div>
     {% endif %}
     <div class="form-group">
-        <div class="col-lg-offset-3 col-lg-9">
+        <div class="col-md-offset-3 col-md-9">
             <input type="submit" name="submit" class="btn btn-inverse" value="{{ language.usercontrol_recovery_button }}"/>
         </div>
     </div>

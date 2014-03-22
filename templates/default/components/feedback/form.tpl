@@ -25,34 +25,34 @@
 <form method="post" class="form-horizontal">
     <fieldset>
         <div class="form-group">
-            <label class="control-label col-lg-3">{{ language.feedback_form_name_label }}</label>
+            <label class="control-label col-md-3">{{ language.feedback_form_name_label }}</label>
 
-            <div class="controls col-lg-9">
+            <div class="controls col-md-9">
                 <input type="text" name="topic_name" class="form-control" required/>
                 <p class="help-block">{{ language.feedback_form_name_desc }}</p>
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-lg-3">{{ language.feedback_form_title_label }}</label>
+            <label class="control-label col-md-3">{{ language.feedback_form_title_label }}</label>
 
-            <div class="controls col-lg-9">
+            <div class="controls col-md-9">
                 <input type="text" name="topic_title" class="form-control" required/>
                 <p class="help-block">{{ language.feedback_form_title_desc }}</p>
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-lg-3">{{ language.feedback_form_text_label }}</label>
+            <label class="control-label col-md-3">{{ language.feedback_form_text_label }}</label>
 
-            <div class="controls col-lg-9">
+            <div class="controls col-md-9">
                 <textarea name="topic_body" class="form-control" placeholder="Message ..." rows="5"></textarea>
                 <p class="help-block">{{ language.feedback_form_text_desc }}</p>
             </div>
         </div>
         {% if user.id < 1 %}
         <div class="form-group">
-            <label class="control-label col-lg-3">{{ language.feedback_form_email_label }}</label>
+            <label class="control-label col-md-3">{{ language.feedback_form_email_label }}</label>
 
-            <div class="controls col-lg-9">
+            <div class="controls col-md-9">
                 <input type="email" name="topic_email" class="form-control" required/>
                 <p class="help-block">{{ language.feedback_form_email_desc }}</p>
             </div>
@@ -63,24 +63,24 @@
                 var RecaptchaOptions = { theme : 'white' };
             </script>
             <div class="form-group">
-                <label class="control-label col-lg-3">{{ language.feedback_form_captcha_label }}</label>
+                <label class="control-label col-md-3">{{ language.feedback_form_captcha_label }}</label>
 
-                <div class="controls col-lg-9">
+                <div class="controls col-md-9">
                     {{ local.captcha }}
                 </div>
             </div>
         {% else %}
             <div class="form-group">
-                <label class="control-label col-lg-3">{{ language.feedback_form_captcha_label }}</label>
+                <label class="control-label col-md-3">{{ language.feedback_form_captcha_label }}</label>
 
-                <div class="controls col-lg-9">
+                <div class="controls col-md-9">
                     <img src="{{ local.captcha }}" id="captcha"/><a href="#" onclick="document.getElementById('captcha').src='{{ local.captcha }}?'+Math.random();"><i class="icon-refresh"></i></a><br/>
                     <input type="text" name="captcha" class="form-control" required>
                 </div>
             </div>
         {% endif %}
         <div class="form-group">
-            <div class="controls col-lg-9">
+            <div class="controls col-md-9">
                 <input type="submit" name="dofeedback" value="{{ language.feedback_form_send_button }}" class="btn btn-danger" />
             </div>
         </div>

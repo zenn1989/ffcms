@@ -36,23 +36,23 @@
 <div class="container">
 
     <div class="row">
-        <div class="col-xs-9">
+        <div class="col-md-9">
             <a href="{{ system.url }}"><img src="{{ system.theme }}/img/logo.png" /></a>
         </div>
-        <div class="col-xs-3">
+        <div class="col-md-3">
             {% include 'widgets/search_form.tpl' %}
         </div>
     </div>
 
     <div class="row container-content">
 
-        <div class="col-xs-3">
+        <div class="col-md-3">
             {% include 'widgets/left_menu.tpl' %}
             {{ module.lastcomments }}
             {{ module.tag_cloud }}
         </div>
 
-        <div class="col-xs-9">
+        <div class="col-md-9">
             <div class="panel panel-default">
                 <div class="panel-body">
                     {% if content.body == null %}
@@ -76,7 +76,7 @@
 <div class="content-footer">
     <div class="container">
         <div class="row">
-            <div class="col-lg-offset-3 col-lg-9">
+            <div class="col-md-offset-3 col-md-9">
                 {% include 'widgets/footer.tpl' %}
             </div>
         </div>

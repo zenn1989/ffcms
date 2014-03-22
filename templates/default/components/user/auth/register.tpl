@@ -33,33 +33,33 @@
     {% endif %}
 {% endif %}
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-md-8">
         <form class="form-horizontal" method="post" action="" autocomplete="off">
             <div class="form-group">
-                <label class="control-label col-lg-3">{{ language.usercontrol_auth_login }}</label>
+                <label class="control-label col-md-3">{{ language.usercontrol_auth_login }}</label>
 
-                <div class="col-lg-9">
+                <div class="col-md-9">
                     <input name="login" type="text" placeholder="ivan2013" class="form-control" required>
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label col-lg-3">{{ language.usercontrol_auth_email }}</label>
+                <label class="control-label col-md-3">{{ language.usercontrol_auth_email }}</label>
 
-                <div class="col-lg-9">
+                <div class="col-md-9">
                     <input name="email" type="text" placeholder="ivan.petrov@gmail.com" class="form-control" required>
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label col-lg-3">{{ language.usercontrol_auth_pseudoname }}</label>
+                <label class="control-label col-md-3">{{ language.usercontrol_auth_pseudoname }}</label>
 
-                <div class="col-lg-9">
+                <div class="col-md-9">
                     <input name="nick" type="text" placeholder="Kurt Cobain" class="form-control" required>
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label col-lg-3">{{ language.usercontrol_auth_pass }}</label>
+                <label class="control-label col-md-3">{{ language.usercontrol_auth_pass }}</label>
 
-                <div class="col-lg-9">
+                <div class="col-md-9">
                     <input type="password" name="password" placeholder="Password" class="form-control" required>
                 </div>
             </div>
@@ -69,17 +69,17 @@
                         var RecaptchaOptions = { theme : 'white' };
                     </script>
                     <div class="form-group">
-                        <label class="control-label col-lg-3">{{ language.usercontrol_auth_captcha }}</label>
+                        <label class="control-label col-md-3">{{ language.usercontrol_auth_captcha }}</label>
 
-                        <div class="col-lg-9">
+                        <div class="col-md-9">
                             {{ local.captcha }}
                         </div>
                     </div>
                 {% else %}
                     <div class="form-group">
-                        <label class="control-label col-lg-3">{{ language.usercontrol_auth_captcha }}</label>
+                        <label class="control-label col-md-3">{{ language.usercontrol_auth_captcha }}</label>
 
-                        <div class="col-lg-9">
+                        <div class="col-md-9">
                             <img src="{{ local.captcha }}" id="captcha"/><a href="#" onclick="document.getElementById('captcha').src='{{ local.captcha }}?'+Math.random();"><i class="fa fa-refresh"></i></a><br/>
                             <input type="text" name="captcha" class="form-control" required>
                         </div>
@@ -87,13 +87,13 @@
                 {% endif %}
             {% endif %}
             <div class="form-group">
-                <div class="col-lg-offset-3 col-lg-9">
+                <div class="col-md-offset-3 col-md-9">
                     <input type="submit" name="submit" class="btn btn-inverse" value="{{ language.usercontrol_reg_button }}"/>
                 </div>
             </div>
         </form>
     </div>
-    <div class="col-lg-4">
+    <div class="col-md-4">
         {% if local.cfg.use_openid %}
             <p>{{ language.usercontrol_openid_desc }}</p>
             <script src="http://loginza.ru/js/widget.js" type="text/javascript"></script>

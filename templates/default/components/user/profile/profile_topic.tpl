@@ -21,7 +21,7 @@
 
 <hr/>
 <div class="row">
-    <div class="col-lg-12">
+    <div class="col-md-12">
         <form action="" method="post">
             <textarea name="topicanswer" class="form-control"></textarea>
             <input type="submit" name="newanswer" class="btn btn-success pull-right" value="{{ language.usercontrol_profile_pm_answermsg }}">

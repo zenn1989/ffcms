@@ -11,9 +11,9 @@
 <hr/>
 <form action="" method="post">
     <div class="form-group">
-        <label class="control-label col-lg-3">{{ language.usercontrol_profile_pm_write_touser }} </label>
+        <label class="control-label col-md-3">{{ language.usercontrol_profile_pm_write_touser }} </label>
 
-        <div class="col-lg-9">
+        <div class="col-md-9">
         {% if local.message.friend %}
         <select name="accepterid" class="form-control">
             {% for friend in local.message.friend %}

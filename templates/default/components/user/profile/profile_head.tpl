@@ -1,5 +1,5 @@
 <div class="row">
-<div class="col-lg-12">
+<div class="col-md-12">
     <h2>{{ local.profile.user_name }}
         <small>
             "{{ local.profile.user_status }}"
@@ -10,7 +10,7 @@
 </div>
 <hr/>
 <div class="row">
-    <div class="col-lg-4">
+    <div class="col-md-4">
         <img src="{{ system.script_url }}/{{ local.profile.user_avatar }}" class="img-responsive"/><br/>
         <ul class="nav nav-pills nav-stacked">
             {% if user.id > 0 %}
@@ -36,7 +36,7 @@
             {% endif %}
         </ul>
     </div>
-    <div class="col-lg-8">
+    <div class="col-md-8">
         <div class="tabbable">
             <ul class="nav nav-tabs nav-justified">
                 <li{% if local.path == '' or local.path == 'wall' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}"><i class="icon-home"></i> {{ language.usercontrol_profile_menu_wall }}</a></li>

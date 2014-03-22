@@ -34,11 +34,11 @@
         </div>
         <br />
         <div class="row" id="comment_load">
-            <div class="col-lg-6">
+            <div class="col-md-6">
                 <a href="#comment_load" class="btn btn-default btn-block"
                    id="doLoadComment">{{ language.comments_text_loadmore }}</a>
             </div>
-            <div class="col-lg-6">
+            <div class="col-md-6">
                 <a href="#comment_load" class="btn btn-default btn-block"
                    id="doLoadAllComment">{{ language.comments_text_loadall }}</a>
             </div>

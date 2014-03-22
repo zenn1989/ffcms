@@ -98,13 +98,14 @@ class template extends singleton {
         self::$variables[self::TYPE_SYSTEM]['theme'] = property::getInstance()->get('script_url') . '/' . property::getInstance()->get('tpl_dir') . '/' . self::getIfaceTemplate();
         self::$variables[self::TYPE_SYSTEM]['lang'] = language::getInstance()->getUseLanguage();
         self::$variables[self::TYPE_SYSTEM]['languages'] = language::getInstance()->getAvailable();
-        self::$variables[self::TYPE_SYSTEM]['self_url'] = property::getInstance()->get('url').router::getInstance()->getUriString();
+        self::$variables[self::TYPE_SYSTEM]['self_url'] = property::getInstance()->get('script_url').router::getInstance()->getUriString();
         $serial_title = property::getInstance()->get('seo_title');
         self::$variables[self::TYPE_SYSTEM]['title'] = $serial_title[language::getInstance()->getUseLanguage()];
         self::$variables[self::TYPE_SYSTEM]['file_name'] = basename($_SERVER['PHP_SELF']);
         self::$variables[self::TYPE_SYSTEM]['version'] = version;
         self::$variables[self::TYPE_SYSTEM]['admin_tpl'] = property::getInstance()->get('script_url') . '/' . property::getInstance()->get('tpl_dir') . '/' . property::getInstance()->get('admin_tpl'); // for script usage
         self::$variables[self::TYPE_SYSTEM]['loader'] = loader;
+        self::$variables[self::TYPE_SYSTEM]['is_main'] = router::getInstance()->isMain();
     }
 
     public function twigUserVariables() {

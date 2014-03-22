@@ -32,7 +32,7 @@
             <h3 class="centered">{{ language.usercontrol_profile_pers_wall }}</h3>
             <hr/>
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-md-12">
                     {% if user.id > 0 and local.profile.is_friend or local.profile.is_self %}
                         {% if local.wall.dopost %}
                             {% if local.wall.time_limit %}
@@ -50,7 +50,7 @@
             </div>
             <br />
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-md-12">
                     {% for post in local.post %}
                         <div class="media">
                             <a class="pull-left" href="{{ system.url }}/user/id{{ post.caster_id }}">

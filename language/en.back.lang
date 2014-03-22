@@ -352,6 +352,7 @@ admin_component_news_category_notify_noselectcat<=>Category owner not be selecte
 admin_component_news_category_notify_noname<=>Category name cant be null
 admin_component_news_category_notify_pathwrong<=>Pathway is incorrent or always used
 admin_component_news_category_add_title<=>Adding category
+admin_component_news_category_edit_title<=>Edit category
 admin_component_news_category_add_mother_label<=>Category owner
 admin_component_news_category_add_name_label<=>Category name
 admin_component_news_category_add_url_label<=>Pathway
