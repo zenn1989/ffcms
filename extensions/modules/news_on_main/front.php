@@ -62,7 +62,7 @@ class modules_news_on_main_front {
             $tagPrepareArray = system::getInstance()->altexplode(',', $lang_keywords[language::getInstance()->getUseLanguage()]);
             $tag_array = array();
             foreach($tagPrepareArray as $tagItem) {
-                $tag_array[] = system::getInstance()->noSpaceOnStartEnd($tagItem);
+                $tag_array[] = trim($tagItem);
             }
             $comment_count = 0;
             if(is_object(extension::getInstance()->call(extension::TYPE_HOOK, 'comment')))

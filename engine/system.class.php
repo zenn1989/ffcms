@@ -132,11 +132,11 @@ class system extends singleton {
             $output = array();
             foreach($data as $key=>$entery)
             {
-                $output[$key] = strip_tags($entery);
+                $output[$key] = htmlentities(strip_tags($entery), ENT_QUOTES | ENT_IGNORE, "UTF-8");
             }
             return $output;
         }
-        return strip_tags($data);
+        return htmlentities(strip_tags($data), ENT_QUOTES | ENT_IGNORE, "UTF-8");
     }
 
     /**
@@ -561,23 +561,6 @@ class system extends singleton {
     }
 
     /**
-     * Remove spaces on start/end of string. Example: String ' Hello ' => 'Hello'
-     * @param $string
-     * @return string
-     */
-    public function noSpaceOnStartEnd($string) {
-        $start_character = substr($string, 0, 1);
-        if($start_character == " ") {
-            $string = substr($string, 1, strlen($string));
-        }
-        $end_character = substr($string, -1);
-        if($end_character == " ") {
-            $string = substr($string, 0, -1);
-        }
-        return $string;
-    }
-
-    /**
      * Remove from string $string string $char $count number of times
      * @param $char
      * @param $string
@@ -638,5 +621,37 @@ class system extends singleton {
         if(file_exists($path))
             return;
         @mkdir($path, $chmod, true);
+    }
+
+    public function altaddslashes($data) {
+        if(is_array($data)) {
+            $output = array();
+            foreach($data as $key => $val){
+                if(is_array($key)) {
+                    return $this->altaddslashes($key);
+                } else {
+                    $output[$key] = addslashes($val);
+                }
+            }
+            return $output;
+        } else {
+            return addslashes($data);
+        }
+    }
+
+    public function altstripslashes($data) {
+        if(is_array($data)) {
+            $output = array();
+            foreach($data as $key => $val){
+                if(is_array($key)) {
+                    return $this->altstripslashes($key);
+                } else {
+                    $output[$key] = stripslashes($val);
+                }
+            }
+            return $output;
+        } else {
+            return stripslashes($data);
+        }
     }
 }

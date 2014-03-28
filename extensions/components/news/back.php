@@ -337,10 +337,10 @@ class components_news_back {
                 $params['notify']['notext'] = true;
             }
             if (sizeof($params['notify']) == 0) {
-                $serial_title = serialize($params['news']['title']);
-                $serial_text = serialize($params['news']['text']);
-                $serial_description = serialize($params['news']['description']);
-                $serial_keywords = serialize($params['news']['keywords']);
+                $serial_title = serialize(system::getInstance()->altaddslashes($params['news']['title']));
+                $serial_text = serialize(system::getInstance()->altaddslashes($params['news']['text']));
+                $serial_description = serialize(system::getInstance()->altaddslashes($params['news']['description']));
+                $serial_keywords = serialize(system::getInstance()->altaddslashes($params['news']['keywords']));
                 $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_com_news_entery
 					(`title`, `text`, `link`, `category`, `date`, `author`, `description`, `keywords`, `display`, `important`) VALUES
 					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -416,10 +416,10 @@ class components_news_back {
                 $params['notify']['notext'] = true;
             }
             if(sizeof($params['notify']) == 0) {
-                $serial_title = serialize($title);
-                $serial_text = serialize($text);
-                $serial_description = serialize($description);
-                $serial_keywords = serialize($keywords);
+                $serial_title = serialize(system::getInstance()->altaddslashes($title));
+                $serial_text = serialize(system::getInstance()->altaddslashes($text));
+                $serial_description = serialize(system::getInstance()->altaddslashes($description));
+                $serial_keywords = serialize(system::getInstance()->altaddslashes($keywords));
                 $stmt = database::getInstance()->con()->prepare("UPDATE " . property::getInstance()->get('db_prefix') . "_com_news_entery SET title = ?, text = ?, link = ?,
 						category = ?, date = ?, author = ?, description = ?, keywords = ?, display = ?, important = ? WHERE id = ?");
                 $stmt->bindParam(1, $serial_title, PDO::PARAM_STR);
@@ -465,13 +465,13 @@ class components_news_back {
 
         if($result = $stmt->fetch()) {
             $params['news']['id'] = $news_id;
-            $params['news']['title'] = unserialize($result['title']);
-            $params['news']['text'] = unserialize($result['text']);
+            $params['news']['title'] = system::getInstance()->altstripslashes(unserialize($result['title']));
+            $params['news']['text'] = system::getInstance()->altstripslashes(unserialize($result['text']));
             $params['news']['pathway'] = system::getInstance()->noextention($result['link']);
             $params['news']['cat_id'] = $result['category'];
             $params['news']['date'] = system::getInstance()->toDate($result['date'], 'h');
-            $params['news']['description'] = unserialize($result['description']);
-            $params['news']['keywords'] = unserialize($result['keywords']);
+            $params['news']['description'] = system::getInstance()->altstripslashes(unserialize($result['description']));
+            $params['news']['keywords'] = system::getInstance()->altstripslashes(unserialize($result['keywords']));
             $params['news']['display'] = $result['display'];
             $params['news']['important'] = $result['important'];
             if(file_exists(root . '/upload/news/poster_' . $news_id . '.jpg')) {
