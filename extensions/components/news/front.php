@@ -89,10 +89,10 @@ class components_news_front {
                 $params['notify']['notext'] = true;
             }
             if(sizeof($params['notify']) == 0) {
-                $serial_title = serialize($title);
-                $serial_text = serialize($text);
-                $serial_description = serialize($description);
-                $serial_keywords = serialize($keywords);
+                $serial_title = serialize(system::getInstance()->altaddslashes($title));
+                $serial_text = serialize(system::getInstance()->altaddslashes($text));
+                $serial_description = serialize(system::getInstance()->altaddslashes($description));
+                $serial_keywords = serialize(system::getInstance()->altaddslashes($keywords));
                 $stmt = database::getInstance()->con()->prepare("UPDATE " . property::getInstance()->get('db_prefix') . "_com_news_entery SET title = ?, text = ?, link = ?,
 						category = ?, date = ?, author = ?, description = ?, keywords = ? WHERE id = ?");
                 $stmt->bindParam(1, $serial_title, PDO::PARAM_STR);
@@ -138,13 +138,13 @@ class components_news_front {
         if($result = $stmt->fetch()) {
             $params['news']['categorys'] = $this->getCategoryArray();
             $params['news']['id'] = $news_id;
-            $params['news']['title'] = unserialize($result['title']);
-            $params['news']['text'] = unserialize($result['text']);
+            $params['news']['title'] = system::getInstance()->altstripslashes(unserialize($result['title']));
+            $params['news']['text'] = system::getInstance()->altstripslashes(unserialize($result['text']));
             $params['news']['pathway'] = system::getInstance()->noextention($result['link']);
             $params['news']['cat_id'] = $result['category'];
             $params['news']['date'] = system::getInstance()->toDate($result['date'], 'h');
-            $params['news']['description'] = unserialize($result['description']);
-            $params['news']['keywords'] = unserialize($result['keywords']);
+            $params['news']['description'] = system::getInstance()->altstripslashes(unserialize($result['description']));
+            $params['news']['keywords'] = system::getInstance()->altstripslashes(unserialize($result['keywords']));
             if(file_exists(root . '/upload/news/poster_' . $news_id . '.jpg')) {
                 $params['news']['poster_path'] = '/upload/news/poster_' . $news_id . '.jpg';
                 $params['news']['poster_name'] = 'poster_' . $news_id . '.jpg';
@@ -191,10 +191,10 @@ class components_news_front {
                 $params['notify']['notext'] = true;
             }
             if (sizeof($params['notify']) == 0) {
-                $serial_title = serialize($params['news']['title']);
-                $serial_text = serialize($params['news']['text']);
-                $serial_description = serialize($params['news']['description']);
-                $serial_keywords = serialize($params['news']['keywords']);
+                $serial_title = serialize(system::getInstance()->altaddslashes($params['news']['title']));
+                $serial_text = serialize(system::getInstance()->altaddslashes($params['news']['text']));
+                $serial_description = serialize(system::getInstance()->altaddslashes($params['news']['description']));
+                $serial_keywords = serialize(system::getInstance()->altaddslashes($params['news']['keywords']));
                 $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_com_news_entery
 					(`title`, `text`, `link`, `category`, `date`, `author`, `description`, `keywords`, `display`, `important`) VALUES
 					(?, ?, ?, ?, ?, ?, ?, ?, 0, 0)");
@@ -246,7 +246,7 @@ class components_news_front {
         $catstmt->execute();
         if ($catresult = $catstmt->fetch()) {
             $category_link = $catresult['path'];
-            $category_serial_text = unserialize($catresult['name']);
+            $category_serial_text = system::getInstance()->altstripslashes(unserialize($catresult['name']));
             $category_text = $category_serial_text[language::getInstance()->getUseLanguage()];
             $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE link = ? AND category = ? AND display = 1 AND date <= ?");
             $stmt->bindParam(1, $url, PDO::PARAM_STR);
@@ -256,10 +256,10 @@ class components_news_front {
         }
         if ($stmt != null && $result = $stmt->fetch()) {
             $news_view_id = $result['id'];
-            $lang_text = unserialize($result['text']);
-            $lang_title = unserialize($result['title']);
-            $lang_description = unserialize($result['description']);
-            $lang_keywords = unserialize($result['keywords']);
+            $lang_text = system::getInstance()->altstripslashes(unserialize($result['text']));
+            $lang_title = system::getInstance()->altstripslashes(unserialize($result['title']));
+            $lang_description = system::getInstance()->altstripslashes(unserialize($result['description']));
+            $lang_keywords = system::getInstance()->altstripslashes(unserialize($result['keywords']));
             if(system::getInstance()->length($lang_title[language::getInstance()->getUseLanguage()]) < 1 || system::getInstance()->length($lang_text[language::getInstance()->getUseLanguage()]) < 1)
                 return null;
             meta::getInstance()->add('title', $lang_title[language::getInstance()->getUseLanguage()]);
@@ -290,9 +290,9 @@ class components_news_front {
                     $similar_title = unserialize($simRow['title']);
                     $similar_path = $simRow['path'];
                     $similar_full_path = $similar_path == null ? $simRow['link'] : $similar_path . "/" . $simRow['link'];
-                    $similar_text_serialize = unserialize($simRow['text']);
+                    $similar_text_serialize = system::getInstance()->altstripslashes(unserialize($simRow['text']));
                     $similar_text_full = system::getInstance()->nohtml($similar_text_serialize[language::getInstance()->getUseLanguage()]);
-                    $similar_text_short = system::getInstance()->sentenceSub($similar_text_full, 200);
+                    $similar_text_short = system::getInstance()->sentenceSub(system::getInstance()->altstripslashes($similar_text_full), 200);
                     $similar_array[] = array(
                         'link' => $similar_full_path,
                         'title' => $similar_title[language::getInstance()->getUseLanguage()],
@@ -412,8 +412,10 @@ class components_news_front {
         while ($fresult = $fstmt->fetch()) {
             $category_select_array[] = $fresult['category_id'];
             if ($cat_link == $fresult['path']) {
-                $serial_name = unserialize($fresult['name']);
+                $serial_name = system::getInstance()->nohtml(unserialize($fresult['name']));
+                $serial_desc = system::getInstance()->nohtml(unserialize($fresult['desc']));
                 meta::getInstance()->add('title', $page_title = language::getInstance()->get('news_view_category').': '.$serial_name[language::getInstance()->getUseLanguage()]);
+                meta::getInstance()->add('description', $serial_desc[language::getInstance()->getUseLanguage()]);
             }
         }
         $category_list = system::getInstance()->altimplode(',', $category_select_array);
@@ -442,9 +444,9 @@ class components_news_front {
             $stmt->execute();
             if (sizeof($category_select_array) > 0) {
                 while ($result = $stmt->fetch()) {
-                    $lang_text = unserialize($result['text']);
-                    $lang_title = unserialize($result['title']);
-                    $lang_keywords = unserialize($result['keywords']);
+                    $lang_text = system::getInstance()->altstripslashes(unserialize($result['text']));
+                    $lang_title = system::getInstance()->altstripslashes(unserialize($result['title']));
+                    $lang_keywords = system::getInstance()->altstripslashes(unserialize($result['keywords']));
                     $news_short_text = $lang_text[language::getInstance()->getUseLanguage()];
                     if(system::getInstance()->length($lang_title[language::getInstance()->getUseLanguage()]) < 1) // do not add the empty title news
                         continue;
@@ -466,7 +468,7 @@ class components_news_front {
                     $comment_count = 0;
                     if(is_object(extension::getInstance()->call(extension::TYPE_HOOK, 'comment')))
                         $comment_count = extension::getInstance()->call(extension::TYPE_HOOK, 'comment')->getCount('/news/'.$news_full_link);
-                    $cat_serial_text = unserialize($result['name']);
+                    $cat_serial_text = system::getInstance()->altstripslashes(unserialize($result['name']));
                     $news_view_id = $result['id'];
                     $image_poster_root = root . '/upload/news/poster_' . $news_view_id . '.jpg';
                     $image_poster_url = false;

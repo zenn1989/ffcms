@@ -22,6 +22,7 @@ DROP TABLE IF EXISTS `{$db_prefix}_com_news_category`;
 CREATE TABLE `{$db_prefix}_com_news_category` (
   `category_id` int(24) NOT NULL AUTO_INCREMENT,
   `name` text NOT NULL,
+  `desc` VARCHAR( 4096 ) NOT NULL DEFAULT  '',
   `path` varchar(320) NOT NULL,
   PRIMARY KEY (`category_id`),
   UNIQUE KEY `link` (`path`),
@@ -34,14 +35,14 @@ INSERT INTO `{$db_prefix}_com_news_category` (`category_id`, `name`, `path`) VAL
 DROP TABLE IF EXISTS `{$db_prefix}_com_news_entery`;
 CREATE TABLE `{$db_prefix}_com_news_entery` (
   `id` int(24) NOT NULL AUTO_INCREMENT,
-  `title` varchar(512) NOT NULL,
+  `title` varchar(2048) NOT NULL,
   `text` text NOT NULL,
   `link` varchar(256) NOT NULL,
   `category` int(24) NOT NULL,
   `date` int(16) NOT NULL,
   `author` int(24) NOT NULL,
-  `description` varchar(250) NOT NULL,
-  `keywords` varchar(250) NOT NULL,
+  `description` varchar(2048) NOT NULL,
+  `keywords` varchar(4096) NOT NULL,
   `views` int(36) NOT NULL DEFAULT '0',
   `display` int(2) NOT NULL DEFAULT '1',
   `important` int(1) NOT NULL DEFAULT '0',

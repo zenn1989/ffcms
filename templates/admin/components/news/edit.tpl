@@ -91,7 +91,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h2>{{ language.admin_component_news_edit_page_title_name }}[{{ itemlang }}]</h2>
-                        <input onkeyup="oJS.strNormalize(this)" type="text" name="title[{{ itemlang }}]" class="form-control" value="{{ news.title[itemlang] }}"/>
+                        <input onkeyup="oJS.strNormalize(this)" type="text" name="title[{{ itemlang }}]" class="form-control" value="{{ news.title[itemlang] }}" maxlength="150" />
                         <span class="help-block">{{ language.admin_component_news_edit_page_title_desc }}</span>
                     </div>
                 </div>
@@ -104,12 +104,12 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <h2>{{ language.admin_component_news_edit_page_description }}[{{ itemlang }}]</h2>
-                        <input type="text" name="description[{{ itemlang }}]" class="form-control" value="{{ news.description[itemlang] }}"/>
+                        <input type="text" name="description[{{ itemlang }}]" class="form-control" value="{{ news.description[itemlang] }}" maxlength="250" />
                         <span class="help-block">{{ language.admin_component_news_edit_page_description_desc }}</span>
                     </div>
                     <div class="col-lg-6">
                         <h2>{{ language.admin_component_news_edit_page_keywords }}[{{ itemlang }}]</h2>
-                        <input type="text" id="keywords[{{ itemlang }}]" name="keywords[{{ itemlang }}]" class="form-control" value="{{ news.keywords[itemlang] }}"/>
+                        <input type="text" id="keywords[{{ itemlang }}]" name="keywords[{{ itemlang }}]" class="form-control" value="{{ news.keywords[itemlang] }}" maxlength="200" />
                         <input class="btn btn-info pull-right" type="button" value="{{ language.admin_component_news_edit_page_keybutton_gen }}" onClick="countKeywords('{{ itemlang }}')">
                         <span class="help-block">{{ language.admin_component_news_edit_page_keywords_description }}</span>
                     </div>

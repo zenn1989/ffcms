@@ -71,7 +71,8 @@ class components_news_back {
         $params['news']['categorys'] = extension::getInstance()->call(extension::TYPE_COMPONENT, 'news')->getCategoryArray();
 
         if(system::getInstance()->post('submit')) {
-            $cat_name = system::getInstance()->post('category_name');
+            $cat_name = system::getInstance()->nohtml(system::getInstance()->post('category_name'));
+            $cat_desc = system::getInstance()->post('category_desc');
             $cat_path = system::getInstance()->nohtml(system::getInstance()->post('category_path'));
             $owner_cat_id = (int)system::getInstance()->post('category_owner');
             if(!system::getInstance()->isInt($cat_id) || $cat_id < 1) {
@@ -96,11 +97,13 @@ class components_news_back {
                 } else {
                     $new_category_path = $resMother['path'] . "/" . $cat_path;
                 }
-                $serial_name = serialize($cat_name);
-                $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_com_news_category SET path = ?, name = ? WHERE category_id = ?");
+                $serial_name = serialize(system::getInstance()->altaddslashes($cat_name));
+                $serial_desc = serialize(system::getInstance()->altaddslashes($cat_desc));
+                $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_com_news_category SET `path` = ?, `name` = ?, `desc` = ? WHERE `category_id` = ?");
                 $stmt->bindParam(1, $new_category_path, PDO::PARAM_STR);
                 $stmt->bindParam(2, $serial_name, PDO::PARAM_STR);
-                $stmt->bindParam(3, $cat_id, PDO::PARAM_INT);
+                $stmt->bindParam(3, $serial_desc, PDO::PARAM_STR);
+                $stmt->bindParam(4, $cat_id, PDO::PARAM_INT);
                 $stmt->execute();
                 $stmt = null;
                 system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=news&make=category');
@@ -117,6 +120,7 @@ class components_news_back {
             $owner_path = system::getInstance()->altimplode('/', $path_array);
             $params['cat'] = array(
                 'name' => unserialize($res['name']),
+                'desc' => unserialize($res['desc']),
                 'path' => $last_path_name
             );
             $stmt = database::getInstance()->con()->prepare("SELECT category_id FROM ".property::getInstance()->get('db_prefix')."_com_news_category WHERE path = ?");
@@ -198,8 +202,10 @@ class components_news_back {
 
         if (system::getInstance()->post('submit')) {
             $cat_id = system::getInstance()->post('category_owner');
-            $cat_name = system::getInstance()->post('category_name');
-            $cat_serial_name = serialize($cat_name);
+            $cat_name = system::getInstance()->nohtml(system::getInstance()->post('category_name'));
+            $cat_desc = system::getInstance()->post('category_desc');
+            $cat_serial_name = serialize(system::getInstance()->altaddslashes($cat_name));
+            $cat_serial_desc = serialize(system::getInstance()->altaddslashes($cat_desc));
             $cat_path = system::getInstance()->post('category_path');
             if(!system::getInstance()->isInt($cat_id) || $cat_id < 1) {
                 $params['notify']['owner_notselect'] = true;
@@ -223,9 +229,10 @@ class components_news_back {
                     }
                     $stmt = null;
 
-                    $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_com_news_category (`name`, `path`) VALUES (?, ?)");
+                    $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_com_news_category (`name`, `desc`, `path`) VALUES (?, ?, ?)");
                     $stmt->bindParam(1, $cat_serial_name, PDO::PARAM_STR);
-                    $stmt->bindParam(2, $new_category_path, PDO::PARAM_STR);
+                    $stmt->bindParam(2, $cat_serial_desc, PDO::PARAM_STR);
+                    $stmt->bindParam(3, $new_category_path, PDO::PARAM_STR);
                     $stmt->execute();
                     system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=news&make=category");
                 }

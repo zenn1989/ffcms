@@ -37,7 +37,15 @@
                     <label class="control-label col-lg-3">{{ language.admin_component_news_category_add_name_label }}[{{ itemlang }}]</label>
 
                     <div class="col-lg-9">
-                        <input type="text" class="form-control" name="category_name[{{ itemlang }}]" value="{{ cat.name[itemlang] }}">
+                        <input type="text" class="form-control" name="category_name[{{ itemlang }}]" value="{{ cat.name[itemlang] }}" maxlength="100">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-lg-3">{{ language.admin_component_news_category_add_desc_label }}[{{ itemlang }}]</label>
+
+                    <div class="col-lg-9">
+                        <textarea name="category_desc[{{ itemlang }}]" class="form-control" maxlength="250">{{ cat.desc[itemlang] }}</textarea>
+                        <span class="help-block">{{ language.admin_component_news_category_add_desc_helper }}</span>
                     </div>
                 </div>
             </div>
@@ -49,7 +57,7 @@
         <label class="control-label col-lg-3">{{ language.admin_component_news_category_add_url_label }}</label>
 
         <div class="col-lg-9">
-            <input type="text" class="form-control" name="category_path" value="{{ cat.path }}">
+            <input type="text" class="form-control" name="category_path" value="{{ cat.path }}" maxlength="128">
         </div>
     </div>
     <input type="submit" name="submit" value="{{ language.admin_component_news_category_add_form_button }}" class="btn btn-success"/>
