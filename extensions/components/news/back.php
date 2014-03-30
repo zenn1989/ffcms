@@ -64,7 +64,6 @@ class components_news_back {
     }
 
     private function viewNewsEditCategory() {
-
         $cat_id = (int)system::getInstance()->get('id');
         $params = array();
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
@@ -75,14 +74,20 @@ class components_news_back {
             $cat_desc = system::getInstance()->post('category_desc');
             $cat_path = system::getInstance()->nohtml(system::getInstance()->post('category_path'));
             $owner_cat_id = (int)system::getInstance()->post('category_owner');
+            $stmt = database::getInstance()->con()->prepare("SELECT path FROM ".property::getInstance()->get('db_prefix')."_com_news_category WHERE category_id = ?");
+            $stmt->bindParam(1, $cat_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $resCat = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt = null;
+            $old_path = $resCat['path'];
             if(!system::getInstance()->isInt($cat_id) || $cat_id < 1) {
                 $params['notify']['owner_notselect'] = true;
             }
             if(strlen($cat_name[property::getInstance()->get('lang')]) < 1) {
                 $params['notify']['noname'] = true;
             }
-            if($cat_path != '' && $cat_id != 1 && $cat_id != $owner_cat_id) { // its not a general category?
-                if (!$this->checkCategoryWay($cat_path, $owner_cat_id)) {
+            if($cat_id != 1 && $cat_id != $owner_cat_id && $old_path != $cat_path) { // its not a general category?
+                if (!$this->checkCategoryWay($cat_path, $owner_cat_id, $cat_id)) {
                     $params['notify']['wrongpath'] = true;
                 }
             }

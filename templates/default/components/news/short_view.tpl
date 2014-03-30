@@ -1,5 +1,8 @@
 {% if page_title|length > 0 %} {# for module news on main - have no title #}
     <h1>{{ page_title }}</h1>
+    {% if page_desc|length > 0 %}
+        <p>{{ page_desc }}</p>
+    {% endif %}
     <hr />
 {% endif %}
 {% for newsdata in local %}

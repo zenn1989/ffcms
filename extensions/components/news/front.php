@@ -399,6 +399,7 @@ class components_news_front {
         $category_list = null;
         $fstmt = null;
         $page_title = null;
+        $page_desc = null;
         if (extension::getInstance()->getConfig('multi_category', 'news', 'components', 'boolean')) {
             $fstmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_category WHERE path like ?");
             $path_swarm = "$cat_link%";
@@ -413,9 +414,9 @@ class components_news_front {
             $category_select_array[] = $fresult['category_id'];
             if ($cat_link == $fresult['path']) {
                 $serial_name = system::getInstance()->nohtml(unserialize($fresult['name']));
-                $serial_desc = system::getInstance()->nohtml(unserialize($fresult['desc']));
+                $serial_desc = unserialize($fresult['desc']);
                 meta::getInstance()->add('title', $page_title = language::getInstance()->get('news_view_category').': '.$serial_name[language::getInstance()->getUseLanguage()]);
-                meta::getInstance()->add('description', $serial_desc[language::getInstance()->getUseLanguage()]);
+                meta::getInstance()->add('description', $page_desc = $serial_desc[language::getInstance()->getUseLanguage()]);
             }
         }
         $category_list = system::getInstance()->altimplode(',', $category_select_array);
@@ -502,7 +503,8 @@ class components_news_front {
                     'view_tags' => $viewTags,
                     'view_count' => $viewCount
                 ),
-                'page_title' => $page_title
+                'page_title' => $page_title,
+                'page_desc' => $page_desc
             )
         );
     }

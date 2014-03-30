@@ -22,7 +22,7 @@ DROP TABLE IF EXISTS `{$db_prefix}_com_news_category`;
 CREATE TABLE `{$db_prefix}_com_news_category` (
   `category_id` int(24) NOT NULL AUTO_INCREMENT,
   `name` text NOT NULL,
-  `desc` VARCHAR( 4096 ) NOT NULL DEFAULT  '',
+  `desc` VARCHAR(4096) NOT NULL DEFAULT  '',
   `path` varchar(320) NOT NULL,
   PRIMARY KEY (`category_id`),
   UNIQUE KEY `link` (`path`),
