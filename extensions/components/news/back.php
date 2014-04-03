@@ -86,7 +86,7 @@ class components_news_back {
             if(strlen($cat_name[property::getInstance()->get('lang')]) < 1) {
                 $params['notify']['noname'] = true;
             }
-            if($cat_id != 1 && $cat_id != $owner_cat_id && $old_path != $cat_path) { // its not a general category?
+            if($cat_id != 1 && $cat_id != $owner_cat_id && $old_path != $cat_path && !system::getInstance()->suffixEquals($old_path, $cat_path)) { // its not a general category?
                 if (!$this->checkCategoryWay($cat_path, $owner_cat_id, $cat_id)) {
                     $params['notify']['wrongpath'] = true;
                 }

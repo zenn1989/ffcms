@@ -1,8 +1,10 @@
+language<=>Language
 global_accept_button<=>Accept
 global_reject_button<=>Cancel
 global_send_button<=>Send
 global_search_button<=>Search
 global_info_missed<=>No information available
+global_main<=>Main page
 seo_title_userlist<=>User list
 usercontrol_auth_header<=>Login
 usercontrol_reg_header<=>Register

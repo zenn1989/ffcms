@@ -1,4 +1,6 @@
 {% import 'macro/notify.tpl' as notifytpl %}
+<link href="{{ system.theme }}/css/datepicker.css" rel="stylesheet">
+<script type="text/javascript" src="{{ system.theme }}/js/bootstrap-datepicker.js"></script>
 <script type="text/javascript" src="{{ system.script_url }}/resource/ckeditor/ckeditor.js"></script>
 <script src="{{ system.script_url }}/resource/ckeditor/adapters/jquery.js"></script>
 <script type="text/javascript">
@@ -10,6 +12,7 @@
                 $('.form-horizontal').submit(function(){
                     window.onbeforeunload = null;
                 });
+                $('#datefield').datepicker();
             }
     );
     window.onbeforeunload = function (evt) {
@@ -49,7 +52,7 @@
         </div>
         <div class="col-lg-6">
             <h2>{{ language.admin_component_static_edit_page_date_text }}<small><input type="checkbox" id="setcurrentdate" name="current_date"/> {{ language.admin_component_static_edit_page_current_date }}</small></h2>
-            <input type="text" name="date" id="datefield" value="{{ static.date }}" class="form-control"/>
+            <input type="text" name="date" id="datefield" data-date-format="dd.mm.yyyy" value="{{ static.date }}" class="form-control"/>
             <span class="help-block">{{ language.admin_component_static_edit_page_date_desc }}</span>
         </div>
     </div>

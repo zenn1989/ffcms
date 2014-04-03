@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+    <channel>
+        <title>{{ channel.title }}</title>
+        <link>{{ channel.link }}</link>
+        <description>{{ channel.desc }}</description>
+        {% for item in items %}
+        <item>
+            <title>{{ item.title }}</title>
+            <link>{{ item.link }}</link>
+            <description>{{ item.desc }}</description>
+            <pubDate>{{ item.date }}</pubDate>
+            <category>{{ item.category }}</category>
+            <guid>{{ item.link }}#{{ item.id }}</guid>
+            {% if item.image_url %}
+            <enclosure url="{{ item.image_url }}" type="image/jpeg" length="{{ item.image_size }}" />
+            {% endif %}
+        </item>
+        {% endfor %}
+    </channel>
+</rss>

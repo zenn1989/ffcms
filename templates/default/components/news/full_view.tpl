@@ -10,12 +10,20 @@
 </script>
 
 <article class="article-item">
+    <ol class="breadcrumb">
+        <li><a href="{{ system.url }}">{{ language.global_main }}</a></li>
+        <li><a href="{{ system.url }}/news/">{{ language.news_view_category_unset }}</a></li>
+        {% if local.category_url != null %}
+        <li><a href="{{ system.url }}/news/{{ local.category_url }}">{{ local.category_name }}</a></li>
+        {% endif %}
+        <li class="active">{{ local.title|slice(0,50) }}</li>
+    </ol>
     <h1>{{ local.title }}</h1>
     <div class="meta">
         <span><i class="fa fa-list"></i><a href="{{ system.url }}/news/{{ local.category_url }}">{{ local.category_name }}</a></span>
         <span><i class="fa fa-calendar"></i>{{ local.date }}</span>
         <span><i class="fa fa-user"></i><a href="{{ system.url }}/user/id{{ local.author_id }}">{{ local.author_nick }}</a></span>
-        {% if cfg.view_count %}
+        {% if local.cfg.view_count %}
             <span><i class="fa fa-eye"></i> {{ local.view_count }}</span>
         {% endif %}
     </div>

@@ -4,6 +4,7 @@ global_reject_button<=>Отменить
 global_send_button<=>Отправить
 global_search_button<=>Найти
 global_info_missed<=>Информация отсутствует
+global_main<=>Главная страница
 seo_title_userlist<=>Список пользователей
 usercontrol_auth_header<=>Авторизация
 usercontrol_reg_header<=>Регистрация

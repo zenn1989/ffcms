@@ -16,10 +16,13 @@ use engine\language;
 use engine\extension;
 use engine\meta;
 use engine\user;
+use engine\cache;
 
 class components_news_front {
     protected static $instance = null;
     const ALLOWED_HTML_TAGS = "<p><a><img><img/><table><tr><td><tbody><thead><th><pre><iframe><span><strong><em><s><blockquote><ul><ol><li><h1><h2><h3><h4><div>";
+    const RSS_UPDATE_TIME = 600;
+    const RSS_ITEM_LIMIT = 10;
 
     public static function getInstance() {
         if(is_null(self::$instance)) {
@@ -39,6 +42,8 @@ class components_news_front {
         $last_object = array_pop($way);
         if($way[0] == "tag" && system::getInstance()->suffixEquals($last_object, '.html')) {
             $content = $this->viewTagList($last_object);
+        } elseif($source_way[0] == "feed.rss") {
+            $this->viewNewsRssFeed(); //void
         } elseif($source_way[0] == "add" && extension::getInstance()->getConfig('enable_useradd', 'news', extension::TYPE_COMPONENT, 'bol')) {
             if($last_object < 1)
                 $content = $this->viewUseraddNews();
@@ -376,6 +381,61 @@ class components_news_front {
         return template::getInstance()->twigRender('components/news/tag_view.tpl', array('local' => $prepared_array));
     }
 
+    private function viewNewsRssFeed() {
+        header('Content-Type: application/rss+xml; charset=utf-8');
+        if(cache::getInstance()->get('rssfeed', self::RSS_UPDATE_TIME))
+            template::getInstance()->justPrint(cache::getInstance()->get('rssfeed', self::RSS_UPDATE_TIME));
+        $params = array();
+        $stmt = database::getInstance()->con()->query("SELECT a.id,a.title,a.text,a.link,a.date,b.path,b.name FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a,
+                                        ".property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.display = 1 ORDER BY a.id DESC LIMIT 0,".self::RSS_ITEM_LIMIT);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = null;
+        $site_title = property::getInstance()->get('seo_title');
+        $site_desc = property::getInstance()->get('seo_description');
+        $params['channel'] = array(
+            'title' => $site_title[language::getInstance()->getUseLanguage()],
+            'desc' => $site_desc[language::getInstance()->getUseLanguage()],
+            'link' => property::getInstance()->get('url') . '/news/'
+        );
+        foreach($result as $row) {
+            $item_title = system::getInstance()->altstripslashes(unserialize($row['title']));
+            $item_fulltext = system::getInstance()->altstripslashes(unserialize($row['text']));
+            $item_langtext = system::getInstance()->stringInline(system::getInstance()->nohtml($item_fulltext[language::getInstance()->getUseLanguage()]));
+            $item_catname = system::getInstance()->altstripslashes(unserialize($row['name']));
+            $item_desc = null;
+            $item_link = property::getInstance()->get('url') . '/news/';
+            if(system::getInstance()->contains('<hr />', $item_langtext)) {
+                $item_desc = strstr($item_langtext, '<hr />', true);
+            } elseif (system::getInstance()->length($item_langtext) > 200) {
+                $item_desc = system::getInstance()->sentenceSub($item_langtext, 200) . "...";
+            }
+            if($row['path'] == null) {
+                $item_link .= $row['link'];
+            } else {
+                $item_link .= $row['path'] . "/" . $row['link'];
+            }
+            $item_image = null;
+            $image_size = 0;
+            if(file_exists(root . '/upload/news/poster_' . $row['id'] . '.jpg')) {
+                $item_image = property::getInstance()->get('script_url') . '/upload/news/poster_' . $row['id'] .'.jpg';
+                $image_size = filesize(root . '/upload/news/poster_' . $row['id'] . '.jpg');
+            }
+            $params['items'][] = array(
+                'title' => $item_title[language::getInstance()->getUseLanguage()],
+                'desc' => $item_desc,
+                'date' => date(DATE_RSS, $row['date']),
+                'link' => $item_link,
+                'category' => $item_catname[language::getInstance()->getUseLanguage()],
+                'id' => $row['id'],
+                'image_url' => $item_image,
+                'image_size' => $image_size
+            );
+        }
+        $content = template::getInstance()->twigString()->render(@file_get_contents(root . '/resource/cmscontent/rss_2.xml'), $params);
+        cache::getInstance()->store('rssfeed', $content);
+        template::getInstance()->justPrint($content);
+    }
+
     public function viewCategory()
     {
         $viewTags = extension::getInstance()->getConfig('enable_tags', 'news', 'components', 'boolean');
@@ -504,7 +564,8 @@ class components_news_front {
                     'view_count' => $viewCount
                 ),
                 'page_title' => $page_title,
-                'page_desc' => $page_desc
+                'page_desc' => $page_desc,
+                'page_link' => $cat_link
             )
         );
     }

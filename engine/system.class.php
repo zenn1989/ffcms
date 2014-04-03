@@ -139,6 +139,10 @@ class system extends singleton {
         return htmlentities(strip_tags($data), ENT_QUOTES | ENT_IGNORE, "UTF-8");
     }
 
+    public function stringInline($data) {
+        return preg_replace('/\s+/', ' ', trim($data));
+    }
+
     /**
      * Pseudo random [A-Za-z0-9] string with length $length
      * @param int $length

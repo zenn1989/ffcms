@@ -1,4 +1,11 @@
 {% if page_title|length > 0 %} {# for module news on main - have no title #}
+    <ol class="breadcrumb">
+        <li><a href="{{ system.url }}">{{ language.global_main }}</a></li>
+        <li><a href="{{ system.url }}/news/">{{ language.news_view_category_unset }}</a></li>
+        {% if page_link != null %}
+            <li class="active">{{ page_title }}</li>
+        {% endif %}
+    </ol>
     <h1>{{ page_title }}</h1>
     {% if page_desc|length > 0 %}
         <p>{{ page_desc }}</p>
@@ -7,6 +14,7 @@
 {% endif %}
 {% for newsdata in local %}
     <article class="article-item">
+
         <h2><a href="{{ system.url }}/news/{{ newsdata.full_news_uri }}">{{ newsdata.title }}</a></h2>
         <div class="meta">
             <span><i class="fa fa-list"></i><a href="{{ system.url }}/news/{{ newsdata.category_url }}">{{ newsdata.category_name }}</a></span>

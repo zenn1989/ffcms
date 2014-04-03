@@ -43,8 +43,8 @@ class modules_news_on_main_front {
         $stmt->bindParam(2, $page_news_count, PDO::PARAM_INT);
         $stmt->execute();
         while ($result = $stmt->fetch()) {
-            $lang_text = unserialize($result['text']);
-            $lang_title = unserialize($result['title']);
+            $lang_text = system::getInstance()->altstripslashes(unserialize($result['text']));
+            $lang_title = system::getInstance()->altstripslashes(unserialize($result['title']));
             $lang_keywords = unserialize($result['keywords']);
             $news_short_text = $lang_text[language::getInstance()->getUseLanguage()];
             if(system::getInstance()->length($lang_title[language::getInstance()->getUseLanguage()]) < 1) // do not add the empty title news
