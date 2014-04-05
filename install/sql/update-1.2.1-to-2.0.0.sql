@@ -16,7 +16,7 @@ CREATE TABLE `{$db_prefix}_extensions` (
 INSERT INTO `{$db_prefix}_extensions` (`id`, `type`, `configs`, `dir`, `enabled`, `path_choice`, `path_allow`, `path_deny`) VALUES
   (1,	'components',	'',	'static',	1,	0,	'',	''),
   (2,	'components',	'a:12:{s:13:\"login_captcha\";s:1:\"0\";s:16:\"register_captcha\";s:1:\"1\";s:15:\"register_aprove\";s:1:\"0\";s:10:\"use_openid\";s:1:\"1\";s:12:\"profile_view\";s:1:\"1\";s:15:\"wall_post_count\";s:1:\"5\";s:16:\"marks_post_count\";s:1:\"5\";s:17:\"friend_page_count\";s:2:\"10\";s:15:\"wall_post_delay\";s:2:\"30\";s:8:\"pm_count\";s:1:\"5\";s:12:\"balance_view\";s:1:\"0\";s:14:\"userlist_count\";s:2:\"10\";}',	'user',	1,	0,	'',	''),
-  (3,	'components',	'a:10:{s:15:\"count_news_page\";s:1:\"5\";s:17:\"short_news_length\";s:3:\"200\";s:18:\"enable_views_count\";s:1:\"1\";s:14:\"enable_useradd\";s:1:\"0\";s:14:\"multi_category\";s:1:\"1\";s:11:\"enable_tags\";s:1:\"1\";s:9:\"poster_dx\";s:3:\"200\";s:9:\"poster_dy\";s:3:\"200\";s:10:\"gallery_dx\";s:3:\"150\";s:10:\"gallery_dy\";s:3:\"150\";}',	'news',	1,	0,	'',	''),
+  (3, 'components', 'a:12:{s:15:"count_news_page";s:1:"5";s:17:"short_news_length";s:3:"200";s:18:"enable_views_count";s:1:"1";s:14:"enable_useradd";s:1:"0";s:14:"multi_category";s:1:"1";s:11:"enable_tags";s:1:"1";s:9:"poster_dx";s:3:"200";s:9:"poster_dy";s:3:"200";s:10:"gallery_dx";s:3:"150";s:10:"gallery_dy";s:3:"150";s:10:"enable_rss";s:1:"0";s:9:"rss_count";s:2:"10";}', 'news', 1, 0, '', ''),
   (4,	'components',	'',	'sitemap',	1,	0,	'',	''),
   (5,	'components',	'',	'feedback',	1,	0,	'',	''),
   (6,	'components',	'',	'search',	1,	0,	'',	''),

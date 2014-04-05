@@ -382,12 +382,19 @@ class components_news_front {
     }
 
     private function viewNewsRssFeed() {
+        if(!extension::getInstance()->getConfig('enable_rss', 'news', extension::TYPE_COMPONENT, 'bool'))
+            return null;
         header('Content-Type: application/rss+xml; charset=utf-8');
-        if(cache::getInstance()->get('rssfeed', self::RSS_UPDATE_TIME))
-            template::getInstance()->justPrint(cache::getInstance()->get('rssfeed', self::RSS_UPDATE_TIME));
+        if(cache::getInstance()->get('rssfeed_'.language::getInstance()->getUseLanguage(), self::RSS_UPDATE_TIME))
+            template::getInstance()->justPrint(cache::getInstance()->get('rssfeed_'.language::getInstance()->getUseLanguage(), self::RSS_UPDATE_TIME));
         $params = array();
-        $stmt = database::getInstance()->con()->query("SELECT a.id,a.title,a.text,a.link,a.date,b.path,b.name FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a,
-                                        ".property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.display = 1 ORDER BY a.id DESC LIMIT 0,".self::RSS_ITEM_LIMIT);
+        $item_count = self::RSS_ITEM_LIMIT;
+        if(extension::getInstance()->getConfig('rss_count', 'news', extension::TYPE_COMPONENT, 'int') > 0)
+            $item_count = extension::getInstance()->getConfig('rss_count', 'news', extension::TYPE_COMPONENT, 'int');
+        $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.text,a.link,a.date,b.path,b.name FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a,
+                                        ".property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.display = 1 ORDER BY a.id DESC LIMIT 0,?");
+        $stmt->bindParam(1, $item_count, PDO::PARAM_INT);
+        $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt = null;
         $site_title = property::getInstance()->get('seo_title');
@@ -404,9 +411,10 @@ class components_news_front {
             $item_catname = system::getInstance()->altstripslashes(unserialize($row['name']));
             $item_desc = null;
             $item_link = property::getInstance()->get('url') . '/news/';
-            if(system::getInstance()->contains('<hr />', $item_langtext)) {
-                $item_desc = strstr($item_langtext, '<hr />', true);
-            } elseif (system::getInstance()->length($item_langtext) > 200) {
+            if(system::getInstance()->contains('<hr />', $item_fulltext[language::getInstance()->getUseLanguage()])) {
+                $item_desc = strstr($item_fulltext[language::getInstance()->getUseLanguage()], '<hr />', true);
+                $item_desc = system::getInstance()->stringInline(system::getInstance()->nohtml($item_desc));
+            } elseif(system::getInstance()->length($item_langtext) > 200) {
                 $item_desc = system::getInstance()->sentenceSub($item_langtext, 200) . "...";
             }
             if($row['path'] == null) {
@@ -432,7 +440,7 @@ class components_news_front {
             );
         }
         $content = template::getInstance()->twigString()->render(@file_get_contents(root . '/resource/cmscontent/rss_2.xml'), $params);
-        cache::getInstance()->store('rssfeed', $content);
+        cache::getInstance()->store('rssfeed_'.language::getInstance()->getUseLanguage(), $content);
         template::getInstance()->justPrint($content);
     }
 

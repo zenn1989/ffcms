@@ -26,6 +26,9 @@
         {{ settingstpl.textgroup('poster_dy', config.poster_dy, language.admin_component_news_config_poster_dy_title, language.admin_component_news_config_poster_dy_desc) }}
         {{ settingstpl.textgroup('gallery_dx', config.gallery_dx, language.admin_component_news_config_gallery_dx_title, language.admin_component_news_config_gallery_dx_desc) }}
         {{ settingstpl.textgroup('gallery_dy', config.gallery_dy, language.admin_component_news_config_gallery_dy_title, language.admin_component_news_config_gallery_dy_desc) }}
+    <h2>{{ language.admin_component_news_settings_rss }}</h2>
+        {{ settingstpl.selectYNgroup('enable_rss', config.enable_rss, language.admin_component_news_config_rss_enable_title, language.admin_component_news_config_rss_enable_desc, _context) }}
+        {{ settingstpl.textgroup('rss_count', config.rss_count, language.admin_component_news_config_rss_count_title, language.admin_component_news_config_rss_count_desc) }}
     <input type="submit" name="submit" value="{{ language.admin_extension_save_button }}" class="btn btn-success"/>
     </fieldset>
 </form>
