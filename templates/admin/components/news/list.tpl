@@ -1,11 +1,29 @@
 {% import 'macro/scriptdata.tpl' as scriptdata %}
+{% import 'macro/notify.tpl' as notifytpl %}
 <h1>{{ extension.title }}<small>{{ language.admin_component_news_manage }}</small></h1>
 <hr />
 {% include 'components/news/menu_include.tpl' %}
 <div class="row">
     <div class="col-lg-12">
+        <div class="pull-left">
+            <div class="btn-group">
+                <button type="button" class="btn btn-default">{{ language.admin_component_news_edit_page_filter_title }}</button>
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="?object=components&action=news&make=list&filter=0">{{ language.admin_component_news_edit_page_filter_all }}</a></li>
+                    <li><a href="?object=components&action=news&make=list&filter=1">{{ language.admin_component_news_edit_page_filter_moderate }}</a></li>
+                    <li><a href="?object=components&action=news&make=list&filter=2">{{ language.admin_component_news_edit_page_filter_important }}</a></li>
+                </ul>
+            </div>
+        </div>
         <div class="pull-right">
-            <form action="" method="post" class="form-inline">
+            <form action="" method="get" class="form-inline">
+                <input type="hidden" name="object" value="components" />
+                <input type="hidden" name="action" value="news" />
+                <input type="hidden" name="filter" value="3" />
                 <div class="form-group">
                     <input type="text" name="search" placeHolder="Data..." value="{{ search.value|escape|striptags }}" class="form-control"/>
                 </div>
@@ -45,5 +63,9 @@
     <input type="submit" name="deleteSelected" value="{{ language.admin_checkbox_delselect }}" class="btn btn-danger" />
     {{ scriptdata.checkjs('#checkAll', '.check_array') }}
 </form>
+{% if search.value|length < 1 %}
 {{ pagination }}
+{% endif %}
+{% else %}
+    {{ notifytpl.warning(language.admin_component_news_edit_page_nullerror) }}
 {% endif %}

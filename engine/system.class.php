@@ -124,9 +124,10 @@ class system extends singleton {
     /**
      * Remove html entery
      * @param string $data
+     * @param bool $save_quotes
      * @return string
      */
-    public function nohtml($data)
+    public function nohtml($data, $save_quotes = false)
     {
         if(is_array($data)) {
             $output = array();
@@ -136,7 +137,7 @@ class system extends singleton {
             }
             return $output;
         }
-        return htmlentities(strip_tags($data), ENT_QUOTES | ENT_IGNORE, "UTF-8");
+        return $save_quotes === true ? $data : htmlentities(strip_tags($data), ENT_QUOTES | ENT_IGNORE, "UTF-8");
     }
 
     public function stringInline($data) {

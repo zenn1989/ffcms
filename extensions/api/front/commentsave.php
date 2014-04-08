@@ -28,7 +28,7 @@ class api_commentsave_front {
             if(!$obj->canEdit($comment_id)) {
                 return null;
             }
-            $comment_text = system::getInstance()->nohtml(system::getInstance()->post('comment_text'));
+            $comment_text = system::getInstance()->nohtml(system::getInstance()->post('comment_text'), true);
             if($comment_id > 0 && strlen($comment_text) > 0) {
                 $stmt = database::getInstance()->con()->prepare("UPDATE " . property::getInstance()->get('db_prefix') . "_mod_comments set comment = ? where id = ?");
                 $stmt->bindParam(1, $comment_text, PDO::PARAM_STR);

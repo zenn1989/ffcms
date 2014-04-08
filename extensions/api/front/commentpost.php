@@ -29,7 +29,7 @@ class api_commentpost_front {
     }
 
     private function postComment() {
-        $text = system::getInstance()->nohtml(system::getInstance()->post('comment_message'));
+        $text = system::getInstance()->nohtml(system::getInstance()->post('comment_message'), true);
         $authorid = user::getInstance()->get('id');
         $position = system::getInstance()->post('comment_position');
         $pathway = system::getInstance()->post('pathway');

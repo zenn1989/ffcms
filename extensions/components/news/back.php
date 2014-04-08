@@ -22,6 +22,11 @@ class components_news_back {
     const ITEM_PER_PAGE = 10;
     const SEARCH_PER_PAGE = 50;
 
+    const FILTER_ALL = 0;
+    const FILTER_MODERATE = 1;
+    const FILTER_IMPORTANT = 2;
+    const FILTER_SEARCH = 3;
+
     public static function getInstance() {
         if(is_null(self::$instance))
             self::$instance = new self();
@@ -522,22 +527,34 @@ class components_news_back {
         }
 
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
-        $params['search']['value'] = system::getInstance()->nohtml(system::getInstance()->post('search'));
+        $params['search']['value'] = system::getInstance()->nohtml(system::getInstance()->get('search'));
         $index_start = (int)system::getInstance()->get('index');
         $db_index = $index_start * self::ITEM_PER_PAGE;
         $stmt = null;
-        if(system::getInstance()->post('dosearch') && strlen($params['search']['value']) > 0) {
+        $filter = (int)system::getInstance()->get('filter');
+        if($filter === self::FILTER_MODERATE) { // 1
+            $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.category,a.link,b.category_id,b.path FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".
+                property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.display = 0 ORDER BY a.id DESC LIMIT ?,".self::ITEM_PER_PAGE);
+            $stmt->bindParam(1, $db_index, PDO::PARAM_INT);
+            $stmt->execute();
+        } elseif($filter === self::FILTER_IMPORTANT) { // 2
+            $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.category,a.link,b.category_id,b.path FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".
+                property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.important = 1 ORDER BY a.id DESC LIMIT ?,".self::ITEM_PER_PAGE);
+            $stmt->bindParam(1, $db_index, PDO::PARAM_INT);
+            $stmt->execute();
+        } elseif($filter === self::FILTER_SEARCH) { // 3
             $search_string = "%".$params['search']['value']."%";
             $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.category,a.link,b.category_id,b.path FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".
                 property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND (a.title like ? OR a.text like ?) ORDER BY a.id DESC LIMIT 0,".self::SEARCH_PER_PAGE);
             $stmt->bindParam(1, $search_string, PDO::PARAM_STR);
             $stmt->bindParam(2, $search_string, PDO::PARAM_STR);
             $stmt->execute();
-        } else {
+        } else { // 0 || > 3
             $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.category,a.link,b.category_id,b.path FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".
                 property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id ORDER BY a.id DESC LIMIT ?,".self::ITEM_PER_PAGE);
             $stmt->bindParam(1, $db_index, PDO::PARAM_INT);
             $stmt->execute();
+            $filter = 0;
         }
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt = null;
@@ -553,7 +570,7 @@ class components_news_back {
                 'link' => $link
             );
         }
-        $params['pagination'] = template::getInstance()->showFastPagination($index_start, self::ITEM_PER_PAGE, $this->getTotalNewsCount(), '?object=components&action=news&index=');
+        $params['pagination'] = template::getInstance()->showFastPagination($index_start, self::ITEM_PER_PAGE, $this->getTotalNewsCount($filter), '?object=components&action=news&filter='.$filter.'&index=');
 
         return template::getInstance()->twigRender('components/news/list.tpl', $params);
     }
@@ -580,8 +597,20 @@ class components_news_back {
         return false;
     }
 
-    public function getTotalNewsCount() {
-        $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_com_news_entery");
+    public function getTotalNewsCount($filter = 0) {
+        $query = null;
+        switch($filter) {
+            case 1:
+                $query = "SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE display = 0";
+                break;
+            case 2:
+                $query = "SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE important = 1";
+                break;
+            default:
+                $query = "SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_com_news_entery";
+                break;
+        }
+        $stmt = database::getInstance()->con()->prepare($query);
         $stmt->execute();
         $result = $stmt->fetch();
         $stmt = null;

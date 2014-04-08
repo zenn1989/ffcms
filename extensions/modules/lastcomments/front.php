@@ -43,6 +43,7 @@ class modules_lastcomments_front {
                 $params['comment'][] = array(
                     'user_id' => $result['author'],
                     'user_name' => user::getInstance()->get('nick', $result['author']),
+                    'user_avatar' => user::getInstance()->buildAvatar('small', $result['author']),
                     'uri' => $result['pathway'],
                     'preview' => system::getInstance()->altsubstr($comment_text, 0, $max_comment_char_size),
                     'date' => system::getInstance()->toDate($result['time'], 'd')

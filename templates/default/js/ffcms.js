@@ -68,6 +68,7 @@ $(document).ready(function() {
     $( ".side-links .toggle-children" ).click(function() {
         $(this).toggleClass('open').next().toggle("slow");
     });
+    $('.tooltip-show').tooltip();
 });
 
 function ffcmsAddBookmark(b_url, b_title) {

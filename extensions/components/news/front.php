@@ -535,8 +535,9 @@ class components_news_front {
                         $tag_array[] = trim($tagItem);
                     }
                     $comment_count = 0;
-                    if(is_object(extension::getInstance()->call(extension::TYPE_HOOK, 'comment')))
-                        $comment_count = extension::getInstance()->call(extension::TYPE_HOOK, 'comment')->getCount('/news/'.$news_full_link);
+                    if(is_object(extension::getInstance()->call(extension::TYPE_HOOK, 'comment'))) {
+                        $comment_count = extension::getInstance()->call(extension::TYPE_HOOK, 'comment')->getCount('/'.language::getInstance()->getUseLanguage().'/news/'.$news_full_link);
+                    }
                     $cat_serial_text = system::getInstance()->altstripslashes(unserialize($result['name']));
                     $news_view_id = $result['id'];
                     $image_poster_root = root . '/upload/news/poster_' . $news_view_id . '.jpg';
