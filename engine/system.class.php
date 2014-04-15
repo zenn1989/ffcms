@@ -297,7 +297,7 @@ class system extends singleton {
 
     /**
      * Check $data is in rage 0-9 (integer)
-     * @param boolean $data
+     * @param string $data
      * @return boolean
      */
     public function isInt($data)
@@ -312,7 +312,7 @@ class system extends singleton {
      */
     public function isIntList($data)
     {
-        return !preg_match('/[^0-9,]/s', $data) && $this->length($data) > 0;
+        return !preg_match('/[^0-9, ]/s', $data) && $this->length($data) > 0;
     }
 
     /**
@@ -626,6 +626,71 @@ class system extends singleton {
         if(file_exists($path))
             return;
         @mkdir($path, $chmod, true);
+    }
+
+    /**
+     * Save file data with creating path if not founded. Extended alias to file_put_contents
+     * @param string $file_data
+     * @param string $path
+     */
+    public function putFile($file_data, $path) {
+        $path_array = explode('/', $path);
+        array_pop($path_array);
+        $path_dir = implode('/', $path_array);
+        if(!$this->prefixEquals($path_dir, root))
+            $path = root . $path_dir;
+        if(!file_exists($path_dir))
+            $this->createDirectory($path_dir);
+        @file_put_contents($path, $file_data);
+    }
+
+    /**
+     * Alias function for putFile($file_name, $path)
+     * @param string $file_data
+     * @param string $path
+     */
+    public function saveFile($file_data, $path) {
+        $this->putFile($file_data, $path);
+    }
+
+    /**
+     * Alias function for putFile($file_name, $path)
+     * @param string $file_data
+     * @param string $path
+     */
+    public function storeFile($file_data, $path) {
+        $this->putFile($file_data, $path);
+    }
+
+    /**
+     * Get content from URL according curl
+     * @param string $url
+     * @return mixed
+     */
+    public function url_get_contents($url)
+    {
+        $content = null;
+        if(function_exists('curl_version')) {
+            $curl = \curl_init();
+            $userAgent = 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)';
+
+            \curl_setopt($curl,CURLOPT_URL, $url);
+            \curl_setopt($curl,CURLOPT_RETURNTRANSFER, TRUE);
+            \curl_setopt($curl,CURLOPT_CONNECTTIMEOUT, 5);
+
+            \curl_setopt($curl, CURLOPT_HEADER, 0);
+            \curl_setopt($curl, CURLOPT_USERAGENT, $userAgent);
+            \curl_setopt($curl, CURLOPT_FAILONERROR, TRUE);
+            \curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE);
+            \curl_setopt($curl, CURLOPT_AUTOREFERER, TRUE);
+            \curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+
+            $content = \curl_exec($curl);
+            \curl_close($curl);
+        } else {
+            $content = @file_get_contents($url);
+        }
+        return $content;
     }
 
     public function altaddslashes($data) {

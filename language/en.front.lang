@@ -219,7 +219,11 @@ comment_text_edit_link<=>Edit
 comment_text_delete_link<=>Delete
 comment_modal_text_notify<=>If you need mass comment edit you can do it in admin panel->modules->comments
 comments_api_incorrent_length<=>Incorrent length of comment
-comments_register_msg<=>You can`t publish comments on website. Please <a href="/user/register.html">register now</a>
+comments_register_msg<=>You can`t publish comments on website. Please register now
+comments_api_incorrent_captcha<=>Characters security image are not passed
+comment_api_guest_title<=>Guest comment
+comment_api_guest_name<=>Name
+comment_api_on_moderate<=>Your comment has been sent for moderation.
 position_header_main<=>Main
 position_header_news<=>News
 position_header_users<=>Users

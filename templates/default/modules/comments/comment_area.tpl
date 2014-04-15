@@ -21,10 +21,21 @@
 </ul>
 <div class="tab-content">
     <div class="tab-pane active" id="comment_site">
-        <div style="padding-top: 25px;"> <!-- padding for wisybb popover -->
+        <div style="padding-top: 15px;"> <!-- padding for wisybb popover -->
             {% if user.id > 0 %}
-            <textarea style="width: 95%;" placeHolder="{{ language.comments_text_writemsg }}" id="comment_value" class="wysibb-editor" rows="5"></textarea>
-            <div class="pull-right"><a href="#comment-add" id="comment_send" class="btn btn-success">{{ language.global_send_button }}</a></div><br /><br />
+                <div class="row">
+                    <div class="col-md-12">
+                        <textarea style="width: 95%;" placeHolder="{{ language.comments_text_writemsg }}" id="comment_value" class="wysibb-editor" rows="5"></textarea>
+                        <div class="pull-right"><a href="#comment-add" id="comment_send" class="btn btn-success">{{ language.global_send_button }}</a></div>
+                    </div>
+                </div>
+            {% elseif guest_access %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <textarea style="width: 95%;" placeHolder="{{ language.comments_text_writemsg }}" id="comment_value" class="wysibb-editor" rows="5"></textarea>
+                        <div class="pull-right"><a href="#comment-guest" data-toggle="modal" class="btn btn-success">{{ language.global_send_button }}</a></div>
+                    </div>
+                </div>
             {% else %}
             <p class="alert alert-warning">{{ language.comments_register_msg }}</p>
             {% endif %}
@@ -62,6 +73,45 @@
                     <div class="alert alert-info">{{ language.comment_modal_text_notify }}</div>
                 {% endif %}
                 <div id="comment-edit-jquery">{{ language.comment_modal_edit_loadingnow }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- guest modal form -->
+<div class="modal fade" id="comment-guest" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">{{ language.comment_api_guest_title }}</h4>
+            </div>
+            <div class="modal-body">
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label class="control-label col-md-4">{{ language.comment_api_guest_name }}</label>
+                    <div class="col-md-8"><input type="text" class="form-control" name="guest_name" maxlength="16" /></div>
+                </div>
+                {% if captcha.full %}
+                    <script>
+                        var RecaptchaOptions = { theme : 'white' };
+                    </script>
+                    {{ captcha.image }}
+                {% else %}
+                    <div class="row">
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-8">
+                        <img src="{{ captcha.image }}" id="captcha"/>
+                        <a href="#" onclick="document.getElementById('captcha').src='{{ captcha.image }}?'+Math.random();"><i class="fa fa-refresh"></i></a>
+                        <input type="text" name="captcha" class="form-control" required>
+                    </div>
+                    </div>
+                {% endif %}
+            </form>
+            </div>
+            <div class="modal-footer">
+                <a href="#comment-add" id="comment_send" class="btn btn-success">{{ language.global_send_button }}</a>
             </div>
         </div>
     </div>

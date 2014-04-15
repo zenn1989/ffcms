@@ -115,6 +115,9 @@ CREATE TABLE `{$db_prefix}_mod_comments` (
   `author` int(32) NOT NULL,
   `time` int(16) NOT NULL DEFAULT '0',
   `pathway` varchar(256) NOT NULL,
+  `ip` VARCHAR( 18 ) NOT NULL DEFAULT  '',
+  `guest_name` VARCHAR( 128 ) NOT NULL DEFAULT '',
+  `moderate` INT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

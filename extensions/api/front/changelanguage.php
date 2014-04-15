@@ -32,6 +32,8 @@ class api_changelanguage_front {
             $uri_target = '/' . $to . '/';
             $uri_target .= $uri_no_lang;
             system::getInstance()->redirect($uri_target);
+        } else {
+            system::getInstance()->redirect();
         }
     }
 }

@@ -1,6 +1,7 @@
 AddDefaultCharset utf-8
 Options -Indexes
 
+DirectoryIndex index.php
 RewriteEngine On
 RewriteBase /
 RewriteRule ^.htaccess$ - [F]

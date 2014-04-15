@@ -27,7 +27,7 @@ class modules_lastcomments_front {
         $comment_count = extension::getInstance()->getConfig('last_count', 'lastcomments', 'modules', 'int');
         if($comment_count < 1)
             $comment_count = 1;
-        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE `pathway` != '' ORDER BY `time` DESC LIMIT 0,?");
+        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE `pathway` != '' AND moderate = '0' ORDER BY `time` DESC LIMIT 0,?");
         $stmt->bindParam(1, $comment_count, PDO::PARAM_INT);
         $stmt->execute();
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -46,7 +46,8 @@ class modules_lastcomments_front {
                     'user_avatar' => user::getInstance()->buildAvatar('small', $result['author']),
                     'uri' => $result['pathway'],
                     'preview' => system::getInstance()->altsubstr($comment_text, 0, $max_comment_char_size),
-                    'date' => system::getInstance()->toDate($result['time'], 'd')
+                    'date' => system::getInstance()->toDate($result['time'], 'd'),
+                    'guest_name' => system::getInstance()->nohtml($result['guest_name'])
                 );
             }
             $render = template::getInstance()->twigRender('modules/lastcomments/lastcomments.tpl', array('local' => $params));

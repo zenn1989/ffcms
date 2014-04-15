@@ -15,6 +15,9 @@
             {% if item.image_url %}
             <enclosure url="{{ item.image_url }}" type="image/jpeg" length="{{ item.image_size }}" />
             {% endif %}
+            {% if item.text|length > 0 %}
+            <yandex:full-text><![CDATA[{{ item.text|raw }}]]></yandex:full-text>
+            {% endif %}
         </item>
         {% endfor %}
     </channel>

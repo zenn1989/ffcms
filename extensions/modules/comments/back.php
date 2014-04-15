@@ -41,8 +41,36 @@ class modules_comments_back {
             case 'delete':
                 $content = $this->viewCommentDelete();
                 break;
+            case 'aprove':
+                $this->viewCommentAprove();
+                break;
+            case 'hide':
+                $this->viewCommentHide();
+                break;
         }
         return $content;
+    }
+
+    private function viewCommentHide() {
+        $comment_id = (int)system::getInstance()->get('id');
+
+        $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_mod_comments SET moderate = 1 WHERE id = ?");
+        $stmt->bindParam(1, $comment_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt = null;
+
+        system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=modules&action=comments");
+    }
+
+    private function viewCommentAprove() {
+        $comment_id = (int)system::getInstance()->get('id');
+
+        $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_mod_comments SET moderate = 0 WHERE id = ?");
+        $stmt->bindParam(1, $comment_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt = null;
+
+        system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=modules&action=comments");
     }
 
     private function viewCommentDelete() {
@@ -68,7 +96,7 @@ class modules_comments_back {
             $params['comments']['data'] = array(
                 'id' => $comment_id,
                 'user_name' => user::getInstance()->get('nick', $result['author']),
-                'text' => extension::getInstance(true)->call(extension::TYPE_HOOK, 'bbtohtml')->nobbcode($result['comment'])
+                'text' => extension::getInstance()->call(extension::TYPE_HOOK, 'bbtohtml')->nobbcode($result['comment'])
             );
         } else {
             system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=modules&action=comments');
@@ -122,6 +150,7 @@ class modules_comments_back {
         $params['config']['edit_time'] = extension::getInstance()->getConfig('edit_time', 'comments', extension::TYPE_MODULE, 'int');
         $params['config']['min_length'] = extension::getInstance()->getConfig('min_length', 'comments', extension::TYPE_MODULE, 'int');
         $params['config']['max_length'] = extension::getInstance()->getConfig('max_length', 'comments', extension::TYPE_MODULE, 'int');
+        $params['config']['guest_comment'] = extension::getInstance()->getConfig('guest_comment', 'comments', extension::TYPE_MODULE, 'int');
 
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
 
@@ -159,7 +188,9 @@ class modules_comments_back {
                 'id' => $row['id'],
                 'user_id' => $row['author'],
                 'user_name' => user::getInstance()->get('nick', $row['author']),
-                'comment' => extension::getInstance(true)->call(extension::TYPE_HOOK, 'bbtohtml')->nobbcode($row['comment'])
+                'comment' => extension::getInstance()->call(extension::TYPE_HOOK, 'bbtohtml')->nobbcode($row['comment']),
+                'guest_name' => system::getInstance()->nohtml($row['guest_name']),
+                'moderate' => $row['moderate']
             );
         }
 

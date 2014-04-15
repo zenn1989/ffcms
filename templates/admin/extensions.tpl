@@ -69,7 +69,7 @@
             </thead>
             <tbody>
             {% for name,param in extension %}
-                {% if param.enabled == 0 %}
+                {% if param.enabled != 1 %}
                     <tr>
                         <td>{{ loop.index }}</td>
                         <td>{{ param.title }}</td>

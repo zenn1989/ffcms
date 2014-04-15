@@ -31,7 +31,7 @@ class hooks_comment_front
     {
         if(is_null($way))
             $way = router::getInstance()->getUriString();
-        $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE pathway = ?");
+        $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE pathway = ? AND moderate = 0");
         $stmt->bindParam(1, $way, PDO::PARAM_STR);
         $stmt->execute();
         $resultSet = $stmt->fetch();

@@ -35,7 +35,7 @@ class modules_comments_front {
         if(is_null($way))
             $way = router::getInstance()->getUriString();
         if($show_all) {
-            $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE pathway = ? ORDER BY id DESC");
+            $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE pathway = ? AND moderate = '0' ORDER BY id DESC");
             $stmt->bindParam(1, $way, PDO::PARAM_STR);
             $stmt->execute();
         } else {
@@ -44,7 +44,7 @@ class modules_comments_front {
                 $end = 1;
             }
             $end *= $comment_count;
-            $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE pathway = ? ORDER BY id DESC LIMIT 0,?");
+            $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE pathway = ? AND moderate = '0' ORDER BY id DESC LIMIT 0,?");
             $stmt->bindParam(1, $way, PDO::PARAM_STR);
             $stmt->bindParam(2, $end, PDO::PARAM_INT);
             $stmt->execute();
@@ -73,7 +73,8 @@ class modules_comments_front {
                 'comment_date' => system::getInstance()->toDate($item['time'], 'h'),
                 'comment_id' => $item['id'],
                 'can_edit' => $can_edit,
-                'can_delete' => $can_delete
+                'can_delete' => $can_delete,
+                'guest_name' => system::getInstance()->nohtml($item['guest_name'])
             );
         }
         $stmt = null;

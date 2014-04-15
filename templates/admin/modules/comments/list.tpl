@@ -17,11 +17,21 @@
     {% for item in comments.list %}
     <tr>
         <td><input type="checkbox" name="check_array[]" class="check_array" value="{{ item.id }}"/> {{ item.id }}</td>
-        <td>{{ item.user_name }}</td>
+        <td>{% if item.user_id < 1 %}
+            {{ item.guest_name }}
+            {% else %}
+            {{ item.user_name }}
+            {% endif %}
+        </td>
         <td>{{ item.comment|striptags|escape }}</td>
         <td class="text-center">
             <a href="?object=modules&action=comments&make=edit&id={{ item.id }}" title="Edit"><i class="fa fa-pencil-square-o fa-lg"></i></a>
             <a href="?object=modules&action=comments&make=delete&id={{ item.id }}" title="Delete"><i class="fa fa-trash-o fa-lg"></i></a>
+            {% if item.moderate %}
+                <a href="?object=modules&action=comments&make=aprove&id={{ item.id }}" title="Aprove"><i class="fa fa-check fa-lg"></i></a>
+            {% else %}
+                <a href="?object=modules&action=comments&make=hide&id={{ item.id }}" title="hide"><i class="fa fa-lock fa-lg"></i></a>
+            {% endif %}
         </td>
     </tr>
     {% endfor %}

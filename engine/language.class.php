@@ -100,4 +100,26 @@ class language extends singleton {
     public static function canUse($lang) {
         return in_array($lang, self::$available);
     }
+
+    /**
+     * Add lines to language file. Used in install() function when extension installed in interface.
+     * Example: extension::getInstance->add(array('ru' => array('variable_param' => 'This is variable value')));
+     * @param array $data
+     * @param bool $back
+     */
+    public function add($data, $back = false) {
+        foreach($data as $lang=>$lines) {
+            $toWriteString = "\n";
+            foreach($lines as $param=>$value) {
+                $toWriteString .= $param . "<=>" . $value . "\n";
+            }
+            $file = null;
+            if($back) {
+                $file = root . "/language/" . $lang . ".back.addition.lang";
+            } else {
+                $file = root . "/language/" . $lang . ".front.addition.lang";
+            }
+            @file_put_contents($file, $toWriteString, FILE_APPEND | LOCK_EX);
+        }
+    }
 }

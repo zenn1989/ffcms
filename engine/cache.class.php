@@ -44,8 +44,18 @@ class cache extends singleton {
     }
 
     /**
-     * Get file from cache storage if it exist and does not exprire for time. Return null if cache not available.
+     * Alias for function store($name, $data)
      * @param $name
+     * @param $data
+     */
+    public function save($name, $data) {
+        $this->store($name, $data);
+    }
+
+    /**
+     * Get file from cache storage if it exist and does not exprire for time. Return null if cache not available.
+     * @param string $name
+     * @param int $custom_time
      * @return null|string
      */
     public function get($name, $custom_time = null) {

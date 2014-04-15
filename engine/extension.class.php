@@ -23,9 +23,9 @@ class extension extends singleton {
     /**
      * @return extension
      */
-    public static function getInstance($all = false) {
+    public static function getInstance() {
         if(is_null(self::$instance)) {
-            self::loadExtensionsData($all);
+            self::loadExtensionsData();
             self::$instance = new self();
         }
         return self::$instance;
@@ -69,36 +69,38 @@ class extension extends singleton {
 
     public function loadModules() {
         foreach(self::$extconfigs['modules'] as $mod_data) {
-            // check is module work on this pathway.
-            $work_on_this_path = false;
-            if ($mod_data['path_choice'] == 1) {
-                // 	 { $this->stringPathway: component/aaa/ddd.html
-                //	<   											=> ok
-                //	 { module_rule: component/*
-                $allowed_array = explode(';', $mod_data['path_allow']);
-                foreach ($allowed_array as $allowed) {
-                    // dont change it on false (can deny before excepted data)
-                    $canwork = router::getInstance()->isRightWayRule($allowed);
-                    if ($canwork) {
-                        $work_on_this_path = true;
+            if($mod_data['enabled'] == 1) { // if module is enabled
+                // check is module work on this pathway.
+                $work_on_this_path = false;
+                if ($mod_data['path_choice'] == 1) {
+                    // 	 { $this->stringPathway: component/aaa/ddd.html
+                    //	<   											=> ok
+                    //	 { module_rule: component/*
+                    $allowed_array = explode(';', $mod_data['path_allow']);
+                    foreach ($allowed_array as $allowed) {
+                        // dont change it on false (can deny before excepted data)
+                        $canwork = router::getInstance()->isRightWayRule($allowed);
+                        if ($canwork) {
+                            $work_on_this_path = true;
+                        }
                     }
-                }
-            } // list of deny ways
-            else {
-                $find_deny = false;
-                $deny_array = explode(';', $mod_data['path_deny']);
-                foreach ($deny_array as $deny) {
-                    if (router::getInstance()->isRightWayRule($deny)) {
-                        $find_deny = true;
+                } // list of deny ways
+                else {
+                    $find_deny = false;
+                    $deny_array = explode(';', $mod_data['path_deny']);
+                    foreach ($deny_array as $deny) {
+                        if (router::getInstance()->isRightWayRule($deny)) {
+                            $find_deny = true;
+                        }
                     }
+                    $work_on_this_path = !$find_deny;
                 }
-                $work_on_this_path = !$find_deny;
-            }
-           // if module is working on this pathway URI - load it!
-            if ($work_on_this_path) {
-                $object = $this->call(self::TYPE_MODULE, $mod_data['dir']);
-                if(is_object($object) && method_exists($object, 'make'))
-                    $object->make();
+               // if module is working on this pathway URI - load it!
+                if ($work_on_this_path) {
+                    $object = $this->call(self::TYPE_MODULE, $mod_data['dir']);
+                    if(is_object($object) && method_exists($object, 'make'))
+                        $object->make();
+                }
             }
         }
     }
@@ -126,10 +128,8 @@ class extension extends singleton {
         self::loadExtensionsData();
     }
 
-    protected static function loadExtensionsData($all = false) {
+    protected static function loadExtensionsData() {
         $query = "SELECT * FROM ".property::getInstance()->get('db_prefix')."_extensions";
-        if(!$all)
-            $query .= " WHERE enabled = 1";
         $stmt = database::getInstance()->con()->query($query);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         foreach($result as $row) {

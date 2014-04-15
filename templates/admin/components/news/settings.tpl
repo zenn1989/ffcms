@@ -29,6 +29,7 @@
     <h2>{{ language.admin_component_news_settings_rss }}</h2>
         {{ settingstpl.selectYNgroup('enable_rss', config.enable_rss, language.admin_component_news_config_rss_enable_title, language.admin_component_news_config_rss_enable_desc, _context) }}
         {{ settingstpl.textgroup('rss_count', config.rss_count, language.admin_component_news_config_rss_count_title, language.admin_component_news_config_rss_count_desc) }}
+        {{ settingstpl.selectYNgroup('enable_full_rss', config.enable_full_rss, language.admin_component_news_config_rss_fulltext_title, language.admin_component_news_config_rss_fulltext_desc, _context) }}
     <input type="submit" name="submit" value="{{ language.admin_extension_save_button }}" class="btn btn-success"/>
     </fieldset>
 </form>

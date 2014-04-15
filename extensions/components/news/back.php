@@ -281,6 +281,7 @@ class components_news_back {
         $params['config']['gallery_dy'] = extension::getInstance()->getConfig('gallery_dy', 'news', extension::TYPE_COMPONENT, 'int');
         $params['config']['enable_rss'] = extension::getInstance()->getConfig('enable_rss', 'news', extension::TYPE_COMPONENT, 'int');
         $params['config']['rss_count'] = extension::getInstance()->getConfig('rss_count', 'news', extension::TYPE_COMPONENT, 'int');
+        $params['config']['enable_full_rss'] = extension::getInstance()->getConfig('enable_full_rss', 'news', extension::TYPE_COMPONENT, 'int');
 
         return template::getInstance()->twigRender('components/news/settings.tpl', $params);
     }

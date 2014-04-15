@@ -25,6 +25,9 @@ class api {
     public function make() {
         $iface = system::getInstance()->get('iface');
         $object = system::getInstance()->get('object');
+        $cron = system::getInstance()->get('cron');
+        if($cron != null)
+            return $this->cronInit();
         $link = $this->call($iface, $object);
         if(method_exists($link, 'make'))
             $link->make();
@@ -55,6 +58,30 @@ class api {
             }
         }
         return self::$links_api[$iface][$object];
+    }
+
+    private function cronInit() {
+        foreach(extension::getInstance()->getAllParams() as $ext_type=>$ext_data) {
+            foreach($ext_data as $ext_item) {
+                if($ext_item['enabled'] == 1) {
+                    $ext_file = root . '/extensions/' . $ext_type . '/' . $ext_item['dir'] . '/cron.php';
+                    if(file_exists($ext_file)) {
+                        @require_once($ext_file);
+                        $cname = 'cron_' . $ext_item['dir'];
+                        if(class_exists($cname)) {
+                            $link = new $cname;
+                            if(method_exists($link, 'getInstance') && method_exists($link, 'make'))
+                                $link::getInstance()->make();
+                            else
+                                logger::getInstance()->log(logger::LEVEL_WARN, 'Method getInstance() or make() not founded in cron '.$ext_file);
+                        } else {
+                            logger::getInstance()->log(logger::LEVEL_WARN, 'Class '.$cname.' not founded in cron '.$ext_file);
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
 

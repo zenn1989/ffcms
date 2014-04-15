@@ -15,12 +15,12 @@ $(document).ready(function () {
     }
 });
 function posterDelete(id) {
-    $.get(host+'/api.php?iface='+loader+'&object=newsposterdelete&id='+id, function(){
+    $.get(ffcms_host+'/api.php?iface='+loader+'&object=newsposterdelete&id='+id, function(){
         $('#posterobject').remove();
     });
 }
 function gallerydel(name, id) {
-    $.get(host+'/api.php?iface='+loader+'&object=jqueryfile&action=delete&name='+name+'&id='+id);
+    $.get(ffcms_host+'/api.php?iface='+loader+'&object=jqueryfile&action=delete&name='+name+'&id='+id);
     document.getElementById(name).remove();
 }
 function pathCallback()

@@ -7,7 +7,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ system.url }}">{{ language.position_header_main }}</a></a>
+            <a class="navbar-brand" href="{{ system.url }}">{{ language.position_header_main }}</a>
         </div>
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">

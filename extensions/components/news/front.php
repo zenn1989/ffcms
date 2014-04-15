@@ -332,6 +332,13 @@ class components_news_front {
                 }
             }
             $comment_list = extension::getInstance()->call(extension::TYPE_MODULE, 'comments')->buildCommentTemplate();
+            $guest_add = extension::getInstance()->getConfig('guest_comment', 'comments', extension::TYPE_MODULE, 'bool');
+            $captcha_full = false;
+            $captcha_img = null;
+            if($guest_add) {
+                $captcha_full = extension::getInstance()->getConfig('captcha_type', 'captcha', 'hooks') == "recaptcha" ? true : false;
+                $captcha_img = extension::getInstance()->call(extension::TYPE_HOOK, 'captcha')->show();
+            }
             $theme_array = array(
                 'tags' => $tag_array,
                 'title' => $lang_title[language::getInstance()->getUseLanguage()],
@@ -351,7 +358,7 @@ class components_news_front {
                 'gallery' => $image_gallery_array,
                 'poster' => $image_poster_url
             );
-            return template::getInstance()->twigRender('components/news/full_view.tpl', array('local' => $theme_array, 'comments' => $comment_list));
+            return template::getInstance()->twigRender('components/news/full_view.tpl', array('local' => $theme_array, 'comments' => $comment_list, 'guest_access' => $guest_add, 'captcha' => array('full' => $captcha_full, 'image' => $captcha_img)));
         }
         return null;
     }
@@ -385,8 +392,12 @@ class components_news_front {
         if(!extension::getInstance()->getConfig('enable_rss', 'news', extension::TYPE_COMPONENT, 'bool'))
             return null;
         header('Content-Type: application/rss+xml; charset=utf-8');
-        if(cache::getInstance()->get('rssfeed_'.language::getInstance()->getUseLanguage(), self::RSS_UPDATE_TIME))
-            template::getInstance()->justPrint(cache::getInstance()->get('rssfeed_'.language::getInstance()->getUseLanguage(), self::RSS_UPDATE_TIME));
+        $way = router::getInstance()->shiftUriArray();
+        $fulltext_enabled = extension::getInstance()->getConfig('enable_full_rss', 'news', extension::TYPE_COMPONENT, 'bool');
+        $fulltext_mod = $way[1] === "fulltext" && $fulltext_enabled ? true : false;
+        $cache_filename = $fulltext_mod ? 'rssfeed_fulltext_'.language::getInstance()->getUseLanguage() : 'rssfeed_'.language::getInstance()->getUseLanguage();
+        if(cache::getInstance()->get($cache_filename, self::RSS_UPDATE_TIME))
+            template::getInstance()->justPrint(cache::getInstance()->get($cache_filename, self::RSS_UPDATE_TIME));
         $params = array();
         $item_count = self::RSS_ITEM_LIMIT;
         if(extension::getInstance()->getConfig('rss_count', 'news', extension::TYPE_COMPONENT, 'int') > 0)
@@ -428,8 +439,10 @@ class components_news_front {
                 $item_image = property::getInstance()->get('script_url') . '/upload/news/poster_' . $row['id'] .'.jpg';
                 $image_size = filesize(root . '/upload/news/poster_' . $row['id'] . '.jpg');
             }
+            $full_text = $fulltext_mod ? $item_fulltext[language::getInstance()->getUseLanguage()] : null;
             $params['items'][] = array(
                 'title' => $item_title[language::getInstance()->getUseLanguage()],
+                'text' => $full_text,
                 'desc' => $item_desc,
                 'date' => date(DATE_RSS, $row['date']),
                 'link' => $item_link,
@@ -440,7 +453,7 @@ class components_news_front {
             );
         }
         $content = template::getInstance()->twigString()->render(@file_get_contents(root . '/resource/cmscontent/rss_2.xml'), $params);
-        cache::getInstance()->store('rssfeed_'.language::getInstance()->getUseLanguage(), $content);
+        cache::getInstance()->store($cache_filename, $content);
         template::getInstance()->justPrint($content);
     }
 

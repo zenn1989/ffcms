@@ -55,20 +55,30 @@ $(document).ready(function() {
     $('#comment_send').click(function(e){
         $('#comment_value').sync();
         var comment_text = $('#comment_value').val();
+        var guest_name = $('[name=guest_name]').val();
+        var captcha = $('[name=captcha]').val();
+        var recaptcha_challenge_field = $('[name=recaptcha_challenge_field]').val();
+        var recaptcha_response_field = $('[name=recaptcha_response_field]').val();
         if(comment_text.length > 0)
         {
             $.post(host+'/api.php?iface=front&object=commentpost',
-                { comment_message : comment_text, comment_position : current_point, pathway : comment_pathway },
+                { comment_message : comment_text, comment_position : current_point, pathway : comment_pathway,
+                  guest_name : guest_name, captcha : captcha, recaptcha_challenge_field : recaptcha_challenge_field, recaptcha_response_field : recaptcha_response_field
+                },
                 function(data) {
                     $('#comment_list').html(data);
                 });
-            $('#comment_value').val(null);
+            if(guest_name != null && guest_name.length > 0)
+                $('#comment-guest').modal('hide');
+            $('#comment_value').htmlcode('');
         }
     });
     $( ".side-links .toggle-children" ).click(function() {
         $(this).toggleClass('open').next().toggle("slow");
     });
     $('.tooltip-show').tooltip();
+    // run cron tasker in user background
+    $.get(host+'/api.php?cron='+Math.random());
 });
 
 function ffcmsAddBookmark(b_url, b_title) {

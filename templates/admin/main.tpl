@@ -8,7 +8,7 @@
 
     <title>{{ language.admin_page_title }}</title>
     <script>
-        var host = '{{ system.script_url }}';
+        var ffcms_host = '{{ system.script_url }}';
         var loader = '{{ system.loader }}';
     </script>
 

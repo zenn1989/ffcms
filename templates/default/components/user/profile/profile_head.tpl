@@ -2,7 +2,9 @@
 <div class="col-md-12">
     <h2>{{ local.profile.user_name }}
         <small>
-            "{{ local.profile.user_status }}"
+            {% if local.profile.user_status|length > 0 %}
+            &laquo;{{ local.profile.user_status }}&raquo;
+            {% endif %}
             {% if local.profile.is_self %}<a href="{{ system.url }}/user/id{{ local.profile.user_id }}/settings/status"><i class="fa fa-refresh"></i></a>{% endif %}
         </small>
     </h2>

@@ -57,4 +57,8 @@ ALTER TABLE  `{$db_prefix}_com_news_entery` CHANGE  `description`  `description`
 ALTER TABLE  `{$db_prefix}_com_news_entery` CHANGE  `keywords`  `keywords` VARCHAR( 4096 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 ALTER TABLE  `{$db_prefix}_com_news_category` ADD  `desc` VARCHAR( 4096 ) NOT NULL DEFAULT  '' AFTER  `name`;
 
+ALTER TABLE  `{$db_prefix}_mod_comments` ADD  `ip` VARCHAR( 18 ) NOT NULL DEFAULT  '',
+ADD  `guest_name` VARCHAR( 128 ) NOT NULL DEFAULT '',
+ADD `moderate` INT(1) NOT NULL DEFAULT 0;
+
 UPDATE `{$db_prefix}_version` SET `version` = '2.0.0';

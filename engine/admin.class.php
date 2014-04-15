@@ -110,13 +110,13 @@ class admin extends singleton {
         if($this->get['action'] == null) {
             $params = array();
             $params['type'] = $this->get['object'];
-            $ext_params = extension::getInstance(true)->getAllParams();
+            $ext_params = extension::getInstance()->getAllParams();
             foreach($ext_params as $type=>$data) {
                 if($type == $this->get['object']) {
                     foreach($data as $cdir=>$cdata) {
                         $params['extension'][$cdir] = array(
-                            'title' => language::getInstance()->get('admin_'.$type.'_'.$cdata['dir'].'.name'),
-                            'desc' => language::getInstance()->get('admin_'.$type.'_'.$cdata['dir'].'.desc'),
+                            'title' => language::getInstance()->get('admin_'.$type.'_'.$cdata['dir'].'.name') ?: $cdir,
+                            'desc' => language::getInstance()->get('admin_'.$type.'_'.$cdata['dir'].'.desc') ?: $cdir,
                             'enabled' => $cdata['enabled']
                         );
                     }
@@ -168,10 +168,10 @@ class admin extends singleton {
     }
 
     private function installExtension() {
-        $ext_params = extension::getInstance(true)->getAllParams();
+        $ext_params = extension::getInstance()->getAllParams();
         if(array_key_exists($this->get['action'], $ext_params[$this->get['object']])) // always installed, wtf this man try to do?
             return;
-        $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_extensions (`type`, `configs`, `dir`, `enabled`) VALUES (?, '', ?, 0)");
+        $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_extensions (`type`, `configs`, `dir`, `enabled`, `path_choice`, `path_allow`) VALUES (?, '', ?, 0, 1, '*')");
         $stmt->bindParam(1, $this->get['object'], \PDO::PARAM_STR);
         $stmt->bindParam(2, $this->get['action'], \PDO::PARAM_STR);
         $stmt->execute();
@@ -302,13 +302,13 @@ class admin extends singleton {
 
     private function viewExtensionMenu() {
         $params = array();
-        $ext = extension::getInstance(true)->getAllParams();
+        $ext = extension::getInstance()->getAllParams();
         foreach($ext as $type=>$cdata) {
             foreach($cdata as $single) {
                 if($single['enabled'] == 1) {
                     $params[$type][] = array(
                         'dir' => $single['dir'],
-                        'lang' => language::getInstance()->get('admin_'.$type.'_'.$single['dir'].'.name')
+                        'lang' => language::getInstance()->get('admin_'.$type.'_'.$single['dir'].'.name') ?: $single['dir']
                     );
                 }
             }

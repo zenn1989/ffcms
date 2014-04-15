@@ -6,6 +6,7 @@
 |========= @license: GNU GPL V3, file: license.txt ========|
 |==========================================================|
  */
+session_start();
 define('root', dirname(__FILE__));
 define('loader', 'api');
 require_once(root . '/load.php');

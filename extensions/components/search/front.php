@@ -29,9 +29,10 @@ class components_search_front {
         meta::getInstance()->add('title', language::getInstance()->get('search_seo_title'));
         $way = router::getInstance()->shiftUriArray();
         $query = system::getInstance()->nohtml($way[0]);
-        $params['query'] = $query;
-        if(system::getInstance()->length($query) > 2) {
+        $params['query'] = null;
+        if(system::getInstance()->length($query) > 2 && !system::getInstance()->prefixEquals($query, "?")) {
             $params['search'] = array_merge($this->searchOnNews($query), $this->searchOnPage($query));
+            $params['query'] = $query;
         }
         $render = template::getInstance()->twigRender(
             'components/search/search.tpl',
