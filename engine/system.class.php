@@ -693,6 +693,24 @@ class system extends singleton {
         return $content;
     }
 
+    public function altscandir($dir, $sort_desc = false) {
+        $ignored = array('.', '..', '.svn', '.htaccess');
+
+        $files = array();
+        foreach (scandir($dir) as $file) {
+            if(in_array($file, $ignored)) continue;
+            $files[$file] = filemtime($dir . '/' . $file);
+        }
+        if($sort_desc)
+            arsort($files);
+        else
+            asort($files);
+
+        $files = array_keys($files);
+
+        return $files;
+    }
+
     public function altaddslashes($data) {
         if(is_array($data)) {
             $output = array();

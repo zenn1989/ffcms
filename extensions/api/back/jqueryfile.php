@@ -61,7 +61,7 @@ class api_jqueryfile_back {
         if($news_id < 1 || !file_exists($path))
             return;
         $output = array();
-        foreach(scandir($path . 'orig/') as $files) {
+        foreach(system::getInstance()->altscandir($path . 'orig/', true) as $files) {
             $file_split = explode('.', $files);
             $file_ext = array_pop($file_split);
             if(in_array($file_ext, array('jpg', 'png', 'gif', 'bmp', 'jpeg'))) {

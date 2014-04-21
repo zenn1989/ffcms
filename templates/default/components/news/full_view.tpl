@@ -16,7 +16,7 @@
         {% if local.category_url != null %}
         <li><a href="{{ system.url }}/news/{{ local.category_url }}">{{ local.category_name }}</a></li>
         {% endif %}
-        <li class="active">{{ local.title|slice(0,50) }}</li>
+        <li class="active">{{ local.title|slice(0,50) }}{% if local.title|length > 50 %}...{% endif %}</li>
     </ol>
     <h1>{{ local.title }}</h1>
     <div class="meta">

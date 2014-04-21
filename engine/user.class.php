@@ -28,17 +28,19 @@ class user extends singleton {
     protected static function preload() {
         $token = $_COOKIE['token'];
         $personal_id = $_COOKIE['person'];
+        $user_ip = system::getInstance()->getRealIp();
         // data 1st raw check before sql is used
         if (strlen($token) == 32 && (filter_var($personal_id, FILTER_VALIDATE_EMAIL) || (strlen($personal_id) > 0 && system::getInstance()->isLatinOrNumeric($personal_id)))) {
             $query = "SELECT * FROM
             ".property::getInstance()->get('db_prefix')."_user a,
             ".property::getInstance()->get('db_prefix')."_user_access_level b,
             ".property::getInstance()->get('db_prefix')."_user_custom c
-            WHERE (a.email = ? OR a.login = ?) AND a.token = ? AND a.aprove = 0 AND a.access_level = b.group_id AND a.id = c.id";
+            WHERE (a.email = ? OR a.login = ?) AND a.token = ? AND a.token_ip = ? AND a.aprove = 0 AND a.access_level = b.group_id AND a.id = c.id";
             $stmt = database::getInstance()->con()->prepare($query);
             $stmt->bindParam(1, $personal_id, \PDO::PARAM_STR);
             $stmt->bindParam(2, $personal_id, \PDO::PARAM_STR);
             $stmt->bindParam(3, $token, \PDO::PARAM_STR, 32);
+            $stmt->bindParam(4, $user_ip, \PDO::PARAM_STR);
             $stmt->execute();
             if ($stmt->rowCount() == 1) {
                 $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);

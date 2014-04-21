@@ -267,3 +267,7 @@ lastcomments_notfound<=>Комментарии не найдены
 tagcloud_title<=>Облако тегов
 tagcloud_notfound<=>Теги не найдены
 tagcloud_alttext<=>Совпадений:
+discusnews_title<=>Обсуждаемые новости
+discusnews_empty<=>Нет обсуждаемых публикаций
+viewnews_title<=>Популярные новости
+viewnews_empty<=>Новости не найдены на сайте

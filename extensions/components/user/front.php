@@ -739,10 +739,12 @@ class components_user_front {
                 $dbemail = $checkRes['email'];
                 $md5token = system::getInstance()->md5random();
                 $nixtime = time();
-                $stmt2 = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_user SET token = ?, token_start = ? WHERE openid = ?");
+                $user_ip = system::getInstance()->getRealIp();
+                $stmt2 = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_user SET token = ?, token_start = ?, token_ip = ? WHERE openid = ?");
                 $stmt2->bindParam(1, $md5token, PDO::PARAM_STR, 32);
                 $stmt2->bindParam(2, $nixtime, PDO::PARAM_INT);
-                $stmt2->bindParam(3, $openidIdentifity, PDO::PARAM_STR);
+                $stmt2->bindParam(3, $user_ip, PDO::PARAM_STR);
+                $stmt2->bindParam(4, $openidIdentifity, PDO::PARAM_STR);
                 $stmt2->execute();
 
                 setcookie('person', $dbemail, null, '/', null, null, true);
@@ -1033,6 +1035,7 @@ class components_user_front {
             }
             if(sizeof($params['notify']) == 0) { // no error added
                 $md5pwd = system::getInstance()->doublemd5(system::getInstance()->post('password'));
+                $user_ip = system::getInstance()->getRealIp();
                 $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_user WHERE (email = ? OR login = ?) AND pass = ?");
                 $stmt->bindParam(1, $loginoremail, PDO::PARAM_STR);
                 $stmt->bindParam(2, $loginoremail, PDO::PARAM_STR);
@@ -1041,12 +1044,13 @@ class components_user_front {
                 if ($stmt->rowCount() == 1) {
                     $md5token = system::getInstance()->md5random();
                     $nixtime = time();
-                    $stmt2 = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_user SET token = ?, token_start = ? WHERE (email = ? OR login = ?) AND pass = ?");
-                    $stmt2->bindParam(1, $md5token);
-                    $stmt2->bindParam(2, $nixtime);
-                    $stmt2->bindParam(3, $loginoremail);
-                    $stmt2->bindParam(4, $loginoremail);
-                    $stmt2->bindParam(5, $md5pwd);
+                    $stmt2 = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_user SET token = ?, token_start = ?, token_ip = ? WHERE (email = ? OR login = ?) AND pass = ?");
+                    $stmt2->bindParam(1, $md5token, PDO::PARAM_STR, 32);
+                    $stmt2->bindParam(2, $nixtime, PDO::PARAM_INT);
+                    $stmt2->bindParam(3, $user_ip, PDO::PARAM_STR);
+                    $stmt2->bindParam(4, $loginoremail, PDO::PARAM_STR);
+                    $stmt2->bindParam(5, $loginoremail, PDO::PARAM_STR);
+                    $stmt2->bindParam(6, $md5pwd, PDO::PARAM_STR, 32);
                     $stmt2->execute();
 
                     setcookie('person', $loginoremail, null, '/', null, null, true);

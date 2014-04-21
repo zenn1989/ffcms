@@ -66,11 +66,11 @@ class template extends singleton {
             new \Twig_Loader_Filesystem($template_path_root),
             array(
                 'cache' => $twig_cache,
-                'auto_reload' => true,
                 'charset' => 'utf-8',
                 'autoescape' => false
             )
         );
+        self::$twig_file->enableAutoReload();
         self::$twig_string = new \Twig_Environment(new \Twig_Loader_String());
     }
 

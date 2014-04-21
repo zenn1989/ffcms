@@ -169,6 +169,7 @@ CREATE TABLE `{$db_prefix}_user` (
   `access_level` int(2) NOT NULL DEFAULT '1',
   `token` varchar(32) NOT NULL,
   `token_start` int(16) NOT NULL,
+  `token_ip` VARCHAR( 20 ) NOT NULL DEFAULT  '',
   `aprove` varchar(128) NOT NULL DEFAULT '0',
   `openid` varchar(512) NOT NULL DEFAULT '',
   `balance` decimal(12,2) NOT NULL DEFAULT '0.00',

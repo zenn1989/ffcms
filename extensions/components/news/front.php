@@ -320,7 +320,7 @@ class components_news_front {
             $image_gallery_root = root . '/upload/news/gallery/' . $news_view_id . '/';
             $image_gallery_array = array();
             if(file_exists($image_gallery_root)) {
-                foreach(scandir($image_gallery_root . 'orig/') as $image_item) {
+                foreach(system::getInstance()->altscandir($image_gallery_root . 'orig/') as $image_item) {
                     $file_array = explode(".", $image_item);
                     $file_ext = array_pop($file_array);
                     if(in_array($file_ext, array('jpg', 'gif', 'png', 'bmp', 'jpeg'))) {
@@ -399,12 +399,14 @@ class components_news_front {
         if(cache::getInstance()->get($cache_filename, self::RSS_UPDATE_TIME))
             template::getInstance()->justPrint(cache::getInstance()->get($cache_filename, self::RSS_UPDATE_TIME));
         $params = array();
+        $time = time();
         $item_count = self::RSS_ITEM_LIMIT;
         if(extension::getInstance()->getConfig('rss_count', 'news', extension::TYPE_COMPONENT, 'int') > 0)
             $item_count = extension::getInstance()->getConfig('rss_count', 'news', extension::TYPE_COMPONENT, 'int');
         $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.text,a.link,a.date,b.path,b.name FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a,
-                                        ".property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.display = 1 ORDER BY a.id DESC LIMIT 0,?");
-        $stmt->bindParam(1, $item_count, PDO::PARAM_INT);
+                                        ".property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.date <= ? AND a.display = 1 ORDER BY a.date DESC LIMIT 0,?");
+        $stmt->bindParam(1, $time, PDO::PARAM_INT);
+        $stmt->bindParam(2, $item_count, PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt = null;

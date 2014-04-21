@@ -61,4 +61,6 @@ ALTER TABLE  `{$db_prefix}_mod_comments` ADD  `ip` VARCHAR( 18 ) NOT NULL DEFAUL
 ADD  `guest_name` VARCHAR( 128 ) NOT NULL DEFAULT '',
 ADD `moderate` INT(1) NOT NULL DEFAULT 0;
 
+ALTER TABLE  `{$db_prefix}_user` ADD `token_ip` VARCHAR( 20 ) NOT NULL DEFAULT  '' AFTER  `token_start`;
+
 UPDATE `{$db_prefix}_version` SET `version` = '2.0.0';

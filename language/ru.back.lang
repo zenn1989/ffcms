@@ -472,6 +472,20 @@ admin_modules_tagcloud.desc<=>Отображает облако тегов но�
 admin_modules_tagcloud_settings<=>Настройки
 admin_modules_tagcloud_count_title<=>Количество тегов
 admin_modules_tagcloud_count_desc<=>Количество тегов отображаемых на сайте в блоке?
+admin_modules_news_top_discus.name<=>Обсуждаемые новости
+admin_modules_news_top_discus.desc<=>Вывод на сайт в блоке информации о самых обсуждаемых новостях
+admin_modules_news_top_discus_settings<=>Настройки
+admin_modules_news_top_discus_label_discount_title<=>Кол-во материалов
+admin_modules_news_top_discus_label_discount_desc<=>Количество отображаемых ссылок в блоке обсуждаемых новостей
+admin_modules_news_top_discus_label_daycount_title<=>Кол-во дней
+admin_modules_news_top_discus_label_daycount_desc<=>За какое количество дней выводить информацию о новостях? 0 = за все время
+admin_modules_news_top_view.name<=>Популярные новости
+admin_modules_news_top_view.desc<=>Вывод на сайт в блоке информации о самых популярных по просмотрам новостях
+admin_modules_news_top_view_settings<=>Настройки
+admin_modules_news_top_view_label_discount_title<=>Кол-во материалов
+admin_modules_news_top_view_label_discount_desc<=>Количество отображаемых ссылок в блоке популярных новостей
+admin_modules_news_top_view_label_daycount_title<=>Кол-во дней
+admin_modules_news_top_view_label_daycount_desc<=>За какое количество дней выводить информацию о новостях? 0 = за все время
 extension_install_always<=>Расширение с таким типом уже установлено!
 extension_install_filenotfound<=>Основные файлы компонента не найдены, работа компонента невозможна!
 extension_install_classno<=>Не найдена декларация основного класса расширения!

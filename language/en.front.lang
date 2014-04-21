@@ -269,3 +269,7 @@ lastcomments_notfound<=>Comments not founded
 tagcloud_title<=>Tag cloud
 tagcloud_notfound<=>Tags not founded
 tagcloud_alttext<=>Matches:
+discusnews_title<=>Discussed news
+discusnews_empty<=>News with discuss not founded
+viewnews_title<=>Popular news
+viewnews_empty<=>News not founded on website
