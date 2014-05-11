@@ -282,6 +282,9 @@ class components_news_back {
         $params['config']['enable_rss'] = extension::getInstance()->getConfig('enable_rss', 'news', extension::TYPE_COMPONENT, 'int');
         $params['config']['rss_count'] = extension::getInstance()->getConfig('rss_count', 'news', extension::TYPE_COMPONENT, 'int');
         $params['config']['enable_full_rss'] = extension::getInstance()->getConfig('enable_full_rss', 'news', extension::TYPE_COMPONENT, 'int');
+        $params['config']['enable_soc_rss'] = extension::getInstance()->getConfig('enable_soc_rss', 'news', extension::TYPE_COMPONENT, 'int');
+        $params['config']['rss_hash'] = extension::getInstance()->getConfig('rss_hash', 'news', extension::TYPE_COMPONENT, 'str');
+        $params['config']['rss_soc_linkshort'] = extension::getInstance()->getConfig('rss_soc_linkshort', 'news', extension::TYPE_COMPONENT, 'int');
 
         return template::getInstance()->twigRender('components/news/settings.tpl', $params);
     }
@@ -380,6 +383,7 @@ class components_news_back {
                 foreach($params['news']['keywords'] as $keyrow) {
                     $keyrow_array = system::getInstance()->altexplode(',', $keyrow);
                     foreach($keyrow_array as $objectkey) {
+                        $objectkey = system::getInstance()->altlower(trim($objectkey));
                         $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_mod_tags(`object_id`, `object_type`, `tag`) VALUES (?, 'news', ?)");
                         $stmt->bindParam(1, $new_news_id, PDO::PARAM_INT);
                         $stmt->bindParam(2, $objectkey, PDO::PARAM_STR);
@@ -462,6 +466,7 @@ class components_news_back {
                 foreach($keywords as $keyrow) {
                     $keyrow_array = system::getInstance()->altexplode(',', $keyrow);
                     foreach($keyrow_array as $objectkey) {
+                        $objectkey = system::getInstance()->altlower(trim($objectkey));
                         $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_mod_tags(`object_id`, `object_type`, `tag`) VALUES (?, 'news', ?)");
                         $stmt->bindParam(1, $news_id, PDO::PARAM_INT);
                         $stmt->bindParam(2, $objectkey, PDO::PARAM_STR);
@@ -534,24 +539,24 @@ class components_news_back {
         $stmt = null;
         $filter = (int)system::getInstance()->get('filter');
         if($filter === self::FILTER_MODERATE) { // 1
-            $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.category,a.link,b.category_id,b.path FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".
+            $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.category,a.link,a.date,b.category_id,b.path FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".
                 property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.display = 0 ORDER BY a.id DESC LIMIT ?,".self::ITEM_PER_PAGE);
             $stmt->bindParam(1, $db_index, PDO::PARAM_INT);
             $stmt->execute();
         } elseif($filter === self::FILTER_IMPORTANT) { // 2
-            $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.category,a.link,b.category_id,b.path FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".
+            $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.category,a.link,a.date,b.category_id,b.path FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".
                 property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.important = 1 ORDER BY a.id DESC LIMIT ?,".self::ITEM_PER_PAGE);
             $stmt->bindParam(1, $db_index, PDO::PARAM_INT);
             $stmt->execute();
         } elseif($filter === self::FILTER_SEARCH) { // 3
             $search_string = "%".$params['search']['value']."%";
-            $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.category,a.link,b.category_id,b.path FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".
+            $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.category,a.link,a.date,b.category_id,b.path FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".
                 property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND (a.title like ? OR a.text like ?) ORDER BY a.id DESC LIMIT 0,".self::SEARCH_PER_PAGE);
             $stmt->bindParam(1, $search_string, PDO::PARAM_STR);
             $stmt->bindParam(2, $search_string, PDO::PARAM_STR);
             $stmt->execute();
         } else { // 0 || > 3
-            $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.category,a.link,b.category_id,b.path FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".
+            $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.category,a.link,a.date,b.category_id,b.path FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".
                 property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id ORDER BY a.id DESC LIMIT ?,".self::ITEM_PER_PAGE);
             $stmt->bindParam(1, $db_index, PDO::PARAM_INT);
             $stmt->execute();
@@ -568,7 +573,8 @@ class components_news_back {
             $params['news'][] = array(
                 'id' => $data['id'],
                 'title' => $title[language::getInstance()->getUseLanguage()],
-                'link' => $link
+                'link' => $link,
+                'date' => system::getInstance()->toDate($data['date'], 'h')
             );
         }
         $params['pagination'] = template::getInstance()->showFastPagination($index_start, self::ITEM_PER_PAGE, $this->getTotalNewsCount($filter), '?object=components&action=news&filter='.$filter.'&index=');

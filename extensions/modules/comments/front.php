@@ -71,6 +71,7 @@ class modules_comments_front {
                 'author_avatar' => user::getInstance()->buildAvatar('small', $poster_id),
                 'comment_text' => extension::getInstance()->call(extension::TYPE_HOOK, 'bbtohtml')->bbcode2html($item['comment']),
                 'comment_date' => system::getInstance()->toDate($item['time'], 'h'),
+                'unixtime' => $item['time'],
                 'comment_id' => $item['id'],
                 'can_edit' => $can_edit,
                 'can_delete' => $can_delete,

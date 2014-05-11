@@ -11,6 +11,7 @@
         <th>{{ language.admin_modules_comment_th2 }}</th>
         <th>{{ language.admin_modules_comment_th3 }}</th>
         <th>{{ language.admin_modules_comment_th4 }}</th>
+        <th>{{ language.admin_modules_comment_th5 }}</th>
     </tr>
     </thead>
     <tbody>
@@ -24,6 +25,7 @@
             {% endif %}
         </td>
         <td>{{ item.comment|striptags|escape }}</td>
+        <td>{{ item.date }}</td>
         <td class="text-center">
             <a href="?object=modules&action=comments&make=edit&id={{ item.id }}" title="Edit"><i class="fa fa-pencil-square-o fa-lg"></i></a>
             <a href="?object=modules&action=comments&make=delete&id={{ item.id }}" title="Delete"><i class="fa fa-trash-o fa-lg"></i></a>

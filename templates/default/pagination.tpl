@@ -24,7 +24,7 @@
                     {{ listmacro.li_pagination(system.url, local.link, pageidx, pageidx == local.index) }}
                 {% endfor %}
             {% else %} {# list middle +-4 items from this +1st + last#}
-                {{ listmacro.li_pagination(local.link, 0, false) }} {# 1st page #}
+                {{ listmacro.li_pagination(system.url, local.link, 0, false) }} {# 1st page #}
                 <li class="disabled"><a href="#">...</a></li> {# splitter '...' #}
                 {% for pageidx in local.index-3..local.index+3 %}
                     {{ listmacro.li_pagination(system.url, local.link, pageidx, pageidx == local.index) }}

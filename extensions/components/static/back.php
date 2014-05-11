@@ -198,7 +198,8 @@ class components_static_back {
             $params['static'][] = array(
                 'id' => $data['id'],
                 'title' => $title_locale[language::getInstance()->getUseLanguage()],
-                'path' => $data['pathway']
+                'path' => $data['pathway'],
+                'date' => system::getInstance()->toDate($data['date'], 'h')
             );
         }
         $params['pagination'] = template::getInstance()->showFastPagination($index_start, self::ITEM_PER_PAGE, $this->getTotalStaticCount(), '?object=components&action=static&index=');

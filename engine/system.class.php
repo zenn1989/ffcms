@@ -133,7 +133,7 @@ class system extends singleton {
             $output = array();
             foreach($data as $key=>$entery)
             {
-                $output[$key] = htmlentities(strip_tags($entery), ENT_QUOTES | ENT_IGNORE, "UTF-8");
+                $output[$key] = $save_quotes === true ? $entery : htmlentities(strip_tags($entery), ENT_QUOTES | ENT_IGNORE, "UTF-8");
             }
             return $output;
         }
@@ -741,5 +741,25 @@ class system extends singleton {
         } else {
             return stripslashes($data);
         }
+    }
+
+    public function altupper($text) {
+        return mb_strtoupper($text, 'UTF-8');
+    }
+
+    public function altlower($text) {
+        return mb_strtolower($text, 'UTF-8');
+    }
+
+    /**
+     * Convert many &amp;amp;quotes; to " as example
+     * @param $text
+     * @return string
+     */
+    public function htmlQuoteDecode($text) {
+        $text = str_replace('&amp;', '&', $text);
+        if(strpos($text, '&amp;'))
+            return $this->htmlQuoteDecode($text);
+        return html_entity_decode($text, ENT_QUOTES, "UTF-8");
     }
 }

@@ -63,4 +63,7 @@ ADD `moderate` INT(1) NOT NULL DEFAULT 0;
 
 ALTER TABLE  `{$db_prefix}_user` ADD `token_ip` VARCHAR( 20 ) NOT NULL DEFAULT  '' AFTER  `token_start`;
 
+ALTER TABLE `{$db_prefix}_com_news_entery` CHANGE `text` `text` MEDIUMTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+ALTER TABLE `{$db_prefix}_com_static` CHANGE `text` `text` MEDIUMTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+
 UPDATE `{$db_prefix}_version` SET `version` = '2.0.0';

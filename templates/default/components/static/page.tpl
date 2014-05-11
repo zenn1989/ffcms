@@ -8,17 +8,19 @@
         });
     });
 </script>
-<article class="article-item">
-    <h1>{{ local.title }}</h1>
-    {% if local.show_date %}
+<article class="article-item" itemscope="itemscope" itemtype="http://schema.org/Article">
+    <h1 itemprop="name">{{ local.title }}</h1>
         <div class="meta">
-            <span> </span>
+            {% if local.show_date %}
+            <span><i class="fa fa-calendar"></i>{{ local.date }}</span>
+            {% else %}
+            <span>&nbsp;</span>
+            {% endif %}
             <div class="pull-right">
-                <span><i class="fa fa-calendar"></i>{{ local.date }}</span>
+                <a href="{{ local.pathway }}?print" target="_blank"><i class="fa fa-print"></i></a>
             </div>
         </div>
-    {% else %}
-        <hr />
-    {% endif %}
-    {{ local.text }}
+    <div itemprop="articleBody">
+        {{ local.text }}
+    </div>
 </article>

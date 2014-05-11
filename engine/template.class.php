@@ -67,7 +67,8 @@ class template extends singleton {
             array(
                 'cache' => $twig_cache,
                 'charset' => 'utf-8',
-                'autoescape' => false
+                'autoescape' => false,
+                'strict_variables' => false,
             )
         );
         self::$twig_file->enableAutoReload();

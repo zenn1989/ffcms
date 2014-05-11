@@ -1,6 +1,7 @@
 {% import 'macro/notify.tpl' as notifytpl %}
 <link href="{{ system.theme }}/css/datepicker.css" rel="stylesheet">
 <script type="text/javascript" src="{{ system.theme }}/js/bootstrap-datepicker.js"></script>
+<script src="{{ system.theme }}/js/maxlength.js"></script>
 <script type="text/javascript" src="{{ system.script_url }}/resource/ckeditor/ckeditor.js"></script>
 <script src="{{ system.script_url }}/resource/ckeditor/adapters/jquery.js"></script>
 <script type="text/javascript">
@@ -13,6 +14,7 @@
                     window.onbeforeunload = null;
                 });
                 $('#datefield').datepicker();
+                $('input[maxlength]').maxlength({alwaysShow: true});
             }
     );
     window.onbeforeunload = function (evt) {
@@ -69,7 +71,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h2>{{ language.admin_component_static_edit_page_title }}[{{ itemlang }}]</h2>
-                        <input onkeyup="oJS.strNormalize(this)" type="text" name="title[{{ itemlang }}]" class="form-control" value="{{ static.title[itemlang] }}"/>
+                        <input onkeyup="oJS.strNormalize(this)" type="text" name="title[{{ itemlang }}]" class="form-control" value="{{ static.title[itemlang] }}" maxlength="150" />
                         <span class="help-block">{{ language.admin_component_static_edit_page_title_desc }}</span>
                     </div>
                 </div>
@@ -82,12 +84,12 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <h2>{{ language.admin_component_static_edit_page_description }}[{{ itemlang }}]</h2>
-                        <input type="text" name="description[{{ itemlang }}]" class="form-control" value="{{ static.description[itemlang] }}"/>
+                        <input type="text" name="description[{{ itemlang }}]" class="form-control" value="{{ static.description[itemlang] }}" maxlength="250" />
                         <span class="help-block">{{ language.admin_component_static_edit_page_description_desc }}</span>
                     </div>
                     <div class="col-lg-6">
                         <h2>{{ language.admin_component_static_edit_page_keywords }}[{{ itemlang }}]</h2>
-                        <input type="text" id="keywords[{{ itemlang }}]" name="keywords[{{ itemlang }}]" class="form-control" value="{{ static.keywords[itemlang] }}"/>
+                        <input type="text" id="keywords[{{ itemlang }}]" name="keywords[{{ itemlang }}]" class="form-control" value="{{ static.keywords[itemlang] }}" maxlength="200" />
                         <input class="btn btn-info pull-right" type="button" value="{{ language.admin_component_static_edit_page_keybutton_gen }}" onClick="countKeywords('{{ itemlang }}')">
                         <span class="help-block">{{ language.admin_component_static_edit_page_keywords_description }}</span>
                     </div>

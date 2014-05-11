@@ -85,7 +85,7 @@
 
             <ul class="nav navbar-nav navbar-right navbar-user">
                 <li class="dropdown messages-dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bolt"></i> {{ language.admin_fastaccess_title }} <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bolt"></i> {{ language.admin_fastaccess_title }} <span class="badge">{{ content.head.feedback_day + content.head.comments_day }}</span> <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li class="message-preview">
                             <a href="?object=components&action=news&make=add">
@@ -106,8 +106,16 @@
                         <li class="message-preview">
                             <a href="?object=components&action=feedback">
                                 <span class="avatar"><i class="fa fa-envelope fa-4x"></i></span>
-                                <span class="name">{{ language.admin_fastaccess_feedback_title }}</span>
+                                <span class="name">{{ language.admin_fastaccess_feedback_title }} <span class="badge alert-danger">{{ content.head.feedback_day }}</span></span>
                                 <span class="message">{{ language.admin_fastaccess_feedback_desc }}</span>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li class="message-preview">
+                            <a href="?object=modules&action=comments">
+                                <span class="avatar"><i class="fa fa-comments fa-4x"></i></span>
+                                <span class="name">{{ language.admin_fastaccess_comments_title }} <span class="badge alert-danger">{{ content.head.comments_day }}</span></span>
+                                <span class="message">{{ language.admin_fastaccess_comments_desc }}</span>
                             </a>
                         </li>
                     </ul>

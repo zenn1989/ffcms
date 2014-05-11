@@ -24,6 +24,7 @@
             <th>{{ language.admin_component_static_th_id }}</th>
             <th>{{ language.admin_component_static_th_title }}</th>
             <th>{{ language.admin_component_static_th_path }}</th>
+            <th>{{ language.admin_component_static_th_date }}</th>
             <th>{{ language.admin_component_static_th_edit }}</th>
         </tr>
     </thead>
@@ -33,6 +34,7 @@
             <td><input type="checkbox" name="check_array[]" class="check_array" value="{{ item.id }}"/> {{ item.id }}</td>
             <td><a href="?object=components&action=static&make=edit&id={{ item.id }}">{{ item.title }}</a></td>
             <td><a href="{{ system.url }}/static/{{ item.path }}" target="_blank">/static/{{ item.path }}</a></td>
+            <td>{{ item.date }}</td>
             <td class="text-center">
                 <a href="?object=components&action=static&make=edit&id={{ item.id }}" title="Edit"><i class="fa fa-pencil-square-o fa-lg"></i></a>
                 <a href="?object=components&action=static&make=delete&id={{ item.id }}" title="Delete"><i class="fa fa-trash-o fa-lg"></i></a>

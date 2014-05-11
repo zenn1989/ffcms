@@ -190,7 +190,8 @@ class modules_comments_back {
                 'user_name' => user::getInstance()->get('nick', $row['author']),
                 'comment' => extension::getInstance()->call(extension::TYPE_HOOK, 'bbtohtml')->nobbcode($row['comment']),
                 'guest_name' => system::getInstance()->nohtml($row['guest_name']),
-                'moderate' => $row['moderate']
+                'moderate' => $row['moderate'],
+                'date' => system::getInstance()->toDate($row['time'], 'h')
             );
         }
 

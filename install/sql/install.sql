@@ -36,7 +36,7 @@ DROP TABLE IF EXISTS `{$db_prefix}_com_news_entery`;
 CREATE TABLE `{$db_prefix}_com_news_entery` (
   `id` int(24) NOT NULL AUTO_INCREMENT,
   `title` varchar(2048) NOT NULL,
-  `text` text NOT NULL,
+  `text` MEDIUMTEXT NOT NULL,
   `link` varchar(256) NOT NULL,
   `category` int(24) NOT NULL,
   `date` int(16) NOT NULL,
@@ -59,7 +59,7 @@ DROP TABLE IF EXISTS `{$db_prefix}_com_static`;
 CREATE TABLE `{$db_prefix}_com_static` (
   `id` int(32) NOT NULL AUTO_INCREMENT,
   `title` text NOT NULL,
-  `text` text NOT NULL,
+  `text` MEDIUMTEXT NOT NULL,
   `owner` int(32) NOT NULL,
   `pathway` varchar(256) NOT NULL,
   `date` int(16) NOT NULL,

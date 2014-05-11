@@ -1,6 +1,7 @@
 {% import 'macro/notify.tpl' as notifytpl %}
 <link href="{{ system.theme }}/css/datepicker.css" rel="stylesheet">
 <script type="text/javascript" src="{{ system.theme }}/js/bootstrap-datepicker.js"></script>
+<script src="{{ system.theme }}/js/maxlength.js"></script>
 <link rel="stylesheet" href="{{ system.theme }}/css/fileupload/jquery.fileupload.css">
 <script type="text/javascript" src="{{ system.script_url }}/resource/ckeditor/ckeditor.js"></script>
 <script src="{{ system.script_url }}/resource/ckeditor/adapters/jquery.js"></script>
@@ -27,6 +28,7 @@
                     window.onbeforeunload = null;
                 });
                 $('#datefield').datepicker();
+                $('input[maxlength]').maxlength({alwaysShow: true});
             }
     );
     window.onbeforeunload = function (evt) {
@@ -94,7 +96,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h2>{{ language.admin_component_news_edit_page_title_name }}[{{ itemlang }}]</h2>
-                        <input onkeyup="oJS.strNormalize(this)" type="text" name="title[{{ itemlang }}]" class="form-control" value="{{ news.title[itemlang] }}" maxlength="150" />
+                        <input onkeyup="oJS.strNormalize(this)" type="text" name="title[{{ itemlang }}]" class="form-control" value="{{ news.title[itemlang] }}" maxlength="100" />
                         <span class="help-block">{{ language.admin_component_news_edit_page_title_desc }}</span>
                     </div>
                 </div>

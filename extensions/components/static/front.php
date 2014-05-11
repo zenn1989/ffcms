@@ -35,11 +35,19 @@ class components_static_front {
 
     /**
      * Set in body position static page for $pathway
-     * @param $pathway
+     * @param string $pathway
+     * @param int $id
+     * @param boolean $show_date
+     * @return string|null
      */
     public function display($pathway, $id = null, $show_date = true) {
         $stmt = null;
+        $is_print = false;
         if(is_null($id)) {
+            if(system::getInstance()->suffixEquals($pathway, '?print')) {
+                $pathway = substr($pathway, 0, -strlen('?print'));
+                $is_print = true;
+            }
             $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_static WHERE pathway = ?");
             $stmt->bindParam(1, $pathway, PDO::PARAM_STR);
             $stmt->execute();
@@ -64,8 +72,11 @@ class components_static_front {
                 'title' => $serial_title[language::getInstance()->getUseLanguage()],
                 'text' => $serial_text[language::getInstance()->getUseLanguage()],
                 'date' => system::getInstance()->toDate($result['date'], 'd'),
-                'show_date' => $show_date
+                'show_date' => $show_date,
+                'pathway' => property::getInstance()->get('url') . '/static/' . $pathway
             );
+            if($is_print)
+                template::getInstance()->justPrint(template::getInstance()->twigRender('components/static/print.tpl', array('local' => $params)));
             return template::getInstance()->twigRender('components/static/page.tpl', array('local' => $params));
         }
         return null;

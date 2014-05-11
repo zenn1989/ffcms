@@ -79,6 +79,7 @@ class modules_news_on_main_front {
                 'title' => $lang_title[language::getInstance()->getUseLanguage()],
                 'text' => $news_short_text,
                 'date' => system::getInstance()->toDate($result['date'], 'h'),
+                'unixtime' => $result['date'],
                 'category_url' => $result['path'],
                 'category_name' => $cat_serial_text[language::getInstance()->getUseLanguage()],
                 'author_id' => $result['author'],

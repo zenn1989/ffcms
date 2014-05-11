@@ -30,6 +30,7 @@ class admin extends singleton {
             'action' => (string)system::getInstance()->get('action')
         );
         template::getInstance()->set(template::TYPE_CONTENT, 'modmenu', $this->viewExtensionMenu());
+        template::getInstance()->set(template::TYPE_CONTENT, 'head', $this->viewHeadElements());
         template::getInstance()->set(template::TYPE_CONTENT, 'body', $this->loadAdminBody());
         return template::getInstance()->make();
     }
@@ -298,6 +299,36 @@ class admin extends singleton {
         if($this->get['action'] === 'saved')
             $params['notify']['saved'] = true;
         return template::getInstance()->twigRender('settings.tpl', $params);
+    }
+
+    private function viewHeadElements() {
+        $params = array();
+
+        list($month, $day, $year) = explode('-', date('m-d-y'));
+        $day_start = mktime(0, 0, 0, $month, $day, $year);
+        $day_end = mktime(0, 0, 0, $month, $day + 1, $year);
+
+        $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_com_feedback WHERE time >= ? AND time <= ?");
+        $stmt->bindParam(1, $day_start, \PDO::PARAM_INT);
+        $stmt->bindParam(2, $day_end, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        $res_feed = $stmt->fetch();
+        $stmt = null;
+
+        $params['feedback_day'] = $res_feed[0];
+
+        $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE time >= ? AND time <= ?");
+        $stmt->bindParam(1, $day_start, \PDO::PARAM_INT);
+        $stmt->bindParam(2, $day_end, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        $res_feed = $stmt->fetch();
+        $stmt = null;
+
+        $params['comments_day'] = $res_feed[0];
+
+        return $params;
     }
 
     private function viewExtensionMenu() {

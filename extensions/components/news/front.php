@@ -49,7 +49,7 @@ class components_news_front {
                 $content = $this->viewUseraddNews();
             else
                 $content = $this->viewUsereditNews($last_object);
-        } elseif (system::getInstance()->suffixEquals($last_object, '.html')) { // its a single news
+        } elseif(system::getInstance()->suffixEquals($last_object, '.html') || system::getInstance()->suffixEquals(substr($last_object, 0, -strlen('?print')), '.html')) { // its a single news
             $content = $this->viewFullNews($last_object, $way);
         } else { // its a category
             $content = $this->viewCategory();
@@ -239,6 +239,11 @@ class components_news_front {
 
     private function viewFullNews($url, $categories)
     {
+        $is_print = false;
+        if(system::getInstance()->suffixEquals($url, '?print')) {
+            $url = substr($url, 0, -strlen('?print'));
+            $is_print = true;
+        }
         $viewTags = extension::getInstance()->getConfig('enable_tags', 'news', 'components', 'boolean');
         $viewCount = extension::getInstance()->getConfig('enable_views_count', 'news', 'components', 'boolean');
         $stmt = null;
@@ -339,18 +344,22 @@ class components_news_front {
                 $captcha_full = extension::getInstance()->getConfig('captcha_type', 'captcha', 'hooks') == "recaptcha" ? true : false;
                 $captcha_img = extension::getInstance()->call(extension::TYPE_HOOK, 'captcha')->show();
             }
+            $pathway = router::getInstance()->getUriString();
+            if($is_print)
+                $pathway = substr($pathway, 0, -strlen('?print'));
             $theme_array = array(
                 'tags' => $tag_array,
                 'title' => $lang_title[language::getInstance()->getUseLanguage()],
                 'text' => system::getInstance()->removeCharsFromString('<hr />', $lang_text[language::getInstance()->getUseLanguage()], 1),
                 'date' => system::getInstance()->toDate($result['date'], 'h'),
+                'unixtime' => $result['date'],
                 'category_url' => $category_link,
                 'category_name' => $category_text,
                 'author_id' => $result['author'],
                 'author_nick' => user::getInstance()->get('nick', $result['author']),
                 'view_count' => $result['views'],
                 'similar_items' => $similar_array,
-                'pathway' => router::getInstance()->getUriString(),
+                'pathway' => $pathway,
                 'cfg' => array(
                     'view_tags' => $viewTags,
                     'view_count' => $viewCount
@@ -358,6 +367,8 @@ class components_news_front {
                 'gallery' => $image_gallery_array,
                 'poster' => $image_poster_url
             );
+            if($is_print)
+                template::getInstance()->justPrint(template::getInstance()->twigRender('components/news/print.tpl', array('local' => $theme_array)));
             return template::getInstance()->twigRender('components/news/full_view.tpl', array('local' => $theme_array, 'comments' => $comment_list, 'guest_access' => $guest_add, 'captcha' => array('full' => $captcha_full, 'image' => $captcha_img)));
         }
         return null;
@@ -395,7 +406,21 @@ class components_news_front {
         $way = router::getInstance()->shiftUriArray();
         $fulltext_enabled = extension::getInstance()->getConfig('enable_full_rss', 'news', extension::TYPE_COMPONENT, 'bool');
         $fulltext_mod = $way[1] === "fulltext" && $fulltext_enabled ? true : false;
-        $cache_filename = $fulltext_mod ? 'rssfeed_fulltext_'.language::getInstance()->getUseLanguage() : 'rssfeed_'.language::getInstance()->getUseLanguage();
+        $cache_filename = null;
+        switch($way[1]) {
+            case null:
+                $cache_filename = 'rssfeed_'.language::getInstance()->getUseLanguage();
+                break;
+            case 'fulltext':
+                $cache_filename = 'rssfeed_fulltext_'.language::getInstance()->getUseLanguage();
+                break;
+            case 'short':
+                $cache_filename = 'rssfeed_short' . language::getInstance()->getUseLanguage();
+                break;
+            case 'medium':
+                $cache_filename = 'rssfeed_medium' . language::getInstance()->getUseLanguage();
+                break;
+        }
         if(cache::getInstance()->get($cache_filename, self::RSS_UPDATE_TIME))
             template::getInstance()->justPrint(cache::getInstance()->get($cache_filename, self::RSS_UPDATE_TIME));
         $params = array();
@@ -403,7 +428,7 @@ class components_news_front {
         $item_count = self::RSS_ITEM_LIMIT;
         if(extension::getInstance()->getConfig('rss_count', 'news', extension::TYPE_COMPONENT, 'int') > 0)
             $item_count = extension::getInstance()->getConfig('rss_count', 'news', extension::TYPE_COMPONENT, 'int');
-        $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.text,a.link,a.date,b.path,b.name FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a,
+        $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.text,a.link,a.date,a.keywords,b.path,b.name FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a,
                                         ".property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.date <= ? AND a.display = 1 ORDER BY a.date DESC LIMIT 0,?");
         $stmt->bindParam(1, $time, PDO::PARAM_INT);
         $stmt->bindParam(2, $item_count, PDO::PARAM_INT);
@@ -420,16 +445,20 @@ class components_news_front {
         foreach($result as $row) {
             $item_title = system::getInstance()->altstripslashes(unserialize($row['title']));
             $item_fulltext = system::getInstance()->altstripslashes(unserialize($row['text']));
-            $item_langtext = system::getInstance()->stringInline(system::getInstance()->nohtml($item_fulltext[language::getInstance()->getUseLanguage()]));
+            $item_langtext = system::getInstance()->stringInline(system::getInstance()->nohtml($item_fulltext[language::getInstance()->getUseLanguage()], true));
             $item_catname = system::getInstance()->altstripslashes(unserialize($row['name']));
+            $item_keywords = unserialize($row['keywords']);
             $item_desc = null;
             $item_link = property::getInstance()->get('url') . '/news/';
             if(system::getInstance()->contains('<hr />', $item_fulltext[language::getInstance()->getUseLanguage()])) {
                 $item_desc = strstr($item_fulltext[language::getInstance()->getUseLanguage()], '<hr />', true);
-                $item_desc = system::getInstance()->stringInline(system::getInstance()->nohtml($item_desc));
+                $item_desc = system::getInstance()->stringInline(system::getInstance()->nohtml($item_desc, true));
             } elseif(system::getInstance()->length($item_langtext) > 200) {
                 $item_desc = system::getInstance()->sentenceSub($item_langtext, 200) . "...";
+            } else {
+                $item_desc = $item_langtext;
             }
+            $item_desc = system::getInstance()->htmlQuoteDecode($item_desc);
             if($row['path'] == null) {
                 $item_link .= $row['link'];
             } else {
@@ -442,8 +471,58 @@ class components_news_front {
                 $image_size = filesize(root . '/upload/news/poster_' . $row['id'] . '.jpg');
             }
             $full_text = $fulltext_mod ? $item_fulltext[language::getInstance()->getUseLanguage()] : null;
+            $title = system::getInstance()->htmlQuoteDecode(system::getInstance()->nohtml($item_title[language::getInstance()->getUseLanguage()]));
+            if(extension::getInstance()->getConfig('enable_soc_rss', 'news', extension::TYPE_COMPONENT, 'bol')) {
+                $add_hash_lang = extension::getInstance()->getConfig('rss_hash', 'news', extension::TYPE_COMPONENT, 'str');
+                $add_hash = $add_hash_lang[language::getInstance()->getUseLanguage()];
+                if($way[1] == 'short') { // twitter autopost from RSS - max length 140 chars
+                    $reserve_length = 0;
+                    $reserve_length += system::getInstance()->length($title);
+                    if(extension::getInstance()->getConfig('rss_soc_linkshort', 'news', extension::TYPE_COMPONENT, 'bool')) {
+                        $reserve_length += 20;
+                    } else {
+                        $reserve_length += system::getInstance()->length($item_link) > 25 ? 25 : system::getInstance()->length($item_link); // as test twitter not reserve more than 22 symb. 25 as max.
+                    }
+                    $used_keys = array();
+                    foreach(system::getInstance()->altexplode(',', $item_keywords[language::getInstance()->getUseLanguage()]) as $keyitem) {
+                        $keyitem = trim($keyitem);
+                        if(system::getInstance()->length($keyitem) + $reserve_length <= 140) { // title.length + keyword.length + space + sharp(#)
+                            $title .= " #".$keyitem;
+                            $used_keys[] = $keyitem;
+                            $reserve_length += system::getInstance()->length($keyitem);
+                            $reserve_length += 2; // space + sharp (#key )
+                        } else {
+                            break;
+                        }
+                    }
+                    foreach(system::getInstance()->altexplode(',', $add_hash) as $add_keyitem) {
+                        $add_keyitem = system::getInstance()->altlower(trim($add_keyitem));
+                        if(system::getInstance()->length($add_keyitem) + $reserve_length + 2 <= 140 && !in_array($add_keyitem, $used_keys)) {
+                            $title .= " #".$add_keyitem;
+                            $used_keys[] = $add_keyitem;
+                            $reserve_length += system::getInstance()->length($add_keyitem);
+                            $reserve_length += 2; // space + sharp (#key )
+                        }
+                    }
+                } elseif($way[1] == 'medium') { // other social from RSS - hash tags in desc and title UPPER
+                    $used_keys = array();
+                    foreach(system::getInstance()->altexplode(',', $item_keywords[language::getInstance()->getUseLanguage()]) as $keyitem) {
+                        $keyitem = trim($keyitem);
+                        $item_desc .= " #".$keyitem;
+                        $used_keys[] = $keyitem;
+                    }
+                    foreach(system::getInstance()->altexplode(',', $add_hash) as $add_keyitem) {
+                        $add_keyitem = system::getInstance()->altlower(trim($add_keyitem));
+                        if(!in_array($add_keyitem, $used_keys)) {
+                            $item_desc .= " #".$add_keyitem;
+                            $used_keys[] = $add_keyitem;
+                        }
+                    }
+                    $title = system::getInstance()->altupper($title);
+                }
+            }
             $params['items'][] = array(
-                'title' => $item_title[language::getInstance()->getUseLanguage()],
+                'title' => $title,
                 'text' => $full_text,
                 'desc' => $item_desc,
                 'date' => date(DATE_RSS, $row['date']),
@@ -565,6 +644,7 @@ class components_news_front {
                         'title' => $lang_title[language::getInstance()->getUseLanguage()],
                         'text' => $news_short_text,
                         'date' => system::getInstance()->toDate($result['date'], 'h'),
+                        'unixtime' => $result['date'],
                         'category_url' => $result['path'],
                         'category_name' => $cat_serial_text[language::getInstance()->getUseLanguage()],
                         'author_id' => $result['author'],
@@ -580,18 +660,18 @@ class components_news_front {
         }
         $page_link = $cat_link == null ? "news" : "news/" . $cat_link;
         $pagination = template::getInstance()->showFastPagination($page_index, $page_news_count, $total_news_count, $page_link);
-        return template::getInstance()->twigRender('/components/news/short_view.tpl',
-            array('local' => $theme_array,
-                'pagination' => $pagination,
-                'cfg' => array(
-                    'view_tags' => $viewTags,
-                    'view_count' => $viewCount
-                ),
-                'page_title' => $page_title,
-                'page_desc' => $page_desc,
-                'page_link' => $cat_link
-            )
+        $full_params = array('local' => $theme_array,
+            'pagination' => $pagination,
+            'cfg' => array(
+                'view_tags' => $viewTags,
+                'view_count' => $viewCount
+            ),
+            'page_title' => $page_title,
+            'page_desc' => $page_desc,
+            'page_link' => $cat_link
         );
+
+        return template::getInstance()->twigRender('/components/news/short_view.tpl', $full_params);
     }
 
     /**

@@ -37,6 +37,7 @@ class meta extends singleton {
             self::$metadata['description'][] = $serial_desc[language::getInstance()->getUseLanguage()];
             self::$metadata['keywords'][] = $serial_keywords[language::getInstance()->getUseLanguage()];
         }
+        self::$metadata['global_title'] = $serial_title[language::getInstance()->getUseLanguage()];
     }
 
     /**
@@ -52,6 +53,7 @@ class meta extends singleton {
     public function compile() {
         template::getInstance()->set(template::TYPE_META, 'description', system::getInstance()->altimplode('. ', self::$metadata['description']));
         template::getInstance()->set(template::TYPE_META, 'keywords', system::getInstance()->altimplode('. ', self::$metadata['keywords']));
+        template::getInstance()->set(template::TYPE_META, 'global_title', self::$metadata['global_title']);
         if(property::getInstance()->get('multi_title'))
             template::getInstance()->set(template::TYPE_META, 'title', system::getInstance()->altimplode(" - ", array_reverse(self::$metadata['title'])));
         else
