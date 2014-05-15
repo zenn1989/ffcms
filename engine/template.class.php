@@ -96,6 +96,7 @@ class template extends singleton {
         self::$variables[self::TYPE_SYSTEM]['url'] = property::getInstance()->get('url');
         self::$variables[self::TYPE_SYSTEM]['script_url'] = property::getInstance()->get('script_url');
         self::$variables[self::TYPE_SYSTEM]['nolang_url'] = property::getInstance()->get('nolang_url');
+        self::$variables[self::TYPE_SYSTEM]['uri'] = $this->nolang_uri();
         self::$variables[self::TYPE_SYSTEM]['theme'] = property::getInstance()->get('script_url') . '/' . property::getInstance()->get('tpl_dir') . '/' . self::getIfaceTemplate();
         self::$variables[self::TYPE_SYSTEM]['lang'] = language::getInstance()->getUseLanguage();
         self::$variables[self::TYPE_SYSTEM]['languages'] = language::getInstance()->getAvailable();
@@ -107,6 +108,15 @@ class template extends singleton {
         self::$variables[self::TYPE_SYSTEM]['admin_tpl'] = property::getInstance()->get('script_url') . '/' . property::getInstance()->get('tpl_dir') . '/' . property::getInstance()->get('admin_tpl'); // for script usage
         self::$variables[self::TYPE_SYSTEM]['loader'] = loader;
         self::$variables[self::TYPE_SYSTEM]['is_main'] = router::getInstance()->isMain();
+    }
+
+    public function nolang_uri() {
+        $uri = system::getInstance()->altexplode('/', router::getInstance()->getUriString());
+        if(!property::getInstance()->get('user_friendly_url')) // remove /index.php if non friendy urls
+            array_shift($uri);
+        if(property::getInstance()->get('use_multi_language')) // remove /ru /en from uri
+            array_shift($uri);
+        return system::getInstance()->altimplode('/', $uri);
     }
 
     public function twigUserVariables() {

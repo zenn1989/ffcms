@@ -110,19 +110,20 @@ class user extends singleton {
      * @param $idlist
      */
     public function listload($idlist) {
-        if (is_array($idlist)) {
-            $idlist = system::getInstance()->altimplode(',', $idlist);
-        }
-        if (!system::getInstance()->isIntList($idlist) || strlen($idlist) < 1) {
+        $list_array = system::getInstance()->removeNullFrontIntList($idlist);
+        if(sizeof($list_array) < 1)
             return;
-        }
+        $idlist = system::getInstance()->altimplode(',', $list_array);
+        //var_dump($idlist);
         $query = "SELECT * FROM
             ".property::getInstance()->get('db_prefix')."_user a,
             ".property::getInstance()->get('db_prefix')."_user_access_level b,
             ".property::getInstance()->get('db_prefix')."_user_custom c
             WHERE a.id in ($idlist) AND a.aprove = 0 AND a.access_level = b.group_id AND a.id = c.id";
-        $query = database::getInstance()->con()->query($query);
-        $result = $query->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt = database::getInstance()->con()->prepare($query);
+        $stmt->execute();
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt = null;
         foreach($result as $item) {
             foreach($item as $param => $data) {
                 self::$userdata[$item['id']][$param] = $data;

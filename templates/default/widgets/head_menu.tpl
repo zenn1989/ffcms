@@ -16,7 +16,7 @@
                 <li><a href="{{ system.url }}/user"> {{ language.position_header_users }}</a></li>
                 <li><a href="{{ system.url }}/feedback/">{{ language.feedback_form_title }}</a></li>
                 {% for langitem in system.languages %}
-                    <li><a href="{{ system.script_url }}/api.php?iface=front&object=changelanguage&to={{ langitem }}"><img class="flag flag-{{ langitem }}" src="{{ system.script_url }}/resource/flags/blank.gif" /></a></li>
+                    <li><a href="{{ system.nolang_url }}/{{ langitem }}/{{ system.uri }}"><img class="flag flag-{{ langitem }}" src="{{ system.script_url }}/resource/flags/blank.gif" /></a></li>
                 {% endfor %}
             </ul>
             <ul class="nav navbar-nav navbar-right">

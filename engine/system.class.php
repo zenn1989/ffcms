@@ -316,6 +316,22 @@ class system extends singleton {
     }
 
     /**
+     * Prepare int list or int array to int array, removing < 1 values
+     * @param string|array $data
+     * @return array
+     */
+    public function removeNullFrontIntList($data) {
+        $new_data = array();
+        if(!is_array($data)) {
+            $data = $this->altimplode(',', $data);
+        }
+        foreach($data as $key=>$value) {
+            $new_data[$key] = $value;
+        }
+        return $new_data;
+    }
+
+    /**
      * Remove from $array data $value (not a key!)
      * @param string $value
      * @param array $array

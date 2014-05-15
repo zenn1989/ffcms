@@ -31,7 +31,10 @@ INSERT INTO `{$db_prefix}_extensions` (`id`, `type`, `configs`, `dir`, `enabled`
   (17,	'modules',	'a:5:{s:14:\"comments_count\";s:1:\"5\";s:10:\"time_delay\";s:2:\"60\";s:9:\"edit_time\";s:2:\"30\";s:10:\"min_length\";s:2:\"10\";s:10:\"max_length\";s:4:\"2000\";}',	'comments',	1,	1,	'news/*;static/*;extension/*',	''),
   (18,	'modules',	'',	'usernotify',	1,	1,	'*',	''),
   (19,	'modules',	'a:2:{s:10:\"last_count\";s:1:\"5\";s:11:\"text_length\";s:2:\"70\";}',	'lastcomments',	1,	1,	'*',	''),
-  (20,	'modules',	'a:3:{s:9:\"tag_count\";s:2:\"20\";s:22:\"template_position_name\";s:4:\"left\";s:23:\"template_position_index\";s:1:\"2\";}',	'tagcloud',	1,	1,	'*',	'');
+  (20,	'modules',	'a:3:{s:9:\"tag_count\";s:2:\"20\";s:22:\"template_position_name\";s:4:\"left\";s:23:\"template_position_index\";s:1:\"2\";}',	'tagcloud',	1,	1,	'*',	''),
+  (21, 'modules', 'a:2:{s:12:"discus_count";s:1:"5";s:11:"discus_days";s:1:"0";}', 'news_top_discus', 0, 1, '*', ''),
+  (22, 'modules', 'a:2:{s:13:"viewtop_count";s:1:"5";s:12:"viewtop_days";s:1:"0";}', 'news_top_view', 0, 1, '*', ''),
+  (23, 'modules', 'a:1:{s:9:"new_count";s:1:"5";}', 'news_new', 0, 1, '*', '');
 
 DROP TABLE IF EXISTS `{$db_prefix}_user_access_level`;
 CREATE TABLE `{$db_prefix}_user_access_level` (

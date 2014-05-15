@@ -48,8 +48,9 @@
 
         <div class="col-md-3">
             {% include 'widgets/left_menu.tpl' %}
-            {# {{ module.news_top_discus }} #}
-            {# {{ module.news_top_view }} #}
+            {{ module.news_top_discus }}
+            {{ module.news_top_view }}
+            {{ module.news_new }}
             {{ module.lastcomments }}
             {{ module.tag_cloud }}
         </div>
