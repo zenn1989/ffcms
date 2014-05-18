@@ -652,7 +652,8 @@ class components_news_front {
                         'full_news_uri' => $news_full_link,
                         'comment_count' => $comment_count,
                         'view_count' => $result['views'],
-                        'poster' => $image_poster_url
+                        'poster' => $image_poster_url,
+                        'important' => $result['important']
                     );
                 }
             }

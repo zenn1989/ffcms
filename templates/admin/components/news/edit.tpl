@@ -11,7 +11,7 @@
             {
                 // prepare ckeditor
                 CKEDITOR.disableAutoInline = true;
-                $('.wysi').ckeditor();
+                $('.wysi').ckeditor({language: '{{ system.lang }}'});
                 // prepare jquery image uploader
                 $.getJSON("/api.php?iface=back&object=jqueryfile&action=list&id={{ news.id }}",
                         function (data) {

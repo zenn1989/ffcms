@@ -15,7 +15,7 @@
 {% for newsdata in local %}
     <article class="article-item" itemscope="itemscope" itemtype="http://schema.org/NewsArticle">
 
-        <h2 itemprop="name"><a href="{{ system.url }}/news/{{ newsdata.full_news_uri }}">{{ newsdata.title }}</a></h2>
+        <h2 itemprop="name"><a href="{{ system.url }}/news/{{ newsdata.full_news_uri }}">{% if newsdata.important > 0 %}<i class="fa fa-paperclip"></i> {% endif %}{{ newsdata.title }}</a></h2>
         <div class="meta">
             <span><i class="fa fa-list"></i><a href="{{ system.url }}/news/{{ newsdata.category_url }}" itemprop="genre">{{ newsdata.category_name }}</a></span>
             <span><i class="fa fa-calendar"></i><time datetime="{{ newsdata.unixtime|date("c") }}" itemprop="datePublished">{{ newsdata.date }}</time></span>

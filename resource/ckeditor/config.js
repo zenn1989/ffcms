@@ -4,7 +4,10 @@
  */
 
 CKEDITOR.editorConfig = function( config ) {
-	// Define changes to default configuration here.
+	// Define changes to default configuration here. For example:
+	// config.language = 'en';
+	// config.uiColor = '#AADC6E';
+		// Define changes to default configuration here.
 	// For the complete reference:
 	// http://docs.ckeditor.com/#!/api/CKEDITOR.config
 
@@ -14,7 +17,6 @@ CKEDITOR.editorConfig = function( config ) {
 		{ name: 'editing',     groups: [ 'find', 'selection', 'spellchecker' ] },
 		{ name: 'links' },
 		{ name: 'insert' },
-		{ name: 'forms' },
 		{ name: 'tools' },
         { name: 'colors' },
         { name: 'others' },
@@ -27,7 +29,7 @@ CKEDITOR.editorConfig = function( config ) {
 
 	// Remove some buttons, provided by the standard plugins, which we don't
 	// need to have in the Standard(s) toolbar.
-	config.removeButtons = 'Underline,Subscript,Superscript';
+	config.removeButtons = 'Underline,Subscript,Superscript,Replace,Save,Print,NewPage,DocProps,Preview,document,Templates,Find,SelectAll,PageBreak,Language';
 
     config.allowedContent = true;
 
@@ -39,6 +41,11 @@ CKEDITOR.editorConfig = function( config ) {
 
 	// Make dialogs simpler.
 	config.removeDialogTabs = 'image:advanced;link:advanced';
+
+    config.scayt_autoStartup = false;
+    config.disableNativeSpellChecker = false;
+	
+	config.extraPlugins = 'youtube,widget,lineutils,codesnippet,leaflet';
 
     config.height = '400';
 };

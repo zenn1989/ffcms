@@ -597,8 +597,6 @@ html {
 }
 
 .smile {
-    width: 16px;
-    height: 16px;
     line-height: 20px;
     padding: 5px;
     display: inline-block;
@@ -611,6 +609,15 @@ html {
 .smile img {
     max-width: 16px;
     max-height: 16px;
+}
+
+.sm {
+    margin: 1px;
+}
+
+blockquote {
+    font-size: 12px;
+    font-style: italic;
 }
 
 /* END SMILEBOX TOOLBAR */

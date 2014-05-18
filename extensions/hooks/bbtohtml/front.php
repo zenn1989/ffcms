@@ -7,6 +7,8 @@
 |==========================================================|
  */
 
+use engine\system;
+
 class hooks_bbtohtml_front
 {
     private $parser = null;
@@ -34,7 +36,7 @@ class hooks_bbtohtml_front
             $this->parser = new bbcode;
         }
         $this->parser->parse($bbtext);
-        return $this->parser->get_html();
+        return system::getInstance()->htmlQuoteDecode($this->parser->get_html());
     }
 
     /**

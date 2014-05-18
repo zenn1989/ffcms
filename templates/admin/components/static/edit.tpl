@@ -9,7 +9,7 @@
             function()
             {
                 CKEDITOR.disableAutoInline = true;
-                $('.wysi').ckeditor();
+                $('.wysi').ckeditor({language: '{{ system.lang }}'});
                 $('.form-horizontal').submit(function(){
                     window.onbeforeunload = null;
                 });
