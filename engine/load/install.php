@@ -17,6 +17,7 @@ require_once(root . '/engine/property.class.php');
 require_once(root . '/engine/template.class.php');
 require_once(root . '/engine/router.class.php');
 require_once(root . '/engine/system.class.php');
+require_once(root . '/engine/ini.class.php');
 require_once(root . '/engine/logger.class.php');
 require_once(root . '/engine/language.class.php');
 require_once(root . '/engine/database.class.php');

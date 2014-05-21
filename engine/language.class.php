@@ -34,37 +34,21 @@ class language extends singleton {
         else // no ? then use default language
             $lang = property::getInstance()->get('lang');
         self::$userLang = $lang;
-        $file = null;
-        $addfile = null;
-        // default language files
-        if(loader === 'back') {
-            $file = root . '/language/' . $lang . '.back.lang';
-            $addfile = root . '/language/' . $lang . '.back.addition.lang';
-        } elseif(loader === 'install') {
-            $file = root . '/language/' . $lang . '.install.lang';
-        } else {
-            $file = root . '/language/' . $lang . '.front.lang';
-            $addfile = root . '/language/' . $lang . '.front.addition.lang';
-        }
+        $file = root . '/language/' . $lang . '.ini';
+        $addfile = root . '/language/' . $lang . '.custom.ini';
         self::getLanguageFile($file);
         self::getLanguageFile($addfile);
         // additional theme lang file
-        $theme_langfile = root . '/' . property::getInstance()->get('tpl_dir') . '/' . property::getInstance()->get('tpl_name') . '/' . $lang . '.language.lang';
+        $theme_langfile = root . '/' . property::getInstance()->get('tpl_dir') . '/' . property::getInstance()->get('tpl_name') . '/' . $lang . '.ini';
         self::getLanguageFile($theme_langfile);
     }
 
     protected static function getLanguageFile($file) {
         if(!file_exists($file))
             return;
-        $content = @file_get_contents($file);
-        $lang_array = explode("\n", $content);
-        foreach($lang_array as $lang_line) {
-            if(strlen($lang_line) > 3 && !system::getInstance()->prefixEquals($lang_line, '#')) {
-                list($tag, $value) = explode("<=>", $lang_line);
-                $value = str_replace(array("\r\n","\r"), '', $value); // js issue with illegal
-                template::getInstance()->set(template::TYPE_LANGUAGE, $tag, $value);
-            }
-        }
+        $lang_array = ini::getInstance()->read($file, true);
+        foreach($lang_array[loader] as $key=>$value)
+            template::getInstance()->set(template::TYPE_LANGUAGE, $key, $value);
     }
 
     protected static function loadAvailable() {
@@ -74,13 +58,12 @@ class language extends singleton {
         $found_language = array();
         // get all available
         foreach($scan as $file) {
-            if(!system::getInstance()->prefixEquals($file, '.') && system::getInstance()->suffixEquals($file, '.lang'))
+            if(!system::getInstance()->prefixEquals($file, '.') && system::getInstance()->suffixEquals($file, '.ini'))
                 $found_language = system::getInstance()->arrayAdd(strstr($file, '.', true), $found_language);
         }
-        // check if exists all files
+        // check if exists
         foreach($found_language as $check_language) {
-            if(file_exists(root . '/language/' . $check_language . '.front.lang') && file_exists(root . '/language/' . $check_language . '.back.lang')
-               && file_exists(root . '/language/' . $check_language . '.install.lang'))
+            if(file_exists(root . '/language/' . $check_language . '.ini'))
                 self::$available[] = $check_language;
         }
     }
@@ -102,24 +85,25 @@ class language extends singleton {
     }
 
     /**
-     * Add lines to language file. Used in install() function when extension installed in interface.
-     * Example: extension::getInstance->add(array('ru' => array('variable_param' => 'This is variable value')));
-     * @param array $data
-     * @param bool $back
+     * Write language chars to ini file. Example of usage: language::getInstance()->add(
+     * array('ru' => array('front' => array('lang_opt' => 'lang_data', 'lang_opt_2' => 'lang_data2')))
+     * ) - will be write to ru.custom.ini data: [front]lang_opt = 'lang_data' \n 'lang_opt_2' => 'lang_data2'
+     * @params array $data
      */
-    public function add($data, $back = false) {
-        foreach($data as $lang=>$lines) {
-            $toWriteString = "\n";
-            foreach($lines as $param=>$value) {
-                $toWriteString .= $param . "<=>" . $value . "\n";
-            }
-            $file = null;
-            if($back) {
-                $file = root . "/language/" . $lang . ".back.addition.lang";
-            } else {
-                $file = root . "/language/" . $lang . ".front.addition.lang";
-            }
-            @file_put_contents($file, $toWriteString, FILE_APPEND | LOCK_EX);
+    public function add($data) {
+        if(!is_array($data))
+            return false;
+        $total_result = true;
+        foreach($data as $language=>$object) {
+            $lang_defined_file = root . '/language/' . $language . '.custom.ini';
+            $lang_defined = array();
+            if(file_exists($lang_defined_file))
+                $lang_defined = ini::getInstance()->read($lang_defined_file, true);
+            $write_array = array_replace_recursive($lang_defined,$object);
+            $res = ini::getInstance()->write($write_array, $lang_defined_file, true);
+            if($res === false) // if not writed once - total write is failed, no reason to switch on true.
+                $total_result = false;
         }
+        return $total_result;
     }
 }
