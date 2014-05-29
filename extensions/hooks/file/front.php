@@ -197,13 +197,12 @@ class hooks_file_front {
     private function validImageMime($file) {
         $mime_type = array("image/gif", "image/jpeg", "image/jpg", "image/png", "image/bmp");
         $ext_image = array('jpg', 'gif', 'jpeg', 'png', 'bmp');
-        $file_infofunction = getimagesize($file['tmp_name']);
         $image_name_split = explode('.', $file['name']);
         $image_extension = array_pop($image_name_split);
 
-        if (in_array($file['type'], $mime_type) && in_array($file_infofunction['mime'], $mime_type)
-            && $file['size'] > 0 && $file['size'] < property::getInstance()->get('upload_img_max_size') * 1024
-            && in_array(strtolower($image_extension), $ext_image)) {
+        if (in_array(strtolower($image_extension), $ext_image) && in_array($file['type'], $mime_type)
+            && in_array(system::getInstance()->getMime($file['tmp_name']), $mime_type)
+            && $file['size'] > 0 && $file['size'] < property::getInstance()->get('upload_img_max_size') * 1024) {
                 return true;
         }
         return false;

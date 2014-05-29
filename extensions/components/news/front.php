@@ -357,7 +357,7 @@ class components_news_front {
                 'category_name' => $category_text,
                 'author_id' => $result['author'],
                 'author_nick' => user::getInstance()->get('nick', $result['author']),
-                'view_count' => $result['views'],
+                'view_count' => $result['views']+1, // fix update query after select (data is not updater now)
                 'similar_items' => $similar_array,
                 'pathway' => $pathway,
                 'cfg' => array(

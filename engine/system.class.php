@@ -778,4 +778,27 @@ class system extends singleton {
             return $this->htmlQuoteDecode($text);
         return html_entity_decode($text, ENT_QUOTES, "UTF-8");
     }
+
+    /**
+     * Get file mime type based on finfo function or gd lib (only for images)
+     * @param $file
+     * @return null|string
+     */
+    public function getMime($file) {
+        if(function_exists('finfo_open')) {
+            $finfo = finfo_open(FILEINFO_NONE | FILEINFO_MIME);
+            $mime = strstr(finfo_file($finfo, $file), ';', true); // ex: image/jpeg; charset=binary to image/jpeg
+            finfo_close($finfo);
+            return $mime;
+        } elseif(function_exists('mime_content_type')) {
+            return mime_content_type($file);
+        } elseif(function_exists('getimagesize')) { // no other way, only gd func
+            $info = getimagesize($file);
+            return $info['mime'];
+        } else {
+            logger::getInstance()->log(logger::LEVEL_ERR, 'Not founded system function to get Mime info. Please install finfo extension.');
+            return null;
+        }
+
+    }
 }

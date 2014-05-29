@@ -318,10 +318,7 @@ class admin extends singleton {
 
         $params['feedback_day'] = $res_feed[0];
 
-        $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE time >= ? AND time <= ?");
-        $stmt->bindParam(1, $day_start, \PDO::PARAM_INT);
-        $stmt->bindParam(2, $day_end, \PDO::PARAM_INT);
-        $stmt->execute();
+        $stmt = database::getInstance()->con()->query("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE moderate = 1");
 
         $res_feed = $stmt->fetch();
         $stmt = null;

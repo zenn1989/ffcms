@@ -49,6 +49,8 @@ class components_feedback_back {
         $stmt->execute();
 
         if($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $result['title'] = system::getInstance()->htmlQuoteDecode($result['title']);
+            $result['text'] = system::getInstance()->htmlQuoteDecode($result['text']);
             $params['feedback']['result'] = $result;
         } else {
             system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=user");

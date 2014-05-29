@@ -118,7 +118,6 @@ class template extends singleton {
             array_shift($uri);
         return system::getInstance()->altimplode('/', $uri);
     }
-
     public function twigUserVariables() {
         self::$variables[self::TYPE_USER]['id'] = user::getInstance()->get('id');
         self::$variables[self::TYPE_USER]['name'] = user::getInstance()->get('nick');

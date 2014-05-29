@@ -12,6 +12,8 @@ use engine\template;
 use engine\database;
 use engine\property;
 use engine\cache;
+use engine\language;
+use engine\system;
 
 class components_sitemap_front {
     protected static $instance = null;
@@ -24,18 +26,20 @@ class components_sitemap_front {
     }
 
     /**
-     * Add info to sitemap. Example: extension::getInstance()->call(extension::TYPE_COMPONENT, 'sitemap')->add('/test.html', date('c'), 'daily', 0.5)
-     * @param $uri
-     * @param $date
-     * @param $freq
-     * @param $priority
+     * Add info to sitemap.
+     * @param string $uri
+     * @param int $date
+     * @param string $freq
+     * @param float $priority
+     * @param string|null $title
      */
-    public function add($uri, $date, $freq, $priority) {
+    public function add($uri, $date, $freq, $priority, $title = null) {
         $this->map[] = array(
             'uri' => property::getInstance()->get('url').$uri,
             'date' => $date,
             'freq' => $freq,
-            'priority' => $priority
+            'priority' => $priority,
+            'title' => $title
         );
     }
 
@@ -54,11 +58,20 @@ class components_sitemap_front {
                 cache::getInstance()->store('sitemap'.$lang, $render);
             }
             template::getInstance()->justPrint($render);
+        } elseif($way[0] == "sitemap.html") {
+            $tpl = cache::getInstance()->get('htmlmap'.$lang);
+            if(is_null($tpl)) {
+                $this->loadDefaults();
+                $tpl = template::getInstance()->twigRender('components/sitemap/html.tpl', array('local' => $this->map));
+                cache::getInstance()->store('htmlmap'.$lang, $tpl);
+            }
+            template::getInstance()->set(template::TYPE_CONTENT, 'body', $tpl);
         }
     }
 
     private function loadDefaults() {
-        $this->add('/', date('c'), 'daily', '1.0'); // main page
+        $global_title = property::getInstance()->get('seo_title');
+        $this->add('/', date('c'), 'daily', '1.0', $global_title[language::getInstance()->getUseLanguage()]); // main page
         $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".
             property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.display = 1 AND a.category = b.category_id ORDER BY a.id ASC");
         $stmt->execute();
@@ -69,25 +82,31 @@ class components_sitemap_front {
             } else {
                 $link = "/news/".$result['path']."/".$result['link'];
             }
-            $this->add($link, date('c', $result['date']), 'weekly', '0.3');
+            $news_title = system::getInstance()->altstripslashes(unserialize($result['title']));
+            $this->add($link, date('c', $result['date']), 'weekly', '0.3', $news_title[language::getInstance()->getUseLanguage()]);
         }
         $stmt = null;
-        $stmt = database::getInstance()->con()->prepare("SELECT `pathway`, `date` FROM ".property::getInstance()->get('db_prefix')."_com_static");
+        $stmt = database::getInstance()->con()->prepare("SELECT `pathway`, `date`, `title` FROM ".property::getInstance()->get('db_prefix')."_com_static");
         $stmt->execute();
         while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $this->add("/static/".$result['pathway'], date('c', $result['date']), 'weekly', '0.4');
+            $static_title = system::getInstance()->altstripslashes(unserialize($result['title']));
+            $this->add("/static/".$result['pathway'], date('c', $result['date']), 'weekly', '0.4', $static_title[language::getInstance()->getUseLanguage()]);
         }
         $stmt = null;
-        $stmt = database::getInstance()->con()->prepare("SELECT id FROM ".property::getInstance()->get('db_prefix')."_user WHERE aprove = 0");
+        $stmt = database::getInstance()->con()->prepare("SELECT id,nick,login FROM ".property::getInstance()->get('db_prefix')."_user WHERE aprove = 0");
         $stmt->execute();
         while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $this->add("/user/id".$result['id'], date('c'), 'weekly', '0.2');
+            $u_title = $result['nick'];
+            if(system::getInstance()->length($u_title) < 1)
+                $u_title = $result['login']; // unsafe .. but didnt care (:
+            $this->add("/user/id".$result['id'], date('c'), 'weekly', '0.2', $u_title);
         }
         $stmt = null;
-        $stmt = database::getInstance()->con()->prepare("SELECT a.path, b.`date` FROM `".property::getInstance()->get('db_prefix')."_com_news_category` a, `".property::getInstance()->get('db_prefix')."_com_news_entery` b WHERE a.category_id = b.category AND a.path != '' GROUP BY a.path ORDER BY b.`date` DESC");
+        $stmt = database::getInstance()->con()->prepare("SELECT a.`path`, a.`name`, b.`date` FROM `".property::getInstance()->get('db_prefix')."_com_news_category` a, `".property::getInstance()->get('db_prefix')."_com_news_entery` b WHERE a.category_id = b.category AND a.path != '' GROUP BY a.path ORDER BY b.`date` DESC");
         $stmt->execute();
         while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $this->add("/news/".$result['path'], date('c', $result['date']), 'weekly', '0.3');
+            $cat_name = unserialize($result['name']);
+            $this->add("/news/".$result['path'], date('c', $result['date']), 'weekly', '0.3', $cat_name[language::getInstance()->getUseLanguage()]);
         }
     }
 }
