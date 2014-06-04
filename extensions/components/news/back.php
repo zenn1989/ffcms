@@ -345,7 +345,9 @@ class components_news_back {
             $params['news']['text'] = system::getInstance()->post('text');
             $params['news']['description'] = system::getInstance()->nohtml(system::getInstance()->post('description'));
             $params['news']['keywords'] = system::getInstance()->nohtml(system::getInstance()->post('keywords'));
-            $date = system::getInstance()->post('current_date') == "on" ? time() : system::getInstance()->toUnixTime(system::getInstance()->post('date'));
+            $date = system::getInstance()->toUnixTime(system::getInstance()->post('date'));
+            if(system::getInstance()->post('current_date') == "on" || $date < 1)
+                $date = time();
             $params['news']['date'] = system::getInstance()->toDate($date, 'h');
             if (strlen($params['news']['title'][property::getInstance()->get('lang')]) < 1) {
                 $params['notify']['notitle'] = true;

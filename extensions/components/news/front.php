@@ -470,8 +470,8 @@ class components_news_front {
                 $item_image = property::getInstance()->get('script_url') . '/upload/news/poster_' . $row['id'] .'.jpg';
                 $image_size = filesize(root . '/upload/news/poster_' . $row['id'] . '.jpg');
             }
-            $full_text = $fulltext_mod ? $item_fulltext[language::getInstance()->getUseLanguage()] : null;
-            $title = system::getInstance()->htmlQuoteDecode(system::getInstance()->nohtml($item_title[language::getInstance()->getUseLanguage()]));
+            $full_text = $fulltext_mod ? system::getInstance()->stringInline(system::getInstance()->htmlQuoteDecode(system::getInstance()->nohtml($item_fulltext[language::getInstance()->getUseLanguage()]))) : null;
+            $title = system::getInstance()->htmlQuoteDecode(system::getInstance()->nohtml($item_title[language::getInstance()->getUseLanguage()], true));
             if(extension::getInstance()->getConfig('enable_soc_rss', 'news', extension::TYPE_COMPONENT, 'bol')) {
                 $add_hash_lang = extension::getInstance()->getConfig('rss_hash', 'news', extension::TYPE_COMPONENT, 'str');
                 $add_hash = $add_hash_lang[language::getInstance()->getUseLanguage()];

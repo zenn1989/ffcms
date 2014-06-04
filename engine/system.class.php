@@ -133,11 +133,11 @@ class system extends singleton {
             $output = array();
             foreach($data as $key=>$entery)
             {
-                $output[$key] = $save_quotes === true ? $entery : htmlentities(strip_tags($entery), ENT_QUOTES | ENT_IGNORE, "UTF-8");
+                $output[$key] = $save_quotes === true ? strip_tags($entery) : htmlentities(strip_tags($entery), ENT_QUOTES, "UTF-8");
             }
             return $output;
         }
-        return $save_quotes === true ? $data : htmlentities(strip_tags($data), ENT_QUOTES | ENT_IGNORE, "UTF-8");
+        return $save_quotes === true ? strip_tags($data) : htmlentities(strip_tags($data), ENT_QUOTES, "UTF-8");
     }
 
     public function stringInline($data) {
@@ -776,7 +776,7 @@ class system extends singleton {
         $text = str_replace('&amp;', '&', $text);
         if(strpos($text, '&amp;'))
             return $this->htmlQuoteDecode($text);
-        return html_entity_decode($text, ENT_QUOTES, "UTF-8");
+        return html_entity_decode($text, ENT_QUOTES | ENT_IGNORE, "UTF-8");
     }
 
     /**

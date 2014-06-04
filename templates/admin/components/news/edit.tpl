@@ -96,7 +96,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h2>{{ language.admin_component_news_edit_page_title_name }}[{{ itemlang }}]</h2>
-                        <input onkeyup="oJS.strNormalize(this)" type="text" name="title[{{ itemlang }}]" class="form-control" value="{{ news.title[itemlang] }}" maxlength="100" />
+                        <input{% if itemlang == langs.current %} onkeyup="oJS.strNormalize(this)"{% endif %} type="text" name="title[{{ itemlang }}]" class="form-control" value="{{ news.title[itemlang] }}" maxlength="100" />
                         <span class="help-block">{{ language.admin_component_news_edit_page_title_desc }}</span>
                     </div>
                 </div>

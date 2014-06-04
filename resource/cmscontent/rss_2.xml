@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
-<rss version="2.0">
+<rss version="2.0" encoding="UTF-8">
     <channel>
         <title>{{ channel.title }}</title>
         <link>{{ channel.link }}</link>
         <description>{{ channel.desc }}</description>
         {% for item in items %}
         <item>
-            <title>{{ item.title }}</title>
+            <title>{{ item.title|raw }}</title>
             <link>{{ item.link }}</link>
             <description>{{ item.desc }}</description>
             <pubDate>{{ item.date }}</pubDate>
@@ -16,7 +16,7 @@
             <enclosure url="{{ item.image_url }}" type="image/jpeg" length="{{ item.image_size }}" />
             {% endif %}
             {% if item.text|length > 0 %}
-            <yandex:full-text><![CDATA[{{ item.text|raw }}]]></yandex:full-text>
+            <yandex:full-text>{{ item.text|raw }}</yandex:full-text>
             {% endif %}
         </item>
         {% endfor %}

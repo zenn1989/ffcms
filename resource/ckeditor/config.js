@@ -48,4 +48,6 @@ CKEDITOR.editorConfig = function( config ) {
 	config.extraPlugins = 'youtube,widget,lineutils,codesnippet,leaflet';
 
     config.height = '400';
+
+    config.basicEntities = false;
 };

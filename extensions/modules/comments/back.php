@@ -191,7 +191,8 @@ class modules_comments_back {
                 'comment' => extension::getInstance()->call(extension::TYPE_HOOK, 'bbtohtml')->nobbcode($row['comment']),
                 'guest_name' => system::getInstance()->nohtml($row['guest_name']),
                 'moderate' => $row['moderate'],
-                'date' => system::getInstance()->toDate($row['time'], 'h')
+                'date' => system::getInstance()->toDate($row['time'], 'h'),
+                'uri' => $row['pathway']
             );
         }
 
