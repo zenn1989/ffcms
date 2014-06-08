@@ -71,7 +71,7 @@ class template extends singleton {
                 'strict_variables' => false,
             )
         );
-        self::$twig_file->enableAutoReload();
+        //self::$twig_file->enableAutoReload();
         self::$twig_string = new \Twig_Environment(new \Twig_Loader_String());
     }
 

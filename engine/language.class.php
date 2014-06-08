@@ -49,6 +49,10 @@ class language extends singleton {
         $lang_array = ini::getInstance()->read($file, true);
         foreach($lang_array[loader] as $key=>$value)
             template::getInstance()->set(template::TYPE_LANGUAGE, $key, $value);
+        if(loader === 'api') { // api loader also use front language data
+            foreach($lang_array['front'] as $key=>$value)
+                template::getInstance()->set(template::TYPE_LANGUAGE, $key, $value);
+        }
     }
 
     protected static function loadAvailable() {

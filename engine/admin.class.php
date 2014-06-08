@@ -118,7 +118,8 @@ class admin extends singleton {
                         $params['extension'][$cdir] = array(
                             'title' => language::getInstance()->get('admin_'.$type.'_'.$cdata['dir'].'.name') ?: $cdir,
                             'desc' => language::getInstance()->get('admin_'.$type.'_'.$cdata['dir'].'.desc') ?: $cdir,
-                            'enabled' => $cdata['enabled']
+                            'enabled' => $cdata['enabled'],
+                            'way' => $cdata['type'] == extension::TYPE_COMPONENT ? $cdir : null
                         );
                     }
                 }
