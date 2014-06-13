@@ -37,7 +37,7 @@ class components_feedback_front {
             $captcha = system::getInstance()->post('captcha');
             $date = time();
             if(!filter_var($poster_email, FILTER_VALIDATE_EMAIL)) {
-                $params['notify']['wrong_captcha'] = true;
+                $params['notify']['wrong_email'] = true;
             }
             if(system::getInstance()->length($topic_title) < 3 || system::getInstance()->length($topic_title) > 70) {
                 $params['notify']['wrong_title'] = true;

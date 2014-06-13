@@ -3,7 +3,7 @@
 <hr />
 <p>{{ language.feedback_form_desc }}</p>
 {% if local.notify %}
-    {% if local.notify.wrong_captcha %}
+    {% if local.notify.wrong_email %}
         {{ notify.error(language.feedback_error_email) }}
     {% endif %}
     {% if local.notify.wrong_title %}
