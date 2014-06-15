@@ -46,9 +46,9 @@ class components_search_front {
         $params = array();
         $queryBuild = '%'.$query.'%';
         $stmt = database::getInstance()->con()->prepare(
-        "SELECT a.title,a.text,a.link,a.category,b.category_id,b.path FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a,
+        "SELECT a.title,a.text,a.link,a.category,a.date,b.category_id,b.path FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a,
         ".property::getInstance()->get('db_prefix')."_com_news_category b
-        WHERE a.category = b.category_id AND (a.text like ? OR a.title like ?) LIMIT 50"
+        WHERE a.category = b.category_id AND (a.text like ? OR a.title like ?) ORDER BY a.`date` DESC LIMIT 50"
         );
         $stmt->bindParam(1, $queryBuild, PDO::PARAM_STR);
         $stmt->bindParam(2, $queryBuild, PDO::PARAM_STR);
@@ -66,7 +66,8 @@ class components_search_front {
             $params['news'][] = array(
                 'link' => $link,
                 'title' => $title[language::getInstance()->getUseLanguage()],
-                'snippet' => $text
+                'snippet' => $text,
+                'date' => system::getInstance()->toDate($result['date'], 'h')
             );
         }
         $stmt = null;
@@ -77,7 +78,7 @@ class components_search_front {
     {
         $params = array();
         $queryBuild = '%'.$query.'%';
-        $stmt = database::getInstance()->con()->prepare("SELECT title,text,pathway FROM ".property::getInstance()->get('db_prefix')."_com_static WHERE text like ? OR title like ? LIMIT 50");
+        $stmt = database::getInstance()->con()->prepare("SELECT title,text,pathway,date FROM ".property::getInstance()->get('db_prefix')."_com_static WHERE text like ? OR title like ? ORDER BY `date` LIMIT 50");
         $stmt->bindParam(1, $queryBuild, PDO::PARAM_STR);
         $stmt->bindParam(2, $queryBuild, PDO::PARAM_STR);
         $stmt->execute();
@@ -90,7 +91,8 @@ class components_search_front {
             $params['static'][] = array(
                 'link' => $link,
                 'title' => $title[language::getInstance()->getUseLanguage()],
-                'snippet' => $text
+                'snippet' => $text,
+                'date' => system::getInstance()->toDate($result['date'], 'h')
             );
         }
         return $params;
