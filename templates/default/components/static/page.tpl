@@ -16,9 +16,11 @@
             {% else %}
             <span>&nbsp;</span>
             {% endif %}
+            {% if not local.is_main %}
             <div class="pull-right">
                 <a href="{{ local.pathway }}?print" target="_blank"><i class="fa fa-print"></i></a>
             </div>
+            {% endif %}
         </div>
     <div itemprop="articleBody">
         {{ local.text }}

@@ -17,6 +17,8 @@ class system extends singleton {
 
     protected static $instance = null;
 
+    const MAX_INTEGER_32 = 2147483647;
+
     /**
      * @return system
      */

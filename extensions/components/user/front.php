@@ -1052,9 +1052,13 @@ class components_user_front {
                     $stmt2->bindParam(5, $loginoremail, PDO::PARAM_STR);
                     $stmt2->bindParam(6, $md5pwd, PDO::PARAM_STR, 32);
                     $stmt2->execute();
-
-                    setcookie('person', $loginoremail, null, '/', null, null, true);
-                    setcookie('token', $md5token, null, '/', null, null, true);
+                    if(system::getInstance()->post('longsession') == "on") {
+                        setcookie('person', $loginoremail, system::MAX_INTEGER_32, '/', null, null, true);
+                        setcookie('token', $md5token, system::MAX_INTEGER_32, '/', null, null, true);
+                    } else {
+                        $_SESSION['person'] = $loginoremail;
+                        $_SESSION['token'] = $md5token;
+                    }
                     system::getInstance()->redirect();
                 } else {
                     $params['notify']['wrong_data'] = true;
@@ -1081,6 +1085,8 @@ class components_user_front {
         $stmt = null;
         setcookie('person', null, null, '/', null, null, true);
         setcookie('token', null, null, '/', null, null, true);
+        unset($_SESSION['token']);
+        unset($_SESSION['person']);
         system::getInstance()->redirect();
     }
 

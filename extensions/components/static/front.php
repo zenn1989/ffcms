@@ -40,7 +40,7 @@ class components_static_front {
      * @param boolean $show_date
      * @return string|null
      */
-    public function display($pathway, $id = null, $show_date = true) {
+    public function display($pathway, $id = null, $show_date = true, $is_main = false) {
         $stmt = null;
         $is_print = false;
         if(is_null($id)) {
@@ -73,6 +73,7 @@ class components_static_front {
                 'text' => $serial_text[language::getInstance()->getUseLanguage()],
                 'date' => system::getInstance()->toDate($result['date'], 'd'),
                 'show_date' => $show_date,
+                'is_main' => $is_main,
                 'pathway' => property::getInstance()->get('url') . '/static/' . $pathway
             );
             if($is_print)

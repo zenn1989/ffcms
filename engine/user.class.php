@@ -26,8 +26,8 @@ class user extends singleton {
     }
 
     protected static function preload() {
-        $token = $_COOKIE['token'];
-        $personal_id = $_COOKIE['person'];
+        $token = isset($_SESSION['token']) ? $_SESSION['token'] : $_COOKIE['token'];
+        $personal_id = isset($_SESSION['person']) ? $_SESSION['person'] : $_COOKIE['person'];
         $user_ip = system::getInstance()->getRealIp();
         // data 1st raw check before sql is used
         if (strlen($token) == 32 && (filter_var($personal_id, FILTER_VALIDATE_EMAIL) || (strlen($personal_id) > 0 && system::getInstance()->isLatinOrNumeric($personal_id)))) {
