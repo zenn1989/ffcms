@@ -25,6 +25,7 @@ require_once(root . '/engine/user.class.php');
 require_once(root . '/engine/extension.class.php');
 require_once(root . '/engine/meta.class.php');
 require_once(root . '/engine/cache.class.php');
+require_once(root . '/engine/permission.class.php');
 require_once(root . '/engine/install.class.php');
 
 \engine\template::getInstance()->twigDefaultVariables(); // set default template variables according changes in dymanic variables
