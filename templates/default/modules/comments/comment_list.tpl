@@ -28,7 +28,7 @@
                     <div class="pull-right">
                         {% if comment.can_delete %}<a href="#comment_site" onclick="return deletecomment({{ comment.comment_id }});" data-toggle="tooltip" data-placement="top" title="{{ language.comment_text_delete_link }}" class="tooltip-show"><i class="fa fa-ban"></i></a> {% endif %}
                         {% if comment.can_edit %}<a href="#edit-comment" data-toggle="modal" class="edit-comment tooltip-show" data-toggle="tooltip" data-placement="top" title="{{ language.comment_text_edit_link }}" onclick="return editcomment({{ comment.comment_id }})"><i class="fa fa-pencil-square-o"></i></a> {% endif %}
-                        {% if user.id > 0 %}<a onclick="replayto('{{ comment.author_nick }}')" href="#comment_value" data-toggle="tooltip" data-placement="top" title="{{ language.comments_text_answerto }}" class="tooltip-show"><i class="fa fa-quote-right"></i></a> {% endif %}
+                        {% if user.id > 0 %}<a onclick="replayto('{% if comment.author_id > 0 %}{{ comment.author_nick }}{% else %}{{ comment.guest_name }}{% endif %}')" href="#comment_value" data-toggle="tooltip" data-placement="top" title="{{ language.comments_text_answerto }}" class="tooltip-show"><i class="fa fa-quote-right"></i></a> {% endif %}
                     </div>
                 </div>
                 <div class="panel-body">
