@@ -32,5 +32,5 @@ engine.
 # Licensing and authors
 FFCMS developed under GNU GPL v3 license - you can use ffcms where you want and as you want. License require copyleft to authors.
 
-The main developer of FFCMS system is [Pyatinsky Mihail - zenn](http://vk.com/followzenn) from Ukraine.
+The main developer of FFCMS system is [Pyatinsky Mihail - zenn](http://vk.com/followzenn) from Russia.
 
