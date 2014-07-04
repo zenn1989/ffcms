@@ -2,6 +2,19 @@
 <h1>{{ extension.title }}<small>{{ language.admin_modules_comment_manage_title }}</small></h1>
 <hr />
 {% include 'modules/comments/menu_include.tpl' %}
+<div class="pull-left">
+    <div class="btn-group">
+        <button type="button" class="btn btn-default">{{ language.admin_modules_comment_filter_title }}</button>
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+            <li><a href="?object=modules&action=comments&make=list&filter=0">{{ language.admin_modules_comment_filter_all }}</a></li>
+            <li><a href="?object=modules&action=comments&make=list&filter=1">{{ language.admin_modules_comment_filter_moderate }}</a></li>
+        </ul>
+    </div>
+</div>
 {% if comments.list %}
 <form action="" method="post" onsubmit="return confirm('{{ language.admin_onsubmit_warning }}');">
 <table class="table table-responsive table-bordered">

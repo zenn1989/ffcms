@@ -20,6 +20,9 @@ class modules_comments_back {
 
     const ITEM_PER_PAGE = 10;
 
+    const FILTER_ALL = 0;
+    const FILTER_MODERATE = 1;
+
     public static function getInstance() {
         if(is_null(self::$instance))
             self::$instance = new self();
@@ -30,6 +33,7 @@ class modules_comments_back {
         $content = null;
         switch(system::getInstance()->get('make')) {
             case null:
+            case 'list':
                 $content = $this->viewCommentList();
                 break;
             case 'edit':
@@ -172,16 +176,27 @@ class modules_comments_back {
 
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
 
+        $filter = (int)system::getInstance()->get('filter');
         $index = (int)system::getInstance()->get('index');
         $db_index = $index * self::ITEM_PER_PAGE;
 
-        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_mod_comments ORDER BY id DESC LIMIT ?,".self::ITEM_PER_PAGE);
-        $stmt->bindParam(1, $db_index, PDO::PARAM_INT);
-        $stmt->execute();
+        $stmt = null;
+
+        if($filter == self::FILTER_MODERATE) {
+            $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE moderate = 1 ORDER BY id DESC LIMIT ?,".self::ITEM_PER_PAGE);
+            $stmt->bindParam(1, $db_index, PDO::PARAM_INT);
+            $stmt->execute();
+        } else {
+            $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_mod_comments ORDER BY id DESC LIMIT ?,".self::ITEM_PER_PAGE);
+            $stmt->bindParam(1, $db_index, PDO::PARAM_INT);
+            $stmt->execute();
+        }
 
         $resultFetch = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        user::getInstance()->listload(system::getInstance()->extractFromMultyArray('author', $resultFetch));
+        $authors_ids = system::getInstance()->extractFromMultyArray('author', $resultFetch);
+        if(sizeof($authors_ids) > 1) // 2 or more
+            user::getInstance()->listload(system::getInstance()->extractFromMultyArray('author', $resultFetch));
 
         foreach($resultFetch as $row) {
             $params['comments']['list'][] = array(
@@ -196,15 +211,18 @@ class modules_comments_back {
             );
         }
 
-        $params['pagination'] = template::getInstance()->showFastPagination($index, self::ITEM_PER_PAGE, $this->getTotalCommentCount(), '?object=modules&action=comments&index=');
+        $params['pagination'] = template::getInstance()->showFastPagination($index, self::ITEM_PER_PAGE, $this->getTotalCommentCount($filter), '?object=modules&action=comments&filter='.$filter.'&index=');
 
         return template::getInstance()->twigRender('modules/comments/list.tpl', $params);
 
     }
 
-    public function getTotalCommentCount() {
-        $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_mod_comments");
-        $stmt->execute();
+    public function getTotalCommentCount($filter) {
+        $stmt = null;
+        if($filter == self::FILTER_MODERATE)
+            $stmt = database::getInstance()->con()->query("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE moderate = 1");
+        else
+            $stmt = database::getInstance()->con()->query("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_mod_comments");
         $result = $stmt->fetch();
         $stmt = null;
         return $result[0];

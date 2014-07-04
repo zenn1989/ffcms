@@ -146,7 +146,9 @@
             </div>
             <div class="panel-body">
                 <a href="?object=cleancache" class="btn btn-success btn-block">{{ language.admin_block_operation_cacheclean }}</a> <br />
-                <a href="?object=cleanstats" class="btn btn-warning btn-block">{{ language.admin_block_operation_statclean }}</a>
+                <a href="?object=cleanstats" class="btn btn-warning btn-block">{{ language.admin_block_operation_statclean }}</a> <br />
+                <a href="?object=cleanlogs" class="btn btn-info btn-block">{{ language.admin_block_operation_logclean }}</a>
+
             </div>
         </div>
     </div>

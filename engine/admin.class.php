@@ -61,11 +61,26 @@ class admin extends singleton {
             case 'cleanstats':
                 $content = $this->viewCleanStatistic();
                 break;
+            case 'cleanlogs':
+                $content = $this->viewCleanLogs();
+                break;
             default:
                 $content = $this->loadMainpage();
                 break;
         }
         return $content;
+    }
+
+    private function viewCleanLogs() {
+        $params = array();
+
+        if(system::getInstance()->post('submit')) {
+            system::getInstance()->removeDirectory(root . '/log/');
+            system::getInstance()->createPrivateDirectory(root . '/log/');
+            $params['notify']['log_clear'] = true;
+        }
+
+        return template::getInstance()->twigRender('cleanlogs.tpl', $params);
     }
 
     private function viewCleanCache() {
