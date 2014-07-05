@@ -110,11 +110,10 @@ class user extends singleton {
      * @param $idlist
      */
     public function listload($idlist) {
-        $list_array = system::getInstance()->removeNullFrontIntList($idlist);
-        if(sizeof($list_array) < 1)
+        $list_array = system::getInstance()->removeNullFrontIntList($idlist); // array
+        if(sizeof($list_array) < 2)
             return;
-        $idlist = system::getInstance()->altimplode(',', $list_array);
-        //var_dump($idlist);
+        $idlist = system::getInstance()->altimplode(',', $list_array); // string
         $query = "SELECT * FROM
             ".property::getInstance()->get('db_prefix')."_user a,
             ".property::getInstance()->get('db_prefix')."_user_access_level b,

@@ -7,6 +7,7 @@
 |==========================================================|
  */
 // admin iface marker
+session_start();
 define('loader', 'back');
 define('root', dirname(__FILE__));
 
