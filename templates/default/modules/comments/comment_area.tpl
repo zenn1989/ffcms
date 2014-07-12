@@ -1,5 +1,5 @@
-<script type="text/javascript" src="{{ system.script_url }}/resource/wysibb/jquery.wysibb.min.js"></script>
-{% if system.lang in ['ar', 'cn', 'de', 'en', 'fr', 'pl', 'tr', 'ua', 'vn'] %}
+<script type="text/javascript" src="{{ system.script_url }}/resource/wysibb/jquery.wysibb.js"></script>
+{% if system.lang in ['ar', 'cn', 'de', 'en', 'fr', 'pl', 'tr', 'ua', 'vn', 'ru'] %}
 <script type="text/javascript" src="{{ system.script_url }}/resource/wysibb/lang/{{ system.lang }}.js"></script>
 {% endif %}
 <link rel="stylesheet" href="{{ system.script_url }}/resource/wysibb/theme/default/wbbtheme.css" />

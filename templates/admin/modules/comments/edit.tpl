@@ -1,5 +1,5 @@
 {% import 'macro/notify.tpl' as notifytpl %}
-<script src="{{ system.script_url }}/resource/wysibb/jquery.wysibb.min.js"></script>
+<script src="{{ system.script_url }}/resource/wysibb/jquery.wysibb.js"></script>
 <link rel="stylesheet" href="{{ system.script_url }}/resource/wysibb/theme/default/wbbtheme.css" />
 <script>
     $(document).ready(function () {

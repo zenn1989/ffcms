@@ -162,6 +162,7 @@ class hooks_file_front {
      * @return bool|string
      */
     public function uploadImage($dir = '/images/', $file) {
+        $dir = $this->checkFolderName($dir);
         $full_dir = root . $this->directory . $dir;
         // make directory for upload if it dosnt exists
         if(!file_exists($full_dir)) {
@@ -176,6 +177,36 @@ class hooks_file_front {
         $image_new_name = $this->analiseUploadName(implode('', $object_pharse), $image_extension, $full_dir);
         move_uploaded_file($file['tmp_name'], $full_dir . $image_new_name . "." . $image_extension);
         return $image_new_name . "." .$image_extension;
+    }
+
+    /**
+     * Uploading archive $file in the directory $dir
+     * @param array $file
+     * @param string $dir
+     * @return bool|string
+     */
+    public function uploadArchive($dir = "/files/", $file)
+    {
+        $dir = $this->checkFolderName($dir);
+        $full_dir = root . $this->directory . $dir;
+        if(!file_exists($full_dir))
+            system::getInstance()->createDirectory($full_dir);
+        $object = explode(".", $file['name']);
+        $extension = array_pop($object);
+        if($extension === "zip" || $extension === "rar" || $extension === "gz") {
+            $archive_name = $this->analiseUploadName(implode('', $object), $extension, $dir);
+            move_uploaded_file($file['tmp_name'], $full_dir . '/' . $archive_name . "." . $extension);
+            return $archive_name . "." . $extension;
+        }
+        return false;
+    }
+
+    private function checkFolderName($folder) {
+        if(!system::getInstance()->prefixEquals($folder, '/') && !system::getInstance()->prefixEquals($folder, '\\'))
+            $folder = '/' . $folder;
+        if(!system::getInstance()->suffixEquals($folder, '/') && !system::getInstance()->suffixEquals($folder, '\\'))
+            $folder .= '/';
+        return $folder;
     }
 
     private function analiseUploadName($name, $xt, $dir, $recursive = false)

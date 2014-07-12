@@ -127,7 +127,7 @@ class system extends singleton {
      * Remove html entery
      * @param string $data
      * @param bool $save_quotes
-     * @return string
+     * @return string|array
      */
     public function nohtml($data, $save_quotes = false)
     {
