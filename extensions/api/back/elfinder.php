@@ -9,6 +9,7 @@
 
 use engine\permission;
 use engine\property;
+use engine\system;
 
 class api_elfinder_back {
     protected static $instance = null;
@@ -33,6 +34,9 @@ class api_elfinder_back {
                 ? !($attr == 'read' || $attr == 'write') // set read+write to false, other (locked+hidden) set to true
                 : null; // else elFinder decide it itself
         }
+
+        if(!file_exists(root . '/upload/'))
+            system::getInstance()->createDirectory(root . '/upload/', 0755);
 
         $opts = array(
             // 'debug' => true,

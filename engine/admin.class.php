@@ -224,6 +224,8 @@ class admin extends singleton {
 
     private function viewDumper() {
         $params = array();
+        if(!file_exists(root . '/backup/'))
+            system::getInstance()->createDirectory(root . '/backup/', 0755);
         if(!is_readable(root . "/backup/") || !is_writable(root . "/backup/"))
             $params['notify']['rw_error'] = true;
         if(system::getInstance()->post('submit'))
