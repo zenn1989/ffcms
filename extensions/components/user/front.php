@@ -19,7 +19,7 @@ use engine\meta;
 
 class components_user_front {
     protected static $instance = null;
-    private $add_links = array();
+    protected  $add_links = array();
 
     public static function getInstance() {
         if(is_null(self::$instance)) {

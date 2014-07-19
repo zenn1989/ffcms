@@ -52,6 +52,7 @@ require_once(root . '/engine/ban.class.php');
 \engine\language::getInstance();
 \engine\user::getInstance();
 \engine\extension::getInstance()->loadModules();
+\engine\extension::getInstance()->loadHooks();
 \engine\router::getInstance()->makeRoute();
 \engine\meta::getInstance()->compile();
 echo \engine\template::getInstance()->make();

@@ -46,8 +46,10 @@ class meta extends singleton {
      * @param string $data
      */
     public function add($tag, $data) {
-        if(in_array($tag, array('title', 'description', 'keywords')))
-            self::$metadata[$tag][] = $data;
+        if(in_array($tag, array('title', 'description', 'keywords'))) {
+            if(system::getInstance()->length($data) > 0)
+                self::$metadata[$tag][] = $data;
+        }
     }
 
     public function compile() {

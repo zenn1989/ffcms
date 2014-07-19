@@ -23,6 +23,12 @@
                     <li{% if local.path == 'news' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}/news"><i class="fa fa-pencil-square-o"></i> {{ language.usercontrol_profile_mymenu_newspublic }}</a></li>
                     {% endif %}
                     <li{% if local.path == 'settings' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}/settings"><i class="fa fa-cogs"></i> {{ language.usercontrol_profile_mymenu_settings }}</a></li>
+                    {% if local.profile.add_menu %}
+                        <hr />
+                        {% for add_menu in local.profile.add_menu %}
+                            <li><a href="{{ system.url }}/{{ add_menu.link }}">{{ add_menu.text }}</a></li>
+                        {% endfor %}
+                    {% endif %}
                 {% else %}
                     {% if local.profile.is_friend %}
                         <li><a href="{{ system.url }}/user/id{{ user.id }}/messages/write/{{ local.profile.user_id }}"><i class="fa fa-envelope"></i> {{ language.usercontrol_profile_mymenu_writemsg }}</a></li>

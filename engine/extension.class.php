@@ -68,7 +68,7 @@ class extension extends singleton {
     }
 
     public function loadModules() {
-        foreach(self::$extconfigs['modules'] as $mod_data) {
+        foreach(self::$extconfigs[self::TYPE_MODULE] as $mod_data) {
             if($mod_data['enabled'] == 1) { // if module is enabled
                 // check is module work on this pathway.
                 $work_on_this_path = false;
@@ -100,6 +100,17 @@ class extension extends singleton {
                     $object = $this->call(self::TYPE_MODULE, $mod_data['dir']);
                     if(is_object($object) && method_exists($object, 'make'))
                         $object->make();
+                }
+            }
+        }
+    }
+
+    public function loadHooks() {
+        foreach(self::$extconfigs[self::TYPE_HOOK] as $hook_data) {
+            if($hook_data['enabled'] == 1) {
+                $callback = $this->call(self::TYPE_HOOK, $hook_data['dir']);
+                if(is_object($callback) && method_exists($callback, 'make')) {
+                    $callback->make();
                 }
             }
         }
