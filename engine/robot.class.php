@@ -10,7 +10,7 @@
 namespace engine;
 
 
-class robot {
+class robot extends singleton {
     protected static $instance = null;
 
     public static function getInstance() {

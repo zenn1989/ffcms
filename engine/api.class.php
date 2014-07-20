@@ -9,7 +9,7 @@
 
 namespace engine;
 
-class api {
+class api extends singleton {
     protected static $instance = null;
     protected static $links_api = array();
 

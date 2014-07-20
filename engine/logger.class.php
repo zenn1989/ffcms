@@ -9,7 +9,7 @@
 
 namespace engine;
 
-class logger {
+class logger extends singleton {
     const LEVEL_ERR = 'Error';
     const LEVEL_WARN = 'Warning';
     const LEVEL_NOTIFY = 'Notify';

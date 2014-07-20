@@ -88,13 +88,13 @@ wbbdebug=true;
 		this.$txtArea=$(txtArea);
 		var id = this.$txtArea.attr("id") || this.setUID(this.txtArea);
 		this.options = {
-			bbmode:				true,
-			onlyBBmode:			false,
-			themeName:			"default", 
-			bodyClass:			"",
-			lang:				"en",
-			tabInsert:			true,
-			toolbar:			true,
+            bbmode:				false,
+            onlyBBmode:			false,
+            themeName:			"default",
+            bodyClass:			"",
+            lang:				"en",
+            tabInsert:			true,
+//			toolbar:			false,
 			//img upload config 
 			imgupload:			true,
 			img_uploadurl:		"",

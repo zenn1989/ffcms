@@ -10,7 +10,25 @@
             {
                 CKEDITOR.disableAutoInline = true;
                 $('.wysi').ckeditor({language: '{{ system.lang }}'});
-                $('.form-horizontal').submit(function(){
+                $('.form-horizontal').submit(function() {
+                    var is_fail = false;
+                    $.ajax({
+                        async: false,
+                        type: 'GET',
+                        url: ffcms_host + '/api.php?iface='+loader+'&object=checkauth',
+                        success: function(data) {
+                            if(data < 1) {
+                                is_fail = true;
+                            }
+                        },
+                        error: function() {
+                            is_fail = true;
+                        }
+                    });
+                    if(is_fail) {
+                        if(!confirm('{{ language.admin_formsubmit_notify }}'))
+                            return false;
+                    }
                     window.onbeforeunload = null;
                 });
                 $('#datefield').datepicker();

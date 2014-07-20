@@ -9,7 +9,7 @@
 
 namespace engine;
 
-class property {
+class property extends singleton {
     protected static $cfg = array();
     protected static $instance = null;
 
