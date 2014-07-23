@@ -143,35 +143,21 @@ class template extends singleton {
     /**
      * Add to rendering variable with value. If add is true value not be replaced, added.
      * @param $type ['content', 'language', 'system']
-     * @param $variable
-     * @param $value
+     * @param string $variable
+     * @param string|array $value
      * @param bool $add
      */
     public function set($type, $variable, $value, $add = false) {
-        if(is_array($variable)) {
-            foreach($variable as $single_var) {
-                if($add || is_null(self::$variables[$type][$single_var])) {
-                    if($add)
-                        self::$variables[$type][$single_var] .= $value[$single_var];
-                    else
-                        self::$variables[$type][$single_var] = $value[$single_var];
-                }
-            }
-        } else {
-            if($add || is_null(self::$variables[$type][$variable])) {
-                if($add)
-                    self::$variables[$type][$variable] .= $value;
-                else
-                    self::$variables[$type][$variable] = $value;
-            }
-        }
+        if(system::getInstance()->length($variable) < 1 || (!is_array($value) && system::getInstance()->length($value) < 1) || (is_array($value) && $add))
+            return;
+        self::$variables[$type][$variable] = $add ? self::$variables[$type][$variable] . $value : $value;
     }
 
     /**
      * Get template variable by type and name
-     * @param $type
-     * @param $variable
-     * @return string
+     * @param $type ['content', 'language', 'system']
+     * @param string $variable
+     * @return string|null
      */
     public function get($type, $variable) {
         return self::$variables[$type][$variable];
@@ -179,8 +165,8 @@ class template extends singleton {
 
     /**
      * Render function for extensions.
-     * @param $tpl
-     * @param $variables array
+     * @param string $tpl
+     * @param array $variables
      * @return string
      */
     public function twigRender($tpl, $variables) {
