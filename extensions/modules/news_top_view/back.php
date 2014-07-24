@@ -38,4 +38,10 @@ class modules_news_top_view_back {
 
         return template::getInstance()->twigRender('modules/news_top_view/settings.tpl', $params);
     }
+
+    public function accessData() {
+        return array(
+            'admin/modules/news_top_view',
+        );
+    }
 }

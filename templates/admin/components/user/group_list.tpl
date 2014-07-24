@@ -18,7 +18,7 @@
         <td>{{ item.name }}</td>
         <td>
             {% for right in item.rights %}
-            <div class="label {% if right == 'global/owner' %}label-danger{% else %}label-default{% endif %}">{{ right }}</div>
+            <div class="label {% if right == 'global/owner' %}label-danger{% elseif right starts with 'admin/' %}label-warning{% else %}label-info{% endif %}">{{ right }}</div>
             {% endfor %}
         </td>
         <td class="text-center"><a href="?object=components&action=user&make=groupedit&id={{ item.id }}" title="Edit"><i class="fa fa-pencil-square-o fa-lg"></i></a>

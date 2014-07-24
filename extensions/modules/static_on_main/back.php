@@ -53,4 +53,10 @@ class modules_static_on_main_back {
         return template::getInstance()->twigRender('modules/static_on_main/settings.tpl', $params);
     }
 
+    public function accessData() {
+        return array(
+            'admin/modules/static_on_main',
+        );
+    }
+
 }

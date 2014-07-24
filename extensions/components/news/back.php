@@ -68,6 +68,21 @@ class components_news_back {
         template::getInstance()->set(template::TYPE_CONTENT, 'body', $content);
     }
 
+    public function accessData() {
+        return array(
+            'admin/components/news',
+            'admin/components/news/list',
+            'admin/components/news/edit',
+            'admin/components/news/add',
+            'admin/components/news/delete',
+            'admin/components/news/settings',
+            'admin/components/news/category',
+            'admin/components/news/addcategory',
+            'admin/components/news/delcategory',
+            'admin/components/news/editcategory',
+        );
+    }
+
     private function viewNewsEditCategory() {
         $cat_id = (int)system::getInstance()->get('id');
         $params = array();

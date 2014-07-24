@@ -19,14 +19,26 @@
         <h2>{{ language.admin_component_usercontrol_group_edit_perms }}</h2>
         <hr/>
         <div class="row">
-            {% for perm in permission_all %}
+            {% for perm in permission_general %}
             <div class="col-lg-2">
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" name="perm[{{ perm }}]"{% if perm in group.rights %} checked{% endif %} /> {{ perm }}
+                        <input type="checkbox" name="perm[{{ perm }}]"{% if perm in group.rights %} checked{% endif %} /> {% if perm == 'global/owner' %}<span class="text-danger">{{ perm }}</span>{% else %}{{ perm }}{% endif %}
                     </label>
                 </div>
             </div>
+            {% endfor %}
+        </div>
+        <hr />
+        <div class="row">
+            {% for admin_perm in permission_admin %}
+                <div class="col-lg-2">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="perm[{{ admin_perm }}]"{% if perm in group.rights %} checked{% endif %} /> {{ admin_perm }}
+                        </label>
+                    </div>
+                </div>
             {% endfor %}
         </div>
         <br />

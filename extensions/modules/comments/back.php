@@ -55,6 +55,18 @@ class modules_comments_back {
         return $content;
     }
 
+    public function accessData() {
+        return array(
+            'admin/modules/comments',
+            'admin/modules/comments/list',
+            'admin/modules/comments/edit',
+            'admin/modules/comments/settings',
+            'admin/modules/comments/delete',
+            'admin/modules/comments/aprove',
+            'admin/modules/comments/hide',
+        );
+    }
+
     private function viewCommentHide() {
         $comment_id = (int)system::getInstance()->get('id');
 

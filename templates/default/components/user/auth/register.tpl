@@ -28,7 +28,7 @@
     {% if local.notify.aprove_sended %}
         {{ notify.warning(language.usercontrol_register_success_aprove) }}
     {% endif %}
-    {% if local.notify.successs %}
+    {% if local.notify.success %}
         {{ notify.success(language.usercontrol_register_success_noaprove) }}
     {% endif %}
 {% endif %}

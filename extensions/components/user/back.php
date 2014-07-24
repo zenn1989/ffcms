@@ -68,6 +68,22 @@ class components_user_back {
         template::getInstance()->set(template::TYPE_CONTENT, 'body', $content);
     }
 
+    public function accessData() {
+        return array(
+            'admin/components/user',
+            'admin/components/user/grouplist',
+            'admin/components/user/groupedit',
+            'admin/components/user/groupdelete',
+            'admin/components/user/groupadd',
+            'admin/components/user/banlist',
+            'admin/components/user/banadd',
+            'admin/components/user/bandelete',
+            'admin/components/user/settings',
+            'admin/components/user/edit',
+            'admin/components/user/delete',
+        );
+    }
+
     private function viewUserBandelete() {
         $params = array();
 
@@ -279,7 +295,8 @@ class components_user_back {
             system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=user&make=grouplist");
         }
 
-        $params['permission_all'] = permission::getInstance()->getAllPermissions();
+        $params['permission_general'] = permission::getInstance()->getAllPermissions();
+        $params['permission_admin'] = permission::getInstance()->getAdminPermissions();
 
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
 

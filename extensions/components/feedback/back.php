@@ -37,6 +37,14 @@ class components_feedback_back {
         template::getInstance()->set(template::TYPE_CONTENT, 'body', $content);
     }
 
+    public function accessData() {
+        return array(
+            'admin/components/feedback',
+            'admin/components/feedback/list',
+            'admin/components/feedback/read',
+        );
+    }
+
     private function viewFeedRead() {
         $params = array();
 

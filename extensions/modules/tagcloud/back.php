@@ -36,4 +36,10 @@ class modules_tagcloud_back {
 
         return template::getInstance()->twigRender('modules/tagcloud/settings.tpl', $params);
     }
+
+    public function accessData() {
+        return array(
+            'admin/modules/tagcloud',
+        );
+    }
 }

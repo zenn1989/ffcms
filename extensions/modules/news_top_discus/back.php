@@ -38,4 +38,10 @@ class modules_news_top_discus_back {
 
         return template::getInstance()->twigRender('modules/news_top_discus/settings.tpl', $params);
     }
+
+    public function accessData() {
+        return array(
+            'admin/modules/news_top_discus',
+        );
+    }
 }

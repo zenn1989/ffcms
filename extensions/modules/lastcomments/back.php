@@ -37,4 +37,10 @@ class modules_lastcomments_back {
 
         return template::getInstance()->twigRender('modules/lastcomments/settings.tpl', $params);
     }
+
+    public function accessData() {
+        return array(
+            'admin/modules/lastcomments',
+        );
+    }
 }

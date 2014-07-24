@@ -45,6 +45,15 @@ class components_static_back {
         return $content;
     }
 
+    public function accessData() {
+        return array(
+            'admin/components/static',
+            'admin/components/static/add',
+            'admin/components/static/edit',
+            'admin/components/static/delete',
+        );
+    }
+
     private function viewStaticDelete() {
         $params = array();
         $page_id = (int)system::getInstance()->get('id');

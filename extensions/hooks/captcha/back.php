@@ -39,6 +39,12 @@ class hooks_captcha_back {
         return template::getInstance()->twigRender('hooks/captcha/settings.tpl', $params);
     }
 
+    public function accessData() {
+        return array(
+            'admin/hooks/captcha'
+        );
+    }
+
 
 }
 

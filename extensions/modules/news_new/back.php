@@ -37,4 +37,10 @@ class modules_news_new_back {
 
         return template::getInstance()->twigRender('modules/news_new/settings.tpl', $params);
     }
+
+    public function accessData() {
+        return array(
+            'admin/modules/news_new',
+        );
+    }
 }

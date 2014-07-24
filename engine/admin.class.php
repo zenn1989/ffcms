@@ -14,6 +14,11 @@ class admin extends singleton {
     protected $get = array();
     protected $extension_link = array();
 
+    protected static $default_admin_sections = array(
+        'admin/main', 'admin/settings', 'admin/filemanager', 'admin/antivirus', 'admin/dump', 'admin/modules', 'admin/components', 'admin/hooks', 'admin/cleancache',
+        'admin/cleanstats', 'admin/cleanlogs'
+    );
+
     public static function getInstance() {
         if(is_null(self::$instance))
             self::$instance = new self();
@@ -21,14 +26,16 @@ class admin extends singleton {
     }
 
     public function make() {
-        if(!permission::getInstance()->have('global/owner')) {
-            logger::getInstance()->log(logger::LEVEL_NOTIFY, 'Try to enter in admin without access from ip: '.system::getInstance()->getRealIp());
-            system::getInstance()->redirect();
-        }
         $this->get = array(
             'object' => (string)system::getInstance()->get('object'),
             'action' => (string)system::getInstance()->get('action')
         );
+        if(!permission::getInstance()->have('global/owner')) { // if not a global admin
+            if(!permission::getInstance()->haveAdmin($this->get['object'], $this->get['action'], (string)system::getInstance()->get('make'))) { // if dosnt have access to this part
+                logger::getInstance()->log(logger::LEVEL_NOTIFY, 'Try to enter in admin without access from ip: '.system::getInstance()->getRealIp());
+                system::getInstance()->redirect();
+            }
+        }
         template::getInstance()->set(template::TYPE_CONTENT, 'modmenu', $this->viewExtensionMenu());
         template::getInstance()->set(template::TYPE_CONTENT, 'head', $this->viewHeadElements());
         template::getInstance()->set(template::TYPE_CONTENT, 'body', $this->loadAdminBody());
@@ -509,5 +516,9 @@ class admin extends singleton {
             $load = system::getInstance()->altimplode(' ', sys_getloadavg());
         }
         return $load;
+    }
+
+    public function getDefaultAccessRights() {
+        return self::$default_admin_sections;
     }
 }
