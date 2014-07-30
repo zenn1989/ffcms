@@ -50,7 +50,7 @@
         {% for row in news %}
             <tr>
                 <td><input type="checkbox" name="check_array[]" class="check_array" value="{{ row.id }}"/> {{ row.id }}</td>
-                <td><a href="?object=components&action=news&make=edit&id={{ row.id }}">{{ row.title }}</a></td>
+                <td>{% if row.important %}<i class="fa fa-paperclip" style="color:#ff0000;"></i> {% endif %}{% if row.moderate %}<i class="fa fa-eye-slash"></i> {% endif %}<a href="?object=components&action=news&make=edit&id={{ row.id }}">{{ row.title }}</a></td>
                 <td><a href="{{ system.url }}/news/{{ row.link }}" target="_blank">/news/{{ row.link }}</a></td>
                 <td>{{ row.date }}</td>
                 <td class="text-center">

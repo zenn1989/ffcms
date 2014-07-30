@@ -196,8 +196,8 @@ class system extends singleton {
     }
 
     /**
-     * Случайный md5-хеш на основе функции randomString
-     * $min и $max - показатели для выборки случайного размера исходной строки
+     * Random md5 hash based on function randomString
+     * $min and $max - base string length
      * @param int $min
      * @param int $max
      * @return string
@@ -253,7 +253,7 @@ class system extends singleton {
 
     /**
      * Check is $data latin or numeric string
-     * @param $data
+     * @param string $data
      * @return bool
      */
     public function isLatinOrNumeric($data)
@@ -359,7 +359,7 @@ class system extends singleton {
      * Alternative implode (without $decimal on end or start, remove null objects)
      * @param float $decimal
      * @param array $array
-     * @return array|null
+     * @return string|null
      */
     public function altimplode($decimal, $array)
     {
@@ -533,6 +533,7 @@ class system extends singleton {
     /**
      * Get double md5 crypt from $string according $salt
      * @param string $string
+     * @param string|null $custom_salt
      * @return string
      */
     public function doublemd5($string, $custom_salt = null)
@@ -596,9 +597,10 @@ class system extends singleton {
 
     /**
      * Remove from string $string string $char $count number of times
-     * @param $char
-     * @param $string
-     * @param $count
+     * @param string $char
+     * @param string $string
+     * @param int $count
+     * @return string|null
      */
     public function removeCharsFromString($char, $string, $count) {
         return preg_replace('#('.$char.')#', '',$string, $count);
@@ -606,7 +608,7 @@ class system extends singleton {
 
     /**
     * Get the directory size in byte's
-    * @param directory $directory
+    * @param string $directory
     * @return integer
     */
     public function getDirSize($directory) {
@@ -694,7 +696,7 @@ class system extends singleton {
     /**
      * Get content from URL according curl
      * @param string $url
-     * @return mixed
+     * @return string
      */
     public function url_get_contents($url)
     {
@@ -722,6 +724,12 @@ class system extends singleton {
         return $content;
     }
 
+    /**
+     * Scan directory for files and directory's
+     * @param string $dir
+     * @param bool $sort_desc
+     * @return array
+     */
     public function altscandir($dir, $sort_desc = false) {
         $ignored = array('.', '..', '.svn', '.htaccess');
 
@@ -740,6 +748,11 @@ class system extends singleton {
         return $files;
     }
 
+    /**
+     * Add slashes to string or array data to save json or serialize or other response.
+     * @param string|array $data
+     * @return array|string
+     */
     public function altaddslashes($data) {
         if(is_array($data)) {
             $output = array();
@@ -756,6 +769,11 @@ class system extends singleton {
         }
     }
 
+    /**
+     * Remove slashes from string or array.
+     * @param string|array $data
+     * @return array|string
+     */
     public function altstripslashes($data) {
         if(is_array($data)) {
             $output = array();
@@ -782,7 +800,7 @@ class system extends singleton {
 
     /**
      * Convert many &amp;amp;quotes; to " as example
-     * @param $text
+     * @param string $text
      * @return string
      */
     public function htmlQuoteDecode($text) {
@@ -794,7 +812,7 @@ class system extends singleton {
 
     /**
      * Get file mime type based on finfo function or gd lib (only for images)
-     * @param $file
+     * @param string $file
      * @return null|string
      */
     public function getMime($file) {

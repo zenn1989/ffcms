@@ -107,7 +107,7 @@ class user extends singleton {
 
     /**
      * Load user data in memory from list $idlist (array or string list like 1,5,7,8)
-     * @param $idlist
+     * @param string|array $idlist
      */
     public function listload($idlist) {
         $list_array = system::getInstance()->removeNullFrontIntList($idlist); // array
