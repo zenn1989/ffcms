@@ -15,6 +15,7 @@ use engine\property;
 use engine\language;
 use engine\user;
 use engine\extension;
+use engine\permission;
 
 class components_news_back {
     protected static $instance = null;
@@ -532,19 +533,21 @@ class components_news_back {
         $params = array();
 
         if(system::getInstance()->post('deleteSelected')) {
-            $toDelete = system::getInstance()->post('check_array');
-            if(is_array($toDelete) && sizeof($toDelete) > 0) {
-                foreach($toDelete as $news_single_id) { // remove posible poster files and gallery images
-                    if(file_exists(root . '/upload/news/poster_' . $news_single_id . '.jpg'))
-                        @unlink(root . '/upload/news/poster_' . $news_single_id . '.jpg');
-                    if(file_exists(root . '/upload/news/gallery/' . $news_single_id . '/'))
-                        system::getInstance()->removeDirectory(root . '/upload/news/gallery/' . $news_single_id . '/');
-                }
-                $listDelete = system::getInstance()->altimplode(',', $toDelete);
-                if(system::getInstance()->isIntList($listDelete)) {
-                    database::getInstance()->con()->query("DELETE FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE id IN (".$listDelete.")");
-                    // drop tags
-                    database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_mod_tags WHERE object_type = 'news' AND object_id IN (".$listDelete.")");
+            if(permission::getInstance()->have('global/owner') || permission::getInstance()->have('admin/components/news/delete')) {
+                $toDelete = system::getInstance()->post('check_array');
+                if(is_array($toDelete) && sizeof($toDelete) > 0) {
+                    foreach($toDelete as $news_single_id) { // remove posible poster files and gallery images
+                        if(file_exists(root . '/upload/news/poster_' . $news_single_id . '.jpg'))
+                            @unlink(root . '/upload/news/poster_' . $news_single_id . '.jpg');
+                        if(file_exists(root . '/upload/news/gallery/' . $news_single_id . '/'))
+                            system::getInstance()->removeDirectory(root . '/upload/news/gallery/' . $news_single_id . '/');
+                    }
+                    $listDelete = system::getInstance()->altimplode(',', $toDelete);
+                    if(system::getInstance()->isIntList($listDelete)) {
+                        database::getInstance()->con()->query("DELETE FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE id IN (".$listDelete.")");
+                        // drop tags
+                        database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_mod_tags WHERE object_type = 'news' AND object_id IN (".$listDelete.")");
+                    }
                 }
             }
         }

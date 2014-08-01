@@ -14,6 +14,7 @@ use engine\database;
 use engine\property;
 use engine\language;
 use engine\user;
+use engine\permission;
 
 class components_static_back {
     protected static $instance = null;
@@ -177,11 +178,13 @@ class components_static_back {
         $params = array();
 
         if(system::getInstance()->post('deleteSelected')) {
-            $toDelete = system::getInstance()->post('check_array');
-            if(is_array($toDelete) && sizeof($toDelete) > 0) {
-                $listDelete = system::getInstance()->altimplode(',', $toDelete);
-                if(system::getInstance()->isIntList($listDelete)) {
-                    database::getInstance()->con()->query("DELETE FROM ".property::getInstance()->get('db_prefix')."_com_static WHERE id IN (".$listDelete.")");
+            if(permission::getInstance()->have('global/owner') || permission::getInstance()->have('admin/components/static/delete')) {
+                $toDelete = system::getInstance()->post('check_array');
+                if(is_array($toDelete) && sizeof($toDelete) > 0) {
+                    $listDelete = system::getInstance()->altimplode(',', $toDelete);
+                    if(system::getInstance()->isIntList($listDelete)) {
+                        database::getInstance()->con()->query("DELETE FROM ".property::getInstance()->get('db_prefix')."_com_static WHERE id IN (".$listDelete.")");
+                    }
                 }
             }
         }

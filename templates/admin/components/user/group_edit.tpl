@@ -35,7 +35,7 @@
                 <div class="col-lg-2">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="perm[{{ admin_perm }}]"{% if perm in group.rights %} checked{% endif %} /> {{ admin_perm }}
+                            <input type="checkbox" name="perm[{{ admin_perm }}]"{% if admin_perm in group.rights %} checked{% endif %} /> {{ admin_perm }}
                         </label>
                     </div>
                 </div>

@@ -30,15 +30,23 @@ class admin extends singleton {
             'object' => (string)system::getInstance()->get('object'),
             'action' => (string)system::getInstance()->get('action')
         );
+        $access_suspend = false;
         if(!permission::getInstance()->have('global/owner')) { // if not a global admin
             if(!permission::getInstance()->haveAdmin($this->get['object'], $this->get['action'], (string)system::getInstance()->get('make'))) { // if dosnt have access to this part
-                logger::getInstance()->log(logger::LEVEL_NOTIFY, 'Try to enter in admin without access from ip: '.system::getInstance()->getRealIp());
-                system::getInstance()->redirect();
+                if(permission::getInstance()->have('admin/main')) { // user have access to admin main iface
+                    $access_suspend = true;
+                } else {
+                    logger::getInstance()->log(logger::LEVEL_NOTIFY, 'Try to enter in admin without access from ip: '.system::getInstance()->getRealIp());
+                    system::getInstance()->redirect();
+                }
             }
         }
         template::getInstance()->set(template::TYPE_CONTENT, 'modmenu', $this->viewExtensionMenu());
         template::getInstance()->set(template::TYPE_CONTENT, 'head', $this->viewHeadElements());
-        template::getInstance()->set(template::TYPE_CONTENT, 'body', $this->loadAdminBody());
+        if($access_suspend)
+            template::getInstance()->set(template::TYPE_CONTENT, 'body', template::getInstance()->twigRender('access_alert.tpl', array()));
+        else
+            template::getInstance()->set(template::TYPE_CONTENT, 'body', $this->loadAdminBody());
         return template::getInstance()->make();
     }
 

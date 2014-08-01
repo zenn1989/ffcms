@@ -14,6 +14,7 @@ use engine\template;
 use engine\admin;
 use engine\user;
 use engine\extension;
+use engine\permission;
 
 class modules_comments_back {
     protected static $instance = null;
@@ -177,11 +178,13 @@ class modules_comments_back {
         $params = array();
 
         if(system::getInstance()->post('deleteSelected')) {
-            $toDelete = system::getInstance()->post('check_array');
-            if(is_array($toDelete) && sizeof($toDelete) > 0) {
-                $listDelete = system::getInstance()->altimplode(',', $toDelete);
-                if(system::getInstance()->isIntList($listDelete)) {
-                    database::getInstance()->con()->query("DELETE FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE id IN (".$listDelete.")");
+            if(permission::getInstance()->have('global/owner') || permission::getInstance()->have('admin/modules/comments/delete')) {
+                $toDelete = system::getInstance()->post('check_array');
+                if(is_array($toDelete) && sizeof($toDelete) > 0) {
+                    $listDelete = system::getInstance()->altimplode(',', $toDelete);
+                    if(system::getInstance()->isIntList($listDelete)) {
+                        database::getInstance()->con()->query("DELETE FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE id IN (".$listDelete.")");
+                    }
                 }
             }
         }
