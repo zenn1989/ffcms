@@ -30,7 +30,10 @@ class router extends singleton {
     }
 
     public function prepareRoutes() {
-        self::$pathstring = urldecode($_SERVER['REQUEST_URI']);
+        $raw_uri = urldecode($_SERVER['REQUEST_URI']);
+        if($get_pos = strpos($raw_uri, '?'))
+            $raw_uri = substr($raw_uri, 0, $get_pos);
+        self::$pathstring = $raw_uri;
         self::$patharray = explode("/", self::$pathstring);
         // remove 1st null element
         array_shift(self::$patharray);

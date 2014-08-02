@@ -27,7 +27,7 @@
             <span><i class="fa fa-eye"></i> {{ local.view_count }}</span>
         {% endif %}
         <span class="pull-right">
-                <a href="{{ system.nolang_url }}{{ local.pathway }}?print" target="_blank"><i class="fa fa-print"></i></a>
+                <a href="{{ system.nolang_url }}{{ local.pathway }}?print=true" target="_blank"><i class="fa fa-print"></i></a>
         </span>
     </div>
     <div class="row">

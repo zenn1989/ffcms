@@ -49,7 +49,7 @@ class components_news_front {
                 $content = $this->viewUseraddNews();
             else
                 $content = $this->viewUsereditNews($last_object);
-        } elseif(system::getInstance()->suffixEquals($last_object, '.html') || system::getInstance()->suffixEquals(substr($last_object, 0, -strlen('?print')), '.html')) { // its a single news
+        } elseif(system::getInstance()->suffixEquals($last_object, '.html')) { // its a single news
             $content = $this->viewFullNews($last_object, $way);
         } else { // its a category
             $content = $this->viewCategory();
@@ -239,11 +239,6 @@ class components_news_front {
 
     private function viewFullNews($url, $categories)
     {
-        $is_print = false;
-        if(system::getInstance()->suffixEquals($url, '?print')) {
-            $url = substr($url, 0, -strlen('?print'));
-            $is_print = true;
-        }
         $viewTags = extension::getInstance()->getConfig('enable_tags', 'news', 'components', 'boolean');
         $viewCount = extension::getInstance()->getConfig('enable_views_count', 'news', 'components', 'boolean');
         $stmt = null;
@@ -345,8 +340,6 @@ class components_news_front {
                 $captcha_img = extension::getInstance()->call(extension::TYPE_HOOK, 'captcha')->show();
             }
             $pathway = router::getInstance()->getUriString();
-            if($is_print)
-                $pathway = substr($pathway, 0, -strlen('?print'));
             $theme_array = array(
                 'tags' => $tag_array,
                 'title' => $lang_title[language::getInstance()->getUseLanguage()],
@@ -367,7 +360,7 @@ class components_news_front {
                 'gallery' => $image_gallery_array,
                 'poster' => $image_poster_url
             );
-            if($is_print)
+            if(system::getInstance()->get('print') == 'true')
                 template::getInstance()->justPrint(template::getInstance()->twigRender('components/news/print.tpl', array('local' => $theme_array)));
             return template::getInstance()->twigRender('components/news/full_view.tpl', array('local' => $theme_array, 'comments' => $comment_list, 'guest_access' => $guest_add, 'captcha' => array('full' => $captcha_full, 'image' => $captcha_img)));
         }
@@ -376,7 +369,7 @@ class components_news_front {
 
     private function viewTagList($tagname)
     {
-        $cleartag = system::getInstance()->nohtml(substr($tagname, 0, -5));
+        $cleartag = system::getInstance()->nohtml(system::getInstance()->noextention($tagname));
         meta::getInstance()->add('title', $cleartag);
         $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.keywords like ? LIMIT 100");
         $buildSearch = '%'.$cleartag.'%';

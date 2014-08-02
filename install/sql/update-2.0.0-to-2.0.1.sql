@@ -1,0 +1,1 @@
+UPDATE `{$db_prefix}_version` SET `version` = '2.0.1';

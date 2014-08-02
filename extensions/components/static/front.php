@@ -38,16 +38,12 @@ class components_static_front {
      * @param string $pathway
      * @param int $id
      * @param boolean $show_date
+     * @param boolean $is_main
      * @return string|null
      */
     public function display($pathway, $id = null, $show_date = true, $is_main = false) {
         $stmt = null;
-        $is_print = false;
         if(is_null($id)) {
-            if(system::getInstance()->suffixEquals($pathway, '?print')) {
-                $pathway = substr($pathway, 0, -strlen('?print'));
-                $is_print = true;
-            }
             $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_static WHERE pathway = ?");
             $stmt->bindParam(1, $pathway, PDO::PARAM_STR);
             $stmt->execute();
@@ -76,7 +72,7 @@ class components_static_front {
                 'is_main' => $is_main,
                 'pathway' => property::getInstance()->get('url') . '/static/' . $pathway
             );
-            if($is_print)
+            if(system::getInstance()->get('print') == 'true')
                 template::getInstance()->justPrint(template::getInstance()->twigRender('components/static/print.tpl', array('local' => $params)));
             return template::getInstance()->twigRender('components/static/page.tpl', array('local' => $params));
         }
