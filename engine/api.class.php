@@ -31,8 +31,15 @@ class api extends singleton {
         $link = $this->call($iface, $object);
         if(method_exists($link, 'make'))
             $link->make();
+        return null;
     }
 
+    /**
+     * Call to remote function of API classes using interface type and api extension name.
+     * @param string $iface
+     * @param string $object
+     * @return object
+     */
     public function call($iface, $object) {
         if($iface == null || $object == null) {
             exit();

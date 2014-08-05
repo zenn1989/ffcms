@@ -24,6 +24,11 @@ class logger extends singleton {
         return self::$instance;
     }
 
+    /**
+     * Log message to system information. Types: logger::LEVEL_ERR, logger::LEVEL_WARN, logger::LEVEL_NOTIFY
+     * @param string $type
+     * @param string $message
+     */
     public function log($type, $message) {
         $iface = defined('loader') ? loader : 'unknown';
         $compile_message = "=>[".$iface.":".$type."](".system::getInstance()->toDate(time(), 's')."): ".$message."\n";

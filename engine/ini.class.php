@@ -20,7 +20,7 @@ class ini extends singleton {
 
     /**
      * Read ini structure data and return as associative array or FALSE if file not founded
-     * @param $file
+     * @param string $file
      * @param bool $sections
      * @return array|bool
      */
@@ -33,7 +33,7 @@ class ini extends singleton {
     }
 
     /**
-     * Write data to ini file using $assoc_arr. Attention! File be overwrite fully! Before use this function - read data from existing ini file and compare arrays.
+     * Write data to ini file using $assoc_arr. Attention! File be total overwrite'd! Before use this function - read data from existing ini file and compare arrays.
      * @param array $assoc_arr
      * @param string $path
      * @param bool $has_sections

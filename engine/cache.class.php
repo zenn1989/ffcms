@@ -35,8 +35,8 @@ class cache extends singleton {
 
     /**
      * Save data in cache file storage
-     * @param $name
-     * @param $data
+     * @param string $name
+     * @param string $data
      */
     public function store($name, $data) {
         $name = md5($name);
@@ -45,15 +45,15 @@ class cache extends singleton {
 
     /**
      * Alias for function store($name, $data)
-     * @param $name
-     * @param $data
+     * @param string $name
+     * @param string $data
      */
     public function save($name, $data) {
         $this->store($name, $data);
     }
 
     /**
-     * Get file from cache storage if it exist and does not exprire for time. Return null if cache not available.
+     * Get file from cache storage if it exist and does not expire for time. Return null if cache not available.
      * @param string $name
      * @param int $custom_time
      * @return null|string

@@ -310,4 +310,4 @@ CREATE TABLE `{$db_prefix}_version` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 INSERT INTO `{$db_prefix}_version` (`version`) VALUES
-('2.0.0');
+('2.0.1');

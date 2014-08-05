@@ -31,6 +31,7 @@ class database extends singleton {
     }
 
     /**
+     * Return link to PDO connection on system database
      * @return \PDO
      */
     public function con() {
@@ -50,6 +51,10 @@ class database extends singleton {
         self::$link = null;
     }
 
+    /**
+     * Check is database down now
+     * @return bool
+     */
     public function isDown() {
         return is_null(self::$link);
     }

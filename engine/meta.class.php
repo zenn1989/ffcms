@@ -41,7 +41,7 @@ class meta extends singleton {
     }
 
     /**
-     * Adding meta data values
+     * Adding to meta tag data values
      * @param string('title', 'description', 'keywords') $tag
      * @param string $data
      */

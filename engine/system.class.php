@@ -467,7 +467,7 @@ class system extends singleton {
 
     /**
      * Transfer date formats to Unix Time epoch
-     * @param array $object
+     * @param string $object
      * @return number
      */
     public function toUnixTime($object)

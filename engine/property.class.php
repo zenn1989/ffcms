@@ -24,14 +24,25 @@ class property extends singleton {
         return self::$instance;
     }
 
+    /**
+     * @param $param
+     * @return string|null|array
+     */
     public function get($param) {
         return self::$cfg[$param];
     }
 
+    /**
+     * @param string $param
+     * @param string $value
+     */
     public function set($param, $value) {
         self::$cfg[$param] = $value;
     }
 
+    /**
+     * @return array
+     */
     public function getAll() {
         return self::$cfg;
     }

@@ -31,12 +31,23 @@ class extension extends singleton {
         return self::$instance;
     }
 
+    /**
+     * Check is URI pathway is always used. Example: extension::getInstance()->foundRoute('static') - check if /static/* way is used.
+     * @param string $way
+     * @return bool
+     */
     public function foundRoute($way) {
         if(array_key_exists($way, self::$extconfigs['components']) && $way != null && !system::getInstance()->prefixEquals($way, '.') && self::$extconfigs['components'][$way]['enabled'] == 1)
             return true;
         return false;
     }
 
+    /**
+     * Call to extension class functions from remote class. Ex: extension::getInstance()->call(extension::TYPE_COMPONENT, 'static')->display();
+     * @param string $type
+     * @param string $object
+     * @return mixed
+     */
     public function call($type, $object) {
         if(!is_object(self::$callobjects[$type][$object])) {
             if(array_key_exists($type, self::$extconfigs) && array_key_exists($object, self::$extconfigs[$type])) {
@@ -117,9 +128,10 @@ class extension extends singleton {
     }
 
     /**
-     * @param $name
-     * @param $ext_dir
-     * @param $object
+     * Get configuration value of extension by config name, extension name and extension type.
+     * @param string $name
+     * @param string $ext_dir
+     * @param string $object
      * @param string $var_type
      * @return bool|int|string
      */
@@ -150,6 +162,10 @@ class extension extends singleton {
         }
     }
 
+    /**
+     * Get all extensions data as array
+     * @return array
+     */
     public function getAllParams() {
         return self::$extconfigs;
     }

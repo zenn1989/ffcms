@@ -463,18 +463,17 @@ class components_news_back {
                 $serial_description = serialize(system::getInstance()->altaddslashes($description));
                 $serial_keywords = serialize(system::getInstance()->altaddslashes($keywords));
                 $stmt = database::getInstance()->con()->prepare("UPDATE " . property::getInstance()->get('db_prefix') . "_com_news_entery SET title = ?, text = ?, link = ?,
-						category = ?, date = ?, author = ?, description = ?, keywords = ?, display = ?, important = ? WHERE id = ?");
+						category = ?, date = ?, description = ?, keywords = ?, display = ?, important = ? WHERE id = ?");
                 $stmt->bindParam(1, $serial_title, PDO::PARAM_STR);
                 $stmt->bindParam(2, $serial_text, PDO::PARAM_STR);
                 $stmt->bindParam(3, $pathway, PDO::PARAM_STR);
                 $stmt->bindParam(4, $category_id, PDO::PARAM_INT);
                 $stmt->bindParam(5, $date, PDO::PARAM_INT);
-                $stmt->bindParam(6, $editor_id, PDO::PARAM_INT);
-                $stmt->bindParam(7, $serial_description, PDO::PARAM_STR);
-                $stmt->bindParam(8, $serial_keywords, PDO::PARAM_STR);
-                $stmt->bindParam(9, $display, PDO::PARAM_INT);
-                $stmt->bindParam(10, $important, PDO::PARAM_INT);
-                $stmt->bindParam(11, $news_id, PDO::PARAM_INT);
+                $stmt->bindParam(6, $serial_description, PDO::PARAM_STR);
+                $stmt->bindParam(7, $serial_keywords, PDO::PARAM_STR);
+                $stmt->bindParam(8, $display, PDO::PARAM_INT);
+                $stmt->bindParam(9, $important, PDO::PARAM_INT);
+                $stmt->bindParam(10, $news_id, PDO::PARAM_INT);
                 $stmt->execute();
                 $stmt = null;
                 $stmt = database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_mod_tags WHERE `object_type` = 'news' AND `object_id` = ?");

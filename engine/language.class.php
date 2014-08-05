@@ -72,24 +72,42 @@ class language extends singleton {
         }
     }
 
+    /**
+     * Get current user language
+     * @return string
+     */
     public function getUseLanguage() {
         return self::$userLang;
     }
 
+    /**
+     * Get all available languages in system
+     * @return array
+     */
     public function getAvailable() {
         return self::$available;
     }
 
+    /**
+     * Get language value by key
+     * @param string $lang
+     * @return null|string
+     */
     public function get($lang) {
         return template::getInstance()->get(template::TYPE_LANGUAGE, $lang);
     }
 
+    /**
+     * Check is $lang available to use on website
+     * @param string $lang
+     * @return bool
+     */
     public static function canUse($lang) {
         return in_array($lang, self::$available);
     }
 
     /**
-     * Write language chars to ini file. Example of usage: language::getInstance()->add(
+     * Write language data lines to ini file. Example of usage: language::getInstance()->add(
      * array('ru' => array('front' => array('lang_opt' => 'lang_data', 'lang_opt_2' => 'lang_data2')))
      * ) - will be write to ru.custom.ini data: [front]lang_opt = 'lang_data' \n 'lang_opt_2' => 'lang_data2'
      * @params array $data
