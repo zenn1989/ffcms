@@ -19,7 +19,8 @@ use engine\meta;
 
 class components_user_front {
     protected static $instance = null;
-    protected  $add_links = array();
+    protected $pub_menu_links = array();
+    protected $private_menu_links = array();
 
     public static function getInstance() {
         if(is_null(self::$instance)) {
@@ -179,7 +180,8 @@ class components_user_front {
         $params['profile']['user_avatar'] = user::getInstance()->buildAvatar('big', $target);
         $params['profile']['is_friend'] = $this->inFriendsWith($target, $viewer);
         $params['profile']['is_request_friend'] = $this->inFriendRequestWith($target, $viewer);
-        $params['profile']['add_menu'] = $this->add_links;
+        $params['profile']['add_menu']['public'] = $this->pub_menu_links;
+        $params['profile']['add_menu']['private'] = $this->private_menu_links;
         $params['profile']['show_usernews'] = extension::getInstance()->getConfig('enable_useradd', 'news', extension::TYPE_COMPONENT, 'bol');
 
         $params['path'] = $way[1]; // variable for menu active item
@@ -1237,12 +1239,24 @@ class components_user_front {
     }
 
     /**
-     * Add in user profile menu link
-     * @param $link
-     * @param $text
+     * Add menu item to public menu
+     * @param string $link
+     * @param string $text
      */
-    public function addMenuItem($link, $text) {
-        $this->add_links[] = array(
+    public function addPublicMenuItem($link, $text) {
+        $this->pub_menu_links[] = array(
+            'link' => $link,
+            'text' => $text
+        );
+    }
+
+    /**
+     * Add menu item to private menu
+     * @param string $link
+     * @param string $text
+     */
+    public function addPrivateMenuItem($link, $text) {
+        $this->private_menu_links[] = array(
             'link' => $link,
             'text' => $text
         );

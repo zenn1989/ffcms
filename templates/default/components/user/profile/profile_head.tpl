@@ -23,9 +23,9 @@
                     <li{% if local.path == 'news' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}/news"><i class="fa fa-pencil-square-o"></i> {{ language.usercontrol_profile_mymenu_newspublic }}</a></li>
                     {% endif %}
                     <li{% if local.path == 'settings' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}/settings"><i class="fa fa-cogs"></i> {{ language.usercontrol_profile_mymenu_settings }}</a></li>
-                    {% if local.profile.add_menu %}
+                    {% if local.profile.add_menu.private %}
                         <hr />
-                        {% for add_menu in local.profile.add_menu %}
+                        {% for add_menu in local.profile.add_menu.private %}
                             <li><a href="{{ system.url }}/{{ add_menu.link }}">{{ add_menu.text }}</a></li>
                         {% endfor %}
                     {% endif %}
@@ -61,14 +61,14 @@
                         {% endif %}
                     </ul>
                 </li>
-                {% if local.profile.add_menu %}
+                {% if local.profile.add_menu.public %}
                 <li class="dropdown">
                     <a href="#" data-toggle="dropdown">
                         <i class="icon-share-alt"></i> {{ language.usercontrol_profile_menu_more }}
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        {% for addmenu in local.profile.add_menu %}
+                        {% for addmenu in local.profile.add_menu.public %}
                             <li><a href="{{ system.url }}/{{ addmenu.link }}">{{ addmenu.text }}</a></li>
                         {% endfor %}
                     </ul>
