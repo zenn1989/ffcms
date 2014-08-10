@@ -14,12 +14,16 @@
     {% if notify.nosql_data %}
         {{ ntpl.error(language.install_updates_noexist) }}
     {% endif %}
+    {% if notify.actual_version %}
+        {{ ntpl.success(language.install_updates_notfound) }}
+    {% else %}
     <p class="alert alert-info">
         {{ language.install_update_text_info }} <strong>{{ system.version }}</strong>
     </p>
     <p class="alert alert-warning">
         {{ language.install_update_text_notify }}
     </p>
+    {% endif %}
 {% endif %}
 {% if not notify %}
 <form action="" method="post">

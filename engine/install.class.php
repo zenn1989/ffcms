@@ -55,11 +55,16 @@ class install extends singleton {
             $stmt = database::getInstance()->con()->query("SELECT `version` FROM `".property::getInstance()->get('db_prefix')."_version` LIMIT 1");
             $res = $stmt->fetch(\PDO::FETCH_ASSOC);
             $usedVersion = $res['version'];
+            if($usedVersion == version) {
+                $params['notify']['actual_version'] = true;
+            }
             $updateQuery = null;
             if(sizeof($params['notify']) == 0) {
                 if(system::getInstance()->post('startupdate')) {
                     if(($usedVersion === "1.2.1" || $usedVersion === "1.2.0") && file_exists(root . '/install/sql/update-1.2.1-to-2.0.0.sql'))
                         $updateQuery .= str_replace('{$db_prefix}', property::getInstance()->get('db_prefix'), file_get_contents(root . '/install/sql/update-1.2.1-to-2.0.0.sql'));
+                    if(($updateQuery === '1.2.1' || $usedVersion === '1.2.0' || $usedVersion === '2.0.0') && file_exists(root . '/install/sql/update-2.0.0-to-2.0.1.sql'))
+                        $updateQuery .= str_replace('{$db_prefix}', property::getInstance()->get('db_prefix'), file_get_contents(root . '/install/sql/update-2.0.0-to-2.0.1.sql'));
                     // elseif($usedVersion === other) $updateQuery .= ...
                     if($updateQuery != null) {
                         database::getInstance()->con()->exec($updateQuery);
