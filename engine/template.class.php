@@ -71,7 +71,7 @@ class template extends singleton {
                 'strict_variables' => false,
             )
         );
-        if(permission::getInstance()->have('global/owner')) // auto rebuild cache for owner
+        if(loader == 'install' || permission::getInstance()->have('global/owner')) // auto rebuild cache for owner
             self::$twig_file->enableAutoReload();
         self::$twig_string = new \Twig_Environment(new \Twig_Loader_String());
     }

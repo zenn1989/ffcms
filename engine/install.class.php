@@ -49,21 +49,25 @@ class install extends singleton {
         if($install_log == "locked") {
             $params['notify']['locked_update'] = true;
         }
-        $stmt = database::getInstance()->con()->query("SELECT `version` FROM `".property::getInstance()->get('db_prefix')."_version` LIMIT 1");
-        $res = $stmt->fetch(\PDO::FETCH_ASSOC);
-        $usedVersion = $res['version'];
-        $updateQuery = null;
-        if(sizeof($params['notify']) == 0) {
-            if(system::getInstance()->post('startupdate')) {
-                if(($usedVersion === "1.2.1" || $usedVersion === "1.2.0") && file_exists(root . '/install/sql/update-1.2.1-to-2.0.0.sql'))
-                    $updateQuery .= str_replace('{$db_prefix}', property::getInstance()->get('db_prefix'), file_get_contents(root . '/install/sql/update-1.2.1-to-2.0.0.sql'));
-                // elseif($usedVersion === other) $updateQuery .= ...
-                if($updateQuery != null) {
-                    database::getInstance()->con()->exec($updateQuery);
-                    file_put_contents(root . "/install/.update-".version, 'locked'); // only 1 run
-                    $params['notify']['success'] = true;
-                } else {
-                    $params['notify']['nosql_data'] = true;
+        if(!$this->isInstalled()) {
+            $params['notify']['not_installed'] = true;
+        } else {
+            $stmt = database::getInstance()->con()->query("SELECT `version` FROM `".property::getInstance()->get('db_prefix')."_version` LIMIT 1");
+            $res = $stmt->fetch(\PDO::FETCH_ASSOC);
+            $usedVersion = $res['version'];
+            $updateQuery = null;
+            if(sizeof($params['notify']) == 0) {
+                if(system::getInstance()->post('startupdate')) {
+                    if(($usedVersion === "1.2.1" || $usedVersion === "1.2.0") && file_exists(root . '/install/sql/update-1.2.1-to-2.0.0.sql'))
+                        $updateQuery .= str_replace('{$db_prefix}', property::getInstance()->get('db_prefix'), file_get_contents(root . '/install/sql/update-1.2.1-to-2.0.0.sql'));
+                    // elseif($usedVersion === other) $updateQuery .= ...
+                    if($updateQuery != null) {
+                        database::getInstance()->con()->exec($updateQuery);
+                        file_put_contents(root . "/install/.update-".version, 'locked'); // only 1 run
+                        $params['notify']['success'] = true;
+                    } else {
+                        $params['notify']['nosql_data'] = true;
+                    }
                 }
             }
         }
@@ -196,5 +200,9 @@ $config[\'password_salt\'] = "'.$random_password_salt.'";
 
     private function viewMain() {
         return template::getInstance()->twigRender('switch.tpl', array());
+    }
+
+    public function isInstalled() {
+        return file_exists(root . '/config.php');
     }
 }

@@ -21,8 +21,6 @@ require_once(root . '/engine/ini.class.php');
 require_once(root . '/engine/logger.class.php');
 require_once(root . '/engine/language.class.php');
 require_once(root . '/engine/database.class.php');
-require_once(root . '/engine/user.class.php');
-require_once(root . '/engine/extension.class.php');
 require_once(root . '/engine/meta.class.php');
 require_once(root . '/engine/cache.class.php');
 require_once(root . '/engine/permission.class.php');
