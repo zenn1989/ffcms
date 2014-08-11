@@ -422,7 +422,7 @@ class components_user_back {
         $params['udata']['birthday'] = user::getInstance()->get('birthday', $userid);
         $params['udata']['status'] = user::getInstance()->get('status', $userid);
         $params['udata']['group_data'] = $this->getGroupArray();
-        $params['udata']['current_group'] = user::getInstance()->get('access_level');
+        $params['udata']['current_group'] = user::getInstance()->get('access_level', $userid);
 
         return template::getInstance()->twigRender('components/user/edit.tpl', $params);
     }
