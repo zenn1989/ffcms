@@ -55,6 +55,18 @@ class modules_comments_back {
         return $content;
     }
 
+    public function accessData() {
+        return array(
+            'admin/modules/comments',
+            'admin/modules/comments/list',
+            'admin/modules/comments/edit',
+            'admin/modules/comments/settings',
+            'admin/modules/comments/delete',
+            'admin/modules/comments/aprove',
+            'admin/modules/comments/hide',
+        );
+    }
+
     private function viewCommentHide() {
         $comment_id = (int)system::getInstance()->get('id');
 
@@ -91,7 +103,7 @@ class modules_comments_back {
             system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=modules&action=comments");
         }
 
-        $stmt = database::getInstance()->con()->prepare("SELECT comment,author FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE id = ?");
+        $stmt = database::getInstance()->con()->prepare("SELECT comment,author,guest_name FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE id = ?");
         $stmt->bindParam(1, $comment_id, PDO::PARAM_INT);
         $stmt->execute();
 
@@ -99,7 +111,7 @@ class modules_comments_back {
             $stmt = null;
             $params['comments']['data'] = array(
                 'id' => $comment_id,
-                'user_name' => user::getInstance()->get('nick', $result['author']),
+                'user_name' => $result['author'] > 0 ? user::getInstance()->get('nick', $result['author']) : $result['guest_name'],
                 'text' => extension::getInstance()->call(extension::TYPE_HOOK, 'bbtohtml')->nobbcode($result['comment'])
             );
         } else {
