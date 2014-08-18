@@ -21,7 +21,11 @@ class api_redirect_front {
     public function make() {
         $url = system::getInstance()->get('url');
         if(!filter_var($url, FILTER_VALIDATE_URL)) {
-            $url = property::getInstance()->get('url');
+            $url_decode = @base64_decode($url);
+            if(filter_var($url_decode, FILTER_VALIDATE_URL))
+                $url = $url_decode;
+            else
+                $url = property::getInstance()->get('url');
         }
         $theme = "<html>
                 <head>
