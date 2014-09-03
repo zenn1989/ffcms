@@ -55,6 +55,7 @@
     </tbody>
 </table>
 <a id="checkAll" class="btn btn-default">{{ language.admin_checkbox_all }}</a>
+<input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
 <input type="submit" name="deleteSelected" value="{{ language.admin_checkbox_delselect }}" class="btn btn-danger" />
 {{ scriptdata.checkjs('#checkAll', '.check_array') }}
 </form>

@@ -15,6 +15,7 @@ use engine\property;
 use engine\user;
 use engine\permission;
 use engine\extension;
+use engine\csrf;
 
 class components_user_back {
     protected static $instance = null;
@@ -85,6 +86,7 @@ class components_user_back {
     }
 
     private function viewUserBandelete() {
+        csrf::getInstance()->buildToken();
         $params = array();
 
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
@@ -95,7 +97,7 @@ class components_user_back {
         $stmt->execute();
         if($params['ban']['list'] = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $stmt = null;
-            if(system::getInstance()->post('submit')) {
+            if(system::getInstance()->post('submit') && csrf::getInstance()->check()) {
                 $stmt = database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_user_block WHERE id = ?");
                 $stmt->bindParam(1, $ban_id, PDO::PARAM_INT);
                 $stmt->execute();
@@ -111,11 +113,12 @@ class components_user_back {
     }
 
     private function viewUserBanadd() {
+        csrf::getInstance()->buildToken();
         $params = array();
 
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
 
-        if(system::getInstance()->post('ipblock')) {
+        if(system::getInstance()->post('ipblock') && csrf::getInstance()->check()) {
             $userip = system::getInstance()->validIP(system::getInstance()->post('userip'));
             if ($userip) {
                 $str_time = system::getInstance()->post('enddate');
@@ -228,6 +231,7 @@ class components_user_back {
     }
 
     private function viewUserGroupdelete() {
+        csrf::getInstance()->buildToken();
         $params = array();
 
         $group_id = (int)system::getInstance()->get('id');
@@ -238,7 +242,7 @@ class components_user_back {
         // if group is exist in db
         if($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $stmt = null;
-            if(system::getInstance()->post('submit')) { // delete is submited
+            if(system::getInstance()->post('submit') && csrf::getInstance()->check()) { // delete is submited
                 if(system::getInstance()->contains('global/owner', $result['permissions'])) { // dont delete owner group
                     $params['notify']['cant_delete_owner'] = true;
                 } else {
@@ -323,8 +327,9 @@ class components_user_back {
     }
 
     private function viewUserSettings() {
+        csrf::getInstance()->buildToken();
         $params = array();
-        if(system::getInstance()->post('submit')) {
+        if(system::getInstance()->post('submit') && csrf::getInstance()->check()) {
             if(admin::getInstance()->saveExtensionConfigs()) {
                 $params['notify']['save_success'] = true;
             }
@@ -348,6 +353,7 @@ class components_user_back {
     }
 
     private function viewUserDelete() {
+        csrf::getInstance()->buildToken();
         $params = array();
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
 
@@ -356,7 +362,7 @@ class components_user_back {
             system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=user");
         }
 
-        if(system::getInstance()->post('deleteuser')) {
+        if(system::getInstance()->post('deleteuser') && csrf::getInstance()->check()) {
             $stmt = database::getInstance()->con()->prepare("DELETE generaldata,customdata FROM " .
                 property::getInstance()->get('db_prefix') . "_user as generaldata
                 LEFT OUTER JOIN " . property::getInstance()->get('db_prefix') . "_user_custom as customdata

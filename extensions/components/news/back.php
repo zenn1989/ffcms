@@ -16,6 +16,7 @@ use engine\language;
 use engine\user;
 use engine\extension;
 use engine\permission;
+use engine\csrf;
 
 class components_news_back {
     protected static $instance = null;
@@ -165,6 +166,7 @@ class components_news_back {
     }
 
     private function viewNewsDelCategory() {
+        csrf::getInstance()->buildToken();
         $params = array();
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
         $params['news']['categorys'] = extension::getInstance()->call(extension::TYPE_COMPONENT, 'news')->getCategoryArray();
@@ -187,7 +189,7 @@ class components_news_back {
         $stmt = null;
         if($params['cat']['path'] != null) {
             $notify = null;
-            if (system::getInstance()->post('deletecategory')) {
+            if (system::getInstance()->post('deletecategory') && csrf::getInstance()->check()) {
                 $move_to_cat = (int)system::getInstance()->post('move_to_category');
                 if($move_to_cat < 1) {
                     $params['notify']['nomoveto'] = true;
@@ -278,9 +280,10 @@ class components_news_back {
     }
 
     private function viewNewsSettings() {
+        csrf::getInstance()->buildToken();
         $params = array();
         if(system::getInstance()->post('submit')) {
-            if(admin::getInstance()->saveExtensionConfigs()) {
+            if(admin::getInstance()->saveExtensionConfigs() && csrf::getInstance()->check()) {
                 $params['notify']['save_success'] = true;
             }
         }
@@ -306,10 +309,11 @@ class components_news_back {
     }
 
     private function viewNewsDelete() {
+        csrf::getInstance()->buildToken();
         $news_id = (int)system::getInstance()->get('id');
         $params = array();
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
-        if(system::getInstance()->post('submit')) {
+        if(system::getInstance()->post('submit') && csrf::getInstance()->check()) {
             $stmt = database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE id = ?");
             $stmt->bindParam(1, $news_id, PDO::PARAM_INT);
             $stmt->execute();
@@ -529,9 +533,10 @@ class components_news_back {
     }
 
     private function viewNewsList() {
+        csrf::getInstance()->buildToken();
         $params = array();
 
-        if(system::getInstance()->post('deleteSelected')) {
+        if(system::getInstance()->post('deleteSelected') && csrf::getInstance()->check()) {
             if(permission::getInstance()->have('global/owner') || permission::getInstance()->have('admin/components/news/delete')) {
                 $toDelete = system::getInstance()->post('check_array');
                 if(is_array($toDelete) && sizeof($toDelete) > 0) {

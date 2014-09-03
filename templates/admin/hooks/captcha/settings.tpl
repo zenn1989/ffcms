@@ -6,6 +6,7 @@
     {{ notifytpl.success(language.admin_extension_config_update_success) }}
 {% endif %}
 <form method="post" action="" class="form-horizontal">
+    <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
     <fieldset>
         <div class="form-group">
             <label class="col-lg-3 control-label">{{ language.admin_hook_captcha_config_type_title }}</label>

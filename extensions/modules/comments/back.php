@@ -14,6 +14,7 @@ use engine\template;
 use engine\admin;
 use engine\user;
 use engine\extension;
+use engine\csrf;
 
 class modules_comments_back {
     protected static $instance = null;
@@ -90,13 +91,14 @@ class modules_comments_back {
     }
 
     private function viewCommentDelete() {
+        csrf::getInstance()->buildToken();
         $params = array();
 
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
 
         $comment_id = (int)system::getInstance()->get('id');
 
-        if(system::getInstance()->post('delete_comment') && $comment_id > 0) {
+        if(system::getInstance()->post('delete_comment') && $comment_id > 0 && csrf::getInstance()->check()) {
             $stmt = database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE id = ?");
             $stmt->bindParam(1, $comment_id, PDO::PARAM_INT);
             $stmt->execute();
@@ -153,9 +155,10 @@ class modules_comments_back {
     }
 
     private function viewCommentSettings() {
+        csrf::getInstance()->buildToken();
         $params = array();
 
-        if(system::getInstance()->post('submit')) {
+        if(system::getInstance()->post('submit') && csrf::getInstance()->check()) {
             if(admin::getInstance()->saveExtensionConfigs()) {
                 $params['notify']['save_success'] = true;
             }
@@ -174,9 +177,10 @@ class modules_comments_back {
     }
 
     private function viewCommentList() {
+        csrf::getInstance()->buildToken();
         $params = array();
 
-        if(system::getInstance()->post('deleteSelected')) {
+        if(system::getInstance()->post('deleteSelected') && csrf::getInstance()->check()) {
             $toDelete = system::getInstance()->post('check_array');
             if(is_array($toDelete) && sizeof($toDelete) > 0) {
                 $listDelete = system::getInstance()->altimplode(',', $toDelete);

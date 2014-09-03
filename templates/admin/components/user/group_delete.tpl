@@ -3,6 +3,7 @@
 <hr />
 {% include 'components/user/menu_include.tpl' %}
 <form action="" method="post" class="form-horizontal">
+    <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
     {{ notifytpl.warning(language.admin_component_usercontrol_group_del_notify) }}
     {% if notify.cant_delete_owner %}
         {{ notifytpl.error(language.admin_component_usercontrol_group_del_ownererror) }}

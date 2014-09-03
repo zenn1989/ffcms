@@ -15,6 +15,7 @@ use engine\property;
 use engine\language;
 use engine\user;
 use engine\permission;
+use engine\csrf;
 
 class components_static_back {
     protected static $instance = null;
@@ -56,6 +57,7 @@ class components_static_back {
     }
 
     private function viewStaticDelete() {
+        csrf::getInstance()->buildToken();
         $params = array();
         $page_id = (int)system::getInstance()->get('id');
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
@@ -65,7 +67,7 @@ class components_static_back {
         $stmt->execute();
 
         if($result = $stmt->fetch()) { // its found
-            if(system::getInstance()->post('submit')) {
+            if(system::getInstance()->post('submit') && csrf::getInstance()->check()) {
                 $stmt = null;
                 $stmt = database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_com_static WHERE id = ? LIMIT 1");
                 $stmt->bindParam(1, $page_id, PDO::PARAM_INT);
@@ -175,9 +177,10 @@ class components_static_back {
     }
 
     private function viewStaticList() {
+        csrf::getInstance()->buildToken();
         $params = array();
 
-        if(system::getInstance()->post('deleteSelected')) {
+        if(system::getInstance()->post('deleteSelected') && csrf::getInstance()->check()) {
             if(permission::getInstance()->have('global/owner') || permission::getInstance()->have('admin/components/static/delete')) {
                 $toDelete = system::getInstance()->post('check_array');
                 if(is_array($toDelete) && sizeof($toDelete) > 0) {

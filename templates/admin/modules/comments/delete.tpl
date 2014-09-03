@@ -17,6 +17,7 @@
     </tr>
     </tbody>
 </table>
-<form action="" method="post">
+<form action="" method="post">.
+    <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
     <input type="submit" name="delete_comment" value="{{ language.admin_modules_comment_del_button }}" class="btn btn-danger"/>
 </form>

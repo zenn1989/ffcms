@@ -19,6 +19,7 @@
 <hr />
 <p>{{ language.admin_component_usercontrol_ban_reg_desc }}</p>
 <form method="post" action="" class="form-horizontal">
+    <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
     <fieldset>
         <div class="form-group">
             <label class="control-label col-lg-3">{{ language.admin_component_usercontrol_ban_label_userdata }}</label>

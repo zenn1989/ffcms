@@ -26,6 +26,7 @@ date_default_timezone_set(\engine\property::getInstance()->get('time_zone'));
 require_once(root . '/engine/template.class.php');
 require_once(root . '/engine/router.class.php');
 require_once(root . '/engine/system.class.php');
+require_once(root . '/engine/csrf.class.php');
 require_once(root . '/engine/ini.class.php');
 require_once(root . '/engine/logger.class.php');
 require_once(root . '/engine/language.class.php');

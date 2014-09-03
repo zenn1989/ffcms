@@ -51,6 +51,17 @@ class system extends singleton {
     }
 
     /**
+     * Simple function to set user cookie. If time is nil - only for this session. If httponly is false - allowed using by javascript.
+     * @param string $data
+     * @param string $value
+     * @param int $time
+     * @param boolean $httponly
+     */
+    public function setCookie($data, $value, $time = null, $httponly = false) {
+        setcookie($data, $value, $time, '/', null, null, $httponly);
+    }
+
+    /**
      * Search entery's in string $where by string $what
      * @param $what
      * @param $where

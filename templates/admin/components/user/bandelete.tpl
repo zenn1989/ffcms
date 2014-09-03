@@ -21,6 +21,7 @@
     </tbody>
 </table>
 <form action="" method="post">
+    <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
     <input type="submit" name="submit" value="{{ language.admin_component_usercontrol_ban_del_subm }}" class="btn btn-danger" />
     <a href="?object=components&action=user&make=banlist" class="btn btn-warning">{{ language.admin_component_usercontrol_ban_del_cancel }}</a>
 </form>

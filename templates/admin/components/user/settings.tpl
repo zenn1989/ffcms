@@ -8,6 +8,7 @@
     {{ notifytpl.success(language.admin_extension_config_update_success) }}
 {% endif %}
 <form action="" method="post" class="form-horizontal" role="form">
+    <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
     <fieldset>
         <h2>{{ language.admin_component_usercontrol_first_data }}</h2>
         <hr />

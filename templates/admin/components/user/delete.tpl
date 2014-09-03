@@ -6,6 +6,7 @@
     <code>{{ udata.login|striptags|escape }}</code>(<code>id{{ udata.id|striptags|escape }}</code>/<code>{{ udata.email|escape|striptags }}</code>) ?</strong>
 <br/><br/>
 <form action="" method="post">
+    <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
     <input type="submit" name="deleteuser" value="{{ language.admin_component_usercontrol_delete_button_success }}" class="btn btn-danger"/>
     <a href="?object=components&action=user" class="btn btn-info">{{ language.admin_component_usercontrol_delete_button_cancel }}</a>
 </form>

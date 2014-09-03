@@ -11,6 +11,7 @@ use engine\admin;
 use engine\extension;
 use engine\template;
 use engine\system;
+use engine\csrf;
 
 class hooks_captcha_back {
     protected static $instance = null;
@@ -22,9 +23,10 @@ class hooks_captcha_back {
     }
 
     public function make() {
+        csrf::getInstance()->buildToken();
         $params = array();
 
-        if(system::getInstance()->post('submit')) {
+        if(system::getInstance()->post('submit') && csrf::getInstance()->check()) {
             if(admin::getInstance()->saveExtensionConfigs()) {
                 $params['notify']['save_success'] = true;
             }

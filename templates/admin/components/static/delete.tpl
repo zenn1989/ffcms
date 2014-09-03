@@ -19,6 +19,7 @@
     </tbody>
 </table>
 <form method="post" action="">
+        <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
         <input type="submit" name="submit" value="{{ language.admin_component_static_delete_button }}" class="btn btn-danger"/>
         <a href="?object=components&action=static" class="btn btn-success">{{ language.admin_component_static_delete_cancel }}</a>
 </form>

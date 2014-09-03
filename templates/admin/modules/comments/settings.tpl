@@ -7,6 +7,7 @@
     {{ notifytpl.success(language.admin_extension_config_update_success) }}
 {% endif %}
 <form method="post" action="" class="form-horizontal">
+    <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
     <fieldset>
         {{ settingstpl.textgroup('comments_count', config.comments_count, language.admin_modules_comment_config_count_title, language.admin_modules_comment_config_count_desc ) }}
         {{ settingstpl.textgroup('time_delay', config.time_delay, language.admin_modules_comment_config_timedelay_title, language.admin_modules_comment_config_timedelay_desc ) }}

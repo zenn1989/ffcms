@@ -5,6 +5,7 @@
     {{ notify_macro.success(language.admin_settings_saved) }}
 {% endif %}
 <form method="post" action="" class="form-horizontal" role="form">
+<input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
 <fieldset>
 <h2>{{ language.admin_settings_list_main_block }}</h2>
 <hr/>

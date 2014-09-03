@@ -10,6 +10,7 @@
     {{ notifytpl.error(language.admin_component_news_category_delete_unposible) }}
 {% endif %}
 <form class="form-horizontal" method="post">
+    <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
     <div class="form-group">
         <label class="control-label col-lg-3">{{ language.admin_component_news_category_delete_label_target }}</label>
 

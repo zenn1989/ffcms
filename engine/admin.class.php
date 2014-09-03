@@ -287,8 +287,9 @@ class admin extends singleton {
     }
 
     private function viewSettings() {
+        csrf::getInstance()->buildToken();
         $params = array();
-        if (system::getInstance()->post('submit')) {
+        if (system::getInstance()->post('submit') && csrf::getInstance()->check()) {
             $save_data = "<?php\n";
             foreach (system::getInstance()->post(null) as $var_name => $var_value) {
                 if (system::getInstance()->prefixEquals($var_name, 'cfgmain:')) {
