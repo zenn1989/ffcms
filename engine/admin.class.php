@@ -16,7 +16,8 @@ class admin extends singleton {
 
     protected static $default_admin_sections = array(
         'admin/main', 'admin/settings', 'admin/filemanager', 'admin/antivirus', 'admin/dump', 'admin/modules', 'admin/components', 'admin/hooks', 'admin/cleancache',
-        'admin/cleanstats', 'admin/cleanlogs'
+        'admin/cleanstats', 'admin/cleanlogs',
+        'admin/imagebrowser', 'admin/flashbrowser', 'admin/filebrowser'
     );
 
     public static function getInstance() {

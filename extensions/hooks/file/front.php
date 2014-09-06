@@ -187,16 +187,27 @@ class hooks_file_front {
      */
     public function uploadArchive($dir = "/files/", $file)
     {
+        return $this->uploadFile($dir, $file, array('zip', 'rar', 'gz'));
+    }
+
+    /**
+     * Upload file to website directory.
+     * @param string $dir
+     * @param array $file
+     * @param array $allowed_ext
+     * @return bool|string
+     */
+    public function uploadFile($dir = '/other/', $file, $allowed_ext = array('doc', 'docx', 'pdf')) {
         $dir = $this->checkFolderName($dir);
         $full_dir = root . $this->directory . $dir;
         if(!file_exists($full_dir))
             system::getInstance()->createDirectory($full_dir);
         $object = explode(".", $file['name']);
         $extension = array_pop($object);
-        if($extension === "zip" || $extension === "rar" || $extension === "gz") {
-            $archive_name = $this->analiseUploadName(implode('', $object), $extension, $dir);
-            move_uploaded_file($file['tmp_name'], $full_dir . '/' . $archive_name . "." . $extension);
-            return $archive_name . "." . $extension;
+        if(in_array($extension, $allowed_ext) && $file['size'] <= property::getInstance()->get('upload_other_max_size') * 1024) {
+            $file_name = $this->analiseUploadName(implode('', $object), $extension, $dir);
+            move_uploaded_file($file['tmp_name'], $full_dir . '/' . $file_name . "." . $extension);
+            return $file_name . "." . $extension;
         }
         return false;
     }

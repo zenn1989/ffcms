@@ -175,6 +175,33 @@
         <p class="help-block">{{ language.admin_settings_list_label_token_desc }}</p>
     </div>
 </div>
+<h2>{{ language.admin_settings_list_file_block }}</h2>
+<hr />
+<div class="form-group">
+    <label class="col-lg-3 control-label">{{ language.admin_settings_list_file_imgsize_title }}</label>
+
+    <div class="col-lg-9">
+        <input class="form-control" type="text"  name="cfgmain:upload_img_max_size" value="{{ config.upload_img_max_size }}"/>
+        <p class="help-block">{{ language.admin_settings_list_file_imgsize_desc }}</p>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-lg-3 control-label">{{ language.admin_settings_list_file_typeallow_title }}</label>
+
+    <div class="col-lg-9">
+        <input class="form-control" type="text"  name="cfgmain:upload_allowed_ext" value="{{ config.upload_allowed_ext }}"/>
+        <p class="help-block">{{ language.admin_settings_list_file_typeallow_desc }}</p>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-lg-3 control-label">{{ language.admin_settings_list_file_othersize_title }}</label>
+
+    <div class="col-lg-9">
+        <input class="form-control" type="text"  name="cfgmain:upload_other_max_size" value="{{ config.upload_other_max_size }}"/>
+        <p class="help-block">{{ language.admin_settings_list_file_othersize_desc }}</p>
+    </div>
+</div>
+
 <h2>{{ language.admin_settings_list_mail_block }}</h2>
 <hr/>
 <div class="form-group">

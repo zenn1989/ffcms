@@ -58,6 +58,9 @@ class property extends singleton {
         self::$cfg['tpl_dir'] = 'templates';
         self::$cfg['user_friendly_url'] = true;
         self::$cfg['use_multi_language'] = true;
+        // upd
+        self::$cfg['upload_other_max_size'] = 3000;
+        self::$cfg['upload_allowed_ext'] = '.doc;.docx;.rtf;.pdf;.txt;';
         if(is_array($config)) {
             foreach($config as $key=>$value) {
                 self::$cfg[$key] = $value;

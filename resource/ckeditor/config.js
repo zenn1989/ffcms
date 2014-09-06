@@ -29,15 +29,21 @@ CKEDITOR.editorConfig = function( config ) {
 
 	// Remove some buttons, provided by the standard plugins, which we don't
 	// need to have in the Standard(s) toolbar.
-	config.removeButtons = 'Underline,Subscript,Superscript,Replace,Save,Print,NewPage,DocProps,Preview,document,Templates,Find,SelectAll,PageBreak,Language';
+	config.removeButtons = 'Replace,Save,Print,NewPage,DocProps,Preview,document,Templates,Find,SelectAll,PageBreak,Language';
 
     config.allowedContent = true;
 
 	// Se the most common block elements.
 	config.format_tags = 'p;h1;h2;h3;pre';
 
-    config.filebrowserBrowseUrl = '/api.php?iface=back&object=ckbrowser';
-    config.filebrowserUploadUrl = '/api.php?iface=back&object=ckloader';
+    config.filebrowserBrowseUrl = '/api.php?iface=back&object=ckbrowser&type=0';
+    config.filebrowserUploadUrl = '/api.php?iface=back&object=ckloader&type=0';
+
+    config.filebrowserImageBrowseUrl = '/api.php?iface=back&object=ckbrowser&type=1';
+    config.filebrowserImageUploadUrl = '/api.php?iface=back&object=ckloader&type=1';
+
+    config.filebrowserFlashBrowseUrl = '/api.php?iface=back&object=ckbrowser&type=2';
+    config.filebrowserFlashUploadUrl = '/api.php?iface=back&object=ckloader&type=2';
 
 	// Make dialogs simpler.
 	config.removeDialogTabs = 'image:advanced;link:advanced';

@@ -208,10 +208,11 @@ class components_user_back {
     private function viewUserGroupadd() {
         $params = array();
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
-        $params['permission_all'] = permission::getInstance()->getAllPermissions();
+        $params['permission_general'] = permission::getInstance()->getAllPermissions();
+        $params['permission_admin'] = permission::getInstance()->getAdminPermissions();
         if(system::getInstance()->post('submit')) {
             $perm_array = system::getInstance()->post('perm');
-            $string_perms = null;
+            $string_perms = '';
             if(sizeof($perm_array) > 0) {
                 $string_perms = system::getInstance()->altimplode(';', array_keys($perm_array));
             }

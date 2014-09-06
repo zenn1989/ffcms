@@ -184,9 +184,16 @@ class template extends singleton {
     /**
      * Print content without compiling main template.
      * @param $content
+     * @param array|null $params
      */
-    public function justPrint($content) {
-        $render = $this->twigString()->render($content, self::$variables);
+    public function justPrint($content, $params = null) {
+        $renderParams = array();
+        if(!is_null($params)) {
+            $renderParams = array_merge(self::$variables, $params);
+        } else {
+            $renderParams = self::$variables;
+        }
+        $render = $this->twigString()->render($content, $renderParams);
         exit($render);
     }
 
