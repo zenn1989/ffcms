@@ -11,16 +11,16 @@ For more info and more free Bootstrap 3 HTML themes, visit http://startbootstrap
 /* Global Styles */
 
 body {
-  margin-top: 50px;
+    margin-top: 50px;
 }
 
 #wrapper {
-  padding-left: 0;
+    padding-left: 0;
 }
 
 #page-wrapper {
-  width: 100%;
-  padding: 5px 15px;
+    width: 100%;
+    padding: 5px 15px;
 }
 
 /* Nav Messages */
@@ -29,36 +29,35 @@ body {
 .messages-dropdown .dropdown-menu .message-preview .name,
 .messages-dropdown .dropdown-menu .message-preview .message,
 .messages-dropdown .dropdown-menu .message-preview .time {
-  display: block;
+    display: block;
 }
 
 .messages-dropdown .dropdown-menu .message-preview .avatar {
-  float: left;
-  margin-right: 15px;
+    float: left;
+    margin-right: 15px;
 }
 
 .messages-dropdown .dropdown-menu .message-preview .name {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .messages-dropdown .dropdown-menu .message-preview .message {
-  font-size: 12px;
+    font-size: 12px;
 }
 
 .messages-dropdown .dropdown-menu .message-preview .time {
-  font-size: 12px;
+    font-size: 12px;
 }
-
 
 /* Nav Announcements */
 
 .announcement-heading {
-  font-size: 50px;
-  margin: 0;
+    font-size: 50px;
+    margin: 0;
 }
 
 .announcement-text {
-  margin: 0;
+    margin: 0;
 }
 
 .table tbody tr td {
@@ -206,86 +205,86 @@ body {
 /* Flot Chart Containers */
 
 .flot-chart {
-  display: block;
-  height: 400px;
+    display: block;
+    height: 400px;
 }
 
 .flot-chart-content {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 /* Edit Below to Customize Widths > 768px */
-@media (min-width:768px) {
+@media (min-width: 768px) {
 
-  /* Wrappers */
+    /* Wrappers */
+    #wrapper {
+        padding-left: 250px;
+    }
 
-  #wrapper {
-	padding-left: 250px;
-  }
+    #page-wrapper {
+        padding: 15px 25px;
+    }
 
-  #page-wrapper {
-	padding: 15px 25px;
-  }
+    /* Side Nav */
+    .side-nav {
+        margin-left: -250px;
+        left: 250px;
+        width: 250px;
+        position: fixed;
+        top: 50px;
+        height: 99999px;
+        border-radius: 0;
+        border: none;
+        background-color: #222222;
+        overflow-y: auto;
+    }
 
-  /* Side Nav */
+    /* Bootstrap Default Overrides - Customized Dropdowns for the Side Nav */
+    .side-nav > li.dropdown > ul.dropdown-menu {
+        position: relative;
+        min-width: 250px;
+        margin: 0;
+        padding: 0;
+        border: none;
+        border-radius: 0;
+        background-color: transparent;
+        box-shadow: none;
+        -webkit-box-shadow: none;
+    }
 
-  .side-nav {
-	margin-left: -250px;
-	left: 250px;
-	width: 250px;
-	position: fixed;
-	top: 50px;
-	height: 100%;
-	border-radius: 0;
-	border: none;
-	background-color: #222222;
-	overflow-y: auto;
-  }
+    .side-nav > li.dropdown > ul.dropdown-menu > li > a {
+        color: #999999;
+        padding: 15px 15px 15px 25px;
+    }
 
-  /* Bootstrap Default Overrides - Customized Dropdowns for the Side Nav */
+    .navbar-inverse .navbar-nav > li > a {
+        color: #999999;
+    }
 
-  .side-nav>li.dropdown>ul.dropdown-menu {
-	position: relative;
-	min-width: 250px;
-	margin: 0;
-	padding: 0;
-	border: none;
-	border-radius: 0;
-	background-color: transparent;
-	box-shadow: none;
-	-webkit-box-shadow: none;
-  }
+    .side-nav > li.dropdown > ul.dropdown-menu > li > a:hover,
+    .side-nav > li.dropdown > ul.dropdown-menu > li > a.active,
+    .side-nav > li.dropdown > ul.dropdown-menu > li > a:focus {
+        color: #fff;
+        background-color: #080808;
+    }
 
-  .side-nav>li.dropdown>ul.dropdown-menu>li>a {
-	color: #999999;
-	padding: 15px 15px 15px 25px;
-  }
+    .side-nav > li > a {
+        width: 250px;
+    }
 
-  .side-nav>li.dropdown>ul.dropdown-menu>li>a:hover,
-  .side-nav>li.dropdown>ul.dropdown-menu>li>a.active,
-  .side-nav>li.dropdown>ul.dropdown-menu>li>a:focus {
-	color: #fff;
-	background-color: #080808;
-  }
+    .navbar-inverse .navbar-nav > li > a:hover,
+    .navbar-inverse .navbar-nav > li > a:focus {
+        background-color: #080808;
+    }
 
-  .side-nav>li>a {
-	width: 250px;
-  }
+    /* Nav Messages */
+    .messages-dropdown .dropdown-menu {
+        min-width: 300px;
+    }
 
-  .navbar-inverse .navbar-nav>li>a:hover,
-  .navbar-inverse .navbar-nav>li>a:focus {
-	background-color: #080808;
-  }
-
-  /* Nav Messages */
-
-  .messages-dropdown .dropdown-menu {
-	min-width: 300px;
-  }
-
-  .messages-dropdown .dropdown-menu li a {
-	white-space: normal;
-  }
+    .messages-dropdown .dropdown-menu li a {
+        white-space: normal;
+    }
 
 }

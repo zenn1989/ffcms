@@ -13,14 +13,14 @@
     </script>
 
     <!-- Bootstrap core CSS -->
-    <link href="{{ system.theme }}/css/bootstrap.css" rel="stylesheet">
+    <link href="{{ system.script_url }}/resource/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Add custom CSS here -->
     <link href="{{ system.theme }}/css/sb-admin.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ system.theme }}/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ system.script_url }}/resource/fontawesome/4.2.0/css/font-awesome.min.css">
 
-    <script src="{{ system.theme }}/js/jquery-1.10.2.js"></script>
-    <script src="{{ system.theme }}/js/bootstrap.js"></script>
+    <script src="{{ system.script_url }}/resource/jquery/1.11.1/jquery-1.11.1.min.js"></script>
+    <script src="{{ system.script_url }}/resource/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src="{{ system.theme }}/js/ffcms.js"></script>
 </head>
 

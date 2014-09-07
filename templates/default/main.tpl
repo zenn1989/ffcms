@@ -14,13 +14,15 @@
         var host = '{{ system.script_url }}';
         var loader = '{{ system.loader }}';
     </script>
-    <link href="{{ system.theme }}/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ system.script_url }}/resource/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ system.script_url }}/resource/fontawesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="{{ system.theme }}/css/custom.css" rel="stylesheet">
-    <link href="{{ system.theme }}/css/font-awesome.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="{{ system.script_url }}/resource/flags/flags.css" />
     <link href="{{ system.script_url }}/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-    <script src="{{ system.theme }}/js/jquery.min.js"></script>
-    <script src="{{ system.theme }}/js/bootstrap.min.js"></script>
+
+    <script src="{{ system.script_url }}/resource/jquery/1.11.1/jquery-1.11.1.min.js"></script>
+    <script src="{{ system.script_url }}/resource/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src="{{ system.theme }}/js/ffcms.js"></script>
     <!-- DIE OLD IE !111one -->
     <!--[if lt IE 9]>
