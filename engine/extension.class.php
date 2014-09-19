@@ -46,21 +46,30 @@ class extension extends singleton {
      * Call to extension class functions from remote class. Ex: extension::getInstance()->call(extension::TYPE_COMPONENT, 'static')->display();
      * @param string $type
      * @param string $object
+     * @param boolean $is_back
      * @return mixed
      */
-    public function call($type, $object) {
+    public function call($type, $object, $is_back = false) {
         if(!is_object(self::$callobjects[$type][$object])) {
             if(array_key_exists($type, self::$extconfigs) && array_key_exists($object, self::$extconfigs[$type])) {
-                $file = root . '/extensions/' . $type . '/' . $object . '/front.php';
+                $file = root . '/extensions/' . $type . '/' . $object;
+                if($is_back)
+                    $file .= '/back.php';
+                else
+                    $file .= '/front.php';
                 if(file_exists($file)) {
                     @require_once($file);
-                    $cname = $type . '_' . $object .'_front';
+                    $cname = $type . '_' . $object;
+                    if($is_back)
+                        $cname .= '_back';
+                    else
+                        $cname .= '_front';
                     if(class_exists($cname)) {
-                        $init = new $cname;
+                        $init = @new $cname;
                         if(method_exists($cname, 'getInstance')) {
-                            $instance = $init::getInstance();
+                            $instance = @$init::getInstance();
                             if(is_object($instance)) {
-                                self::$callobjects[$type][$object] = $instance;
+                                self::$callobjects[$type][$object][$is_back ? 'back' : 'front'] = $instance;
                             } else {
                                 logger::getInstance()->log(logger::LEVEL_WARN, 'Method getInstance() dosnt return object link for self(return $this) in file '.$file);
                             }
@@ -75,7 +84,7 @@ class extension extends singleton {
                 }
             }
         }
-        return self::$callobjects[$type][$object];
+        return self::$callobjects[$type][$object][$is_back ? 'back' : 'front'];
     }
 
     public function loadModules() {

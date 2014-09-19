@@ -25,7 +25,7 @@
                     <td>{{ loop.index }}</td>
                     <td><a href="?object={{ type }}&action={{ name }}">{{ param.title }}</a> {% if param.way != null %}[<a href="{{ system.url }}/{{ param.way }}/" target="_blank">/{{ param.way }}/</a>]{% endif %}</td>
                     <td>{{ param.desc }}</td>
-                    <td class="text-center"><a href="?object={{ type }}&action={{ name }}"><i class="fa fa-cogs"></i></a></td>
+                    <td class="text-center"><a href="?object={{ type }}&action={{ name }}"><i class="fa fa-cogs"></i></a> <a href="?object={{ type }}&action={{ name }}&sys=info"><i class="fa fa-info-circle"></i></a></td>
                 </tr>
             {% endfor %}
             </tbody>

@@ -56,6 +56,14 @@ class modules_comments_back {
         return $content;
     }
 
+    public function _version() {
+        return '1.0.1';
+    }
+
+    public function _compatable() {
+        return '2.0.2';
+    }
+
     public function accessData() {
         return array(
             'admin/modules/comments',

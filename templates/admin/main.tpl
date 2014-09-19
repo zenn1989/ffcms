@@ -38,7 +38,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ system.script_url }}/{{ system.file_name }}"><i class="fa fa-globe"></i> FFCMS ADMIN</a>
+            <a class="navbar-brand" href="{{ system.script_url }}/{{ system.file_name }}"><i class="fa fa-globe"></i> FFCMS ADMIN - v{{ system.version }}</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -52,6 +52,7 @@
                         <li><a href="?object=filemanager"><i class="fa fa-file-o"></i> {{ language.admin_nav_li_filemanager }}</a></li>
                         <li><a href="?object=antivirus"><i class="fa fa-shield"></i> {{ language.admin_nav_li_avir }}</a></li>
                         <li><a href="?object=dump"><i class="fa fa-floppy-o"></i> {{ language.admin_nav_li_backup }}</a></li>
+                        <li><a href="?object=updates"><i class="fa fa-gavel"></i> {{ language.admin_nav_li_updates }}</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -132,7 +133,11 @@
             <div class="col-lg-12">
                 {{ content.body }}
             </div>
-        </div><!-- /.row -->
+        </div>
+
+        <div class="row">
+            <p class="text-center"><a href="#" onclick="window.history.back();return false;"><span class="label label-primary">{{ language.admin_goback }}</span></a></p>
+        </div>
 
     </div><!-- /#page-wrapper -->
 </div><!-- /#wrapper -->

@@ -28,6 +28,14 @@ class components_static_back {
         return self::$instance;
     }
 
+    public function _version() {
+        return '1.0.1';
+    }
+
+    public function _compatable() {
+        return '2.0.2';
+    }
+
     public function make() {
         $content = null;
         switch(system::getInstance()->get('make')) {

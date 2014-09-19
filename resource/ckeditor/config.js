@@ -51,7 +51,13 @@ CKEDITOR.editorConfig = function( config ) {
     config.scayt_autoStartup = false;
     config.disableNativeSpellChecker = false;
 	
-	config.extraPlugins = 'youtube,widget,lineutils,codesnippet,leaflet';
+	config.extraPlugins = 'youtube,widget,lineutils,codesnippet,leaflet,wordcount';
+
+    config.wordcount = {
+        showWordCount: true,
+        showCharCount: true,
+        countHTML: false
+    };
 
     config.height = '400';
 

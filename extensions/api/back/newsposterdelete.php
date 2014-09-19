@@ -20,7 +20,7 @@ class api_newsposterdelete_back {
     }
 
     public function make() {
-        if(!permission::getInstance()->have('global/owner'))
+        if(!permission::getInstance()->have('admin/components/news/add') && !permission::getInstance()->have('admin/components/news/edit'))
             return;
         $id = (int)system::getInstance()->get('id');
         $fpath = root . '/upload/news/poster_' . $id . '.jpg';

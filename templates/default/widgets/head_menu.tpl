@@ -34,7 +34,7 @@
                             <li><a href="{{ system.url }}/user/logout.html">{{ language.usercontrol_menu_exit }}</a></li>
                         </ul>
                     </li>
-                    {% if user.admin %}
+                    {% if user.admin_panel %}
                         <li><a href="{{ system.script_url }}/admin.php">{{ language.position_header_adminpanel }}</a></li>
                     {% endif %}
                 {% endif %}

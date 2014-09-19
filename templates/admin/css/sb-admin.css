@@ -240,6 +240,10 @@ body {
         overflow-y: auto;
     }
 
+    .navbar-user {
+        padding-right: 20px;
+    }
+
     /* Bootstrap Default Overrides - Customized Dropdowns for the Side Nav */
     .side-nav > li.dropdown > ul.dropdown-menu {
         position: relative;

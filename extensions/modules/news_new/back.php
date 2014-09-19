@@ -22,6 +22,14 @@ class modules_news_new_back {
         return self::$instance;
     }
 
+    public function _version() {
+        return '1.0.1';
+    }
+
+    public function _compatable() {
+        return '2.0.2';
+    }
+
     public function make() {
         $params = array();
 

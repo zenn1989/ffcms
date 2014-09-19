@@ -13,6 +13,7 @@ class admin extends singleton {
     protected static $instance = null;
     protected $get = array();
     protected $extension_link = array();
+    const update_url = 'http://update.ffcms.ru/requestversion.php';
 
     protected static $default_admin_sections = array(
         'admin/main', 'admin/settings', 'admin/filemanager', 'admin/antivirus', 'admin/dump', 'admin/modules', 'admin/components', 'admin/hooks', 'admin/cleancache',
@@ -65,6 +66,9 @@ class admin extends singleton {
                 break;
             case 'dump':
                 $content = $this->viewDumper();
+                break;
+            case 'updates':
+                $content = $this->viewUpdates();
                 break;
             case 'modules':
             case 'components':
@@ -166,7 +170,7 @@ class admin extends singleton {
             }
             return template::getInstance()->twigRender('extensions.tpl', $params);
         } else { // single item
-            if(system::getInstance()->get('sys') != null) {
+            if(in_array(system::getInstance()->get('sys'), array('enable', 'disable', 'install'))) {
                 switch(system::getInstance()->get('sys')) {
                     case 'enable':
                         $this->enableExtension();
@@ -183,21 +187,47 @@ class admin extends singleton {
             $ext_params = extension::getInstance()->getAllParams();
             if(array_key_exists($this->get['action'], $ext_params[$this->get['object']])) {
                 if($ext_params[$this->get['object']][$this->get['action']]['enabled'] == 1) {
-                    $backend = root . '/extensions/' . $this->get['object'] . '/' . $this->get['action'] . '/back.php';
-                    if(file_exists($backend)) {
-                        require_once($backend);
-                        $cname = $this->get['object'] . '_' . $this->get['action'] . '_back';
-                        if(class_exists($cname)) {
-                            $class = new $cname;
-                            if(method_exists($class, 'getInstance') && method_exists($class, 'make')) {
-                                return $class::getInstance()->make();
-                            }
+                    $object = extension::getInstance()->call($this->get['object'], $this->get['action'], true);
+                    if(!is_null($object) && is_object($object)) {
+                        if(system::getInstance()->get('sys') == 'info') {
+                            return $this->infoExtension($object, $ext_params[$this->get['object']][$this->get['action']]);
                         }
+                        if(method_exists($object, '_compatable')) {
+                            $script_compatable = $object->_compatable();
+                            $cname = get_class($object);
+                            if($script_compatable != version)
+                                logger::getInstance()->log(logger::LEVEL_ERR, "Uncompatable extension class ".$cname.". System: ".version.", extension: ".$script_compatable);
+                        }
+                        if(method_exists($object, '_version')) {
+                            $script_version = $object->_version();
+                            $cname = get_class($object);
+                            if($script_version != $ext_params[$this->get['object']][$this->get['action']]['version'])
+                                logger::getInstance()->log(logger::LEVEL_WARN, "Extension class ".$cname." have new updates!");
+                        }
+                        return $object->make();
+                    } else {
+                        logger::getInstance()->log(logger::LEVEL_WARN, 'Extension '.$this->get['object'].' with type '.$this->get['type'].' is not founded');
                     }
                 }
             }
             return template::getInstance()->twigRender('miss_settings.tpl', array());
         }
+    }
+
+    private function infoExtension($object, $db_data) {
+        $params = array();
+
+        if(method_exists($object, '_version'))
+            $params['extinfo']['script_version'] = $object->_version();
+
+        if(method_exists($object, '_compatable'))
+            $params['extinfo']['script_compatable'] = $object->_compatable();
+
+        $params['extinfo']['sys_name'] = $this->get['action'];
+        $params['extinfo']['sys_type'] = $this->get['object'];
+        $params['extinfo']['db_version'] = $db_data['version'];
+        $params['extinfo']['db_compatable'] = $db_data['compatable'];
+        return template::getInstance()->twigRender('extensioninfo.tpl', $params);
     }
 
     private function installExtension() {
@@ -236,6 +266,86 @@ class admin extends singleton {
         $stmt->bindParam(2, $this->get['action'], \PDO::PARAM_STR);
         $stmt->execute();
         $stmt = null;
+    }
+
+    private function viewUpdates() {
+        csrf::getInstance()->buildToken();
+        $action = system::getInstance()->get('action');
+        $params = array();
+
+        if($action == null) {
+            $ffcms_jsondata = system::getInstance()->url_get_contents(self::update_url);
+
+            if(system::getInstance()->length($ffcms_jsondata) < 1)
+                $params['extinfo']['ffsite_down'] = true;
+
+            $json_info = json_decode(base64_decode($ffcms_jsondata));
+            $params['extinfo']['ff_lastversion'] = (string)$json_info->{'response'}->{'version'};
+
+            if($params['extinfo']['ff_lastversion'] != null) {
+                $intequal_local_version = system::getInstance()->ffVersionToCompare(version);
+                $intequal_remote_version = system::getInstance()->ffVersionToCompare($params['extinfo']['ff_lastversion']);
+                if($intequal_remote_version > $intequal_local_version)
+                    $params['extinfo']['update_available'] = true;
+            }
+            $params['extinfo']['repos'] = $json_info->{'response'}->{'repo'};
+
+            if(system::getInstance()->post('submit') && csrf::getInstance()->check() && $params['extinfo']['update_available'] === true) {
+                $params['extinfo']['notifysubmit'] = true;
+                $repo_get_name = system::getInstance()->post('repo_name');
+                $repo_load_url = null;
+                foreach($params['extinfo']['repos'] as $repo) {
+                    if((string)$repo->{'name'} == $repo_get_name) {
+                        $repo_load_url = (string)$repo->{'url'};
+                        break;
+                    }
+                }
+                $ffzip = system::getInstance()->url_get_contents($repo_load_url);
+                $save_name = '/upload/dist/ffcms-'.$params['extinfo']['ff_lastversion'].'.zip';
+                if(file_exists(root . $save_name))
+                    unlink(root . $save_name);
+                system::getInstance()->putFile($ffzip, '/upload/dist/ffcms-'.$params['extinfo']['ff_lastversion'].'.zip');
+                $zip = new \ZipArchive();
+                $zlink = $zip->open(root . $save_name);
+                if($zlink === TRUE) {
+                    $zip->extractTo(root);
+                } else {
+                    $params['extinfo']['notifyfail'] = true;
+                }
+                $zip->close();
+            }
+
+            return template::getInstance()->twigRender('updates_system.tpl', $params);
+        } elseif($action == 'extensions') {
+            $alldata = extension::getInstance()->getAllParams();
+            foreach($alldata as $cdata) {
+                foreach($cdata as $extension) {
+                    $object = extension::getInstance()->call($extension['type'], $extension['dir'], true);
+                    $script_version = null;
+                    $script_compatable = null;
+                    if(method_exists($object, '_version'))
+                        $script_version = $object->_version();
+                    if(method_exists($object, '_compatable'))
+                        $script_compatable = $object->_compatable();
+                    $params['extinfo']['data'][] = array(
+                        'id' => $extension['id'],
+                        'type' => $extension['type'],
+                        'name' => $extension['dir'],
+                        'db_version' => $extension['version'],
+                        'db_compatable' => $extension['compatable'],
+                        'script_version' => $script_version,
+                        'script_compatable' => $script_compatable
+                    );
+                    if(system::getInstance()->post('submit')) {
+                        if(method_exists($object, '_update') && $script_compatable == version)
+                            @$object->_update($extension['version']);
+                        $params['extinfo']['notify_updated'] = true;
+                    }
+                }
+            }
+
+            return template::getInstance()->twigRender('updates_extensions.tpl', $params);
+        }
     }
 
     private function viewDumper() {
@@ -445,6 +555,7 @@ class admin extends singleton {
         $params['stat']['folder_cache_access'] = $this->analiseAccess("/cache/", "rw");
         $params['stat']['file_config_access'] = $this->analiseAccess("/config.php", "rw");
         $params['stat']['logs'] = $this->readLogs();
+
         return template::getInstance()->twigRender('general.tpl', array('local' => $params));
     }
 

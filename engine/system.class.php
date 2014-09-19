@@ -676,14 +676,19 @@ class system extends singleton {
      * @param string $path
      */
     public function putFile($file_data, $path) {
-        $path_array = explode('/', $path);
-        array_pop($path_array);
-        $path_dir = implode('/', $path_array);
-        if(!$this->prefixEquals($path_dir, root))
-            $path = root . $path_dir;
-        if(!file_exists($path_dir))
-            $this->createDirectory($path_dir);
-        @file_put_contents($path, $file_data);
+        $save_dir = null;
+        $file_name = null;
+        $path_array = $this->altexplode("/", $path);
+        $file_name = array_pop($path_array);
+        $path_dir = $this->altimplode("/", $path_array);
+        if(!$this->prefixEquals($path_dir, root)) {
+            $save_dir .= root;
+            if(!$this->prefixEquals($path_dir, "/"))
+                $save_dir .= "/";
+        }
+        $save_dir .= $path_dir;
+        $full_file_name = $save_dir . '/' . $file_name;
+        @file_put_contents($full_file_name, $file_data);
     }
 
     /**
@@ -842,5 +847,18 @@ class system extends singleton {
             return null;
         }
 
+    }
+
+    /**
+     * Return the integer numeric value equals ffcms version increment. Biggest value - newest version. False = incorrent input $version.
+     * @param $version
+     * @return bool|int
+     */
+    public function ffVersionToCompare($version) {
+        if(!preg_match("/^(\d+\\.)?(\d+\\.)?(\\*|\d+)$/", $version))
+            return false;
+        list($major, $minor, $patch) = system::getInstance()->altexplode(".", $version);
+        $result = $major * 100 + $minor * 10 + $patch;
+        return (int)$result;
     }
 }

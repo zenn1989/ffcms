@@ -47,11 +47,11 @@
     <div class="col-md-8">
         <div class="tabbable">
             <ul class="nav nav-tabs nav-justified">
-                <li{% if local.path == '' or local.path == 'wall' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}"><i class="icon-home"></i> {{ language.usercontrol_profile_menu_wall }}</a></li>
-                <li{% if local.path == 'bookmarks' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}/bookmarks"><i class="icon-pencil"></i> {{ language.usercontrol_profile_menu_marks }}</a></li>
+                <li{% if local.path == '' or local.path == 'wall' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}"><i class="glyphicon glyphicon-home"></i> {{ language.usercontrol_profile_menu_wall }}</a></li>
+                <li{% if local.path == 'bookmarks' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}/bookmarks"><i class="glyphicon glyphicon-pencil"></i> {{ language.usercontrol_profile_menu_marks }}</a></li>
                 <li class="dropdown{% if local.path == 'friends' %} active{% endif %}">
                     <a href="#" data-toggle="dropdown">
-                        <i class="icon-user"></i> {{ language.usercontrol_profile_menu_friends }}
+                        <i class="glyphicon glyphicon-user"></i> {{ language.usercontrol_profile_menu_friends }}
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">

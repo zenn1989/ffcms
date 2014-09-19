@@ -21,7 +21,7 @@ class api_elfinder_back {
     }
 
     public function make() {
-        if (!permission::getInstance()->have('global/owner')) {
+        if (!permission::getInstance()->have('admin/filemanager')) {
             return;
         }
         include_once root . '/resource/elfinder/php/elFinderConnector.class.php';

@@ -85,31 +85,33 @@ CREATE TABLE `{$db_prefix}_extensions` (
   `path_choice` tinyint(1) NOT NULL,
   `path_allow` varchar(1024) NOT NULL,
   `path_deny` varchar(1024) NOT NULL,
+  `version` VARCHAR( 12 ) NULL DEFAULT NULL,
+  `compatable` VARCHAR( 12 ) NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `{$db_prefix}_extensions` (`id`, `type`, `configs`, `dir`, `enabled`, `path_choice`, `path_allow`, `path_deny`) VALUES
-(1,	'components',	'',	'static',	1,	0,	'',	''),
-(2,	'components',	'a:12:{s:13:\"login_captcha\";s:1:\"0\";s:16:\"register_captcha\";s:1:\"1\";s:15:\"register_aprove\";s:1:\"0\";s:10:\"use_openid\";s:1:\"1\";s:12:\"profile_view\";s:1:\"1\";s:15:\"wall_post_count\";s:1:\"5\";s:16:\"marks_post_count\";s:1:\"5\";s:17:\"friend_page_count\";s:2:\"10\";s:15:\"wall_post_delay\";s:2:\"30\";s:8:\"pm_count\";s:1:\"5\";s:12:\"balance_view\";s:1:\"0\";s:14:\"userlist_count\";s:2:\"10\";}',	'user',	1,	0,	'',	''),
-(3, 'components', 'a:12:{s:15:"count_news_page";s:1:"5";s:17:"short_news_length";s:3:"200";s:18:"enable_views_count";s:1:"1";s:14:"enable_useradd";s:1:"0";s:14:"multi_category";s:1:"1";s:11:"enable_tags";s:1:"1";s:9:"poster_dx";s:3:"200";s:9:"poster_dy";s:3:"200";s:10:"gallery_dx";s:3:"150";s:10:"gallery_dy";s:3:"150";s:10:"enable_rss";s:1:"0";s:9:"rss_count";s:2:"10";}', 'news', 1, 0, '', ''),
-(4,	'components',	'',	'sitemap',	1,	0,	'',	''),
-(5,	'components',	'',	'feedback',	1,	0,	'',	''),
-(6,	'components',	'',	'search',	1,	0,	'',	''),
-(8,	'hooks',	'a:3:{s:12:\"captcha_type\";s:8:\"ccaptcha\";s:17:\"captcha_publickey\";s:40:\"6Lf5V-YSAAAAAHjZXfPuyetxodstkHEkIn621OdE\";s:18:\"captcha_privatekey\";s:40:\"6Lf5V-YSAAAAACmTdU4Fd0uUbLTdMtI4rYGenl-X\";}',	'captcha',	1,	0,	'',	''),
-(9,	'hooks',	'',	'profile',	0,	0,	'',	''),
-(10,	'hooks',	'',	'bbtohtml',	1,	0,	'',	''),
-(11,	'hooks',	'',	'comment',	1,	0,	'',	''),
-(12,	'hooks',	'',	'file',	1,	0,	'',	''),
-(13,	'hooks',	'',	'mail',	1,	0,	'',	''),
-(15,	'modules',	'',	'news_on_main',	1,	1,	'index',	''),
-(16,	'modules',	'a:2:{s:7:\"news_id\";s:1:\"1\";s:9:\"show_date\";s:1:\"0\";}',	'static_on_main',	0,	1,	'index',	''),
-(17,	'modules',	'a:5:{s:14:\"comments_count\";s:1:\"5\";s:10:\"time_delay\";s:2:\"60\";s:9:\"edit_time\";s:2:\"30\";s:10:\"min_length\";s:2:\"10\";s:10:\"max_length\";s:4:\"2000\";}',	'comments',	1,	1,	'news/*;static/*;extension/*',	''),
-(18,	'modules',	'',	'usernotify',	1,	1,	'*',	''),
-(19,	'modules',	'a:2:{s:10:\"last_count\";s:1:\"5\";s:11:\"text_length\";s:2:\"70\";}',	'lastcomments',	1,	1,	'*',	''),
-(20,	'modules',	'a:3:{s:9:\"tag_count\";s:2:\"20\";s:22:\"template_position_name\";s:4:\"left\";s:23:\"template_position_index\";s:1:\"2\";}',	'tagcloud',	1,	1,	'*',	''),
-(21, 'modules', 'a:2:{s:12:"discus_count";s:1:"5";s:11:"discus_days";s:1:"0";}', 'news_top_discus', 0, 1, '*', ''),
-(22, 'modules', 'a:2:{s:13:"viewtop_count";s:1:"5";s:12:"viewtop_days";s:1:"0";}', 'news_top_view', 0, 1, '*', ''),
-(23, 'modules', 'a:1:{s:9:"new_count";s:1:"5";}', 'news_new', 0, 1, '*', '');
+INSERT INTO `{$db_prefix}_extensions` (`id`, `type`, `configs`, `dir`, `enabled`, `path_choice`, `path_allow`, `path_deny`, `version`, `compatable`) VALUES
+(1,	'components',	'',	'static',	1,	0,	'',	'', '1.0.1', '2.0.2'),
+(2,	'components',	'a:12:{s:13:\"login_captcha\";s:1:\"0\";s:16:\"register_captcha\";s:1:\"1\";s:15:\"register_aprove\";s:1:\"0\";s:10:\"use_openid\";s:1:\"1\";s:12:\"profile_view\";s:1:\"1\";s:15:\"wall_post_count\";s:1:\"5\";s:16:\"marks_post_count\";s:1:\"5\";s:17:\"friend_page_count\";s:2:\"10\";s:15:\"wall_post_delay\";s:2:\"30\";s:8:\"pm_count\";s:1:\"5\";s:12:\"balance_view\";s:1:\"0\";s:14:\"userlist_count\";s:2:\"10\";}',	'user',	1,	0,	'',	'', '1.0.1', '2.0.2'),
+(3, 'components', 'a:12:{s:15:"count_news_page";s:1:"5";s:17:"short_news_length";s:3:"200";s:18:"enable_views_count";s:1:"1";s:14:"enable_useradd";s:1:"0";s:14:"multi_category";s:1:"1";s:11:"enable_tags";s:1:"1";s:9:"poster_dx";s:3:"200";s:9:"poster_dy";s:3:"200";s:10:"gallery_dx";s:3:"150";s:10:"gallery_dy";s:3:"150";s:10:"enable_rss";s:1:"0";s:9:"rss_count";s:2:"10";}', 'news', 1, 0, '', '', '1.0.1', '2.0.2'),
+(4,	'components',	'',	'sitemap',	1,	0,	'',	'', '1.0.1', '2.0.2'),
+(5,	'components',	'',	'feedback',	1,	0,	'',	'', '1.0.1', '2.0.2'),
+(6,	'components',	'',	'search',	1,	0,	'',	'', '1.0.1', '2.0.2'),
+(8,	'hooks',	'a:3:{s:12:\"captcha_type\";s:8:\"ccaptcha\";s:17:\"captcha_publickey\";s:40:\"6Lf5V-YSAAAAAHjZXfPuyetxodstkHEkIn621OdE\";s:18:\"captcha_privatekey\";s:40:\"6Lf5V-YSAAAAACmTdU4Fd0uUbLTdMtI4rYGenl-X\";}',	'captcha',	1,	0,	'',	'', '1.0.1', '2.0.2'),
+(9,	'hooks',	'',	'profile',	0,	0,	'',	'', '1.0.1', '2.0.2'),
+(10,	'hooks',	'',	'bbtohtml',	1,	0,	'',	'', '1.0.1', '2.0.2'),
+(11,	'hooks',	'',	'comment',	1,	0,	'',	'', '1.0.1', '2.0.2'),
+(12,	'hooks',	'',	'file',	1,	0,	'',	'', '1.0.1', '2.0.2'),
+(13,	'hooks',	'',	'mail',	1,	0,	'',	'', '1.0.1', '2.0.2'),
+(15,	'modules',	'',	'news_on_main',	1,	1,	'index',	'', '1.0.1', '2.0.2'),
+(16,	'modules',	'a:2:{s:7:\"news_id\";s:1:\"1\";s:9:\"show_date\";s:1:\"0\";}',	'static_on_main',	0,	1,	'index',	'', '1.0.1', '2.0.2'),
+(17,	'modules',	'a:5:{s:14:\"comments_count\";s:1:\"5\";s:10:\"time_delay\";s:2:\"60\";s:9:\"edit_time\";s:2:\"30\";s:10:\"min_length\";s:2:\"10\";s:10:\"max_length\";s:4:\"2000\";}',	'comments',	1,	1,	'news/*;static/*;',	'', '1.0.1', '2.0.2'),
+(18,	'modules',	'',	'usernotify',	1,	1,	'*',	'', '1.0.1', '2.0.2'),
+(19,	'modules',	'a:2:{s:10:\"last_count\";s:1:\"5\";s:11:\"text_length\";s:2:\"70\";}',	'lastcomments',	1,	1,	'*',	'', '1.0.1', '2.0.2'),
+(20,	'modules',	'a:3:{s:9:\"tag_count\";s:2:\"20\";s:22:\"template_position_name\";s:4:\"left\";s:23:\"template_position_index\";s:1:\"2\";}',	'tagcloud',	1,	1,	'*',	'', '1.0.1', '2.0.2'),
+(21, 'modules', 'a:2:{s:12:"discus_count";s:1:"5";s:11:"discus_days";s:1:"0";}', 'news_top_discus', 0, 1, '*', '', '1.0.1', '2.0.2'),
+(22, 'modules', 'a:2:{s:13:"viewtop_count";s:1:"5";s:12:"viewtop_days";s:1:"0";}', 'news_top_view', 0, 1, '*', '', '1.0.1', '2.0.2'),
+(23, 'modules', 'a:1:{s:9:"new_count";s:1:"5";}', 'news_new', 0, 1, '*', '', '1.0.1', '2.0.2');
 
 DROP TABLE IF EXISTS `{$db_prefix}_mod_comments`;
 CREATE TABLE `{$db_prefix}_mod_comments` (

@@ -51,5 +51,4 @@
 {{ pagination }}
 {% else %}
 <p>{{ language.admin_component_static_nofound }}</p>
-<p class="text-center">{{ language.admin_goback }}</p>
 {% endif %}

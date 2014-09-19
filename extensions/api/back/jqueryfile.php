@@ -23,7 +23,7 @@ class api_jqueryfile_back {
     }
 
     public function make() {
-        if(!permission::getInstance()->have('global/owner'))
+        if(!permission::getInstance()->have('admin/components/news/add') && !permission::getInstance()->have('admin/components/news/edit'))
             return;
         header('Content-type: application/json');
         switch(system::getInstance()->get('action')) {
