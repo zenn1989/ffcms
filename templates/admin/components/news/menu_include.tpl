@@ -10,10 +10,10 @@
     </div>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-            <li><a href="?object=components&action=news">{{ language.admin_component_news_manage }}</a></li>
-            <li><a href="?object=components&action=news&make=add">{{ language.admin_component_news_add }}</a></li>
-            <li><a href="?object=components&action=news&make=category">{{ language.admin_component_news_category }}</a></li>
-            <li><a href="?object=components&action=news&make=settings">{{ language.admin_component_news_settings }}</a></li>
+            <li{% if system.get_data.make == null or system.get_data.make == 'list' %} class="active"{% endif %}><a href="?object=components&action=news">{{ language.admin_component_news_manage }}</a></li>
+            <li{% if system.get_data.make == 'add' %} class="active"{% endif %}><a href="?object=components&action=news&make=add">{{ language.admin_component_news_add }}</a></li>
+            <li{% if system.get_data.make == 'category' %} class="active"{% endif %}><a href="?object=components&action=news&make=category">{{ language.admin_component_news_category }}</a></li>
+            <li{% if system.get_data.make == 'settings' %} class="active"{% endif %}><a href="?object=components&action=news&make=settings">{{ language.admin_component_news_settings }}</a></li>
         </ul>
     </div>
 </nav>

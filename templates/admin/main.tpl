@@ -44,8 +44,8 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav side-nav">
-                <li><a href="{{ system.script_url }}/{{ system.file_name }}"><i class="fa fa-home"></i> {{ language.admin_main_link }}</a></li>
-                <li class="dropdown">
+                <li{% if system.get_data.object == null or system.get_data.object == 'main' %} class="active"{% endif %}><a href="{{ system.script_url }}/{{ system.file_name }}"><i class="fa fa-home"></i> {{ language.admin_main_link }}</a></li>
+                <li class="dropdown{% if system.get_data.object in ['settings', 'filemanager', 'antivirus', 'dump', 'updates'] %} active{% endif %}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fire"></i> {{ language.admin_nav_system }} <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="?object=settings"><i class="fa fa-cogs"></i> {{ language.admin_nav_li_settings }}</a></li>
@@ -55,7 +55,7 @@
                         <li><a href="?object=updates"><i class="fa fa-gavel"></i> {{ language.admin_nav_li_updates }}</a></li>
                     </ul>
                 </li>
-                <li class="dropdown">
+                <li class="dropdown{% if system.get_data.object == 'modules' %} active{% endif %}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-table"></i> {{ language.admin_nav_modules }} <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         {% for module_data in content.modmenu.modules %}
@@ -64,7 +64,7 @@
                         <li><a href="?object=modules"><i class="fa fa-code-fork"></i> {{ language.admin_nav_more_link }}</a></li>
                     </ul>
                 </li>
-                <li class="dropdown">
+                <li class="dropdown{% if system.get_data.object == 'components' %} active{% endif %}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-book"></i> {{ language.admin_nav_components }} <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         {% for component_data in content.modmenu.components %}
@@ -73,7 +73,7 @@
                         <li><a href="?object=components"><i class="fa fa-code-fork"></i> {{ language.admin_nav_more_link }}</a></li>
                     </ul>
                 </li>
-                <li class="dropdown">
+                <li class="dropdown{% if system.get_data.object == 'hooks' %} active{% endif %}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-puzzle-piece"></i> {{ language.admin_nav_hooks }} <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         {% for hook_data in content.modmenu.hooks %}

@@ -204,7 +204,8 @@ class admin extends singleton {
                             if($script_version != $ext_params[$this->get['object']][$this->get['action']]['version'])
                                 logger::getInstance()->log(logger::LEVEL_WARN, "Extension class ".$cname." have new updates!");
                         }
-                        return $object->make();
+                        if(method_exists($object, 'make'))
+                            return @$object->make();
                     } else {
                         logger::getInstance()->log(logger::LEVEL_WARN, 'Extension '.$this->get['object'].' with type '.$this->get['type'].' is not founded');
                     }

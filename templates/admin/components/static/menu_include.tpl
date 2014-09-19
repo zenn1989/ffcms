@@ -10,8 +10,8 @@
     </div>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-            <li><a href="?object=components&action=static">{{ language.admin_component_static_control }}</a></li>
-            <li><a href="?object=components&action=static&make=add">{{ language.admin_component_static_add }}</a></li>
+            <li{% if system.get_data.make == null or system.get_data.make == 'list' %} class="active"{% endif %}><a href="?object=components&action=static">{{ language.admin_component_static_control }}</a></li>
+            <li{% if system.get_data.make == 'add' %} class="active"{% endif %}><a href="?object=components&action=static&make=add">{{ language.admin_component_static_add }}</a></li>
         </ul>
     </div>
 </nav>

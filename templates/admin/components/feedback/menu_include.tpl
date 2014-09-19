@@ -10,7 +10,7 @@
     </div>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-            <li><a href="?object=components&action=feedback">{{ language.admin_component_feedback_list }}</a></li>
+            <li class="active"><a href="?object=components&action=feedback">{{ language.admin_component_feedback_list }}</a></li>
         </ul>
     </div>
 </nav>

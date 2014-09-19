@@ -10,8 +10,8 @@
     </div>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-            <li><a href="?object=modules&action=comments">{{ language.admin_modules_comment_manage_title }}</a></li>
-            <li><a href="?object=modules&action=comments&make=settings">{{ language.admin_modules_comment_settings_title }}</a></li>
+            <li{% if system.get_data.make == null %} class="active"{% endif %}><a href="?object=modules&action=comments">{{ language.admin_modules_comment_manage_title }}</a></li>
+            <li{% if system.get_data.make == 'settings' %} class="active"{% endif %}><a href="?object=modules&action=comments&make=settings">{{ language.admin_modules_comment_settings_title }}</a></li>
         </ul>
     </div>
 </nav>

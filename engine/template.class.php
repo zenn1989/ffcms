@@ -109,6 +109,7 @@ class template extends singleton {
         self::$variables[self::TYPE_SYSTEM]['admin_tpl'] = property::getInstance()->get('script_url') . '/' . property::getInstance()->get('tpl_dir') . '/' . property::getInstance()->get('admin_tpl'); // for script usage
         self::$variables[self::TYPE_SYSTEM]['loader'] = loader;
         self::$variables[self::TYPE_SYSTEM]['is_main'] = router::getInstance()->isMain();
+        self::$variables[self::TYPE_SYSTEM]['get_data'] = system::getInstance()->get(null);
     }
 
     public function nolang_uri() {
