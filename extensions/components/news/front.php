@@ -570,8 +570,14 @@ class components_news_front {
             if ($cat_link == $fresult['path']) {
                 $serial_name = system::getInstance()->nohtml(unserialize($fresult['name']));
                 $serial_desc = unserialize($fresult['desc']);
-                meta::getInstance()->add('title', $page_title = language::getInstance()->get('news_view_category').': '.$serial_name[language::getInstance()->getUseLanguage()]);
-                meta::getInstance()->add('description', $page_desc = $serial_desc[language::getInstance()->getUseLanguage()]);
+                $seo_title = $page_title = language::getInstance()->get('news_view_category').': '.$serial_name[language::getInstance()->getUseLanguage()];
+                $seo_desc = $page_desc = $serial_desc[language::getInstance()->getUseLanguage()];
+                if($page_index > 0) {
+                    $seo_title .= " - " . language::getInstance()->get('news_page_title') . ' ' . ($page_index+1);
+                    $seo_desc .= " - " . language::getInstance()->get('news_page_title') . ' ' . ($page_index+1);
+                }
+                meta::getInstance()->add('title', $seo_title);
+                meta::getInstance()->add('description', $seo_desc);
             }
         }
         $category_list = system::getInstance()->altimplode(',', $category_select_array);
