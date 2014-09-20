@@ -65,6 +65,8 @@ class install extends singleton {
                         $updateQuery .= str_replace('{$db_prefix}', property::getInstance()->get('db_prefix'), file_get_contents(root . '/install/sql/update-1.2.1-to-2.0.0.sql'));
                     if(($updateQuery === '1.2.1' || $usedVersion === '1.2.0' || $usedVersion === '2.0.0') && file_exists(root . '/install/sql/update-2.0.0-to-2.0.1.sql'))
                         $updateQuery .= str_replace('{$db_prefix}', property::getInstance()->get('db_prefix'), file_get_contents(root . '/install/sql/update-2.0.0-to-2.0.1.sql'));
+                    if(($updateQuery === '1.2.1' || $usedVersion === '1.2.0' || $usedVersion === '2.0.0' || $usedVersion === '2.0.1') && file_exists(root . '/install/sql/update-2.0.1-to-2.0.2.sql'))
+                        $updateQuery .= str_replace('{$db_prefix}', property::getInstance()->get('db_prefix'), file_get_contents(root . '/install/sql/update-2.0.1-to-2.0.2.sql'));
                     // elseif($usedVersion === other) $updateQuery .= ...
                     if($updateQuery != null) {
                         database::getInstance()->con()->exec($updateQuery);
