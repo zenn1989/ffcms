@@ -157,7 +157,7 @@ class system extends singleton {
             $output = array();
             foreach($data as $key=>$entery)
             {
-                $output[$key] = $save_quotes === true ? strip_tags($entery) : htmlentities(strip_tags($entery), ENT_QUOTES, "UTF-8");
+                $output[$key] = $this->nohtml($entery, $save_quotes); // recursive is more useful
             }
             return $output;
         }
@@ -165,7 +165,8 @@ class system extends singleton {
     }
 
     public function stringInline($data) {
-        return preg_replace('/\s+/', ' ', trim($data));
+        return str_replace(array("\r", "\n"), '', $data);
+        //return preg_replace('/\s+/', ' ', trim($data)); was bugged in UTF8
     }
 
     /**

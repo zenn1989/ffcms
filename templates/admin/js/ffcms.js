@@ -52,6 +52,8 @@ function getKeywords(s) {
 }
 function countKeywords(current_lang) {
     var s = $('#textobject'+current_lang+'.wysi').val();
+    if(s.length < 1)
+        s = CKEDITOR.instances['textobject'+current_lang].getData();
     var minLengthKeyword = 3;
     var minRepeatKeyword = 3;
     var coincidence = parseFloat(0.7);

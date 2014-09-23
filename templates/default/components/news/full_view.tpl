@@ -20,7 +20,7 @@
     </ol>
     <h1>{{ local.title }}</h1>
     <div class="meta">
-        <span><i class="fa fa-list"></i><a href="{{ system.url }}/news/{{ local.category_url }}" itemprop="genre">{{ local.category_name }}</a></span>
+        <span><i class="fa fa-list"></i><a href="{{ system.url }}/news/{{ local.category_url }}/" itemprop="genre">{{ local.category_name }}</a></span>
         <span><i class="fa fa-calendar"></i><time datetime="{{ local.unixtime|date("c") }}" itemprop="datePublished">{{ local.date }}</time></span>
         <span><i class="fa fa-user"></i><a href="{{ system.url }}/user/id{{ local.author_id }}" itemprop="author">{{ local.author_nick }}</a></span>
         {% if local.cfg.view_count %}
