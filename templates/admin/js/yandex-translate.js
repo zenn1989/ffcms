@@ -1,5 +1,12 @@
 function translateText(lang_source, lang_target, source_text, api_key, blockname, ckeditor_instance) {
-    $.get('https://translate.yandex.net/api/v1.5/tr.json/translate?key='+api_key+'&text='+source_text+'&lang='+lang_source+'-'+lang_target+'&format=html', function(result) {
+    var yandex_languages = {
+        'ua' : 'uk'
+    };
+
+    var lang_yandex_source = (typeof yandex_languages[lang_source] !== 'undefined') ? yandex_languages[lang_source] : lang_source;
+    var lang_yandex_target = (typeof yandex_languages[lang_target] !== 'undefined') ? yandex_languages[lang_target] : lang_target;
+
+    $.get('https://translate.yandex.net/api/v1.5/tr.json/translate?key='+api_key+'&text='+source_text+'&lang='+lang_yandex_source+'-'+lang_yandex_target+'&format=html', function(result) {
         if(ckeditor_instance)
             CKEDITOR.instances[blockname+lang_target].setData(result.text[0]);
         else
