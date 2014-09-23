@@ -66,6 +66,7 @@ class property extends singleton {
                 self::$cfg[$key] = $value;
             }
         }
+        self::$cfg['yandex_translate_key'] = 'trnsl.1.1.20140923T120415Z.11ea02784e7b7447.158c20fac47143a5ccda5fc8a8ca81182669c80f';
     }
 
     public function dymanicPrepares() {

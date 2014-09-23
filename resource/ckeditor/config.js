@@ -61,5 +61,7 @@ CKEDITOR.editorConfig = function( config ) {
 
     config.height = '400';
 
+    config.startupFocus = false;
+
     config.basicEntities = false;
 };

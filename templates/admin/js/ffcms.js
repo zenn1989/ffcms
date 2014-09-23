@@ -85,7 +85,7 @@ function countKeywords(current_lang) {
             keywords3.push(currentWord);
         }
     }
-    document.getElementById('keywords['+current_lang+']').value = keywords3.slice(0, keywords_count);
+    document.getElementById('keywords_'+current_lang).value = keywords3.slice(0, keywords_count);
     keywords2 = new Array();
     keywords3 = new Array();
 }

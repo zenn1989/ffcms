@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="{{ system.theme }}/css/fileupload/jquery.fileupload.css">
 <script type="text/javascript" src="{{ system.script_url }}/resource/ckeditor/ckeditor.js"></script>
 <script src="{{ system.script_url }}/resource/ckeditor/adapters/jquery.js"></script>
+<script src="{{ system.theme }}/js/yandex-translate.js"></script>
 <script type="text/javascript">
     $(document).ready(
             function()
@@ -106,6 +107,14 @@
         <ul class="nav nav-tabs">
             {% for itemlang in langs.all %}
                 <li{% if itemlang == langs.current %} class="active"{% endif %}><a href="#{{ itemlang }}" data-toggle="tab">{{ language.language }}: {{ itemlang|upper }}</a></li>
+                {% if itemlang != langs.current %}
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#" onclick="return translateNews('{{ langs.current }}', '{{ itemlang }}', '{{ system.yandex_translate_key }}');">{{ language.admin_autotranslate }} <span class="label label-danger">{{ langs.current }}</span> -> <span class="label label-success">{{ itemlang }}</span></a></li>
+                        </ul>
+                    </li>
+                {% endif %}
             {% endfor %}
         </ul>
         <div class="tab-content">
@@ -114,7 +123,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h2>{{ language.admin_component_news_edit_page_title_name }}[{{ itemlang }}]</h2>
-                        <input{% if itemlang == langs.current %} onkeyup="oJS.strNormalize(this)"{% endif %} type="text" name="title[{{ itemlang }}]" class="form-control" value="{{ news.title[itemlang] }}" maxlength="100" />
+                        <input{% if itemlang == langs.current %} onkeyup="oJS.strNormalize(this)"{% endif %} type="text" name="title[{{ itemlang }}]" class="form-control" value="{{ news.title[itemlang] }}" maxlength="100" id="news_title_{{ itemlang }}" />
                         <span class="help-block">{{ language.admin_component_news_edit_page_title_desc }}</span>
                     </div>
                 </div>
@@ -127,12 +136,12 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <h2>{{ language.admin_component_news_edit_page_description }}[{{ itemlang }}]</h2>
-                        <input type="text" name="description[{{ itemlang }}]" class="form-control" value="{{ news.description[itemlang] }}" maxlength="250" />
+                        <input type="text" name="description[{{ itemlang }}]" class="form-control" value="{{ news.description[itemlang] }}" maxlength="250" id="news_desc_{{ itemlang }}" />
                         <span class="help-block">{{ language.admin_component_news_edit_page_description_desc }}</span>
                     </div>
                     <div class="col-lg-6">
                         <h2>{{ language.admin_component_news_edit_page_keywords }}[{{ itemlang }}]</h2>
-                        <input type="text" id="keywords[{{ itemlang }}]" name="keywords[{{ itemlang }}]" class="form-control" value="{{ news.keywords[itemlang] }}" maxlength="200" />
+                        <input type="text" id="keywords_{{ itemlang }}" name="keywords[{{ itemlang }}]" class="form-control" value="{{ news.keywords[itemlang] }}" maxlength="200" />
                         <input class="btn btn-info pull-right" type="button" value="{{ language.admin_component_news_edit_page_keybutton_gen }}" onClick="countKeywords('{{ itemlang }}')">
                         <span class="help-block">{{ language.admin_component_news_edit_page_keywords_description }}</span>
                     </div>

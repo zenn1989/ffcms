@@ -110,6 +110,7 @@ class template extends singleton {
         self::$variables[self::TYPE_SYSTEM]['loader'] = loader;
         self::$variables[self::TYPE_SYSTEM]['is_main'] = router::getInstance()->isMain();
         self::$variables[self::TYPE_SYSTEM]['get_data'] = system::getInstance()->get(null);
+        self::$variables[self::TYPE_SYSTEM]['yandex_translate_key'] = property::getInstance()->get('yandex_translate_key');
     }
 
     public function nolang_uri() {
