@@ -111,7 +111,8 @@ INSERT INTO `{$db_prefix}_extensions` (`id`, `type`, `configs`, `dir`, `enabled`
 (20,	'modules',	'a:3:{s:9:\"tag_count\";s:2:\"20\";s:22:\"template_position_name\";s:4:\"left\";s:23:\"template_position_index\";s:1:\"2\";}',	'tagcloud',	1,	1,	'*',	'', '1.0.1', '2.0.2'),
 (21, 'modules', 'a:2:{s:12:"discus_count";s:1:"5";s:11:"discus_days";s:1:"0";}', 'news_top_discus', 0, 1, '*', '', '1.0.1', '2.0.2'),
 (22, 'modules', 'a:2:{s:13:"viewtop_count";s:1:"5";s:12:"viewtop_days";s:1:"0";}', 'news_top_view', 0, 1, '*', '', '1.0.1', '2.0.2'),
-(23, 'modules', 'a:1:{s:9:"new_count";s:1:"5";}', 'news_new', 0, 1, '*', '', '1.0.1', '2.0.2');
+(23, 'modules', 'a:1:{s:9:"new_count";s:1:"5";}', 'news_new', 0, 1, '*', '', '1.0.1', '2.0.2'),
+(24, 'components', 'a:1:{s:17:"count_stream_page";s:2:"20";}', 'stream', 1, 1, '*', '', '1.0.1', '2.0.2');
 
 DROP TABLE IF EXISTS `{$db_prefix}_mod_comments`;
 CREATE TABLE `{$db_prefix}_mod_comments` (
@@ -141,12 +142,12 @@ CREATE TABLE `{$db_prefix}_mod_tags` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 INSERT INTO `{$db_prefix}_mod_tags` (`object_type`, `object_id`, `tag`) VALUES
-('news',	1,	' php'),
-('news',	1,	' flexibility'),
-('news',	1,	' fast'),
-('news',	1,	' cms'),
+('news',	1,	'php'),
+('news',	1,	'flexibility'),
+('news',	1,	'fast'),
+('news',	1,	'cms'),
 ('news',	1,	'ffcms'),
-('news',	1,	' free');
+('news',	1,	'free');
 
 DROP TABLE IF EXISTS `{$db_prefix}_statistic`;
 CREATE TABLE `{$db_prefix}_statistic` (
@@ -232,9 +233,34 @@ CREATE TABLE `{$db_prefix}_user_custom` (
   `lastpmview` int(16) NOT NULL DEFAULT '0',
   `forum_posts` int(32) NOT NULL DEFAULT '0',
   `forum_last_message` int(16) NOT NULL DEFAULT '0',
+  `karma` int(24) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `{$db_prefix}_user_karma`;
+CREATE TABLE IF NOT EXISTS `{$db_prefix}_user_karma` (
+  `trans_id` int(36) NOT NULL AUTO_INCREMENT,
+  `from_id` int(36) NOT NULL,
+  `to_id` int(36) NOT NULL,
+  `type` int(2) NOT NULL,
+  `date` int(18) NOT NULL,
+  `from_ip` varchar(16) NOT NULL,
+  `url` varchar(1024) DEFAULT NULL,
+  PRIMARY KEY (`trans_id`),
+  UNIQUE KEY `trans_id` (`trans_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+DROP TABLE IF EXISTS `{$db_prefix}_com_stream`;
+CREATE TABLE IF NOT EXISTS `{$db_prefix}_com_stream` (
+  `id` int(64) NOT NULL AUTO_INCREMENT,
+  `type` varchar(64) DEFAULT NULL,
+  `caster_id` varchar(40) NOT NULL,
+  `target_object` varchar(1024) NOT NULL,
+  `text_preview` varchar(1024) DEFAULT NULL,
+  `date` int(16) NOT NULL,
+  UNIQUE KEY `id` (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 DROP TABLE IF EXISTS `{$db_prefix}_user_log`;
 CREATE TABLE `{$db_prefix}_user_log` (

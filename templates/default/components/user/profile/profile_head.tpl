@@ -14,6 +14,23 @@
 <div class="row">
     <div class="col-md-4">
         <img src="{{ system.script_url }}/{{ local.profile.user_avatar }}" class="img-responsive"/><br/>
+        {% if local.profile.use_karma %}
+        <div class="text-center">
+            <div class="btn-group">
+                {% if local.profile.karma > 0 %}
+                    <button type="button" class="btn btn-success"{% if local.profile.is_self %} data-toggle="modal" data-target="#karmahistory"{% endif %}>{{ language.usercontrol_profile_karma_title }}: <span id="karmabutton">+{{ local.profile.karma }}</span></button>
+                {% elseif local.profile.karma == 0 %}
+                    <button type="button" class="btn btn-warning"{% if local.profile.is_self %} data-toggle="modal" data-target="#karmahistory"{% endif %}>{{ language.usercontrol_profile_karma_title }}: <span id="karmabutton">{{ local.profile.karma }}</span></button>
+                {% else %}
+                    <button type="button" class="btn btn-danger"{% if local.profile.is_self %} data-toggle="modal" data-target="#karmahistory"{% endif %}>{{ language.usercontrol_profile_karma_title }}: <span id="karmabutton">{{ local.profile.karma }}</span></button>
+                {% endif %}
+                {% if user.id > 0 and not local.profile.is_self %}
+                <button type="button" class="btn btn-success" onclick="return changeKarma(1, {{ local.profile.user_id }}, '{{ system.self_url }}');"><i class="fa fa-thumbs-up"></i> +1</button>
+                <button type="button" class="btn btn-danger" onclick="return changeKarma(0, {{ local.profile.user_id }}, '{{ system.self_url }}');"><i class="fa fa-thumbs-down"></i> -1</button>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
         <ul class="nav nav-pills nav-stacked">
             {% if user.id > 0 %}
                 {% if local.profile.is_self %}
@@ -111,3 +128,45 @@
         </div>
     </div>
 </div>
+{% if local.profile.use_karma and local.profile.is_self %}
+<div class="modal fade modalkarma" tabindex="-1" role="dialog" id="karmahistory" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 class="modal-title">{{ language.usercontrol_profile_karma_changehistory_title }}</h3>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <p>{{ language.usercontrol_profile_karma_changehistory_desc }}</p>
+                    {% if local.profile.karma_history %}
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>{{ language.usercontrol_profile_karma_th_date }}</th>
+                            <th>{{ language.usercontrol_profile_karma_th_changes }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for karmahis in local.profile.karma_history %}
+                            <tr>
+                                <td>{{ karmahis.date }}</td>
+                                {% if karmahis.type == 1 %}
+                                <td class="alert alert-success">+1 <i class="fa fa-thumbs-up"></i></td>
+                                {% else %}
+                                <td class="alert alert-danger">-1 <i class="fa fa-thumbs-down"></i></td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                        <p class="alert alert-warning">{{ language.usercontrol_profile_karma_nochanges }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

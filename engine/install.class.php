@@ -61,16 +61,15 @@ class install extends singleton {
             $updateQuery = null;
             if(sizeof($params['notify']) == 0) {
                 if(system::getInstance()->post('startupdate')) {
-                    if(($usedVersion === "1.2.1" || $usedVersion === "1.2.0") && file_exists(root . '/install/sql/update-1.2.1-to-2.0.0.sql'))
-                        $updateQuery .= str_replace('{$db_prefix}', property::getInstance()->get('db_prefix'), file_get_contents(root . '/install/sql/update-1.2.1-to-2.0.0.sql'));
-                    if(($updateQuery === '1.2.1' || $usedVersion === '1.2.0' || $usedVersion === '2.0.0') && file_exists(root . '/install/sql/update-2.0.0-to-2.0.1.sql'))
-                        $updateQuery .= str_replace('{$db_prefix}', property::getInstance()->get('db_prefix'), file_get_contents(root . '/install/sql/update-2.0.0-to-2.0.1.sql'));
-                    if(($updateQuery === '1.2.1' || $usedVersion === '1.2.0' || $usedVersion === '2.0.0' || $usedVersion === '2.0.1') && file_exists(root . '/install/sql/update-2.0.1-to-2.0.2.sql'))
-                        $updateQuery .= str_replace('{$db_prefix}', property::getInstance()->get('db_prefix'), file_get_contents(root . '/install/sql/update-2.0.1-to-2.0.2.sql'));
-                    // elseif($usedVersion === other) $updateQuery .= ...
+                    $update_sql_array_files = $this->foundVersionUpdates($usedVersion, version);
+                    if(is_array($update_sql_array_files)) {
+                        foreach($update_sql_array_files as $update_file) {
+                            $updateQuery .= @file_get_contents(root . '/install/sql/' . $update_file) . '\n';
+                        }
+                    }
                     if($updateQuery != null) {
                         database::getInstance()->con()->exec($updateQuery);
-                        file_put_contents(root . "/install/.update-".version, 'locked'); // only 1 run
+                        @file_put_contents(root . "/install/.update-".version, 'locked'); // only 1 run
                         $params['notify']['success'] = true;
                     } else {
                         $params['notify']['nosql_data'] = true;
@@ -79,6 +78,58 @@ class install extends singleton {
             }
         }
         return template::getInstance()->twigRender('update.tpl', $params);
+    }
+
+    /**
+     * Function for compare versions and found sql updates for FFCMS. Drugs and india code inside (:
+     * @param $old_version
+     * @param $new_version
+     * @return array|bool
+     */
+    public function foundVersionUpdates($old_version, $new_version) {
+        if(!file_exists(root . '/install/sql/'))
+            return false;
+        if(system::getInstance()->ffVersionToCompare($old_version) >= system::getInstance()->ffVersionToCompare($new_version))
+            return false;
+        $scandir = scandir(root . '/install/sql/');
+        $available_files = array();
+        foreach($scandir as $item_file) {
+            if(system::getInstance()->prefixEquals($item_file, 'update') && system::getInstance()->suffixEquals($item_file, '.sql'))
+                $available_files[] = $item_file;
+        }
+        $found_update = array();
+        $old_array = system::getInstance()->altexplode('.', $old_version);
+        $new_array = system::getInstance()->altexplode('.', $new_version);
+        $major_start = $old_array[1];
+        $minor_start = $old_array[2];
+        for($api=$old_array[0];$api<=$new_array[0];$api++) {
+            for($major=$major_start;$major<=10;$major++) {
+                if($api == $new_array[0] && $major > $new_array[1])
+                    break;
+                for($minor=$minor_start;$minor<=10;$minor++) {
+                    $next_minor = $minor + 1;
+                    $file = 'update-'.$api.'.'.$major.'.'.$minor.'-to-'.$api.'.'.$major.'.'.$next_minor.'.sql';
+                    if(in_array($file, $available_files)) {
+                        $found_update[] = $file;
+                    } else { // not founded minor release, but m.b next major release?
+                        $next_major = $major + 1;
+                        $file = 'update-'.$api.'.'.$major.'.'.$minor.'-to-'.$api.'.'.$next_major.'.0.sql';
+                        if(in_array($file, $available_files)) {
+                            $found_update[] = $file;
+                        } else { // not founder major release, mb api release?
+                            $next_api = $api + 1;
+                            $file = 'update-'.$api.'.'.$major.'.'.$minor.'-to-'.$next_api.'.0.0.sql';
+                            if(in_array($file, $available_files)) {
+                                $found_update[] = $file;
+                            }
+                        }
+                    }
+                }
+            }
+            $major_start = 0;
+            $minor_start = 0;
+        }
+        return $found_update;
     }
 
     private function viewChangeLang() {

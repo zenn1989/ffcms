@@ -355,6 +355,7 @@ class components_user_back {
         $params['config']['pm_count'] = extension::getInstance()->getConfig('pm_count', 'user', extension::TYPE_COMPONENT, 'int');
         $params['config']['balance_view'] = extension::getInstance()->getConfig('balance_view', 'user', extension::TYPE_COMPONENT, 'int');
         $params['config']['userlist_count'] = extension::getInstance()->getConfig('userlist_count', 'user', extension::TYPE_COMPONENT, 'int');
+        $params['config']['use_karma'] = extension::getInstance()->getConfig('use_karma', 'user', extension::TYPE_COMPONENT, 'int');
 
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
 

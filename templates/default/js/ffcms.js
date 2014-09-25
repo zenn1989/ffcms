@@ -34,6 +34,16 @@ function deletecomment(id) {
     }
 }
 
+function changeKarma(type, target_id, url) {
+    $.get(host + '/api.php?iface=front&object=userkarma&make=change&type='+type+'&target='+target_id+'&url='+url, function(response){
+        if(response == 'error') {
+            alert('Error');
+        } else {
+            $('#karmabutton').html(response);
+        }
+    });
+}
+
 $(document).ready(function() {
     $('#doLoadComment').click(function() {
         if(!current_point)

@@ -231,6 +231,9 @@ class components_news_front {
                     $dy = extension::getInstance()->getConfig('poster_dy', 'news', extension::TYPE_COMPONENT, 'int');
                     extension::getInstance()->call(extension::TYPE_HOOK, 'file')->uploadResizedImage('/news/', $_FILES['newsimage'], $dx, $dy, $save_name);
                 }
+                $stream = extension::getInstance()->call(extension::TYPE_COMPONENT, 'stream');
+                if(is_object($stream))
+                    $stream->add('news.add', $editor_id, property::getInstance()->get('url').'/news/'.$pathway, $params['news']['title'][language::getInstance()->getUseLanguage()]);
                 system::getInstance()->redirect('/user/id' . $editor_id . '/news/');
             }
         }

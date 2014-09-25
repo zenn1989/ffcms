@@ -21,7 +21,7 @@
 {% if extinfo.ffsite_down %}
     {{ notifytpl.error(language.admin_update_system_notify_repodown) }}
 {% endif %}
-<table class="table table-stripped">
+<table class="table table-striped">
     <tr>
         <td>{{ language.admin_update_system_local_version }}</td>
         <td><span class="label{% if not extinfo.update_available %} label-success{% else %} label-warning{% endif %}">{{ system.version }}</span></td>

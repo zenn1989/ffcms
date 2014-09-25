@@ -86,8 +86,13 @@ class api_commentpost_front {
             $stmt->bindParam(7, $moderate, PDO::PARAM_INT, 1);
             $stmt->execute();
             $stmt = null;
-            if($moderate)
+            $stream = extension::getInstance()->call(extension::TYPE_COMPONENT, 'stream');
+            $poster = $authorid > 0 ? $authorid : $guest_name;
+            if(is_object($stream))
+                $stream->add('comment.add', $poster, property::getInstance()->get('url').$pathway, $text);
+            if($moderate) {
                 $params['notify']['is_moderate'] = true;
+            }
         }
         echo extension::getInstance()->call(extension::TYPE_MODULE, 'comments')->buildCommentTemplate($pathway, $position, false, $params);
     }

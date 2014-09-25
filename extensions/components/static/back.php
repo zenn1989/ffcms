@@ -16,6 +16,7 @@ use engine\language;
 use engine\user;
 use engine\permission;
 use engine\csrf;
+use engine\extension;
 
 class components_static_back {
     protected static $instance = null;
@@ -178,6 +179,9 @@ class components_static_back {
                 $stmt->bindParam(7, $serial_keywords, PDO::PARAM_STR);
                 $stmt->execute();
                 $stmt = null;
+                $stream = extension::getInstance()->call(extension::TYPE_COMPONENT, 'stream');
+                if(is_object($stream))
+                    $stream->add('static.add', $page_owner, property::getInstance()->get('url').'/static/'.$save_pathway, $params['static']['title'][language::getInstance()->getUseLanguage()]);
                 system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=static");
             }
         }

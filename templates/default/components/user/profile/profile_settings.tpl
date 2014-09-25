@@ -8,6 +8,7 @@
     </div>
 </div>
 <form method="post" action="" class="form-horizontal">
+    <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
     <fieldset>
         <h3>{{ language.usercontrol_profile_settings_title_public }}</h3>
 

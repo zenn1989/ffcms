@@ -16,6 +16,7 @@ use engine\extension;
 use engine\database;
 use engine\property;
 use engine\meta;
+use engine\csrf;
 
 class components_user_front {
     protected static $instance = null;
@@ -189,6 +190,25 @@ class components_user_front {
         if(is_array($addparams)) {
             $params = array_merge($params, $addparams);
         }
+
+        $params['profile']['use_karma'] = extension::getInstance()->getConfig('use_karma', 'user', extension::TYPE_COMPONENT, 'int');
+        if($params['profile']['use_karma'] == 1) {
+            $params['profile']['karma'] = user::getInstance()->get('karma', $target);
+            // karma logs
+            if($params['profile']['is_self']) {
+                $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_user_karma WHERE `to_id` = ? ORDER BY `date` DESC LIMIT 0,10");
+                $stmt->bindParam(1, $target, \PDO::PARAM_INT);
+                $stmt->execute();
+                while($result = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                    $params['profile']['karma_history'][] = array(
+                        'type' => $result['type'],
+                        'date' => system::getInstance()->toDate($result['date'], 'h')
+                    );
+                }
+                $stmt = null;
+            }
+        }
+
         return template::getInstance()->twigRender('components/user/profile/profile_head.tpl', array('local' => $params));
     }
 
@@ -345,8 +365,9 @@ class components_user_front {
     private function viewUserStatusSettings($target, $viewer) {
         if($target != $viewer)
             return null;
+        csrf::getInstance()->buildToken();
         $params = array();
-        if(system::getInstance()->post('updatestatus')) {
+        if(system::getInstance()->post('updatestatus') && csrf::getInstance()->check()) {
             $status = system::getInstance()->nohtml(system::getInstance()->post('newstatus'));
             $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_user_custom SET status = ? WHERE id = ?");
             $stmt->bindParam(1, $status, PDO::PARAM_STR);
@@ -359,10 +380,11 @@ class components_user_front {
     }
 
     private function viewUserSettings($target, $viewer) {
+        csrf::getInstance()->buildToken();
         if($target != $viewer)
             return null;
         $params = array();
-        if(system::getInstance()->post('saveprofile')) {
+        if(system::getInstance()->post('saveprofile') && csrf::getInstance()->check()) {
             $params['form']['submit'] = true;
             $birthday_array = system::getInstance()->post('bitrhday');
             // Y-m-d
@@ -622,6 +644,9 @@ class components_user_front {
                     $stmt->bindParam(3, $message, PDO::PARAM_STR);
                     $stmt->bindParam(4, $time, PDO::PARAM_INT);
                     $stmt->execute();
+                    $stream = extension::getInstance()->call(extension::TYPE_COMPONENT, 'stream');
+                    if(is_object($stream))
+                        $stream->add('user.wallpost', $viewer, property::getInstance()->get('url').'/user/id'.$target, $message);
                 } else {
                     $params['wall']['time_limit'] = true;
                 }
@@ -822,6 +847,9 @@ class components_user_front {
                         ),
                         $nickname
                     );
+                    $stream = extension::getInstance()->call(extension::TYPE_COMPONENT, 'stream');
+                    if(is_object($stream))
+                        $stream->add('user.register', $user_obtained_id, property::getInstance()->get('url').'/user/id'.$user_obtained_id);
                     setcookie('person', $email, null, '/', null, null, true);
                     setcookie('token', $rand_token, null, '/', null, null, true);
                     system::getInstance()->redirect();
@@ -926,6 +954,21 @@ class components_user_front {
         $hash = $way[1];
         if(system::getInstance()->length($hash) < 32)
             return null;
+        $stmt = database::getInstance()->con()->prepare("SELECT id FROM ".property::getInstance()->get('db_prefix')."_user WHERE aprove = ?");
+        $stmt->bindParam(1, $hash, \PDO::PARAM_STR);
+        $stmt->execute();
+
+        if($stmt->rowCount() == 1) {
+            $res = $stmt->fetch(\PDO::FETCH_ASSOC);
+            $stream = extension::getInstance()->call(extension::TYPE_COMPONENT, 'stream');
+            if(is_object($stream))
+                $stream->add('user.register', $res['id'], property::getInstance()->get('url').'/user/id'.$res['id']);
+        } else {
+            $stmt = null;
+            return null;
+        }
+        $stmt = null;
+
         $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_user SET aprove = 0 WHERE aprove = ?");
         $stmt->bindParam(1, $hash, PDO::PARAM_STR);
         $stmt->execute();
@@ -1009,6 +1052,9 @@ class components_user_front {
                     );
                     $params['notify']['aprove_sended'] = true;
                 } else {
+                    $stream = extension::getInstance()->call(extension::TYPE_COMPONENT, 'stream');
+                    if(is_object($stream))
+                        $stream->add('user.register', $user_obtained_id, property::getInstance()->get('url').'/user/id'.$user_obtained_id);
                     $params['notify']['success'] = true;
                 }
             }
