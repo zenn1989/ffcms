@@ -356,6 +356,17 @@ class components_user_back {
         $params['config']['balance_view'] = extension::getInstance()->getConfig('balance_view', 'user', extension::TYPE_COMPONENT, 'int');
         $params['config']['userlist_count'] = extension::getInstance()->getConfig('userlist_count', 'user', extension::TYPE_COMPONENT, 'int');
         $params['config']['use_karma'] = extension::getInstance()->getConfig('use_karma', 'user', extension::TYPE_COMPONENT, 'int');
+        $params['config']['balance_valut_name'] = extension::getInstance()->getConfig('balance_valut_name', 'user', extension::TYPE_COMPONENT, 'str');
+        $params['config']['balance_use_webmoney'] = extension::getInstance()->getConfig('balance_use_webmoney', 'user', extension::TYPE_COMPONENT, 'int');
+        $params['config']['balance_wm_purse'] = extension::getInstance()->getConfig('balance_wm_purse', 'user', extension::TYPE_COMPONENT, 'str');
+        $params['config']['balance_wm_mul'] = extension::getInstance()->getConfig('balance_wm_mul', 'user', extension::TYPE_COMPONENT, 'float');
+        $params['config']['balance_wm_secretkey'] = extension::getInstance()->getConfig('balance_wm_secretkey', 'user', extension::TYPE_COMPONENT, 'str');
+        $params['config']['balance_wm_test'] = extension::getInstance()->getConfig('balance_wm_test', 'user', extension::TYPE_COMPONENT, 'int');
+        $params['config']['balance_use_ik'] = extension::getInstance()->getConfig('balance_use_ik', 'user', extension::TYPE_COMPONENT, 'int');
+        $params['config']['balance_ik_id'] = extension::getInstance()->getConfig('balance_ik_id', 'user', extension::TYPE_COMPONENT, 'str');
+        $params['config']['balance_ik_key'] = extension::getInstance()->getConfig('balance_ik_key', 'user', extension::TYPE_COMPONENT, 'str');
+        $params['config']['balance_ik_mul'] = extension::getInstance()->getConfig('balance_ik_mul', 'user', extension::TYPE_COMPONENT, 'float');
+        $params['config']['balance_ik_valute'] = extension::getInstance()->getConfig('balance_ik_valute', 'user', extension::TYPE_COMPONENT, 'str');
 
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
 

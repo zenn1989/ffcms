@@ -351,7 +351,8 @@ class system extends singleton {
             $data = $this->altimplode(',', $data);
         }
         foreach($data as $key=>$value) {
-            $new_data[$key] = $value;
+            if($this->isInt($value))
+                $new_data[$key] = $value;
         }
         return $new_data;
     }

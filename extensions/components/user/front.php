@@ -60,6 +60,9 @@ class components_user_front {
             case "aprove":
                 $content = $this->viewAprove();
                 break;
+            case 'paynotify':
+                $content = $this->viewPayNotify();
+                break;
         }
         if($way[0] == null || system::getInstance()->isInt($way[0])) {
             // user list
@@ -69,6 +72,52 @@ class components_user_front {
                 $content = $this->viewUserProfile();
         }
         return $content;
+    }
+
+    private function viewPayNotify() {
+        $way = router::getInstance()->shiftUriArray();
+
+        $result = null;
+        switch($way[1]) {
+            case 'wm':
+                $result = $this->viewWmNotify($way[2]);
+                break;
+            case 'ik':
+                $result = $this->viewInterkassaNotify($way[2]);
+                break;
+        }
+
+        return $result;
+    }
+
+    private function viewInterkassaNotify($type) {
+        $params['balancenotify']['pay_number'] = (int)system::getInstance()->post('ik_pm_no');
+        $params['balancenotify']['pay_inv'] = (int)system::getInstance()->post('ik_inv_id');
+        $params['balancenotify']['pay_date'] = system::getInstance()->nohtml(system::getInstance()->post('ik_inv_prc'));
+
+        if($params['balancenotify']['pay_number'] == null)
+            return null;
+        if($type == 'success')
+            return template::getInstance()->twigRender('components/user/balance/ik_balance_success.tpl', $params);
+        elseif($type == 'fail')
+            return template::getInstance()->twigRender('components/user/balance/ik_balance_fail.tpl', $params);
+        elseif($type == 'wait')
+            return template::getInstance()->twigRender('components/user/balance/ik_balance_wait.tpl', $params);
+        return null;
+
+    }
+
+    private function viewWmNotify($type) {
+        $params['balancenotify']['pay_number'] = (int)system::getInstance()->post('LMI_PAYMENT_NO');
+        $params['balancenotify']['pay_invs'] = (int)system::getInstance()->post('LMI_SYS_INVS_NO');
+        $params['balancenotify']['pay_trans'] = (int)system::getInstance()->post('LMI_SYS_TRANS_NO');
+        if($params['balancenotify']['pay_number'] == null)
+            return null;
+        if($type == 'success') {
+            return template::getInstance()->twigRender('components/user/balance/wm_balance_success.tpl', $params);
+        } elseif($type == 'fail')
+            return template::getInstance()->twigRender('components/user/balance/wm_balance_fail.tpl', $params);
+        return null;
     }
 
     private function viewUserProfile() {
@@ -143,8 +192,49 @@ class components_user_front {
             case 'news':
                 $content = $this->viewUserNews($target_id, $viewer_id);
                 break;
+            case 'balance':
+                $content = $this->viewUserBalance($target_id, $viewer_id);
+                break;
         }
         return $content;
+    }
+
+    private function viewUserBalance($target, $viewer) {
+        if($target != $viewer || !extension::getInstance()->getConfig('balance_view', 'news', extension::TYPE_COMPONENT, 'bol'))
+            return null;
+        $params = array();
+
+        $params['config']['balance_use_webmoney'] = extension::getInstance()->getConfig('balance_use_webmoney', 'user', extension::TYPE_COMPONENT, 'int');
+        $params['config']['balance_wm_purse'] = extension::getInstance()->getConfig('balance_wm_purse', 'user', extension::TYPE_COMPONENT, 'str');
+        $params['config']['balance_wm_mul'] = extension::getInstance()->getConfig('balance_wm_mul', 'user', extension::TYPE_COMPONENT, 'float');
+        $params['config']['balance_wm_test'] = extension::getInstance()->getConfig('balance_wm_test', 'user', extension::TYPE_COMPONENT, 'int');
+        $params['config']['balance_valut_name'] = extension::getInstance()->getConfig('balance_valut_name', 'user', extension::TYPE_COMPONENT, 'str');
+        $params['config']['balance_wm_type'] = "WM".system::getInstance()->altsubstr($params['config']['balance_wm_purse'], 0, 1);
+
+        $params['config']['balance_use_ik'] = extension::getInstance()->getConfig('balance_use_ik', 'user', extension::TYPE_COMPONENT, 'int');
+        $params['config']['balance_ik_id'] = extension::getInstance()->getConfig('balance_ik_id', 'user', extension::TYPE_COMPONENT, 'str');
+        $params['config']['balance_ik_key'] = extension::getInstance()->getConfig('balance_ik_key', 'user', extension::TYPE_COMPONENT, 'str');
+        $params['config']['balance_ik_mul'] = extension::getInstance()->getConfig('balance_ik_mul', 'user', extension::TYPE_COMPONENT, 'float');
+        $params['config']['balance_ik_valute'] = extension::getInstance()->getConfig('balance_ik_valute', 'user', extension::TYPE_COMPONENT, 'str');
+
+        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_user_log WHERE `owner` = ? and `type` like 'balance.%' ORDER BY `time` DESC LIMIT 0,50");
+        $stmt->bindParam(1, $target, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        $resultAll = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt = null;
+        foreach($resultAll as $row) {
+            $data_array = unserialize($row['params']);
+            $params['balancelogs'][] = array(
+                'id' => $row['id'],
+                'type' => $row['type'],
+                'message' => $row['message'],
+                'date' => system::getInstance()->toDate($row['time'], 'h'),
+                'amount' => $data_array['amount']
+            );
+        }
+
+        return $this->viewUserProfileHeader($target, $viewer, $params);
     }
 
     private function viewUserNews($target, $viewer) {
@@ -184,6 +274,7 @@ class components_user_front {
         $params['profile']['add_menu']['public'] = $this->pub_menu_links;
         $params['profile']['add_menu']['private'] = $this->private_menu_links;
         $params['profile']['show_usernews'] = extension::getInstance()->getConfig('enable_useradd', 'news', extension::TYPE_COMPONENT, 'bol');
+        $params['profile']['show_balance'] = extension::getInstance()->getConfig('balance_view', 'news', extension::TYPE_COMPONENT, 'bol');
 
         $params['path'] = $way[1]; // variable for menu active item
         $params['action'] = $way[2]; // action or pagination id

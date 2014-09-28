@@ -151,6 +151,8 @@ class extension extends singleton {
             return $configs[$name] == "0" ? false : true;
         } elseif (in_array($var_type, array('int', 'integer'))) {
             return system::getInstance()->toInt($configs[$name]);
+        } elseif(in_array($var_type, array('float', 'double'))) {
+            return (float)$configs[$name];
         }
         return $configs[$name];
     }

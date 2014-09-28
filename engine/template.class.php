@@ -127,6 +127,7 @@ class template extends singleton {
         self::$variables[self::TYPE_USER]['admin'] = permission::getInstance()->have('global/owner');
         self::$variables[self::TYPE_USER]['admin_panel'] = permission::getInstance()->have('admin/main');
         self::$variables[self::TYPE_USER]['news_add'] = extension::getInstance()->getConfig('enable_useradd', 'news', extension::TYPE_COMPONENT, 'bol');
+        self::$variables[self::TYPE_USER]['balance'] = user::getInstance()->get('balance');
     }
 
     /**

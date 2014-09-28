@@ -405,17 +405,17 @@ class admin extends singleton {
             $save_data = "<?php\n";
             foreach (system::getInstance()->post(null) as $var_name => $var_value) {
                 if (system::getInstance()->prefixEquals($var_name, 'cfgmain:')) {
-                    $var_clear_name = substr($var_name, 8);
+                    $var_clear_name = system::getInstance()->nohtml(substr($var_name, 8));
                     $language_depended_params = array('seo_title', 'seo_description', 'seo_keywords');
                     if(in_array($var_clear_name, $language_depended_params)) {
                         foreach(language::getInstance()->getAvailable() as $clang) { // array of available languages. Search in post data
-                            $save_data .= '$config[\'' . $var_clear_name . '\'][\'' . $clang . '\'] = "' . $var_value[$clang] . '";' . "\n";
+                            $save_data .= '$config[\'' . $var_clear_name . '\'][\'' . $clang . '\'] = "' . system::getInstance()->nohtml($var_value[$clang]) . '";' . "\n";
                         }
                     } elseif($var_value == "1" || $var_value == "0") { // boolean type
                         $boolean_var = $var_value == "1" ? "true" : "false";
                         $save_data .= '$config[\'' . $var_clear_name . '\'] = ' . $boolean_var . ';' . "\n";
                     } else {
-                        $save_data .= '$config[\'' . $var_clear_name . '\'] = "' . $var_value . '";' . "\n";
+                        $save_data .= '$config[\'' . $var_clear_name . '\'] = "' . system::getInstance()->nohtml($var_value) . '";' . "\n";
                     }
                 }
             }
@@ -502,6 +502,7 @@ class admin extends singleton {
         foreach(system::getInstance()->post() as $key=>$value) {
             if(system::getInstance()->prefixEquals($key, 'cfg:')) {
                 list(,$cfgname) = system::getInstance()->altexplode(':', $key);
+                $value = system::getInstance()->nohtml($value);
                 $toSave[$cfgname] = $value;
             }
         }

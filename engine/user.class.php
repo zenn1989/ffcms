@@ -193,4 +193,115 @@ class user extends singleton {
         return null;
     }
 
+    /**
+     * Save user log into special table
+     * @param int $owner
+     * @param string $type
+     * @param array $params
+     * @param string $message
+     * @param null $time
+     * @return bool|string
+     */
+    public function putLog($owner = 0, $type, $params, $message, $time = null) {
+        if($owner == 0)
+            $owner = $this->get('id');
+        if($time == null)
+            $time = time();
+
+        if(!is_array($params))
+            return false;
+        if($owner == 0)
+            return false;
+        $save_params = serialize($params);
+
+        $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_user_log (`owner`, `type`, `params`, `message`, `time`) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bindParam(1, $owner, \PDO::PARAM_INT);
+        $stmt->bindParam(2, $type, \PDO::PARAM_STR);
+        $stmt->bindParam(3, $save_params, \PDO::PARAM_STR);
+        $stmt->bindParam(4, $message, \PDO::PARAM_STR);
+        $stmt->bindParam(5, $time, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        $transaction_id = database::getInstance()->con()->lastInsertId();
+        $stmt = null;
+        return $transaction_id;
+
+    }
+
+    /**
+     * Get user logs from db from time or by type with limit lines
+     * @param int $owner
+     * @param null $type
+     * @param null $time
+     * @param int $line_count
+     * @return array|bool
+     */
+    public function getLog($owner = 0, $type = null, $time = null, $line_count = 1) {
+        if($type == null && $time == null)
+            return false;
+        if($owner == 0)
+            $owner = $this->get('id');
+        if($time == null) { // get by type
+            $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_user_log WHERE `owner` = ? AND `type` = ? ORDER BY `time` LIMIT 0,?");
+            $stmt->bindParam(1, $owner, \PDO::PARAM_INT);
+            $stmt->bindParam(2, $type, \PDO::PARAM_INT);
+            $stmt->bindParam(3, $line_count, \PDO::PARAM_INT);
+            $stmt->execute();
+            $resultAll = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $stmt = null;
+            return $resultAll;
+        } else { // get by time
+            $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_user_log WHERE `owner` = ? AND `time` >= ? ORDER BY `time` LIMIT 0,?");
+            $stmt->bindParam(1, $owner, \PDO::PARAM_INT);
+            $stmt->bindParam(2, $time, \PDO::PARAM_INT);
+            $stmt->bindParam(3, $line_count, \PDO::PARAM_INT);
+            $stmt->execute();
+            $resultAll = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $stmt = null;
+            return $resultAll;
+        }
+    }
+
+    /**
+     * Add money to user balance.
+     * @param int $user_id
+     * @param double $amount
+     * @return bool
+     */
+    public function addBalance($user_id = 0, $amount) {
+        if($user_id == 0)
+            $user_id = $this->get('id');
+        $amount = (float)$amount;
+        if($user_id < 1 || $amount <= 0)
+            return false;
+
+        $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_user SET balance = balance + ? WHERE id = ?");
+        $stmt->bindParam(1, $amount, \PDO::PARAM_STR);
+        $stmt->bindParam(2, $user_id, \PDO::PARAM_STR);
+        $stmt->execute();
+        $stmt = null;
+        return true;
+    }
+
+    /**
+     * Reduce money from user balance (outgo)
+     * @param int $user_id
+     * @param double $amount
+     * @return bool
+     */
+    public function flowBalance($user_id = 0, $amount) {
+        if($user_id == 0)
+            $user_id = $this->get('id');
+        $amount = (float)$amount;
+        if($user_id < 1 || $amount <= 0)
+            return false;
+
+        $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_user SET balance = balance - ? WHERE id = ?");
+        $stmt->bindParam(1, $amount, \PDO::PARAM_STR);
+        $stmt->bindParam(2, $user_id, \PDO::PARAM_STR);
+        $stmt->execute();
+        $stmt = null;
+        return true;
+    }
+
 }

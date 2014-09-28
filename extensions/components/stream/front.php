@@ -42,7 +42,12 @@ class components_stream_front extends engine\singleton {
         $resultAll = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $stmt = null;
         $ids = system::getInstance()->extractFromMultyArray('caster_id', $resultAll);
-        user::getInstance()->listload($ids);
+        $load_id = array();
+        foreach($ids as $id) {
+            if(system::getInstance()->isInt($id))
+                $load_id[] = $id;
+        }
+        user::getInstance()->listload($load_id);
 
         foreach($resultAll as $row) {
             $params['stream'][] = array(
@@ -50,7 +55,7 @@ class components_stream_front extends engine\singleton {
                 'type' => $row['type'],
                 'type_language' => language::getInstance()->get('stream_gtype_'.$row['type']),
                 'user_id' => $row['caster_id'],
-                'user_name' => user::getInstance()->get('nick', $row['caster_id']),
+                'user_name' => system::getInstance()->isInt($row['caster_id']) ? user::getInstance()->get('nick', $row['caster_id']) : '',
                 'url' => $row['target_object'],
                 'text' => system::getInstance()->nohtml($row['text_preview']),
                 'date' => system::getInstance()->todate($row['date'], 'h')

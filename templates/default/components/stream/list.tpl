@@ -17,7 +17,7 @@
         <tr>
             <td>{{ item.id }}</td>
             <td>{{ item.date }}</td>
-            <td><a href="{{ system.url }}/user/id{{ item.user_id }}" target="_blank">{{ item.user_name }}</a></td>
+            <td>{% if item.user_name == null %}{{ item.user_id }}{% else %}<a href="{{ system.url }}/user/id{{ item.user_id }}" target="_blank">{{ item.user_name }}</a>{% endif %}</td>
             <td>{{ item.type_language|default(item.type) }}</td>
             <td><a href="{{ item.url }}" target="_blank">{{ item.text|default(item.url) }}</a></td>
         </tr>

@@ -39,6 +39,9 @@
                     {% if local.profile.show_usernews %}
                     <li{% if local.path == 'news' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}/news"><i class="fa fa-pencil-square-o"></i> {{ language.usercontrol_profile_mymenu_newspublic }}</a></li>
                     {% endif %}
+                    {% if local.profile.show_balance %}
+                        <li{% if local.path == 'balance' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}/balance"><i class="fa fa-money"></i> {{ language.usercontrol_profile_settings_tab_balance }}</a></li>
+                    {% endif %}
                     <li{% if local.path == 'settings' %} class="active"{% endif %}><a href="{{ system.url }}/user/id{{ local.profile.user_id }}/settings"><i class="fa fa-cogs"></i> {{ language.usercontrol_profile_mymenu_settings }}</a></li>
                     {% if local.profile.add_menu.private %}
                         <hr />
@@ -124,6 +127,8 @@
                 {% endif %}
             {% elseif local.path == 'news' %}
                 {% include 'components/user/profile/profile_newslist.tpl' %}
+            {% elseif local.path == 'balance' %}
+                {% include 'components/user/profile/profile_balance.tpl' %}
             {% endif %}
         </div>
     </div>
