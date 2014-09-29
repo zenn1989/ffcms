@@ -367,6 +367,13 @@ class components_user_back {
         $params['config']['balance_ik_key'] = extension::getInstance()->getConfig('balance_ik_key', 'user', extension::TYPE_COMPONENT, 'str');
         $params['config']['balance_ik_mul'] = extension::getInstance()->getConfig('balance_ik_mul', 'user', extension::TYPE_COMPONENT, 'float');
         $params['config']['balance_ik_valute'] = extension::getInstance()->getConfig('balance_ik_valute', 'user', extension::TYPE_COMPONENT, 'str');
+        $params['config']['balance_use_rk'] = extension::getInstance()->getConfig('balance_use_rk', 'user', extension::TYPE_COMPONENT, 'int');
+        $params['config']['balance_rk_id'] = extension::getInstance()->getConfig('balance_rk_id', 'user', extension::TYPE_COMPONENT, 'str');
+        $params['config']['balance_rk_key_1'] = extension::getInstance()->getConfig('balance_rk_key_1', 'user', extension::TYPE_COMPONENT, 'str');
+        $params['config']['balance_rk_key_2'] = extension::getInstance()->getConfig('balance_rk_key_2', 'user', extension::TYPE_COMPONENT, 'str');
+        $params['config']['balance_rk_mul'] = extension::getInstance()->getConfig('balance_rk_mul', 'user', extension::TYPE_COMPONENT, 'float');
+        $params['config']['balance_rk_valute'] = extension::getInstance()->getConfig('balance_rk_valute', 'user', extension::TYPE_COMPONENT, 'str');
+        $params['config']['balance_rk_test'] = extension::getInstance()->getConfig('balance_rk_test', 'user', extension::TYPE_COMPONENT, 'int');
 
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
 

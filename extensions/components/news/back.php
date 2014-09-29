@@ -433,8 +433,19 @@ class components_news_back {
                 if(file_exists($full_gallery_path . $gallery_folder . '/'))
                     rename($full_gallery_path . $gallery_folder . '/', $full_gallery_path . $new_news_id . '/');
                 $stream = extension::getInstance()->call(extension::TYPE_COMPONENT, 'stream', false);
-                if(is_object($stream))
-                    $stream->add('news.add', $editor_id, property::getInstance()->get('url').'/news/'.$pathway, $params['news']['title'][language::getInstance()->getUseLanguage()]);
+                if(is_object($stream)) {
+                    $stmt = database::getInstance()->con()->prepare("SELECT a.path FROM ".property::getInstance()->get('db_prefix')."_com_news_category a, ".property::getInstance()->get('db_prefix')."_com_news_entery b
+                     WHERE b.id = ? AND b.category = a.category_id");
+                    $stmt->bindParam(1, $new_news_id, \PDO::PARAM_INT);
+                    $stmt->execute();
+                    if($result = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                        $cat_path = $result['path'];
+                        if($cat_path != null)
+                            $pathway = $cat_path . '/' . $pathway;
+                        $stream->add('news.add', $editor_id, property::getInstance()->get('url').'/news/'.$pathway, $params['news']['title'][language::getInstance()->getUseLanguage()]);
+                    }
+                    $stmt = null;
+                }
                 system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=news");
             }
         }

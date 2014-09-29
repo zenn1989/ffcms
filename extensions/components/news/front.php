@@ -232,8 +232,19 @@ class components_news_front {
                     extension::getInstance()->call(extension::TYPE_HOOK, 'file')->uploadResizedImage('/news/', $_FILES['newsimage'], $dx, $dy, $save_name);
                 }
                 $stream = extension::getInstance()->call(extension::TYPE_COMPONENT, 'stream');
-                if(is_object($stream))
-                    $stream->add('news.add', $editor_id, property::getInstance()->get('url').'/news/'.$pathway, $params['news']['title'][language::getInstance()->getUseLanguage()]);
+                if(is_object($stream)) {
+                    $stmt = database::getInstance()->con()->prepare("SELECT a.path FROM ".property::getInstance()->get('db_prefix')."_com_news_category a, ".property::getInstance()->get('db_prefix')."_com_news_entery b
+                     WHERE b.id = ? AND b.category = a.category_id");
+                    $stmt->bindParam(1, $new_news_id, \PDO::PARAM_INT);
+                    $stmt->execute();
+                    if($result = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                        $cat_path = $result['path'];
+                        if($cat_path != null)
+                            $pathway = $cat_path . '/' . $pathway;
+                        $stream->add('news.add', $editor_id, property::getInstance()->get('url').'/news/'.$pathway, $params['news']['title'][language::getInstance()->getUseLanguage()]);
+                    }
+                    $stmt = null;
+                }
                 system::getInstance()->redirect('/user/id' . $editor_id . '/news/');
             }
         }
@@ -374,7 +385,7 @@ class components_news_front {
     {
         $cleartag = system::getInstance()->nohtml(system::getInstance()->noextention($tagname));
         meta::getInstance()->add('title', $cleartag);
-        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.keywords like ? LIMIT 100");
+        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a, ".property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.keywords like ? ORDER BY a.date DESC LIMIT 100");
         $buildSearch = '%'.$cleartag.'%';
         $stmt->bindParam(1, $buildSearch, PDO::PARAM_STR);
         $stmt->execute();

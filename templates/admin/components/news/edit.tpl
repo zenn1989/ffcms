@@ -111,7 +111,7 @@
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="#" onclick="return translateNews('{{ langs.current }}', '{{ itemlang }}', '{{ system.yandex_translate_key }}');">{{ language.admin_autotranslate }} <span class="label label-danger">{{ langs.current }}</span> -> <span class="label label-success">{{ itemlang }}</span></a></li>
+                            <li><a onclick="return translateNews('{{ langs.current }}', '{{ itemlang }}', '{{ system.yandex_translate_key }}');">{{ language.admin_autotranslate }} <span class="label label-danger">{{ langs.current }}</span> -> <span class="label label-success">{{ itemlang }}</span></a></li>
                         </ul>
                     </li>
                 {% endif %}

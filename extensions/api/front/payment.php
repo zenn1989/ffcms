@@ -23,7 +23,46 @@ class api_payment_front {
             case "interkassa":
                 $this->viewInterkassa();
                 break;
+            case "robokassa":
+                $this->viewRobokassa();
+                break;
         }
+    }
+
+    private function viewRobokassa() {
+        if(!extension::getInstance()->getConfig('balance_use_rk', 'user', extension::TYPE_COMPONENT, 'boolean'))
+            exit("Robokassa API disabled");
+        require_once(root . '/resource/payments/robokassa/robokassa.class.php');
+        $init_rk = new Robokassa(
+            extension::getInstance()->getConfig('balance_rk_id', 'user', extension::TYPE_COMPONENT, 'str'),
+            extension::getInstance()->getConfig('balance_rk_key_1', 'user', extension::TYPE_COMPONENT, 'str'),
+            extension::getInstance()->getConfig('balance_rk_key_2', 'user', extension::TYPE_COMPONENT, 'str'),
+            extension::getInstance()->getConfig('balance_rk_test', 'user', extension::TYPE_COMPONENT, 'boolean')
+        );
+
+        $init_rk->OutSum = $amount = (float)system::getInstance()->post('OutSum');
+        $init_rk->InvId = $transid = (int)system::getInstance()->post('InvId');
+
+        $user_id = (int)system::getInstance()->post('shp_userid');
+
+        $init_rk->addCustomValues(array(
+            'shp_userid' => $user_id,
+        ));
+
+        if(!$init_rk->checkHash($_POST['SignatureValue'])) {
+            exit("Hash sum was wrong!");
+        }
+
+        $mul = $params['config']['balance_rk_mul'] = extension::getInstance()->getConfig('balance_rk_mul', 'user', extension::TYPE_COMPONENT, 'float');
+        $amount *= $mul;
+
+        user::getInstance()->addBalance($user_id, $amount);
+        $payparam = array(
+            'amount' => $amount,
+            'sys_trans_id' => $transid
+        );
+        user::getInstance()->putLog($user_id, 'balance.rkadd', $payparam, 'Recharge balance via robokassa');
+        echo "Success payment";
     }
 
     private function viewInterkassa() {

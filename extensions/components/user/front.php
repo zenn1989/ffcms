@@ -85,9 +85,25 @@ class components_user_front {
             case 'ik':
                 $result = $this->viewInterkassaNotify($way[2]);
                 break;
+            case 'rk':
+                $result = $this->viewRobokassaNotify($way[2]);
+                break;
         }
 
         return $result;
+    }
+
+    private function viewRobokassaNotify($type) {
+        $params['balancenotify']['user_id'] = (int)system::getInstance()->post('shp_userid');
+        $params['balancenotify']['pay_inv'] = (int)system::getInstance()->post('InvId');
+
+        if($params['balancenotify']['user_id'] == null)
+            return null;
+        if($type == 'success')
+            return template::getInstance()->twigRender('components/user/balance/rk_balance_success.tpl', $params);
+        elseif($type == 'fail')
+            return template::getInstance()->twigRender('components/user/balance/rk_balance_fail.tpl', $params);
+        return null;
     }
 
     private function viewInterkassaNotify($type) {
@@ -213,9 +229,36 @@ class components_user_front {
 
         $params['config']['balance_use_ik'] = extension::getInstance()->getConfig('balance_use_ik', 'user', extension::TYPE_COMPONENT, 'int');
         $params['config']['balance_ik_id'] = extension::getInstance()->getConfig('balance_ik_id', 'user', extension::TYPE_COMPONENT, 'str');
-        $params['config']['balance_ik_key'] = extension::getInstance()->getConfig('balance_ik_key', 'user', extension::TYPE_COMPONENT, 'str');
         $params['config']['balance_ik_mul'] = extension::getInstance()->getConfig('balance_ik_mul', 'user', extension::TYPE_COMPONENT, 'float');
         $params['config']['balance_ik_valute'] = extension::getInstance()->getConfig('balance_ik_valute', 'user', extension::TYPE_COMPONENT, 'str');
+
+        $params['config']['balance_use_rk'] = extension::getInstance()->getConfig('balance_use_rk', 'user', extension::TYPE_COMPONENT, 'int');
+        $params['config']['balance_rk_id'] = extension::getInstance()->getConfig('balance_rk_id', 'user', extension::TYPE_COMPONENT, 'str');
+        $params['config']['balance_rk_mul'] = extension::getInstance()->getConfig('balance_rk_mul', 'user', extension::TYPE_COMPONENT, 'float');
+        $params['config']['balance_rk_valute'] = extension::getInstance()->getConfig('balance_rk_valute', 'user', extension::TYPE_COMPONENT, 'str');
+
+        if(system::getInstance()->post('rk_submit')) {
+            $topay = (float)system::getInstance()->post('topay');
+
+            require_once(root . '/resource/payments/robokassa/robokassa.class.php');
+            $init_rk = new Robokassa(
+                $params['config']['balance_rk_id'],
+                extension::getInstance()->getConfig('balance_rk_key_1', 'user', extension::TYPE_COMPONENT, 'str'),
+                extension::getInstance()->getConfig('balance_rk_key_2', 'user', extension::TYPE_COMPONENT, 'str'),
+                extension::getInstance()->getConfig('balance_rk_test', 'user', extension::TYPE_COMPONENT, 'boolean')
+            );
+
+            $init_rk->OutSum = $topay;
+            $init_rk->Desc = 'Recharge balance on '.property::getInstance()->get('url').'. Userid: '.$target;
+            $init_rk->Culture = language::getInstance()->getUseLanguage();
+
+            $init_rk->addCustomValues(array(
+                'shp_userid' => $target
+            ));
+
+            header('Location: ' . $init_rk->getRedirectURL());
+            exit("Browser not support header accept. Payment: <a href='".$init_rk->getRedirectURL()."'>Start pay</a>");
+        }
 
         $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_user_log WHERE `owner` = ? and `type` like 'balance.%' ORDER BY `time` DESC LIMIT 0,50");
         $stmt->bindParam(1, $target, \PDO::PARAM_INT);

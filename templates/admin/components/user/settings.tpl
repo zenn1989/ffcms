@@ -56,6 +56,15 @@
             {{ settingstpl.textgroup('balance_ik_key', config.balance_ik_key, language.admin_component_usercontrol_config_balanceik_secretkey_title, language.admin_component_usercontrol_config_balanceik_secretkey_desc) }}
             {{ settingstpl.textgroup('balance_ik_mul', config.balance_ik_mul, language.admin_component_usercontrol_config_balanceik_mul_title, language.admin_component_usercontrol_config_balanceik_mul_desc) }}
             {{ settingstpl.textgroup('balance_ik_valute', config.balance_ik_valute, language.admin_component_usercontrol_config_balanceik_valutname_title, language.admin_component_usercontrol_config_balanceik_valutname_desc) }}
+            <h2>Robokassa</h2>
+            <hr />
+            {{ settingstpl.selectYNgroup('balance_use_rk', config.balance_use_rk, language.admin_component_usercontrol_config_balancerk_enable_title, language.admin_component_usercontrol_config_balancerk_enable_desc, _context) }}
+            {{ settingstpl.selectYNgroup('balance_rk_test', config.balance_rk_test, language.admin_component_usercontrol_config_balancerk_testmod_title, language.admin_component_usercontrol_config_balancerk_testmod_desc, _context) }}
+            {{ settingstpl.textgroup('balance_rk_id', config.balance_rk_id, language.admin_component_usercontrol_config_balancerk_shopname_title, language.admin_component_usercontrol_config_balancerk_shopname_desc) }}
+            {{ settingstpl.textgroup('balance_rk_key_1', config.balance_rk_key_1, language.admin_component_usercontrol_config_balancerk_pass1_title, language.admin_component_usercontrol_config_balancerk_pass1_desc) }}
+            {{ settingstpl.textgroup('balance_rk_key_2', config.balance_rk_key_2, language.admin_component_usercontrol_config_balancerk_pass2_title, language.admin_component_usercontrol_config_balancerk_pass2_desc) }}
+            {{ settingstpl.textgroup('balance_rk_mul', config.balance_rk_mul, language.admin_component_usercontrol_config_balancerk_mul_title, language.admin_component_usercontrol_config_balancerk_mul_desc) }}
+            {{ settingstpl.textgroup('balance_rk_valute', config.balance_rk_valute, language.admin_component_usercontrol_config_balancerk_valut_title, language.admin_component_usercontrol_config_balancerk_valut_desc) }}
         </div>
     </div>
     <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
@@ -147,6 +156,45 @@
                     </tbody>
                 </table>
                 <p>{{ language.admin_component_usercontrol_config_balanceik_help_p3 }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="helprk" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">Robokassa help guide</h4>
+            </div>
+            <div class="modal-body">
+                <p>{{ language.admin_component_usercontrol_config_balancerk_help_p1 }}</p>
+                <p>{{ language.admin_component_usercontrol_config_balancerk_help_p2 }}</p>
+                <h4>{{ language.admin_component_usercontrol_config_balancerk_help_header }}</h4>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Param</th>
+                        <th>Value</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Success URL[POST]</td>
+                        <td>{{ system.url }}/user/paynotify/rk/success/</td>
+                    </tr>
+                    <tr>
+                        <td>Fail URL[POST]</td>
+                        <td>{{ system.url }}/user/paynotify/ik/fail/</td>
+                    </tr>
+                    <tr>
+                        <td>Result URL[POST]</td>
+                        <td>{{ system.script_url }}/api.php?iface=front&object=payment&type=robokassa</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p>{{ language.admin_component_usercontrol_config_balancerk_help_p3 }}</p>
             </div>
         </div>
     </div>
