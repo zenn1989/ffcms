@@ -235,19 +235,35 @@ class admin extends singleton {
         $ext_params = extension::getInstance()->getAllParams();
         if(array_key_exists($this->get['action'], $ext_params[$this->get['object']])) // always installed, wtf this man try to do?
             return;
-        $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_extensions (`type`, `configs`, `dir`, `enabled`, `path_choice`, `path_allow`) VALUES (?, '', ?, 0, 1, '*')");
-        $stmt->bindParam(1, $this->get['object'], \PDO::PARAM_STR);
-        $stmt->bindParam(2, $this->get['action'], \PDO::PARAM_STR);
-        $stmt->execute();
-        $stmt = null;
         $backend = root . '/extensions/' . $this->get['object'] . '/' . $this->get['action'] . '/back.php';
         if(file_exists($backend)) {
             require_once($backend);
             $cname = $this->get['object'] . '_' . $this->get['action'] . '_back';
             if(class_exists($cname)) {
-                $class = new $cname;
-                if(method_exists($cname, 'getInstance') && method_exists($cname, 'install')) {
-                    $class::getInstance()->install();
+                $class = @new $cname;
+                $object = null;
+                if(method_exists($cname, 'getInstance'))
+                    $object = @$class::getInstance();
+
+                if(is_object($object)) {
+                    $ext_version = null;
+                    $ext_compatable = null;
+                    if(method_exists($object, '_version') && method_exists($object, '_compatable')) {
+                        $ext_version = $object->_version();
+                        $ext_compatable = $object->_compatable();
+                    }
+
+                    $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_extensions (`type`, `configs`, `dir`, `enabled`, `path_choice`, `path_allow`, `version`, `compatable`)
+                    VALUES (?, '', ?, 0, 1, '*', ?, ?)");
+                    $stmt->bindParam(1, $this->get['object'], \PDO::PARAM_STR);
+                    $stmt->bindParam(2, $this->get['action'], \PDO::PARAM_STR);
+                    $stmt->bindParam(3, $ext_version, \PDO::PARAM_STR|\PDO::PARAM_NULL);
+                    $stmt->bindParam(4, $ext_compatable, \PDO::PARAM_STR|\PDO::PARAM_NULL);
+                    $stmt->execute();
+                    $stmt = null;
+
+                    if(method_exists($object, 'install'))
+                        $object->install();
                 }
             }
         }
