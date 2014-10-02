@@ -195,15 +195,15 @@ class user extends singleton {
 
     /**
      * Save user log into special table
-     * @param int $owner
+     * @param int|null $owner
      * @param string $type
      * @param array $params
      * @param string $message
      * @param null $time
      * @return bool|string
      */
-    public function putLog($owner = 0, $type, $params, $message, $time = null) {
-        if($owner == 0)
+    public function putLog($owner = null, $type, $params, $message, $time = null) {
+        if($owner < 1)
             $owner = $this->get('id');
         if($time == null)
             $time = time();

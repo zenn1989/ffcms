@@ -63,7 +63,25 @@ class property extends singleton {
         self::$cfg['upload_allowed_ext'] = '.doc;.docx;.rtf;.pdf;.txt;';
         if(is_array($config)) {
             foreach($config as $key=>$value) {
-                self::$cfg[$key] = $value;
+                // allow multi-url support
+                if($key == 'url') {
+                    self::$cfg['source_url'] = $value;
+                    if(system::getInstance()->contains(';', $value)) { // contains ; spliter in urls
+                        $adr_array = system::getInstance()->altexplode(';', $value);
+                        $user_address = system::getInstance()->getProtocol() . '://';
+                        $user_address .= $_SERVER['HTTP_HOST'];
+                        foreach($adr_array as $address) {
+                            if(system::getInstance()->prefixEquals($address, $user_address)) {
+                                self::$cfg['url'] = $address;
+                                break;
+                            }
+                        }
+                        if(self::$cfg['url'] == null) // if url still null - set first of know
+                            self::$cfg['url'] = $adr_array[0];
+                    } else
+                        self::$cfg[$key] = $value;
+                } else
+                    self::$cfg[$key] = $value;
             }
         }
         self::$cfg['yandex_translate_key'] = 'trnsl.1.1.20140923T120415Z.11ea02784e7b7447.158c20fac47143a5ccda5fc8a8ca81182669c80f';
@@ -81,6 +99,7 @@ class property extends singleton {
             elseif(loader === 'back')
                 self::$cfg['url'] .= '/' . property::getInstance()->get('lang');
         }
+        self::$cfg['protocol'] = system::getInstance()->getProtocol();
     }
 
 }

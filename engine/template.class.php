@@ -95,6 +95,7 @@ class template extends singleton {
 
     public function twigDefaultVariables() {
         self::$variables[self::TYPE_SYSTEM]['url'] = property::getInstance()->get('url');
+        self::$variables[self::TYPE_SYSTEM]['protocol'] = property::getInstance()->get('protocol');
         self::$variables[self::TYPE_SYSTEM]['script_url'] = property::getInstance()->get('script_url');
         self::$variables[self::TYPE_SYSTEM]['nolang_url'] = property::getInstance()->get('nolang_url');
         self::$variables[self::TYPE_SYSTEM]['uri'] = $this->nolang_uri();

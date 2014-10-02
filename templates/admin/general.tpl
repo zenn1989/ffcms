@@ -39,7 +39,7 @@
                 {{ language.admin_stats_graph_title }}
             </div>
             <div class="panel-body">
-                <div id="week-stat" style="min-height: 200px;"></div>
+                <div id="week-stat" style="min-height: 170px;"></div>
             </div>
         </div>
     </div>

@@ -20,7 +20,7 @@
     <div class="header">
         <ul class="nav nav-pills pull-right">
             <li><a href="?">{{ language.install_mainpage }}</a></li>
-            <li><a href="?action=install">{{ language.install_mainahref }}</a></li>
+            <li><a href="?action=check">{{ language.install_mainahref }}</a></li>
             <li><a href="?action=update">{{ language.install_updatehref }}</a></li>
         </ul>
         <h3 class="text-muted">FFCMS Engine {{ system.version }}</h3>

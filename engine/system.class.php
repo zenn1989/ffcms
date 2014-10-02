@@ -863,4 +863,18 @@ class system extends singleton {
         $result = $major * 100 + $minor * 10 + $patch;
         return (int)$result;
     }
+
+    /**
+     * Get web connection protocol type
+     */
+    public function getProtocol() {
+        $proto = 'http';
+        $cf_proxy = json_decode($_SERVER['HTTP_CF_VISITOR']);
+        if(isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on'
+                || $_SERVER['HTTPS'] == 1)
+                || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&  $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'
+                || isset($_SERVER['HTTP_CF_VISITOR']) && $cf_proxy->{'scheme'} == 'https')
+            $proto = 'https';
+        return $proto;
+    }
 }

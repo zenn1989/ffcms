@@ -22,6 +22,9 @@ class install extends singleton {
         template::getInstance()->set(template::TYPE_SYSTEM, 'lang_available', language::getInstance()->getAvailable());
         $content = null;
         switch(system::getInstance()->get('action')) {
+            case 'check':
+                $content = $this->viewCheck();
+                break;
             case 'install':
                 $content = $this->viewInstall();
                 break;
@@ -38,6 +41,55 @@ class install extends singleton {
                 break;
         }
         template::getInstance()->set(template::TYPE_CONTENT, 'body', $content);
+    }
+
+    private function viewCheck() {
+        $params = array();
+
+        if(file_exists(root.'/install/.lock')) {
+            $params['notify']['prepare']['lock'] = true;
+        }
+        if(file_exists(root . '/config.php') && !is_writable(root . '/config.php')) {
+            $params['notify']['prepare']['cfg_write'] = true;
+        }
+        if(!is_writable(root . '/install/')) {
+            $params['notify']['prepare']['inst_write'] = true;
+        }
+        if(!file_exists(root . '/install/sql/install.sql')) {
+            $params['notify']['prepare']['sql_notfound'] = true;
+        }
+        if(!file_exists(root . '/install/.install')) {
+            $params['notify']['prepare']['inst_unlock'] = true;
+        }
+
+        if(sizeof($params['notify']) == 0) {
+            $check_all = false;
+            $php_version = phpversion();
+            $php_v_array = system::getInstance()->altexplode(".", $php_version);
+            $php_v_check = false;
+            if($php_v_array[0] * 10000 + $php_v_array[1] * 100 + $php_v_array[2] >= 50302) // 5.3.2 or more
+                $php_v_check = true;
+
+            $mod_rewrite = false;
+            if(function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules()))
+                $mod_rewrite = true;
+            elseif(isset($_SERVER['IIS_UrlRewriteModule']))
+                $mod_rewrite = true;
+
+            $params['compare']['php_version'] = $php_version;
+            $params['compare']['php_check'] = $php_v_check;
+            $params['compare']['php_pdo'] = extension_loaded('pdo');
+            $params['compare']['apache_rewrite'] = $mod_rewrite;
+            $params['compare']['php_gd'] = extension_loaded('gd') && function_exists('gd_info');
+
+            if($params['compare']['php_check'] === true && $params['compare']['php_pdo'] === true
+                && $params['compare']['apache_rewrite'] && $params['compare']['php_gd'])
+                $check_all = true;
+
+            $params['compare']['all_ok'] = $check_all;
+        }
+
+        return template::getInstance()->twigRender('check.tpl', $params);
     }
 
     private function viewUpdate() {

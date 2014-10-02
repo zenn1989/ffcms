@@ -413,19 +413,19 @@ class components_news_front {
         $way = router::getInstance()->shiftUriArray();
         $fulltext_enabled = extension::getInstance()->getConfig('enable_full_rss', 'news', extension::TYPE_COMPONENT, 'bool');
         $fulltext_mod = $way[1] === "fulltext" && $fulltext_enabled ? true : false;
-        $cache_filename = null;
+        $cache_filename = property::getInstance()->get('protocol') . '_';
         switch($way[1]) {
             case null:
-                $cache_filename = 'rssfeed_'.language::getInstance()->getUseLanguage();
+                $cache_filename .= 'rssfeed_'.language::getInstance()->getUseLanguage();
                 break;
             case 'fulltext':
-                $cache_filename = 'rssfeed_fulltext_'.language::getInstance()->getUseLanguage();
+                $cache_filename .= 'rssfeed_fulltext_'.language::getInstance()->getUseLanguage();
                 break;
             case 'short':
-                $cache_filename = 'rssfeed_short' . language::getInstance()->getUseLanguage();
+                $cache_filename .= 'rssfeed_short' . language::getInstance()->getUseLanguage();
                 break;
             case 'medium':
-                $cache_filename = 'rssfeed_medium' . language::getInstance()->getUseLanguage();
+                $cache_filename .= 'rssfeed_medium' . language::getInstance()->getUseLanguage();
                 break;
         }
         if(cache::getInstance()->get($cache_filename, self::RSS_UPDATE_TIME))

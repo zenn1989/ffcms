@@ -550,6 +550,11 @@ class components_user_front {
             if (system::getInstance()->validPasswordLength($password_array) && system::getInstance()->doublemd5($password_array[0]) === $password && $password_array[1] === $password_array[2] && $password_array[0] != $password_array[1]) {
                 $password = system::getInstance()->doublemd5($password_array[1]);
                 $params['form']['pass_changed'] = true;
+                // save logs
+                $log_params = array(
+                    'ip' => system::getInstance()->getRealIp()
+                );
+                user::getInstance()->putLog($target, 'profile.changepass', $log_params, 'Change profile password');
             }
             $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_user a
             INNER JOIN ".property::getInstance()->get('db_prefix')."_user_custom b USING(id) SET a.nick = ?, a.pass = ?, b.birthday = ?, b.sex = ?, b.phone = ?, b.webpage = ? WHERE a.id = ?");
@@ -890,7 +895,7 @@ class components_user_front {
             if($openidIdentifity == null || system::getInstance()->length($openidIdentifity) < 1)
                 system::getInstance()->redirect('/user/login.html');
             // did this OpenID is always in db?
-            $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*), email, pass FROM ".property::getInstance()->get('db_prefix')."_user WHERE openid = ?");
+            $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*), email, pass, id FROM ".property::getInstance()->get('db_prefix')."_user WHERE openid = ?");
             $stmt->bindParam(1, $openidIdentifity, PDO::PARAM_STR);
             $stmt->execute();
             $checkRes = $stmt->fetch();
@@ -907,6 +912,13 @@ class components_user_front {
                 $stmt2->bindParam(3, $user_ip, PDO::PARAM_STR);
                 $stmt2->bindParam(4, $openidIdentifity, PDO::PARAM_STR);
                 $stmt2->execute();
+
+                $user_id = $checkRes['id'];
+                $log_params = array(
+                    'ip' => $user_ip,
+                    'openid' => $openidIdentifity
+                );
+                user::getInstance()->putLog($user_id, 'profile.openidauth', $log_params, 'Success auth on profile via openid');
 
                 setcookie('person', $dbemail, null, '/', null, null, true);
                 setcookie('token', $md5token, null, '/', null, null, true);
@@ -1033,6 +1045,14 @@ class components_user_front {
                     $stmt->bindParam(3, $userid, PDO::PARAM_INT);
                     $stmt->execute();
                     $request_id = database::getInstance()->con()->lastInsertId();
+                    $stmt = null;
+
+                    // save request to logs
+                    $log_params = array(
+                        'ip' => system::getInstance()->getRealIp()
+                    );
+                    user::getInstance()->putLog($userid, 'profile.restore', $log_params, 'Request profile restore');
+
                     $recovery_link = "<a href=".property::getInstance()->get('url') . '/user/recovery/' . $request_id . '/' . $hash.">".language::getInstance()->get("usercontrol_mail_link_text")."</a>";
                     extension::getInstance()->call(extension::TYPE_HOOK, 'mail')->send($email,
                         language::getInstance()->get('usercontrol_recovery_mail_title'),
@@ -1234,6 +1254,16 @@ class components_user_front {
                     $stmt2->bindParam(5, $loginoremail, PDO::PARAM_STR);
                     $stmt2->bindParam(6, $md5pwd, PDO::PARAM_STR, 32);
                     $stmt2->execute();
+                    $stmt2 = null;
+
+                    // save auth log
+                    $ures = $stmt->fetch(\PDO::FETCH_ASSOC);
+                    $user_id = $ures['id'];
+                    $log_params = array(
+                        'ip' => $user_ip
+                    );
+                    user::getInstance()->putLog($user_id, 'profile.auth', $log_params, 'Success auth on profile');
+
                     if(system::getInstance()->post('longsession') == "on") {
                         setcookie('person', $loginoremail, system::MAX_INTEGER_32, '/', null, null, true);
                         setcookie('token', $md5token, system::MAX_INTEGER_32, '/', null, null, true);
