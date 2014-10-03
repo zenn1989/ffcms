@@ -13,7 +13,7 @@ use engine\database;
 use engine\permission;
 use engine\system;
 
-class api_commentdelete_front {
+class api_commentdelete_front extends \engine\singleton {
     protected static $instance = null;
     public static function getInstance() {
         if(is_null(self::$instance))

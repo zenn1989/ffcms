@@ -13,7 +13,7 @@ use engine\property;
 use engine\extension;
 use engine\system;
 
-class api_ckloader_back {
+class api_ckloader_back extends \engine\singleton {
     protected static $instance = null;
 
     const TYPE_ALL = 0;

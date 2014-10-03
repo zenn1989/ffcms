@@ -16,7 +16,7 @@ use engine\user;
 use engine\extension;
 use engine\csrf;
 
-class modules_comments_back {
+class modules_comments_back extends \engine\singleton {
     protected static $instance = null;
 
     const ITEM_PER_PAGE = 10;

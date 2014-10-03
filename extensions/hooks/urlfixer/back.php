@@ -7,24 +7,20 @@
 |==========================================================|
  */
 
-use engine\permission;
-use engine\system;
-
-class api_newsposterdelete_back extends \engine\singleton {
+class hooks_urlfixer_back extends \engine\singleton {
     protected static $instance = null;
+
+    public function _version() {
+        return '1.0.1';
+    }
+
+    public function _compatable() {
+        return '2.0.3';
+    }
 
     public static function getInstance() {
         if(is_null(self::$instance))
             self::$instance = new self();
         return self::$instance;
-    }
-
-    public function make() {
-        if(!permission::getInstance()->have('admin/components/news/add') && !permission::getInstance()->have('admin/components/news/edit'))
-            return;
-        $id = (int)system::getInstance()->get('id');
-        $fpath = root . '/upload/news/poster_' . $id . '.jpg';
-        if(file_exists($fpath))
-            @unlink($fpath);
     }
 }

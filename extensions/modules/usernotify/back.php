@@ -1,6 +1,6 @@
 <?php
 
-class modules_usernotify_back {
+class modules_usernotify_back extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

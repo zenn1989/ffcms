@@ -15,7 +15,7 @@ use engine\template;
 use engine\system;
 use engine\permission;
 
-class api_commentedit_front {
+class api_commentedit_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

@@ -12,7 +12,7 @@ use engine\system;
 use engine\property;
 use engine\database;
 
-class api_bookmarkadd_front {
+class api_bookmarkadd_front extends \engine\singleton {
     protected static $instance = null;
 
     public function getInstance() {

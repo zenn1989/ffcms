@@ -10,7 +10,7 @@ use engine\meta;
 use engine\extension;
 use engine\router;
 
-class components_stream_front extends engine\singleton {
+class components_stream_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

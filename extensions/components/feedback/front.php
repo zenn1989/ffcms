@@ -16,7 +16,7 @@ use engine\meta;
 use engine\language;
 use engine\template;
 
-class components_feedback_front {
+class components_feedback_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

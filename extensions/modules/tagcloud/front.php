@@ -12,7 +12,7 @@ use engine\extension;
 use engine\database;
 use engine\property;
 
-class modules_tagcloud_front {
+class modules_tagcloud_front extends \engine\singleton {
 
     protected static $instance = null;
 

@@ -13,7 +13,7 @@ use engine\extension;
 use engine\template;
 
 
-class modules_news_new_back {
+class modules_news_new_back extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

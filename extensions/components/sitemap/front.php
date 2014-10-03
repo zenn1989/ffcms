@@ -15,7 +15,7 @@ use engine\cache;
 use engine\language;
 use engine\system;
 
-class components_sitemap_front {
+class components_sitemap_front extends \engine\singleton {
     protected static $instance = null;
     private $map = array();
 

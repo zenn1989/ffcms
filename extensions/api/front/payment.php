@@ -1,11 +1,18 @@
 <?php
+/**
+|==========================================================|
+|========= @copyright Pyatinskii Mihail, 2013-2014 ========|
+|================= @website: www.ffcms.ru =================|
+|========= @license: GNU GPL V3, file: license.txt ========|
+|==========================================================|
+ */
 
 use engine\system;
 use engine\extension;
 use engine\logger;
 use engine\user;
 
-class api_payment_front {
+class api_payment_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

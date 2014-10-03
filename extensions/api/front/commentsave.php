@@ -12,7 +12,7 @@ use engine\database;
 use engine\property;
 use engine\user;
 
-class api_commentsave_front {
+class api_commentsave_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

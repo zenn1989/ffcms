@@ -13,7 +13,7 @@ use engine\template;
 use engine\system;
 use engine\csrf;
 
-class hooks_captcha_back {
+class hooks_captcha_back extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

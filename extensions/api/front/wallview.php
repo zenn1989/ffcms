@@ -13,7 +13,7 @@ use engine\property;
 use engine\system;
 use engine\user;
 
-class api_wallview_front {
+class api_wallview_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

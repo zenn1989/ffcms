@@ -13,7 +13,7 @@ use engine\property;
 use engine\extension;
 
 
-class api_wysibbimage_front {
+class api_wysibbimage_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

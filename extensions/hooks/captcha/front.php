@@ -10,8 +10,7 @@
 use engine\extension;
 use engine\property;
 
-class hooks_captcha_front
-{
+class hooks_captcha_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance()

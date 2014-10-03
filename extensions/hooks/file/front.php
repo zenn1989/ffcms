@@ -12,7 +12,7 @@ use engine\system;
 use engine\property;
 use engine\user;
 
-class hooks_file_front {
+class hooks_file_front extends \engine\singleton {
     protected static $instance = null;
     protected $directory = "/upload";
 

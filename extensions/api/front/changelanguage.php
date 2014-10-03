@@ -11,7 +11,7 @@ use engine\system;
 use engine\language;
 use engine\property;
 
-class api_changelanguage_front {
+class api_changelanguage_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

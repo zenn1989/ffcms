@@ -9,7 +9,7 @@
 
 use engine\system;
 use engine\property;
-class api_redirect_front {
+class api_redirect_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

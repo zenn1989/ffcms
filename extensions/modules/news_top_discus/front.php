@@ -14,7 +14,7 @@ use engine\system;
 use engine\language;
 use engine\extension;
 
-class modules_news_top_discus_front {
+class modules_news_top_discus_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

@@ -10,7 +10,7 @@
 use engine\extension;
 use engine\template;
 
-class modules_static_on_main_front {
+class modules_static_on_main_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

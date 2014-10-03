@@ -14,7 +14,7 @@ use engine\database;
 use engine\property;
 use engine\permission;
 
-class api_commentpost_front {
+class api_commentpost_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

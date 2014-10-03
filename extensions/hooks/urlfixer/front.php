@@ -1,4 +1,11 @@
 <?php
+/**
+|==========================================================|
+|========= @copyright Pyatinskii Mihail, 2013-2014 ========|
+|================= @website: www.ffcms.ru =================|
+|========= @license: GNU GPL V3, file: license.txt ========|
+|==========================================================|
+ */
 
 use engine\property;
 use engine\system;
@@ -7,14 +14,6 @@ use engine\extension;
 
 class hooks_urlfixer_front extends \engine\singleton {
     protected static $instance = null;
-
-    public function _version() {
-        return '1.0.1';
-    }
-
-    public function _compatable() {
-        return '2.0.2';
-    }
 
     public static function getInstance() {
         if(is_null(self::$instance))

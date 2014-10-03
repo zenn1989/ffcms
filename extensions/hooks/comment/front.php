@@ -11,8 +11,7 @@ use engine\database;
 use engine\property;
 use engine\router;
 
-class hooks_comment_front
-{
+class hooks_comment_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance()
@@ -24,7 +23,7 @@ class hooks_comment_front
 
     /**
      * Comments count by URI
-     * @param $hash
+     * @param string|null $way
      * @return mixed
      */
     public function getCount($way = null)

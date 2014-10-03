@@ -17,7 +17,7 @@ use engine\permission;
 use engine\extension;
 use engine\csrf;
 
-class components_user_back {
+class components_user_back extends \engine\singleton {
     protected static $instance = null;
 
     const ITEM_PER_PAGE = 10;

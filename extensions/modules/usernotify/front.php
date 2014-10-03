@@ -13,7 +13,7 @@ use engine\property;
 use engine\template;
 use engine\system;
 
-class modules_usernotify_front {
+class modules_usernotify_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

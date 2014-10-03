@@ -12,7 +12,7 @@ use engine\system;
 use engine\template;
 use engine\property;
 
-class api_ckbrowser_back {
+class api_ckbrowser_back extends \engine\singleton {
     protected static $instance = null;
 
     const TYPE_ALL = 0;

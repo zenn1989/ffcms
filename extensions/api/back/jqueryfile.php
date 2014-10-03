@@ -12,7 +12,7 @@ use engine\extension;
 use engine\property;
 use engine\permission;
 
-class api_jqueryfile_back {
+class api_jqueryfile_back extends \engine\singleton {
     protected static $instance = null;
     const filepath = '/news/gallery/';
 

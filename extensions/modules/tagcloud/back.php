@@ -12,7 +12,7 @@ use engine\template;
 use engine\admin;
 use engine\extension;
 
-class modules_tagcloud_back {
+class modules_tagcloud_back extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

@@ -15,7 +15,7 @@ use engine\extension;
 use engine\system;
 use engine\language;
 
-class modules_static_on_main_back {
+class modules_static_on_main_back extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

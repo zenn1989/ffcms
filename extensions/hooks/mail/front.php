@@ -9,7 +9,7 @@
 
 use engine\property;
 
-class hooks_mail_front {
+class hooks_mail_front extends \engine\singleton {
     protected static $instance = null;
     protected $mailer = null;
 

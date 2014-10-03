@@ -1,6 +1,6 @@
 <?php
 
-class modules_news_on_main_back {
+class modules_news_on_main_back extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

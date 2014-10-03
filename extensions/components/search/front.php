@@ -15,7 +15,7 @@ use engine\router;
 use engine\meta;
 use engine\template;
 
-class components_search_front {
+class components_search_front extends \engine\singleton {
 
     protected static $instance = null;
     public static function getInstance() {

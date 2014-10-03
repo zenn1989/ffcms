@@ -11,7 +11,7 @@ use engine\user;
 use engine\system;
 use engine\extension;
 
-class api_newsposterdelete_front {
+class api_newsposterdelete_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

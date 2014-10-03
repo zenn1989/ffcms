@@ -14,7 +14,7 @@ use engine\user;
 use engine\system;
 use engine\template;
 
-class modules_lastcomments_front {
+class modules_lastcomments_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

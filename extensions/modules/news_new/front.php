@@ -7,7 +7,7 @@ use engine\language;
 use engine\template;
 use engine\system;
 
-class modules_news_new_front {
+class modules_news_new_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

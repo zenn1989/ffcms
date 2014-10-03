@@ -1,6 +1,6 @@
 <?php
 
-class components_search_back {
+class components_search_back extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

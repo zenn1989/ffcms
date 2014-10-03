@@ -16,7 +16,7 @@ use engine\template;
 use engine\router;
 use engine\extension;
 
-class components_static_front {
+class components_static_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

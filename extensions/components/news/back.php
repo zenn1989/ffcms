@@ -18,7 +18,7 @@ use engine\extension;
 use engine\permission;
 use engine\csrf;
 
-class components_news_back {
+class components_news_back extends \engine\singleton {
     protected static $instance = null;
 
     const ITEM_PER_PAGE = 10;

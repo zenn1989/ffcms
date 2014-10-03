@@ -11,7 +11,7 @@ use engine\permission;
 use engine\property;
 use engine\system;
 
-class api_elfinder_back {
+class api_elfinder_back extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

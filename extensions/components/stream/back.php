@@ -1,4 +1,11 @@
 <?php
+/**
+|==========================================================|
+|========= @copyright Pyatinskii Mihail, 2013-2014 ========|
+|================= @website: www.ffcms.ru =================|
+|========= @license: GNU GPL V3, file: license.txt ========|
+|==========================================================|
+ */
 
 use engine\system;
 use engine\database;
@@ -10,7 +17,7 @@ use engine\user;
 use engine\permission;
 use engine\extension;
 
-class components_stream_back extends engine\singleton {
+class components_stream_back extends \engine\singleton {
     protected static $instance = null;
     const ITEM_PER_PAGE = 10;
 

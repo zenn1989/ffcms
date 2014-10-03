@@ -1,6 +1,13 @@
 <?php
+/**
+|==========================================================|
+|========= @copyright Pyatinskii Mihail, 2013-2014 ========|
+|================= @website: www.ffcms.ru =================|
+|========= @license: GNU GPL V3, file: license.txt ========|
+|==========================================================|
+ */
 
-class hooks_file_back {
+class hooks_file_back extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

@@ -9,8 +9,7 @@
 
 use engine\system;
 
-class hooks_bbtohtml_front
-{
+class hooks_bbtohtml_front extends \engine\singleton {
     private $parser = null;
     protected static $instance = null;
 

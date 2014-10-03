@@ -1,6 +1,6 @@
 <?php
 
-class components_sitemap_back {
+class components_sitemap_back extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

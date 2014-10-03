@@ -6,7 +6,7 @@ use engine\property;
 use engine\user;
 use engine\extension;
 
-class api_userkarma_front {
+class api_userkarma_front extends \engine\singleton {
     protected static $instance = null;
 
     public static function getInstance() {

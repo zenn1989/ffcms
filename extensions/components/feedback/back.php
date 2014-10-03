@@ -13,7 +13,7 @@ use engine\admin;
 use engine\database;
 use engine\property;
 
-class components_feedback_back {
+class components_feedback_back extends \engine\singleton {
     protected static $instance = null;
     const ITEM_PER_PAGE = 10;
 

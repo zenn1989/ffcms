@@ -18,7 +18,7 @@ use engine\property;
 use engine\meta;
 use engine\csrf;
 
-class components_user_front {
+class components_user_front extends \engine\singleton {
     protected static $instance = null;
     protected $pub_menu_links = array();
     protected $private_menu_links = array();
