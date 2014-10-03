@@ -54,6 +54,9 @@ class modules_news_on_main_front {
             } elseif (system::getInstance()->length($news_short_text) > $max_preview_length) {
                 $news_short_text = system::getInstance()->sentenceSub($news_short_text, $max_preview_length) . "...";
             }
+            $urlfix_object = extension::getInstance()->call(extension::TYPE_HOOK, 'urlfixer');
+            if(is_object($urlfix_object))
+                $news_short_text = $urlfix_object->fix($news_short_text);
             if ($result['path'] == null) {
                 $news_full_link = $result['link'];
             } else {

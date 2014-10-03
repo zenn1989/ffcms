@@ -8,7 +8,7 @@
  */
 error_reporting(E_ERROR);
 
-define('version', '2.0.2');
+define('version', '2.0.3');
 
 // load test - single thread * 10 times
 // -- type -- | nocache time | cache time | nocache ram | cache ram |

@@ -14,6 +14,7 @@ use engine\meta;
 use engine\system;
 use engine\template;
 use engine\router;
+use engine\extension;
 
 class components_static_front {
     protected static $instance = null;
@@ -59,6 +60,9 @@ class components_static_front {
             $serial_description = unserialize($result['description']);
             if(system::getInstance()->length($serial_title[language::getInstance()->getUseLanguage()]) < 1 || system::getInstance()->length($serial_text[language::getInstance()->getUseLanguage()]) < 1)
                 return null;
+            $urlfix_object = extension::getInstance()->call(extension::TYPE_HOOK, 'urlfixer');
+            if(is_object($urlfix_object))
+                $serial_text = $urlfix_object->fix($serial_text);
             if($pathway) {
                 meta::getInstance()->add('title', $serial_title[language::getInstance()->getUseLanguage()]);
                 meta::getInstance()->add('keywords', $serial_keywords[language::getInstance()->getUseLanguage()]);

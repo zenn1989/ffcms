@@ -281,6 +281,9 @@ class components_news_front {
             $lang_keywords = system::getInstance()->altstripslashes(unserialize($result['keywords']));
             if(system::getInstance()->length($lang_title[language::getInstance()->getUseLanguage()]) < 1 || system::getInstance()->length($lang_text[language::getInstance()->getUseLanguage()]) < 1)
                 return null;
+            $urlfix_object = extension::getInstance()->call(extension::TYPE_HOOK, 'urlfixer');
+            if(is_object($urlfix_object))
+                $lang_text = $urlfix_object->fix($lang_text);
             meta::getInstance()->add('title', $lang_title[language::getInstance()->getUseLanguage()]);
             meta::getInstance()->add('keywords', $lang_keywords[language::getInstance()->getUseLanguage()]);
             meta::getInstance()->add('description', $lang_description[language::getInstance()->getUseLanguage()]);
@@ -631,6 +634,9 @@ class components_news_front {
                     } elseif (system::getInstance()->length($news_short_text) > $max_preview_length) {
                         $news_short_text = system::getInstance()->sentenceSub($news_short_text, $max_preview_length) . "...";
                     }
+                    $urlfix_object = extension::getInstance()->call(extension::TYPE_HOOK, 'urlfixer');
+                    if(is_object($urlfix_object))
+                        $news_short_text = $urlfix_object->fix($news_short_text);
                     if ($result['path'] == null) {
                         $news_full_link = $result['link'];
                     } else {

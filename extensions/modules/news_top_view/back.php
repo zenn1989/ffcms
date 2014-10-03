@@ -27,7 +27,7 @@ class modules_news_top_view_back {
     }
 
     public function _compatable() {
-        return '2.0.2';
+        return '2.0.3';
     }
 
     public function make() {

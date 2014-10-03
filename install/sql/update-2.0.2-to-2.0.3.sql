@@ -19,4 +19,9 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}_com_stream` (
   `date` int(16) NOT NULL,
   UNIQUE KEY `id` (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-INSERT INTO `{$db_prefix}_extensions` (`type`, `configs`, `dir`, `enabled`, `path_choice`, `path_allow`, `path_deny`, `version`, `compatable`) VALUES ('components', 'a:1:{s:17:"count_stream_page";s:2:"20";}', 'stream', 0, 1, '*', '', '1.0.1', '2.0.2');
+INSERT INTO `{$db_prefix}_extensions` (`type`, `configs`, `dir`, `enabled`, `path_choice`, `path_allow`, `path_deny`, `version`, `compatable`) VALUES ('components', 'a:1:{s:17:"count_stream_page";s:2:"20";}', 'stream', 0, 1, '*', '', '1.0.1', '2.0.3');
+INSERT INTO `{$db_prefix}_extensions` (`type`, `configs`, `dir`, `enabled`, `path_choice`, `path_allow`, `path_deny`, `version`, `compatable`) VALUES ('hooks', '', 'urlfixer', '1', '1', '*', '', '1.0.1', '2.0.3');
+UPDATE `{$db_prefix}_extensions` SET `version` = '1.0.1', `compatable` = '2.0.3' WHERE `dir` IN ('static', 'user', 'news', 'sitemap', 'feedback', 'search',
+'captcha', 'profile', 'bbtohtml', 'comment', 'file', 'mail', 'news_on_main', 'static_on_main',
+'comments', 'usernotify', 'lastcomments', 'tagcloud', 'news_top_discus', 'news_top_view', 'news_new');
+UPDATE `{$db_prefix}_version` SET `version` = '2.0.3';

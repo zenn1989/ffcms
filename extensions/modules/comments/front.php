@@ -27,6 +27,9 @@ class modules_comments_front {
 
     /**
      * Get comment list
+     * @param null $way
+     * @param int $end
+     * @param bool $show_all
      * @return array
      */
     public function getCommentsParams($way = null, $end = 0, $show_all = false) {

@@ -245,12 +245,13 @@ class install extends singleton {
                         foreach(system::getInstance()->post(null) as $var_name=>$var_value) {
                             if(system::getInstance()->prefixEquals($var_name, 'config:')) {
                                 $var_name = substr($var_name, strlen('config:'));
+                                $var_name = system::getInstance()->nohtml($var_name);
                                 if($var_name === 'seo_title') {
                                     foreach(language::getInstance()->getAvailable() as $clang) {
-                                        $configs_data .= '$config[\''.$var_name.'\'][\'' . $clang . '\'] = "' . $var_value[$clang] . '";' . "\n";
+                                        $configs_data .= '$config[\''.$var_name.'\'][\'' . $clang . '\'] = "' . system::getInstance()->nohtml($var_value[$clang]) . '";' . "\n";
                                     }
                                 } else
-                                    $configs_data .= '$config[\''.$var_name.'\'] = "'.$var_value.'"'.";\n";
+                                    $configs_data .= '$config[\''.$var_name.'\'] = "' . system::getInstance()->nohtml($var_value) . '"'.";\n";
                             }
                         }
                         $random_password_salt = system::getInstance()->randomString(rand(12,16));
@@ -260,6 +261,7 @@ $config[\'debug\'] = true;
 $config[\'multi_title\'] = false;
 $config[\'cache_interval\'] = "120";
 $config[\'token_time\'] = "86400";
+$config[\'user_friendly_url\'] = false;
 $config[\'mail_from\'] = "admin@example.com";
 $config[\'mail_ownername\'] = "Site Admin";
 $config[\'mail_smtp_use\'] = false;

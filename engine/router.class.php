@@ -44,9 +44,16 @@ class router extends singleton {
         }
         if(property::getInstance()->get('use_multi_language')) { // remove /lang/ from path and notify language of this action
             self::$path_language = array_shift(self::$patharray);
-            if(!language::getInstance()->canUse(self::$path_language)) // language is not founded?
-                system::getInstance()->redirect('/' . property::getInstance()->get('lang') . '/');
-            elseif($_COOKIE['ffcms_lang'] !== self::$path_language) // set language for api and ajax scripts
+            if(!language::getInstance()->canUse(self::$path_language)) { // language is not founded?
+                $redirect_to = null;
+                if(property::getInstance()->get('user_friendly_url'))
+                    $redirect_to .= '/';
+                else
+                    $redirect_to .= '/index.php/';
+
+                $redirect_to .= property::getInstance()->get('lang') . '/';
+                system::getInstance()->redirect($redirect_to);
+            } elseif($_COOKIE['ffcms_lang'] !== self::$path_language) // set language for api and ajax scripts
                 setcookie('ffcms_lang', self::$path_language, null, '/', null, null, true);
 
         }

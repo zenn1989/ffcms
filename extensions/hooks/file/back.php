@@ -14,6 +14,6 @@ class hooks_file_back {
     }
 
     public function _compatable() {
-        return '2.0.2';
+        return '2.0.3';
     }
 }

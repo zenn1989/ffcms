@@ -49,15 +49,24 @@ class components_stream_front extends engine\singleton {
         }
         user::getInstance()->listload($load_id);
 
+        $urlfix_object = extension::getInstance()->call(extension::TYPE_HOOK, 'urlfixer');
+        $bbobject = extension::getInstance()->call(extension::TYPE_HOOK, 'bbtohtml');
+
         foreach($resultAll as $row) {
+            $url_target = $row['target_object'];
+            $text_target = system::getInstance()->nohtml($row['text_preview']);
+            if(is_object($urlfix_object))
+                $url_target = $urlfix_object->fix($url_target);
+            if(is_object($bbobject))
+                $text_target = $bbobject->nobbcode($text_target);
             $params['stream'][] = array(
                 'id' => $row['id'],
                 'type' => $row['type'],
                 'type_language' => language::getInstance()->get('stream_gtype_'.$row['type']),
                 'user_id' => $row['caster_id'],
                 'user_name' => system::getInstance()->isInt($row['caster_id']) ? user::getInstance()->get('nick', $row['caster_id']) : '',
-                'url' => $row['target_object'],
-                'text' => system::getInstance()->nohtml($row['text_preview']),
+                'url' => $url_target,
+                'text' => $text_target,
                 'date' => system::getInstance()->todate($row['date'], 'h')
             );
         }
@@ -73,9 +82,10 @@ class components_stream_front extends engine\singleton {
      * @param int|string $caster_id
      * @param string $target_url
      * @param null|string $preview_text
+     * @param bool $save_syntax
      * @return bool
      */
-    public function add($type, $caster_id, $target_url, $preview_text = null) {
+    public function add($type, $caster_id, $target_url, $preview_text = null, $save_syntax = true) {
         if(strlen($type) < 1)
             return false;
         if(system::getInstance()->isInt($caster_id)) {
@@ -87,6 +97,13 @@ class components_stream_front extends engine\singleton {
         }
         if(!system::getInstance()->prefixEquals($target_url, property::getInstance()->get('url')))
             return false;
+
+        if(!$save_syntax) {
+            $preview_text = system::getInstance()->nohtml($preview_text);
+            $bbobject = extension::getInstance()->call(extension::TYPE_HOOK, 'bbtohtml');
+            if(is_object($bbobject))
+                $preview_text = $bbobject->nobbcode($preview_text);
+        }
 
         if(system::getInstance()->length($preview_text) > 25)
             $preview_text = system::getInstance()->sentenceSub($preview_text, 25) . '...';
