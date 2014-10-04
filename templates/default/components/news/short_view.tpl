@@ -13,7 +13,7 @@
     <hr />
 {% endif %}
 {% for newsdata in local %}
-    <article class="article-item" itemscope="itemscope" itemtype="http://schema.org/NewsArticle">
+    <article class="article-item" itemscope="itemscope" itemtype="{{ system.protocol }}://schema.org/NewsArticle">
 
         <h2 itemprop="name"><a href="{{ system.url }}/news/{{ newsdata.full_news_uri }}">{% if newsdata.important > 0 %}<i class="fa fa-paperclip"></i> {% endif %}{{ newsdata.title }}</a></h2>
         <div class="meta">

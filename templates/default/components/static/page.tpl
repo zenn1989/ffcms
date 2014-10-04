@@ -8,7 +8,7 @@
         });
     });
 </script>
-<article class="article-item" itemscope="itemscope" itemtype="http://schema.org/Article">
+<article class="article-item" itemscope="itemscope" itemtype="{{ system.protocol }}://schema.org/Article">
     <h1 itemprop="name">{{ local.title }}</h1>
         <div class="meta">
             {% if local.show_date %}

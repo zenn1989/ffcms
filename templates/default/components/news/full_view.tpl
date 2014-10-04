@@ -9,7 +9,7 @@
     });
 </script>
 
-<article class="article-item" itemscope="itemscope" itemtype="http://schema.org/NewsArticle">
+<article class="article-item" itemscope="itemscope" itemtype="{{ system.protocol }}://schema.org/NewsArticle">
     <ol class="breadcrumb">
         <li><a href="{{ system.url }}">{{ language.global_main }}</a></li>
         <li><a href="{{ system.url }}/news/">{{ language.news_view_category_unset }}</a></li>

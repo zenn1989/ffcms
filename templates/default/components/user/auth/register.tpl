@@ -96,9 +96,9 @@
     <div class="col-md-4">
         {% if local.cfg.use_openid %}
             <p>{{ language.usercontrol_openid_desc }}</p>
-            <script src="http://loginza.ru/js/widget.js" type="text/javascript"></script>
-            <a href="http://loginza.ru/api/widget?token_url={{ system.url }}/user/openid.html" class="loginza" rel="nofollow">
-                <img src="http://loginza.ru/img/sign_in_button_gray.gif" alt="Use social network" />
+            <script src="{{ system.protocol }}://loginza.ru/js/widget.js" type="text/javascript"></script>
+            <a href="{{ system.protocol }}://loginza.ru/api/widget?token_url={{ system.url }}/user/openid.html" class="loginza" rel="nofollow">
+                <img src="{{ system.protocol }}://loginza.ru/img/sign_in_button_gray.gif" alt="Use social network" />
             </a>
         {% endif %}
     </div>
