@@ -120,6 +120,7 @@ class install extends singleton {
                         }
                     }
                     if($updateQuery != null) {
+                        $updateQuery = str_replace('{$db_prefix}', property::getInstance()->get('db_prefix'), $updateQuery);
                         database::getInstance()->con()->exec($updateQuery);
                         @file_put_contents(root . "/install/.update-".version, 'locked'); // only 1 run
                         $params['notify']['success'] = true;

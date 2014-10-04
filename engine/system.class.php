@@ -689,6 +689,7 @@ class system extends singleton {
                 $save_dir .= "/";
         }
         $save_dir .= $path_dir;
+        $this->createDirectory($save_dir);
         $full_file_name = $save_dir . '/' . $file_name;
         @file_put_contents($full_file_name, $file_data);
     }
