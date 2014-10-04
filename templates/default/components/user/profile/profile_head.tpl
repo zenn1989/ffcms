@@ -116,6 +116,8 @@
                     {% include 'components/user/profile/profile_settings.tpl' %}
                 {% elseif local.action == 'status' %}
                     {% include 'components/user/profile/profile_status.tpl' %}
+                {% elseif local.action == 'logs' %}
+                    {% include 'components/user/profile/profile_logs.tpl' %}
                 {% endif %}
             {% elseif local.path == 'messages' %}
                 {% if local.action == '' or local.action == 'all' or local.action == 'in' or local.action == 'out' %}

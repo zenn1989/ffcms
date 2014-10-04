@@ -187,6 +187,9 @@ class components_user_front extends \engine\singleton {
                     case 'status':
                         $content = $this->viewUserStatusSettings($target_id, $viewer_id);
                         break;
+                    case 'logs':
+                        $content = $this->viewUserLogs($target_id, $viewer_id);
+                        break;
                 }
                 break;
             case 'messages':
@@ -493,6 +496,31 @@ class components_user_front extends \engine\singleton {
                 $stmt = null;
             }
         }
+        return $this->viewUserProfileHeader($target, $viewer, $params);
+    }
+
+    private function viewUserLogs($target, $viewer) {
+        if($target != $viewer)
+            return null;
+        $params = array();
+
+        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_user_log WHERE `owner` = ? AND `type` like 'profile.%' ORDER BY `time` DESC LIMIT 0,50");
+        $stmt->bindParam(1, $target, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        $resAll = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt = null;
+
+        foreach($resAll as $row) {
+            $serial_params = unserialize($row['params']);
+            $params['profilelog'][] = array(
+                'date' => system::getInstance()->toDate($row['time'], 'h'),
+                'type' => $row['type'],
+                'ip' => $serial_params['ip'],
+                'lang_type' => language::getInstance()->get('usercontrol_profile_settings_logs_gtype.' . $row['type'])
+            );
+        }
+
         return $this->viewUserProfileHeader($target, $viewer, $params);
     }
 

@@ -1,3 +1,4 @@
+{% include 'components/user/profile/profile_settings_menu.tpl' %}
 <form method="post" action="" class="form-horizontal">
     <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
     <fieldset>
