@@ -8,9 +8,9 @@ low then 0,1 second. You can write extensions to our system using next model:
 * CronTasks (new)
 
 # Latest news
-We are realise the next ffcms release - 2.0.2 version. System API version: 2. More improvement - use php5 namespaces, static singleton model and other imrovement.
+We are realise the next ffcms release - 2.0.3 version. System API version: 2. More improvement - use php5 namespaces, static singleton model and other futures.
 Also the 2.0.0 version of ffcms support TWIG syntax in templates.
-More info about release 2.0.0: [about 2.0.0 alpha](http://ffcms.ru/en/news/future/prepare-ffcms-2.html), [about 2.0.0 release](http://ffcms.ru/en/news/future/ffcms-release-2.html)
+More info about release 2.*.*: [about 2.0.0 alpha](http://ffcms.ru/en/news/future/prepare-ffcms-2.html), [about 2.0.0 release](http://ffcms.ru/en/news/future/ffcms-release-2.html)
 
 # System requirement
 FFCMS can working on next service:
@@ -20,7 +20,7 @@ FFCMS can working on next service:
 * 64mb RAM and 500mHz CPU(for webserver & php)
 
 # Current version
-Current version of ffcms is **2.0.2**. We still working to improve functionality of our system.
+Current version of ffcms is **2.0.3**. We still working to improve functionality of our system.
 
 # Official documentation
 FFCMS is a opensource project and we published documentation to allow you develop your extensions and templates on ffcms 

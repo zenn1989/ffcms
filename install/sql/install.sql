@@ -98,7 +98,6 @@ INSERT INTO `{$db_prefix}_extensions` (`id`, `type`, `configs`, `dir`, `enabled`
 (5,	'components',	'',	'feedback',	1,	0,	'',	'', '1.0.1', '2.0.3'),
 (6,	'components',	'',	'search',	1,	0,	'',	'', '1.0.1', '2.0.3'),
 (8,	'hooks',	'a:3:{s:12:\"captcha_type\";s:8:\"ccaptcha\";s:17:\"captcha_publickey\";s:40:\"6Lf5V-YSAAAAAHjZXfPuyetxodstkHEkIn621OdE\";s:18:\"captcha_privatekey\";s:40:\"6Lf5V-YSAAAAACmTdU4Fd0uUbLTdMtI4rYGenl-X\";}',	'captcha',	1,	0,	'',	'', '1.0.1', '2.0.3'),
-(9,	'hooks',	'',	'profile',	0,	0,	'',	'', '1.0.1', '2.0.3'),
 (10,	'hooks',	'',	'bbtohtml',	1,	0,	'',	'', '1.0.1', '2.0.3'),
 (11,	'hooks',	'',	'comment',	1,	0,	'',	'', '1.0.1', '2.0.3'),
 (12,	'hooks',	'',	'file',	1,	0,	'',	'', '1.0.1', '2.0.3'),
