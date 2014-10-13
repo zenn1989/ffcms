@@ -105,9 +105,9 @@ class components_news_back extends \engine\singleton {
             $cat_path = system::getInstance()->nohtml(system::getInstance()->post('category_path'));
             $owner_cat_id = (int)system::getInstance()->post('category_owner');
             $stmt = database::getInstance()->con()->prepare("SELECT path FROM ".property::getInstance()->get('db_prefix')."_com_news_category WHERE category_id = ?");
-            $stmt->bindParam(1, $cat_id, PDO::PARAM_INT);
+            $stmt->bindParam(1, $cat_id, \PDO::PARAM_INT);
             $stmt->execute();
-            $resCat = $stmt->fetch(PDO::FETCH_ASSOC);
+            $resCat = $stmt->fetch(\PDO::FETCH_ASSOC);
             $stmt = null;
             $old_path = $resCat['path'];
             if(!system::getInstance()->isInt($cat_id) || $cat_id < 1) {
@@ -123,7 +123,7 @@ class components_news_back extends \engine\singleton {
             }
             if(sizeof($params['notify']) == 0) {
                 $stmt = database::getInstance()->con()->prepare("SELECT path FROM ".property::getInstance()->get('db_prefix')."_com_news_category WHERE category_id = ?");
-                $stmt->bindParam(1, $owner_cat_id, PDO::PARAM_INT);
+                $stmt->bindParam(1, $owner_cat_id, \PDO::PARAM_INT);
                 $stmt->execute();
                 $resMother = $stmt->fetch();
                 $new_category_path = null;
@@ -134,11 +134,13 @@ class components_news_back extends \engine\singleton {
                 }
                 $serial_name = serialize(system::getInstance()->altaddslashes($cat_name));
                 $serial_desc = serialize(system::getInstance()->altaddslashes($cat_desc));
-                $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_com_news_category SET `path` = ?, `name` = ?, `desc` = ? WHERE `category_id` = ?");
-                $stmt->bindParam(1, $new_category_path, PDO::PARAM_STR);
-                $stmt->bindParam(2, $serial_name, PDO::PARAM_STR);
-                $stmt->bindParam(3, $serial_desc, PDO::PARAM_STR);
-                $stmt->bindParam(4, $cat_id, PDO::PARAM_INT);
+                $is_public = system::getInstance()->post('show_rss_main') == "on" ? 1 : 0;
+                $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_com_news_category SET `path` = ?, `name` = ?, `desc` = ?, `public` = ? WHERE `category_id` = ?");
+                $stmt->bindParam(1, $new_category_path, \PDO::PARAM_STR);
+                $stmt->bindParam(2, $serial_name, \PDO::PARAM_STR);
+                $stmt->bindParam(3, $serial_desc, \PDO::PARAM_STR);
+                $stmt->bindParam(4, $is_public, \PDO::PARAM_INT);
+                $stmt->bindParam(5, $cat_id, \PDO::PARAM_INT);
                 $stmt->execute();
                 $stmt = null;
                 system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=news&make=category');
@@ -146,7 +148,7 @@ class components_news_back extends \engine\singleton {
         }
 
         $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_category WHERE category_id = ?");
-        $stmt->bindParam(1, $cat_id, PDO::PARAM_INT);
+        $stmt->bindParam(1, $cat_id, \PDO::PARAM_INT);
         $stmt->execute();
         if($res = $stmt->fetch()) {
             $stmt = null;
@@ -156,10 +158,11 @@ class components_news_back extends \engine\singleton {
             $params['cat'] = array(
                 'name' => unserialize($res['name']),
                 'desc' => unserialize($res['desc']),
-                'path' => $last_path_name
+                'path' => $last_path_name,
+                'public' => $res['public']
             );
             $stmt = database::getInstance()->con()->prepare("SELECT category_id FROM ".property::getInstance()->get('db_prefix')."_com_news_category WHERE path = ?");
-            $stmt->bindParam(1, $owner_path, PDO::PARAM_STR);
+            $stmt->bindParam(1, $owner_path, \PDO::PARAM_STR);
             $stmt->execute();
             if($resOwner = $stmt->fetch()) {
                 $params['news']['selected_category'] = $resOwner['category_id'];
@@ -243,6 +246,7 @@ class components_news_back extends \engine\singleton {
             $cat_serial_name = serialize(system::getInstance()->altaddslashes($cat_name));
             $cat_serial_desc = serialize(system::getInstance()->altaddslashes($cat_desc));
             $cat_path = system::getInstance()->post('category_path');
+            $cat_public = system::getInstance()->post('show_rss_main') == "on" ? 1 : 0;
             if(!system::getInstance()->isInt($cat_id) || $cat_id < 1) {
                 $params['notify']['owner_notselect'] = true;
             }
@@ -254,7 +258,7 @@ class components_news_back extends \engine\singleton {
             }
             if (sizeof($params['notify']) == 0) {
                 $stmt = database::getInstance()->con()->prepare("SELECT path FROM ".property::getInstance()->get('db_prefix')."_com_news_category WHERE category_id  = ?");
-                $stmt->bindParam(1, $cat_id, PDO::PARAM_INT);
+                $stmt->bindParam(1, $cat_id, \PDO::PARAM_INT);
                 $stmt->execute();
                 if ($res = $stmt->fetch()) {
                     $new_category_path = null;
@@ -265,10 +269,11 @@ class components_news_back extends \engine\singleton {
                     }
                     $stmt = null;
 
-                    $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_com_news_category (`name`, `desc`, `path`) VALUES (?, ?, ?)");
-                    $stmt->bindParam(1, $cat_serial_name, PDO::PARAM_STR);
-                    $stmt->bindParam(2, $cat_serial_desc, PDO::PARAM_STR);
-                    $stmt->bindParam(3, $new_category_path, PDO::PARAM_STR);
+                    $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_com_news_category (`name`, `desc`, `path`, `public`) VALUES (?, ?, ?, ?)");
+                    $stmt->bindParam(1, $cat_serial_name, \PDO::PARAM_STR);
+                    $stmt->bindParam(2, $cat_serial_desc, \PDO::PARAM_STR);
+                    $stmt->bindParam(3, $new_category_path, \PDO::PARAM_STR);
+                    $stmt->bindParam(4, $cat_public, \PDO::PARAM_INT);
                     $stmt->execute();
                     system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=news&make=category");
                 }

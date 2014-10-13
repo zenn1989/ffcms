@@ -38,6 +38,7 @@ class modules_news_on_main_front extends \engine\singleton {
 												  WHERE a.date <= ?
 												  AND a.category = b.category_id
 												  AND a.display = 1
+												  AND b.public = 1
 												  ORDER BY a.important DESC, a.date DESC LIMIT 0,?");
         $stmt->bindParam(1, $time, PDO::PARAM_INT);
         $stmt->bindParam(2, $page_news_count, PDO::PARAM_INT);

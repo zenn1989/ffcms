@@ -439,7 +439,7 @@ class components_news_front extends \engine\singleton {
         if(extension::getInstance()->getConfig('rss_count', 'news', extension::TYPE_COMPONENT, 'int') > 0)
             $item_count = extension::getInstance()->getConfig('rss_count', 'news', extension::TYPE_COMPONENT, 'int');
         $stmt = database::getInstance()->con()->prepare("SELECT a.id,a.title,a.text,a.link,a.date,a.keywords,b.path,b.name FROM ".property::getInstance()->get('db_prefix')."_com_news_entery a,
-                                        ".property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.date <= ? AND a.display = 1 ORDER BY a.date DESC LIMIT 0,?");
+                                        ".property::getInstance()->get('db_prefix')."_com_news_category b WHERE a.category = b.category_id AND a.date <= ? AND a.display = 1 AND b.public = 1 ORDER BY a.date DESC LIMIT 0,?");
         $stmt->bindParam(1, $time, PDO::PARAM_INT);
         $stmt->bindParam(2, $item_count, PDO::PARAM_INT);
         $stmt->execute();
@@ -583,6 +583,8 @@ class components_news_front extends \engine\singleton {
             $fstmt->execute();
         }
         while ($fresult = $fstmt->fetch()) {
+            if($fresult['public'] != 1 && $fresult['path'] != '' && $cat_link != $fresult['path']) // if category is not public, not the self and not the main
+                continue;
             $category_select_array[] = $fresult['category_id'];
             if ($cat_link == $fresult['path']) {
                 $serial_name = system::getInstance()->nohtml(unserialize($fresult['name']));
@@ -597,6 +599,7 @@ class components_news_front extends \engine\singleton {
                 meta::getInstance()->add('description', $seo_desc);
             }
         }
+
         $category_list = system::getInstance()->altimplode(',', $category_select_array);
         $theme_array = array();
         $fstmt = null;

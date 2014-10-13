@@ -60,5 +60,12 @@
             <input type="text" class="form-control" name="category_path" value="{{ cat.path }}" maxlength="128">
         </div>
     </div>
+    <div class="form-group">
+        <label class="control-label col-lg-3">{{ language.admin_component_news_category_add_public_label }}</label>
+        <div class="col-lg-9">
+            <input type="checkbox" name="show_rss_main" {% if cat.public is null or cat.public == 1 %}checked{% endif %} /> Выводить материалы на главную, в RSS?
+            <span class="help-block">{{ language.admin_component_news_category_add_public_desc }}</span>
+        </div>
+    </div>
     <input type="submit" name="submit" value="{{ language.admin_component_news_category_add_form_button }}" class="btn btn-success"/>
 </form>

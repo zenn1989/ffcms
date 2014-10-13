@@ -24,13 +24,14 @@ CREATE TABLE `{$db_prefix}_com_news_category` (
   `name` text NOT NULL,
   `desc` VARCHAR(4096) NOT NULL DEFAULT  '',
   `path` varchar(320) NOT NULL,
+  `public` INT( 1 ) NOT NULL DEFAULT  '1',
   PRIMARY KEY (`category_id`),
   UNIQUE KEY `link` (`path`),
   KEY `id` (`category_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `{$db_prefix}_com_news_category` (`category_id`, `name`, `path`) VALUES
-(1,	'a:2:{s:2:\"en\";s:4:\"Main\";s:2:\"ru\";s:14:\"Главная\";}',	'');
+INSERT INTO `{$db_prefix}_com_news_category` (`category_id`, `name`, `path`, `public`) VALUES
+(1,	'a:2:{s:2:\"en\";s:4:\"Main\";s:2:\"ru\";s:14:\"Главная\";}',	'', 1);
 
 DROP TABLE IF EXISTS `{$db_prefix}_com_news_entery`;
 CREATE TABLE `{$db_prefix}_com_news_entery` (
