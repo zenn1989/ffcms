@@ -15,7 +15,7 @@
         <ul class="nav navbar-nav">
             <li><a href="?object=antivirus">{{ language.admin_antivirus_exclude_tomain }}</a></li>
             <li><a href="?object=antivirus&action=rescan">{{ language.admin_antivirus_rescan }}</a></li>
-            <li><a href="?object=antivirus&action=exclude">{{ language.admin_antivirus_exclude_onlist }}</a></li>
+            <li{% if system.get_data.action == 'exclude' %} class="active"{% endif %}><a href="?object=antivirus&action=exclude">{{ language.admin_antivirus_exclude_onlist }}</a></li>
         </ul>
     </div><!-- /.navbar-collapse -->
 </nav>
