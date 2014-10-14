@@ -22,9 +22,9 @@
     <table class="table table-bordered">
         <thead>
         <tr>
-            <th>Файл</th>
-            <th>Информация</th>
-            <th>Пояснение</th>
+            <th>{{ language.admin_antivirus_info_fname }}</th>
+            <th>{{ language.admin_antivirus_info_finfo }}</th>
+            <th>{{ language.admin_antivirus_info_fdesc }}</th>
         </tr>
         </thead>
         <tbody>
