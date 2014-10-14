@@ -35,6 +35,7 @@ date_default_timezone_set(\engine\property::getInstance()->get('time_zone'));
 \engine\extension::getInstance()->loadHooks();
 \engine\router::getInstance()->makeRoute();
 \engine\meta::getInstance()->compile();
+\engine\maintenance::getInstance()->make();
 echo \engine\template::getInstance()->make();
 // independ debug from templates. Sounds not good but cant be removed from theme.
 if(\engine\permission::getInstance()->have('global/owner') && \engine\property::getInstance()->get('debug')) {

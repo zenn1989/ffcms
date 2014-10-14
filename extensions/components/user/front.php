@@ -1247,7 +1247,7 @@ class components_user_front extends \engine\singleton {
     /**
      * Show login form and process post action
      */
-    private function viewLogin() {
+    public function viewLogin() {
         if(user::getInstance()->get('id') > 0) // its always authorised user, no reason to display form
             return null;
         $params = array();

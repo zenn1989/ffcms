@@ -117,6 +117,17 @@
                 <p class="help-block">{{ language.admin_settings_list_label_multilang_desc }}</p>
             </div>
         </div>
+        <div class="form-group">
+            <label class="col-lg-3 control-label">{{ language.admin_settings_list_label_maintenance_title }}</label>
+
+            <div class="col-lg-9">
+                <select name="cfgmain:maintenance" class="form-control">
+                    <option value="0"{% if config.maintenance == 0 %} selected{% endif %}>{{ language.admin_settings_isoff }}</option>
+                    <option value="1"{% if config.maintenance == 1 %} selected{% endif %}>{{ language.admin_settings_ison }}</option>
+                </select>
+                <p class="help-block">{{ language.admin_settings_list_label_maintenance_desc }}</p>
+            </div>
+        </div>
     </div>
     <div class="tab-pane" id="seo">
         <h2>{{ language.admin_settings_list_seo_block }}</h2>

@@ -9,7 +9,7 @@ function translateText(lang_source, lang_target, source_text, api_key, blockname
     //$.getJSON('https://translate.yandex.net/api/v1.5/tr.json/translate?key='+api_key+'&text='+source_text+'&lang='+lang_yandex_source+'-'+lang_yandex_target+'&format=html&callback=?', function(result) {
     $.post('https://translate.yandex.net/api/v1.5/tr.json/translate', { key: api_key, text : source_text, lang : lang_yandex_source+'-'+lang_yandex_target, format : 'html'}, function(result) {
         if(ckeditor_instance)
-            CKEDITOR.instances[blockname+lang_target].setData(result.text[0]);
+            CKEDITOR.instances[blockname+lang_target].setData(result.text[0].replace('/'+lang_source+'/', '/' + lang_target + '/'));
         else
             $('#'+blockname+lang_target).val(result.text[0]);
     });

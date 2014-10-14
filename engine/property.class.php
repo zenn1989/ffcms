@@ -58,6 +58,7 @@ class property extends singleton {
         self::$cfg['tpl_dir'] = 'templates';
         self::$cfg['user_friendly_url'] = true;
         self::$cfg['use_multi_language'] = true;
+        self::$cfg['maintenance'] = false;
         // upd
         self::$cfg['upload_other_max_size'] = 3000;
         self::$cfg['upload_allowed_ext'] = '.doc;.docx;.rtf;.pdf;.txt;';
