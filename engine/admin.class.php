@@ -43,6 +43,7 @@ class admin extends singleton {
                 }
             }
         }
+        language::getInstance()->setUseLanguage(property::getInstance()->get('lang'));
         template::getInstance()->set(template::TYPE_CONTENT, 'modmenu', $this->viewExtensionMenu());
         template::getInstance()->set(template::TYPE_CONTENT, 'head', $this->viewHeadElements());
         if($access_suspend)

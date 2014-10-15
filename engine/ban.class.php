@@ -23,7 +23,7 @@ class ban extends singleton {
     /**
      * Check if user is permament banned in database and display ban.tpl theme
      */
-    public function check() {
+    public function init() {
         $ip = system::getInstance()->getRealIp();
         $time = time();
         $userid = user::getInstance()->get('id');

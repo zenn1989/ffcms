@@ -10,14 +10,13 @@
 namespace engine;
 
 class router extends singleton {
-
-    protected static $patharray = array();
-    protected static $pathstring = null;
     protected static $instance = null;
 
-    protected static $ismain = false;
+    protected $patharray = array();
+    protected $pathstring = null;
+    protected $ismain = false;
 
-    protected static $path_language = null;
+    protected $path_language = null;
 
     /**
      * @return router
@@ -29,22 +28,32 @@ class router extends singleton {
         return self::$instance;
     }
 
-    public function prepareRoutes() {
+    // todo: here must be full routing and rewrite property's, no reason to double it. Remove oldest static reference.
+    public function init() {
+        $this->prepareURI();
+        $this->preparePropertys();
+        $this->prepareLanguages();
+    }
+
+    /**
+     * Prepare URI path as string and array
+     * */
+    private function prepareURI() {
         $raw_uri = urldecode($_SERVER['REQUEST_URI']);
         if($get_pos = strpos($raw_uri, '?'))
             $raw_uri = substr($raw_uri, 0, $get_pos);
-        self::$pathstring = $raw_uri;
-        self::$patharray = explode("/", self::$pathstring);
+        $this->pathstring = $raw_uri;
+        $this->patharray = explode("/", $raw_uri);
         // remove 1st null element
-        array_shift(self::$patharray);
+        array_shift($this->patharray);
         // no user-friendy url ? remove index.php from path
         if(!property::getInstance()->get('user_friendly_url')) {
-            array_shift(self::$patharray);
-            self::$pathstring = substr(self::$pathstring, 10); // remove /index.php from path string
+            array_shift($this->patharray);
+            $this->pathstring = substr($this->pathstring, 10); // remove /index.php from path string
         }
         if(property::getInstance()->get('use_multi_language')) { // remove /lang/ from path and notify language of this action
-            self::$path_language = array_shift(self::$patharray);
-            if(!language::getInstance()->canUse(self::$path_language)) { // language is not founded?
+            $this->path_language = array_shift($this->patharray);
+            if(!language::getInstance()->canUse($this->path_language) && loader == 'front') { // language is not founded?
                 $redirect_to = null;
                 if(property::getInstance()->get('user_friendly_url'))
                     $redirect_to .= '/';
@@ -53,13 +62,46 @@ class router extends singleton {
 
                 $redirect_to .= property::getInstance()->get('lang') . '/';
                 system::getInstance()->redirect($redirect_to);
-            } elseif($_COOKIE['ffcms_lang'] !== self::$path_language) // set language for api and ajax scripts
-                setcookie('ffcms_lang', self::$path_language, null, '/', null, null, true);
-
+            } elseif($_COOKIE['ffcms_lang'] !== $this->path_language) // set language for api and ajax scripts
+                system::getInstance()->setCookie('ffcms_lang', $this->path_language);
         }
         // its a main?
-        if(self::$patharray[0] == null || system::getInstance()->prefixEquals(self::$patharray[0], 'index.'))
-            self::$ismain = true;
+        if($this->patharray[0] == null || system::getInstance()->prefixEquals($this->patharray[0], 'index.'))
+            $this->ismain = true;
+    }
+
+    /**
+     * Overload default system property's: set urls like script_url, full_url, nolang_url depend of routing changes
+     */
+    private function preparePropertys() {
+        property::getInstance()->set('script_url', property::getInstance()->get('url'));
+        if(!property::getInstance()->get('user_friendly_url')) {
+            property::getInstance()->set('url', property::getInstance()->get('url') . '/index.php');
+        }
+        property::getInstance()->set('nolang_url', property::getInstance()->get('url'));
+        if(property::getInstance()->get('use_multi_language')) {
+            if(loader === 'front')
+                property::getInstance()->set('url', property::getInstance()->get('url') . '/' . $this->getPathLanguage());
+            elseif(loader === 'back')
+                property::getInstance()->set('url', property::getInstance()->get('url') . '/' . property::getInstance()->get('lang'));
+        }
+        property::getInstance()->set('protocol', system::getInstance()->getProtocol());
+    }
+
+    /**
+     * Prepare language info from input data.
+     */
+    private function prepareLanguages() {
+        $lang = null;
+        if(loader === 'front' && router::getInstance()->getPathLanguage() != null && language::getInstance()->canUse($this->getPathLanguage())) // did we have language in path for front iface?
+            $lang = router::getInstance()->getPathLanguage();
+        elseif((loader === 'api' || loader === 'install') && language::getInstance()->canUse($_COOKIE['ffcms_lang'])) // did language defined for API scripts?
+            $lang = $_COOKIE['ffcms_lang'];
+        elseif($_SERVER['HTTP_ACCEPT_LANGUAGE'] != null && language::getInstance()->canUse(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)) && loader !== 'back') // did we have lang mark in browser?
+            $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+        else // no ? then use default language
+            $lang = property::getInstance()->get('lang');
+        language::getInstance()->setUseLanguage($lang);
     }
 
     /**
@@ -67,7 +109,7 @@ class router extends singleton {
      * @return array
      */
     public function getUriArray() {
-        return self::$patharray;
+        return $this->patharray;
     }
 
     /**
@@ -75,7 +117,7 @@ class router extends singleton {
      * @return array
      */
     public function shiftUriArray() {
-        $path = self::$patharray;
+        $path = $this->patharray;
         array_shift($path);
         return $path;
     }
@@ -85,14 +127,14 @@ class router extends singleton {
      * @return string
      */
     public function getUriString() {
-        return self::$pathstring;
+        return $this->pathstring;
     }
 
     /**
      * Init current component or model and prepare data to display
      */
     public function makeRoute() {
-        $way = self::getUriArray();
+        $way = $this->getUriArray();
         // its can be a main blank page ?
         if(extension::getInstance()->foundRoute($way[0])) { // its a component?
             $object = extension::getInstance()->call(extension::TYPE_COMPONENT, $way[0]);
@@ -103,10 +145,10 @@ class router extends singleton {
 
     /**
      * Get language obtained from URI pathway
-     * @return null
+     * @return string|null
      */
     public function getPathLanguage() {
-        return self::$path_language;
+        return $this->path_language;
     }
 
     /**
@@ -114,7 +156,7 @@ class router extends singleton {
      * @return bool
      */
     public function isMain() {
-        return self::$ismain;
+        return $this->ismain;
     }
 
     /**
@@ -134,9 +176,9 @@ class router extends singleton {
                     return true;
                 }
                 // if pathway equals rule on current level
-                if ($rule_split[$i] == self::$patharray[$i]) {
+                if ($rule_split[$i] == $this->patharray[$i]) {
                     // if its last level of pathway
-                    if (system::getInstance()->contains('.html', self::$patharray[$i])) {
+                    if (system::getInstance()->contains('.html', $this->patharray[$i])) {
                         return true;
                     }
                     // if not - continue cycle
@@ -161,13 +203,13 @@ class router extends singleton {
         $array_object = array();
         if ($additional != null) {
             // nil element
-            $array_object[] = self::$patharray[0];
+            $array_object[] = $this->patharray[0];
             // next way from add
             foreach ($additional as $values) {
                 $array_object[] = $values;
             }
         } else {
-            $array_object = self::$patharray;
+            $array_object = $this->patharray;
         }
         $string = null;
         for ($i = 1; $i <= sizeof($array_object); $i++) {

@@ -11,39 +11,18 @@ namespace engine;
 
 class language extends singleton {
     protected static $instance = null;
-    protected static $available = array();
-    protected static $userLang = null;
+
+    protected $available = array();
+    protected $userLang = null;
 
     public static function getInstance() {
         if(is_null(self::$instance)) {
-            self::loadAvailable();
-            self::loadLanguage();
             self::$instance = new self();
         }
         return self::$instance;
     }
 
-    protected static function loadLanguage() {
-        $lang = null;
-        if(loader === 'front' && router::getInstance()->getPathLanguage() != null && self::canUse(router::getInstance()->getPathLanguage())) // did we have language in path for front iface?
-            $lang = router::getInstance()->getPathLanguage();
-        elseif((loader === 'api' || loader === 'install') && self::canUse($_COOKIE['ffcms_lang'])) // did language defined for API scripts?
-            $lang = $_COOKIE['ffcms_lang'];
-        elseif($_SERVER['HTTP_ACCEPT_LANGUAGE'] != null && self::canUse(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)) && loader !== 'back') // did we have lang mark in browser?
-            $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
-        else // no ? then use default language
-            $lang = property::getInstance()->get('lang');
-        self::$userLang = $lang;
-        $file = root . '/language/' . $lang . '.ini';
-        $addfile = root . '/language/' . $lang . '.custom.ini';
-        self::getLanguageFile($file);
-        self::getLanguageFile($addfile);
-        // additional theme lang file
-        $theme_langfile = root . '/' . property::getInstance()->get('tpl_dir') . '/' . property::getInstance()->get('tpl_name') . '/' . $lang . '.ini';
-        self::getLanguageFile($theme_langfile);
-    }
-
-    protected static function getLanguageFile($file) {
+    protected function getLanguageFile($file) {
         if(!file_exists($file))
             return;
         $lang_array = ini::getInstance()->read($file, true);
@@ -55,7 +34,7 @@ class language extends singleton {
         }
     }
 
-    protected static function loadAvailable() {
+    public function init() {
         if(!file_exists(root . '/language/'))
             return;
         $scan = scandir(root . '/language/');
@@ -68,7 +47,7 @@ class language extends singleton {
         // check if exists
         foreach($found_language as $check_language) {
             if(file_exists(root . '/language/' . $check_language . '.ini'))
-                self::$available[] = $check_language;
+                $this->available[] = $check_language;
         }
     }
 
@@ -77,7 +56,22 @@ class language extends singleton {
      * @return string
      */
     public function getUseLanguage() {
-        return self::$userLang;
+        return $this->userLang;
+    }
+
+    /**
+     * Set use langauge for this session. As default this function was called from router on build process.
+     * @param string $language
+     */
+    public function setUseLanguage($language) {
+        $file = root . '/language/' . $language . '.ini';
+        $addfile = root . '/language/' . $language . '.custom.ini';
+        $this->getLanguageFile($file);
+        $this->getLanguageFile($addfile);
+        // additional theme lang file
+        $theme_langfile = root . '/' . property::getInstance()->get('tpl_dir') . '/' . property::getInstance()->get('tpl_name') . '/' . $language . '.ini';
+        $this->getLanguageFile($theme_langfile);
+        $this->userLang = $language;
     }
 
     /**
@@ -85,7 +79,7 @@ class language extends singleton {
      * @return array
      */
     public function getAvailable() {
-        return self::$available;
+        return $this->available;
     }
 
     /**
@@ -102,8 +96,8 @@ class language extends singleton {
      * @param string $lang
      * @return bool
      */
-    public static function canUse($lang) {
-        return in_array($lang, self::$available);
+    public function canUse($lang) {
+        return in_array($lang, $this->available);
     }
 
     /**

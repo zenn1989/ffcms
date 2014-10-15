@@ -15,13 +15,12 @@ class robot extends singleton {
 
     public static function getInstance() {
         if(is_null(self::$instance)) {
-            self::collect();
             self::$instance = new self();
         }
         return self::$instance;
     }
 
-    private static function collect() {
+    public function init() {
         if(database::getInstance()->isDown() || !property::getInstance()->get('collect_statistic'))
             return;
         $realip = system::getInstance()->getRealIp();

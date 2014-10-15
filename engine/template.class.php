@@ -11,10 +11,11 @@ namespace engine;
 
 class template extends singleton {
 
-    protected static $twig_file = null;
-    protected static $twig_string = null;
     protected static $instance = null;
-    protected static $variables = array();
+
+    protected $twig_file = null;
+    protected $twig_string = null;
+    protected $variables = array();
 
     // twig variables type
     const TYPE_CONTENT = 'content';
@@ -28,20 +29,18 @@ class template extends singleton {
      * @return template
      */
     public static function getInstance() {
-        if(is_null(self::$instance)) {
+        if(is_null(self::$instance))
             self::$instance = new self();
-            self::twigLoader();
-        }
         return self::$instance;
     }
 
-    protected static function twigLoader() {
+    protected function twigLoader() {
         $twig_cache = root . '/cache/';
-        $tpl_name = self::getIfaceTemplate();
+        $tpl_name = $this->getIfaceTemplate();
         switch(loader) {
             case 'front':
             case 'api':
-                $twig_cache .= user::getInstance()->get('id') < 1 ? 'guest' : 'uid'.user::getInstance()->get('id');
+                $twig_cache .= user::getInstance()->get('id') < 1 ? 'guest' : 'uid' . user::getInstance()->get('id');
                 break;
             case 'back':
                 $twig_cache .= 'admintmp';
@@ -62,7 +61,7 @@ class template extends singleton {
         }
         require_once(root . "/resource/Twig/Autoloader.php");
         \Twig_Autoloader::register();
-        self::$twig_file = new \Twig_Environment(
+        $this->twig_file = new \Twig_Environment(
             new \Twig_Loader_Filesystem($template_path_root),
             array(
                 'cache' => $twig_cache,
@@ -72,11 +71,11 @@ class template extends singleton {
             )
         );
         if(loader == 'install' || permission::getInstance()->have('global/owner')) // auto rebuild cache for owner
-            self::$twig_file->enableAutoReload();
-        self::$twig_string = new \Twig_Environment(new \Twig_Loader_String());
+            $this->twig_file->enableAutoReload();
+        $this->twig_string = new \Twig_Environment(new \Twig_Loader_String());
     }
 
-    protected static function getIfaceTemplate() {
+    protected function getIfaceTemplate() {
         $tpl_dir = null;
         switch(loader) {
             case 'front':
@@ -93,25 +92,26 @@ class template extends singleton {
         return $tpl_dir;
     }
 
-    public function twigDefaultVariables() {
-        self::$variables[self::TYPE_SYSTEM]['url'] = property::getInstance()->get('url');
-        self::$variables[self::TYPE_SYSTEM]['protocol'] = property::getInstance()->get('protocol');
-        self::$variables[self::TYPE_SYSTEM]['script_url'] = property::getInstance()->get('script_url');
-        self::$variables[self::TYPE_SYSTEM]['nolang_url'] = property::getInstance()->get('nolang_url');
-        self::$variables[self::TYPE_SYSTEM]['uri'] = $this->nolang_uri();
-        self::$variables[self::TYPE_SYSTEM]['theme'] = property::getInstance()->get('script_url') . '/' . property::getInstance()->get('tpl_dir') . '/' . self::getIfaceTemplate();
-        self::$variables[self::TYPE_SYSTEM]['lang'] = language::getInstance()->getUseLanguage();
-        self::$variables[self::TYPE_SYSTEM]['languages'] = language::getInstance()->getAvailable();
-        self::$variables[self::TYPE_SYSTEM]['self_url'] = property::getInstance()->get('script_url').router::getInstance()->getUriString();
+    public function init() {
+        $this->twigLoader();
+        $this->set(self::TYPE_SYSTEM, 'url', property::getInstance()->get('url'));
+        $this->set(self::TYPE_SYSTEM, 'protocol', property::getInstance()->get('protocol'));
+        $this->set(self::TYPE_SYSTEM, 'script_url', property::getInstance()->get('script_url'));
+        $this->set(self::TYPE_SYSTEM, 'nolang_url', property::getInstance()->get('nolang_url'));
+        $this->set(self::TYPE_SYSTEM, 'uri', $this->nolang_uri());
+        $this->set(self::TYPE_SYSTEM, 'theme', property::getInstance()->get('script_url') . '/' . property::getInstance()->get('tpl_dir') . '/' . $this->getIfaceTemplate());
+        $this->set(self::TYPE_SYSTEM, 'lang', language::getInstance()->getUseLanguage());
+        $this->set(self::TYPE_SYSTEM, 'languages', language::getInstance()->getAvailable());
+        $this->set(self::TYPE_SYSTEM, 'self_url', property::getInstance()->get('script_url').router::getInstance()->getUriString());
         $serial_title = property::getInstance()->get('seo_title');
-        self::$variables[self::TYPE_SYSTEM]['title'] = $serial_title[language::getInstance()->getUseLanguage()];
-        self::$variables[self::TYPE_SYSTEM]['file_name'] = basename($_SERVER['PHP_SELF']);
-        self::$variables[self::TYPE_SYSTEM]['version'] = version;
-        self::$variables[self::TYPE_SYSTEM]['admin_tpl'] = property::getInstance()->get('script_url') . '/' . property::getInstance()->get('tpl_dir') . '/' . property::getInstance()->get('admin_tpl'); // for script usage
-        self::$variables[self::TYPE_SYSTEM]['loader'] = loader;
-        self::$variables[self::TYPE_SYSTEM]['is_main'] = router::getInstance()->isMain();
-        self::$variables[self::TYPE_SYSTEM]['get_data'] = system::getInstance()->get(null);
-        self::$variables[self::TYPE_SYSTEM]['yandex_translate_key'] = property::getInstance()->get('yandex_translate_key');
+        $this->set(self::TYPE_SYSTEM, 'title', $serial_title[language::getInstance()->getUseLanguage()]);
+        $this->set(self::TYPE_SYSTEM, 'file_name', basename($_SERVER['PHP_SELF']));
+        $this->set(self::TYPE_SYSTEM, 'version', version);
+        $this->set(self::TYPE_SYSTEM, 'admin_tpl', property::getInstance()->get('script_url') . '/' . property::getInstance()->get('tpl_dir') . '/' . property::getInstance()->get('admin_tpl')); // for script usage
+        $this->set(self::TYPE_SYSTEM, 'loader', loader);
+        $this->set(self::TYPE_SYSTEM, 'is_main', router::getInstance()->isMain());
+        $this->set(self::TYPE_SYSTEM, 'get_data', system::getInstance()->get(null));
+        $this->set(self::TYPE_SYSTEM, 'yandex_translate_key', property::getInstance()->get('yandex_translate_key'));
     }
 
     public function nolang_uri() {
@@ -122,27 +122,19 @@ class template extends singleton {
             array_shift($uri);
         return system::getInstance()->altimplode('/', $uri);
     }
-    public function twigUserVariables() {
-        self::$variables[self::TYPE_USER]['id'] = user::getInstance()->get('id');
-        self::$variables[self::TYPE_USER]['name'] = user::getInstance()->get('nick');
-        self::$variables[self::TYPE_USER]['admin'] = permission::getInstance()->have('global/owner');
-        self::$variables[self::TYPE_USER]['admin_panel'] = permission::getInstance()->have('admin/main');
-        self::$variables[self::TYPE_USER]['news_add'] = extension::getInstance()->getConfig('enable_useradd', 'news', extension::TYPE_COMPONENT, 'bol');
-        self::$variables[self::TYPE_USER]['balance'] = user::getInstance()->get('balance');
-    }
 
     /**
      * @return \Twig_Environment
      */
     public function twig() {
-        return self::$twig_file;
+        return $this->twig_file;
     }
 
     /**
      * @return \Twig_Environment
      */
     public function twigString() {
-        return self::$twig_string;
+        return $this->twig_string;
     }
 
     /**
@@ -155,7 +147,7 @@ class template extends singleton {
     public function set($type, $variable, $value, $add = false) {
         if(system::getInstance()->length($variable) < 1 || (!is_array($value) && system::getInstance()->length($value) < 1) || (is_array($value) && $add))
             return;
-        self::$variables[$type][$variable] = $add ? self::$variables[$type][$variable] . $value : $value;
+        $this->variables[$type][$variable] = $add ? $this->variables[$type][$variable] . $value : $value;
     }
 
     /**
@@ -165,7 +157,7 @@ class template extends singleton {
      * @return string|null
      */
     public function get($type, $variable) {
-        return self::$variables[$type][$variable];
+        return $this->variables[$type][$variable];
     }
 
     /**
@@ -175,7 +167,7 @@ class template extends singleton {
      * @return string
      */
     public function twigRender($tpl, $variables) {
-        $renderArray = array_merge(self::$variables, $variables);
+        $renderArray = array_merge($this->variables, $variables);
         return $this->twig()->render($tpl, $renderArray);
     }
 
@@ -183,7 +175,7 @@ class template extends singleton {
         if($this->get(self::TYPE_CONTENT, 'body') == null) { // set 404 code for browser and search engines
             header("HTTP/1.0 404 Not Found");
         }
-        return $this->twig()->render('main.tpl', self::$variables);
+        return $this->twig()->render('main.tpl', $this->variables);
     }
 
     /**
@@ -194,9 +186,9 @@ class template extends singleton {
     public function justPrint($content, $params = null) {
         $renderParams = array();
         if(!is_null($params)) {
-            $renderParams = array_merge(self::$variables, $params);
+            $renderParams = array_merge($this->variables, $params);
         } else {
-            $renderParams = self::$variables;
+            $renderParams = $this->variables;
         }
         $render = $this->twigString()->render($content, $renderParams);
         exit($render);

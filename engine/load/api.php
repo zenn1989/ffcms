@@ -17,13 +17,11 @@ if(!file_exists("config.php")) {
 // default timezone from configs
 date_default_timezone_set(\engine\property::getInstance()->get('time_zone'));
 
-\engine\property::getInstance()->dymanicPrepares(); // processing of URI for multi-language and friendly url's
-\engine\template::getInstance()->twigDefaultVariables(); // set default template variables according changes in dymanic variables
-\engine\template::getInstance()->twigUserVariables(); // user default variables init
+\engine\property::getInstance()->init(); // processing of URI for multi-language and friendly url's
+\engine\language::getInstance()->init();
+\engine\router::getInstance()->init();
 
 // check ip/user is fully blocked?
-\engine\ban::getInstance()->check();
-
-\engine\language::getInstance();
-\engine\user::getInstance();
+\engine\ban::getInstance()->init();
+\engine\user::getInstance()->init();
 \engine\api::getInstance()->make(); // echo enteries

@@ -11,21 +11,21 @@ namespace engine;
 
 class user extends singleton {
     protected static $instance = null;
-    protected static $userdata = array();
-    protected static $userindex = 0;
+
+    protected $userdata = array();
+    protected $userindex = 0;
 
     /**
      * @return user
      */
     public static function getInstance() {
         if(is_null(self::$instance)) {
-            self::preload();
             self::$instance = new self();
         }
         return self::$instance;
     }
 
-    protected static function preload() {
+    public function init() {
         $token = isset($_SESSION['token']) ? $_SESSION['token'] : $_COOKIE['token'];
         $personal_id = isset($_SESSION['person']) ? $_SESSION['person'] : $_COOKIE['person'];
         $user_ip = system::getInstance()->getRealIp();
@@ -46,17 +46,24 @@ class user extends singleton {
                 $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
                 $stmt = null;
                 if ((time() - $result[0]['token_start']) < property::getInstance()->get('token_time')) {
-                    self::$userindex = $result[0]['id'];
+                    $this->userindex = $result[0]['id'];
                     foreach ($result[0] as $column_index => $column_data) {
-                        self::$userdata[self::$userindex][$column_index] = $column_data;
+                        $this->userdata[$this->userindex][$column_index] = $column_data;
                     }
+                    // set template variables
+                    template::getInstance()->set(template::TYPE_USER, 'id', $this->userindex);
+                    template::getInstance()->set(template::TYPE_USER, 'name', $this->userdata[$this->userindex]['nick']);
+                    template::getInstance()->set(template::TYPE_USER, 'admin', permission::getInstance()->have('global/owner'));
+                    template::getInstance()->set(template::TYPE_USER, 'admin_panel', permission::getInstance()->have('admin/main'));
+                    template::getInstance()->set(template::TYPE_USER, 'news_add', extension::getInstance()->getConfig('enable_useradd', 'news', extension::TYPE_COMPONENT, 'bol'));
+                    template::getInstance()->set(template::TYPE_USER, 'balance', $this->userdata[$this->userindex]['balance']);
                 }
             }
         }
     }
 
     private function set($userid, $overload = false) {
-        if(!$overload && array_key_exists($userid, self::$userdata))
+        if(!$overload && array_key_exists($userid, $this->userdata))
             return;
         if($userid < 1)
             return;
@@ -73,7 +80,7 @@ class user extends singleton {
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
         $stmt = null;
         foreach($result as $key=>$value) {
-            self::$userdata[$userid][$key] = $value;
+            $this->userdata[$userid][$key] = $value;
         }
     }
 
@@ -84,11 +91,11 @@ class user extends singleton {
     public function get($param, $userid = 0) {
         // current user, is always loaded on getInstance()
         if($userid === 0) {
-            return self::$userdata[self::$userindex][$param];
+            return $this->userdata[$this->userindex][$param];
         }
         // custom user, make load
         $this->set($userid);
-        return self::$userdata[$userid][$param];
+        return $this->userdata[$userid][$param];
     }
 
     /**
@@ -125,7 +132,7 @@ class user extends singleton {
         $stmt = null;
         foreach($result as $item) {
             foreach($item as $param => $data) {
-                self::$userdata[$item['id']][$param] = $data;
+                $this->userdata[$item['id']][$param] = $data;
             }
         }
     }
