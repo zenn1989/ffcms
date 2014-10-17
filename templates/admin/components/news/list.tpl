@@ -36,31 +36,33 @@
 </div>
 {% if news %}
 <form action="" method="post" onsubmit="return confirm('{{ language.admin_onsubmit_warning }}');">
-    <table class="table table-bordered table-responsive">
-        <thead>
-        <tr>
-            <th>{{ language.admin_component_news_th_id }}</th>
-            <th>{{ language.admin_component_news_th_title }}</th>
-            <th>{{ language.admin_component_news_th_link }}</th>
-            <th>{{ language.admin_component_news_th_date }}</th>
-            <th>{{ language.admin_component_news_th_manage }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for row in news %}
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
             <tr>
-                <td><input type="checkbox" name="check_array[]" class="check_array" value="{{ row.id }}"/> {{ row.id }}</td>
-                <td>{% if row.important %}<i class="fa fa-paperclip" style="color:#ff0000;"></i> {% endif %}{% if row.moderate %}<i class="fa fa-eye-slash"></i> {% endif %}<a href="?object=components&action=news&make=edit&id={{ row.id }}">{{ row.title }}</a></td>
-                <td><a href="{{ system.url }}/news/{{ row.link }}" target="_blank">/news/{{ row.link }}</a></td>
-                <td>{{ row.date }}</td>
-                <td class="text-center">
-                    <a href="?object=components&action=news&make=edit&id={{ row.id }}" title="Edit"><i class="fa fa-pencil-square-o fa-lg"></i></a>
-                    <a href="?object=components&action=news&make=delete&id={{ row.id }}" title="Delete"><i class="fa fa-trash-o fa-lg"></i></a>
-                </td>
+                <th>{{ language.admin_component_news_th_id }}</th>
+                <th>{{ language.admin_component_news_th_title }}</th>
+                <th>{{ language.admin_component_news_th_link }}</th>
+                <th>{{ language.admin_component_news_th_date }}</th>
+                <th>{{ language.admin_component_news_th_manage }}</th>
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            {% for row in news %}
+                <tr class="checkbox-depend">
+                    <td><input type="checkbox" name="check_array[]" class="check_array" value="{{ row.id }}" id="targetclick-{{ row.id }}"/> {{ row.id }}</td>
+                    <td>{% if row.important %}<i class="fa fa-paperclip" style="color:#ff0000;"></i> {% endif %}{% if row.moderate %}<i class="fa fa-eye-slash"></i> {% endif %}<a href="?object=components&action=news&make=edit&id={{ row.id }}">{{ row.title }}</a></td>
+                    <td><a href="{{ system.url }}/news/{{ row.link }}" target="_blank">/news/{{ row.link }}</a></td>
+                    <td>{{ row.date }}</td>
+                    <td class="text-center">
+                        <a href="?object=components&action=news&make=edit&id={{ row.id }}" title="Edit"><i class="fa fa-pencil-square-o fa-lg"></i></a>
+                        <a href="?object=components&action=news&make=delete&id={{ row.id }}" title="Delete"><i class="fa fa-trash-o fa-lg"></i></a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
     <a id="checkAll" class="btn btn-default">{{ language.admin_checkbox_all }}</a>
     <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
     <input type="submit" name="deleteSelected" value="{{ language.admin_checkbox_delselect }}" class="btn btn-danger" />

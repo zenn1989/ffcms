@@ -729,7 +729,8 @@ class components_news_front extends \engine\singleton {
             $total_result[] = array(
                 'id' => $row['id'],
                 'name' => $add . ' ' . $cname[language::getInstance()->getUseLanguage()],
-                'path' => $path
+                'path' => $path,
+                'level' => $path == null ? 0 : $spliter_count + 1
             );
         }
         return $total_result;

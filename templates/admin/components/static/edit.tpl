@@ -72,7 +72,7 @@
             <span class="help-block">{{ language.admin_component_static_edit_page_pathway_desc }}</span>
         </div>
         <div class="col-lg-6">
-            <h2>{{ language.admin_component_static_edit_page_date_text }}<small><input type="checkbox" id="setcurrentdate" name="current_date"/> {{ language.admin_component_static_edit_page_current_date }}</small></h2>
+            <h2>{{ language.admin_component_static_edit_page_date_text }}<small><input type="checkbox" id="setcurrentdate" name="current_date"/> <label for="setcurrentdate">{{ language.admin_component_static_edit_page_current_date }}</label></small></h2>
             <input type="text" name="date" id="datefield" data-date-format="dd.mm.yyyy" value="{{ static.date }}" class="form-control"/>
             <span class="help-block">{{ language.admin_component_static_edit_page_date_desc }}</span>
         </div>

@@ -13,6 +13,11 @@ $(document).ready(function () {
     if(df != null && df.length > 0) {
         changed_path = true;
     }
+    $('tr.checkbox-depend').click(function(event) {
+        if (event.target.type !== 'checkbox') {
+            $(':checkbox', this).trigger('click');
+        }
+    });
 });
 function posterDelete(id) {
     $.get(ffcms_host+'/api.php?iface='+loader+'&object=newsposterdelete&id='+id, function(){

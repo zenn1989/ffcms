@@ -97,7 +97,7 @@
             <span class="help-block">{{ language.admin_component_news_edit_page_pathway_desc }}</span>
         </div>
         <div class="col-lg-6">
-            <h2>{{ language.admin_component_news_edit_page_date_text }}<small><input type="checkbox" id="setcurrentdate" name="current_date"/> {{ language.admin_component_news_edit_page_current_date }}</small></h2>
+            <h2>{{ language.admin_component_news_edit_page_date_text }}<small><input type="checkbox" id="setcurrentdate" name="current_date"/> <label for="setcurrentdate">{{ language.admin_component_news_edit_page_current_date }}</label></small></h2>
             <input type="text" name="date" id="datefield" data-date-format="dd.mm.yyyy" value="{{ news.date }}" class="form-control" />
             <span class="help-block">{{ language.admin_component_news_edit_page_date_desc }}</span>
         </div>
@@ -196,12 +196,12 @@
         </div>
         <div class="col-lg-6">
             <h2>{{ language.admin_component_news_edit_page_params_name }}</h2>
-            <label class="checkbox">
-                <input type="checkbox" name="display_content"{% if news.display == 1 %} checked{% endif %} /> {{ language.admin_component_news_edit_page_display_ckechbox }}
-            </label>
-            <label class="checkbox">
-                <input type="checkbox" name="important_content"{% if news.important == 1 %} checked{% endif %} /> {{ language.admin_component_news_edit_page_important_ckechbox }}
-            </label>
+            <div class="panel panel-info">
+                <div class="panel-body">
+                    <div><input type="checkbox" id="display_content" name="display_content"{% if news.display == 1 %} checked{% endif %} /> <label for="display_content">{{ language.admin_component_news_edit_page_display_ckechbox }}</label></div>
+                    <div><input type="checkbox" id="important_content" name="important_content"{% if news.important == 1 %} checked{% endif %} /> <label for="important_content">{{ language.admin_component_news_edit_page_important_ckechbox }}</label></div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row">

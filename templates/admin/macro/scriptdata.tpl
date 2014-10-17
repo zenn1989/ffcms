@@ -1,10 +1,12 @@
 {% macro checkjs(initobject, checkarray) %}
     <script>
+        var check_target_class = $('{{ checkarray }}');
         $('{{ initobject }}').click(function () {
-            if ($('{{ checkarray }}').is(':checked'))
-                $('{{ checkarray }}').attr('checked', false);
-            else
-                $('{{ checkarray }}').attr('checked', true);
+            $(check_target_class).each(function () {
+                $(this).prop('checked', !$(this).is(':checked'));
+                console.log($(this));
+
+            });
         });
     </script>
 {% endmacro %}

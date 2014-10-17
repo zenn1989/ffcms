@@ -62,6 +62,15 @@ body {
     color: #ffffff;
 }
 
+.table-line tbody > tr > td {
+    line-height: 2.5;
+}
+
+.table tbody tr:hover td, .table tbody tr:hover th {
+    background-color: #cbcbcb;
+    color: #ffffff;
+}
+
 /* Top Navigation */
 
 .top-nav {
