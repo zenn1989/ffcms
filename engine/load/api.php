@@ -19,9 +19,11 @@ date_default_timezone_set(\engine\property::getInstance()->get('time_zone'));
 
 \engine\property::getInstance()->init(); // processing of URI for multi-language and friendly url's
 \engine\language::getInstance()->init();
+\engine\user::getInstance()->init();
 \engine\router::getInstance()->init();
+
+\engine\template::getInstance()->init();
 
 // check ip/user is fully blocked?
 \engine\ban::getInstance()->init();
-\engine\user::getInstance()->init();
 \engine\api::getInstance()->make(); // echo enteries

@@ -155,7 +155,11 @@ class admin extends singleton {
                             'title' => language::getInstance()->get('admin_'.$type.'_'.$cdata['dir'].'.name') ?: $cdir,
                             'desc' => language::getInstance()->get('admin_'.$type.'_'.$cdata['dir'].'.desc') ?: $cdir,
                             'enabled' => $cdata['enabled'],
-                            'way' => $cdata['type'] == extension::TYPE_COMPONENT ? $cdir : null
+                            'type' => $cdata['type'],
+                            'way' => $cdata['type'] == extension::TYPE_COMPONENT ? $cdir : null,
+                            'path_choice' => $cdata['path_choice'],
+                            'path_allow' => $cdata['path_allow'],
+                            'path_deny' => $cdata['path_deny']
                         );
                     }
                 }
@@ -187,11 +191,14 @@ class admin extends singleton {
             }
             $ext_params = extension::getInstance()->getAllParams();
             if(array_key_exists($this->get['action'], $ext_params[$this->get['object']])) {
-                if($ext_params[$this->get['object']][$this->get['action']]['enabled'] == 1) {
+                if($ext_params[$this->get['object']][$this->get['action']] != null) {
                     $object = extension::getInstance()->call($this->get['object'], $this->get['action'], true);
                     if(!is_null($object) && is_object($object)) {
                         if(system::getInstance()->get('sys') == 'info') {
                             return $this->infoExtension($object, $ext_params[$this->get['object']][$this->get['action']]);
+                        }
+                        if(system::getInstance()->get('sys') == 'pathwork' && $this->get['object'] == 'modules') {
+                            return $this->viewModulePathwork($this->get['action'], $ext_params[$this->get['object']][$this->get['action']]);
                         }
                         if(method_exists($object, '_compatable')) {
                             $script_compatable = $object->_compatable();
@@ -214,6 +221,39 @@ class admin extends singleton {
             }
             return template::getInstance()->twigRender('miss_settings.tpl', array());
         }
+    }
+
+    private function viewModulePathwork($module, $global_param) {
+        csrf::getInstance()->buildToken();
+        $params = array();
+
+        if(system::getInstance()->post('submit') && csrf::getInstance()->check()) {
+            $rule_path_choice = (int)system::getInstance()->post('mod_rule_type');
+            if($rule_path_choice > 1) // only 1 and 0
+                $rule_path_choice = 0;
+            $rule_data = system::getInstance()->post('mod_rule_value');
+            $stmt = null;
+            if($rule_path_choice == 1) {
+                $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_extensions SET `path_allow` = ?, `path_choice` = ? WHERE `dir` = ? AND `type` = ?");
+            } else {
+                $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_extensions SET `path_deny` = ?, `path_choice` = ? WHERE `dir` = ? AND `type` = ?");
+            }
+            $stmt->bindParam(1, $rule_data, \PDO::PARAM_STR);
+            $stmt->bindParam(2, $rule_path_choice, \PDO::PARAM_INT);
+            $stmt->bindParam(3, $this->get['action'], \PDO::PARAM_STR);
+            $stmt->bindParam(4, $this->get['object'], \PDO::PARAM_STR);
+            $stmt->execute();
+            $stmt = null;
+            $params['local']['saved'] = true;
+            $global_param = extension::getInstance()->overloadExtension($this->get['object'], $this->get['action'], true);
+        }
+
+        $params['local']['mod_name'] = $module;
+        $params['local']['path_choice'] = $global_param['path_choice'];
+        $params['local']['path_allow'] = $global_param['path_allow'];
+        $params['local']['path_deny'] = $global_param['path_deny'];
+
+        return template::getInstance()->twigRender('extensionmodpath.tpl', $params);
     }
 
     private function infoExtension($object, $db_data) {

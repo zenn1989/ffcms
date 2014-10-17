@@ -19,8 +19,8 @@ date_default_timezone_set(\engine\property::getInstance()->get('time_zone'));
 
 \engine\property::getInstance()->init(); // processing of URI for multi-language and friendly url's
 \engine\language::getInstance()->init();
+\engine\user::getInstance()->init();
 \engine\router::getInstance()->init();
 \engine\template::getInstance()->init();
-\engine\user::getInstance()->init();
 
 echo \engine\admin::getInstance()->make();

@@ -56,6 +56,12 @@ body {
     }
 }
 
+/* table style */
+.table thead > tr {
+    background-color: #2176ac;
+    color: #ffffff;
+}
+
 /* Top Navigation */
 
 .top-nav {
@@ -163,6 +169,11 @@ ul.alert-dropdown {
 
 .side-nav>li>ul>li>a:hover {
     color: #fff;
+}
+
+.side-nav>li>ul>li.active>a {
+    color: #fff;
+    background-color: #080808;
 }
 
 /* Flot Chart Containers */

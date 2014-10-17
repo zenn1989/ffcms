@@ -157,6 +157,21 @@ class extension extends singleton {
         return $configs[$name];
     }
 
+    public function overloadExtension($type, $dir, $return_data = false) {
+        self::$extconfigs[$type][$dir] = null;
+        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_extensions WHERE `type` = ? AND `dir` = ?");
+        $stmt->bindParam(1, $type, \PDO::PARAM_STR);
+        $stmt->bindParam(2, $dir, \PDO::PARAM_STR);
+        $stmt->execute();
+        if($stmt->rowCount() == 1) {
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            self::$extconfigs[$type][$dir] = $result;
+        }
+        $stmt = null;
+        if($return_data)
+            return self::$extconfigs[$type][$dir];
+    }
+
     public function overloadConfigs() {
         self::$extconfigs = null;
         self::loadExtensionsData();

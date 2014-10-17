@@ -19,7 +19,7 @@
     </div>
 </nav>
 <div class="table table-responsive">
-    <table class="table table-bordered">
+    <table class="table table-bordered table-hover">
         <thead>
         <tr>
             <th>{{ language.admin_antivirus_info_fname }}</th>

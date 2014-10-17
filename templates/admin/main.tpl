@@ -47,39 +47,39 @@
                 <li{% if system.get_data.object == null or system.get_data.object == 'main' %} class="active"{% endif %}><a href="{{ system.script_url }}/{{ system.file_name }}"><i class="fa fa-home"></i> {{ language.admin_main_link }}</a></li>
                 <li{% if system.get_data.object in ['settings', 'filemanager', 'antivirus', 'dump', 'updates'] %} class="active"{% endif %}>
                     <a href="javascript:;" data-toggle="collapse" data-target="#system"><i class="fa fa-fire"></i> {{ language.admin_nav_system }} <i class="fa fa-fw fa-caret-down"></i></a>
-                    <ul class="collapse" id="system">
-                        <li><a href="?object=settings"><i class="fa fa-cogs"></i> {{ language.admin_nav_li_settings }}</a></li>
-                        <li><a href="?object=filemanager"><i class="fa fa-file-o"></i> {{ language.admin_nav_li_filemanager }}</a></li>
-                        <li><a href="?object=antivirus"><i class="fa fa-shield"></i> {{ language.admin_nav_li_avir }}</a></li>
-                        <li><a href="?object=dump"><i class="fa fa-floppy-o"></i> {{ language.admin_nav_li_backup }}</a></li>
-                        <li><a href="?object=updates"><i class="fa fa-gavel"></i> {{ language.admin_nav_li_updates }}</a></li>
+                    <ul class="collapse {% if system.get_data.object in ['settings', 'filemanager', 'antivirus', 'dump', 'updates'] %} in{% endif %}" id="system">
+                        <li{% if system.get_data.object == 'settings' %} class="active"{% endif %}><a href="?object=settings"><i class="fa fa-cogs"></i> {{ language.admin_nav_li_settings }}</a></li>
+                        <li{% if system.get_data.object == 'filemanager' %} class="active"{% endif %}><a href="?object=filemanager"><i class="fa fa-file-o"></i> {{ language.admin_nav_li_filemanager }}</a></li>
+                        <li{% if system.get_data.object == 'antivirus' %} class="active"{% endif %}><a href="?object=antivirus"><i class="fa fa-shield"></i> {{ language.admin_nav_li_avir }}</a></li>
+                        <li{% if system.get_data.object == 'dump' %} class="active"{% endif %}><a href="?object=dump"><i class="fa fa-floppy-o"></i> {{ language.admin_nav_li_backup }}</a></li>
+                        <li{% if system.get_data.object == 'updates' %} class="active"{% endif %}><a href="?object=updates"><i class="fa fa-gavel"></i> {{ language.admin_nav_li_updates }}</a></li>
                     </ul>
                 </li>
                 <li{% if system.get_data.object == 'modules' %} class="active"{% endif %}>
                     <a href="javascript:;" data-toggle="collapse" data-target="#modules"><i class="fa fa-table"></i> {{ language.admin_nav_modules }} <i class="fa fa-fw fa-caret-down"></i></a>
-                    <ul class="collapse" id="modules">
+                    <ul class="collapse{% if system.get_data.object == 'modules' %} in{% endif %}" id="modules">
                         {% for module_data in content.modmenu.modules %}
-                            <li><a href="?object=modules&action={{ module_data.dir }}">{{ module_data.lang|default(module_data.dir) }}</a></li>
+                            <li{% if module_data.dir == system.get_data.action %} class="active"{% endif %}><a href="?object=modules&action={{ module_data.dir }}">{{ module_data.lang|default(module_data.dir) }}</a></li>
                         {% endfor %}
-                        <li><a href="?object=modules"><i class="fa fa-code-fork"></i> {{ language.admin_nav_more_link }}</a></li>
+                        <li{% if system.get_data.object == 'modules' and system.get_data.action == null %} class="active"{% endif %}><a href="?object=modules"><i class="fa fa-code-fork"></i> {{ language.admin_nav_more_link }}</a></li>
                     </ul>
                 </li>
                 <li{% if system.get_data.object == 'components' %} class="active"{% endif %}>
                     <a href="javascript:;" data-toggle="collapse" data-target="#components"><i class="fa fa-book"></i> {{ language.admin_nav_components }} <i class="fa fa-fw fa-caret-down"></i></a>
-                    <ul class="collapse" id="components">
+                    <ul class="collapse{% if system.get_data.object == 'components' %} in{% endif %}" id="components">
                         {% for component_data in content.modmenu.components %}
-                            <li><a href="?object=components&action={{ component_data.dir }}">{{ component_data.lang|default(component_data.dir) }}</a></li>
+                            <li{% if component_data.dir == system.get_data.action %} class="active"{% endif %}><a href="?object=components&action={{ component_data.dir }}">{{ component_data.lang|default(component_data.dir) }}</a></li>
                         {% endfor %}
-                        <li><a href="?object=components"><i class="fa fa-code-fork"></i> {{ language.admin_nav_more_link }}</a></li>
+                        <li{% if system.get_data.object == 'components' and system.get_data.action == null %} class="active"{% endif %}><a href="?object=components"><i class="fa fa-code-fork"></i> {{ language.admin_nav_more_link }}</a></li>
                     </ul>
                 </li>
                 <li{% if system.get_data.object == 'hooks' %} class="active"{% endif %}>
-                    <a  href="javascript:;" data-toggle="collapse" data-target="#hooks""><i class="fa fa-puzzle-piece"></i> {{ language.admin_nav_hooks }} <b class="caret"></b></a>
-                    <ul class="collapse" id="hooks">
+                    <a  href="javascript:;" data-toggle="collapse" data-target="#hooks"><i class="fa fa-puzzle-piece"></i> {{ language.admin_nav_hooks }} <b class="caret"></b></a>
+                    <ul class="collapse{% if system.get_data.object == 'hooks' %} in{% endif %}" id="hooks">
                         {% for hook_data in content.modmenu.hooks %}
-                            <li><a href="?object=hooks&action={{ hook_data.dir }}">{{ hook_data.lang|default(hook_data.dir) }}</a></li>
+                            <li{% if hook_data.dir == system.get_data.action %} class="active"{% endif %}><a href="?object=hooks&action={{ hook_data.dir }}">{{ hook_data.lang|default(hook_data.dir) }}</a></li>
                         {% endfor %}
-                        <li><a href="?object=hooks"><i class="fa fa-code-fork"></i> {{ language.admin_nav_more_link }}</a></li>
+                        <li{% if system.get_data.object == 'hooks' and system.get_data.action == null %} class="active"{% endif %}><a href="?object=hooks"><i class="fa fa-code-fork"></i> {{ language.admin_nav_more_link }}</a></li>
                     </ul>
                 </li>
             </ul>
