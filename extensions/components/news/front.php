@@ -548,7 +548,7 @@ class components_news_front extends \engine\singleton {
         template::getInstance()->justPrint($content);
     }
 
-    public function viewCategory()
+    public function viewCategory($is_main = false)
     {
         $viewTags = extension::getInstance()->getConfig('enable_tags', 'news', 'components', 'boolean');
         $viewCount = extension::getInstance()->getConfig('enable_views_count', 'news', 'components', 'boolean');
@@ -586,7 +586,7 @@ class components_news_front extends \engine\singleton {
             if($fresult['public'] != 1 && $fresult['path'] != '' && $cat_link != $fresult['path']) // if category is not public, not the self and not the main
                 continue;
             $category_select_array[] = $fresult['category_id'];
-            if ($cat_link == $fresult['path']) {
+            if ($cat_link == $fresult['path'] && !$is_main) {
                 $serial_name = system::getInstance()->nohtml(unserialize($fresult['name']));
                 $serial_desc = unserialize($fresult['desc']);
                 $seo_title = $page_title = language::getInstance()->get('news_view_category').': '.$serial_name[language::getInstance()->getUseLanguage()];

@@ -17,7 +17,7 @@
 
         <h2 itemprop="name"><a href="{{ system.url }}/news/{{ newsdata.full_news_uri }}">{% if newsdata.important > 0 %}<i class="fa fa-paperclip"></i> {% endif %}{{ newsdata.title }}</a></h2>
         <div class="meta">
-            <span><i class="fa fa-list"></i><a href="{{ system.url }}/news/{{ newsdata.category_url }}/" itemprop="genre">{{ newsdata.category_name }}</a></span>
+            <span><i class="fa fa-list"></i><a href="{{ system.url }}/news/{{ newsdata.category_url }}{% if newsdata.category_url|length > 0 %}/{% endif %}" itemprop="genre">{{ newsdata.category_name }}</a></span>
             <span><i class="fa fa-calendar"></i><time datetime="{{ newsdata.unixtime|date("c") }}" itemprop="datePublished">{{ newsdata.date }}</time></span>
             <span><i class="fa fa-user"></i><a href="{{ system.url }}/user/id{{ newsdata.author_id }}" itemprop="author">{{ newsdata.author_nick }}</a></span>
             {% if cfg.view_count %}
