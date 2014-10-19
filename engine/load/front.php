@@ -9,7 +9,8 @@
 
 // system are not installed or file is missed
 if(!file_exists("config.php")) {
-    exit("System are not installed or file config.php is missed. Run <a href='./install/'>Installer</a>.");
+    // redirect user to the "install process" page
+    header('Location: ./install/');
 } else {
     require_once(root . '/config.php');
 }
