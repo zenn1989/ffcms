@@ -327,7 +327,7 @@ class system extends singleton {
      */
     public function isInt($data)
     {
-        return !preg_match('/[^0-9]/s', $data) && $this->length($data) > 0;
+        return is_numeric($data) && $this->length($data) > 0;
     }
 
     /**
