@@ -15,20 +15,8 @@ use engine\property;
 use engine\permission;
 
 class api_commentpost_front extends \engine\singleton {
-    protected static $instance = null;
-
-    public static function getInstance() {
-        if(is_null(self::$instance)) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
 
     public function make() {
-        $this->postComment();
-    }
-
-    private function postComment() {
         $text = system::getInstance()->nohtml(system::getInstance()->post('comment_message'), true);
         $authorid = user::getInstance()->get('id');
         $position = system::getInstance()->post('comment_position');

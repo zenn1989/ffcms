@@ -19,16 +19,9 @@ use engine\meta;
 use engine\csrf;
 
 class components_user_front extends \engine\singleton {
-    protected static $instance = null;
+
     protected $pub_menu_links = array();
     protected $private_menu_links = array();
-
-    public static function getInstance() {
-        if(is_null(self::$instance)) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
 
     public function make() {
         template::getInstance()->set(template::TYPE_CONTENT, 'body', $this->buildUser());

@@ -10,17 +10,9 @@
 namespace engine;
 
 class language extends singleton {
-    protected static $instance = null;
 
     protected $available = array();
     protected $userLang = null;
-
-    public static function getInstance() {
-        if(is_null(self::$instance)) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
 
     protected function getLanguageFile($file) {
         if(!file_exists($file))

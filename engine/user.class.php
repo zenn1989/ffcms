@@ -10,20 +10,9 @@
 namespace engine;
 
 class user extends singleton {
-    protected static $instance = null;
 
     protected $userdata = array();
     protected $userindex = 0;
-
-    /**
-     * @return user
-     */
-    public static function getInstance() {
-        if(is_null(self::$instance)) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
 
     public function init() {
         $token = isset($_SESSION['token']) ? $_SESSION['token'] : $_COOKIE['token'];

@@ -10,17 +10,7 @@
 namespace engine;
 
 class api extends singleton {
-    protected static $instance = null;
     protected static $links_api = array();
-
-    /**
-     * @return api
-     */
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function make() {
         $iface = system::getInstance()->get('iface');

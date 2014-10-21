@@ -12,13 +12,6 @@ use engine\language;
 use engine\property;
 
 class api_changelanguage_front extends \engine\singleton {
-    protected static $instance = null;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function make() {
         $to = system::getInstance()->get('to');

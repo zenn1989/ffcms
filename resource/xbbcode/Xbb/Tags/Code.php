@@ -109,6 +109,7 @@ class Xbb_Tags_Code extends bbcode
             }
             $this->_geshi->highlight_lines_extra($extra);
         }
+        /**
         // Формируем заголовок
         $result = '<span class="bb_code_lang">'
             . $this->_geshi->get_language_name() . '</span>';
@@ -126,6 +127,9 @@ class Xbb_Tags_Code extends bbcode
         }
         // Возвращаем результат
         return $result . '</div>';
+         **/
+        $result = "<pre>" . htmlspecialchars($this->_geshi->parse_code()) . "</pre>";
+        return $result;
     }
 }
 

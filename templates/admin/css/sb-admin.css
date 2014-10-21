@@ -58,8 +58,8 @@ body {
 
 /* table style */
 .table thead > tr {
-    background-color: #2176ac;
-    color: #ffffff;
+    background-color: #8dbdd8;
+    color: #000000;
 }
 
 .table-line tbody > tr > td {

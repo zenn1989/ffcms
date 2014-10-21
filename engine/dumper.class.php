@@ -11,14 +11,6 @@ namespace engine;
 
 class dumper extends singleton {
 
-    protected static $instance = null;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
-
     /**
      * Create full copy of www dir and mysql database
      */

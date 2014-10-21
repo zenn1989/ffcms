@@ -13,13 +13,6 @@ use engine\language;
 use engine\extension;
 
 class hooks_urlfixer_front extends \engine\singleton {
-    protected static $instance = null;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function make() {}
 

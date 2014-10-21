@@ -10,17 +10,8 @@
 namespace engine;
 
 class meta extends singleton {
-    protected static $instance = null;
-    protected $metadata = array();
 
-    /**
-     * @return meta
-     */
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
+    protected $metadata = array();
 
     /**
      * Default data for main page.

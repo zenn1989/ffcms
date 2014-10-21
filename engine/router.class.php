@@ -10,7 +10,6 @@
 namespace engine;
 
 class router extends singleton {
-    protected static $instance = null;
 
     protected $patharray = array();
     protected $pathstring = null;
@@ -19,16 +18,8 @@ class router extends singleton {
     protected $path_language = null;
 
     /**
-     * @return router
+     * Init router worker
      */
-    public static function getInstance() {
-        if(is_null(self::$instance)) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
-    // todo: here must be full routing and rewrite property's, no reason to double it. Remove oldest static reference.
     public function init() {
         $this->prepareURI();
         $this->preparePropertys();

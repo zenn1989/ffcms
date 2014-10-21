@@ -8,7 +8,6 @@
  */
 
 class hooks_urlfixer_back extends \engine\singleton {
-    protected static $instance = null;
 
     public function _version() {
         return '1.0.1';
@@ -16,11 +15,5 @@ class hooks_urlfixer_back extends \engine\singleton {
 
     public function _compatable() {
         return '2.0.3';
-    }
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
     }
 }

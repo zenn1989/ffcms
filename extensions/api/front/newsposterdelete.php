@@ -12,13 +12,6 @@ use engine\system;
 use engine\extension;
 
 class api_newsposterdelete_front extends \engine\singleton {
-    protected static $instance = null;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function make() {
         $id = (int)system::getInstance()->get('id');

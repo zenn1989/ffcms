@@ -10,18 +10,9 @@
 namespace engine;
 
 class cache extends singleton {
-    protected static $instance = null;
 
     const CACHE_TIME = 120;
     const CACHE_DIR = '/cache/file/';
-
-    public static function getInstance() {
-        if(is_null(self::$instance)) {
-            self::checkDirectoryAvailable();
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
 
     protected static function checkDirectoryAvailable() {
         if(!file_exists(root . self::CACHE_DIR)) {

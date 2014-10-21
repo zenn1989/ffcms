@@ -11,25 +11,12 @@ namespace engine;
 
 class extension extends singleton {
 
-    protected static $instance = null;
-    protected static $callobjects = array();
-    protected static $extconfigs = array();
-
+    protected $callobjects = array();
+    protected $extconfigs = array();
 
     const TYPE_MODULE = 'modules';
     const TYPE_COMPONENT = 'components';
     const TYPE_HOOK = 'hooks';
-
-    /**
-     * @return extension
-     */
-    public static function getInstance() {
-        if(is_null(self::$instance)) {
-            self::loadExtensionsData();
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
 
     /**
      * Check is URI pathway is always used. Example: extension::getInstance()->foundRoute('static') - check if /static/* way is used.
@@ -37,7 +24,7 @@ class extension extends singleton {
      * @return bool
      */
     public function foundRoute($way) {
-        if(array_key_exists($way, self::$extconfigs['components']) && $way != null && !system::getInstance()->prefixEquals($way, '.') && self::$extconfigs['components'][$way]['enabled'] == 1)
+        if(array_key_exists($way, $this->extconfigs['components']) && $way != null && !system::getInstance()->prefixEquals($way, '.') && $this->extconfigs['components'][$way]['enabled'] == 1)
             return true;
         return false;
     }
@@ -50,8 +37,8 @@ class extension extends singleton {
      * @return mixed
      */
     public function call($type, $object, $is_back = false) {
-        if(!is_object(self::$callobjects[$type][$object])) {
-            if(array_key_exists($type, self::$extconfigs) && array_key_exists($object, self::$extconfigs[$type])) {
+        if(!is_object($this->callobjects[$type][$object])) {
+            if(array_key_exists($type, $this->extconfigs) && array_key_exists($object, $this->extconfigs[$type])) {
                 $file = root . '/extensions/' . $type . '/' . $object;
                 if($is_back)
                     $file .= '/back.php';
@@ -69,7 +56,7 @@ class extension extends singleton {
                         if(method_exists($cname, 'getInstance')) {
                             $instance = @$init::getInstance();
                             if(is_object($instance)) {
-                                self::$callobjects[$type][$object][$is_back ? 'back' : 'front'] = $instance;
+                                $this->callobjects[$type][$object][$is_back ? 'back' : 'front'] = $instance;
                             } else {
                                 logger::getInstance()->log(logger::LEVEL_WARN, 'Method getInstance() dosnt return object link for self(return $this) in file '.$file);
                             }
@@ -84,11 +71,11 @@ class extension extends singleton {
                 }
             }
         }
-        return self::$callobjects[$type][$object][$is_back ? 'back' : 'front'];
+        return $this->callobjects[$type][$object][$is_back ? 'back' : 'front'];
     }
 
     public function loadModules() {
-        foreach(self::$extconfigs[self::TYPE_MODULE] as $mod_data) {
+        foreach($this->extconfigs[self::TYPE_MODULE] as $mod_data) {
             if($mod_data['enabled'] == 1) { // if module is enabled
                 // check is module work on this pathway.
                 $work_on_this_path = false;
@@ -126,7 +113,7 @@ class extension extends singleton {
     }
 
     public function loadHooks() {
-        foreach(self::$extconfigs[self::TYPE_HOOK] as $hook_data) {
+        foreach($this->extconfigs[self::TYPE_HOOK] as $hook_data) {
             if($hook_data['enabled'] == 1) {
                 $callback = $this->call(self::TYPE_HOOK, $hook_data['dir']);
                 if(is_object($callback) && method_exists($callback, 'make')) {
@@ -146,7 +133,7 @@ class extension extends singleton {
      */
     public function getConfig($name, $ext_dir, $object, $var_type = null)
     {
-        $configs = unserialize(self::$extconfigs[$object][$ext_dir]['configs']);
+        $configs = unserialize($this->extconfigs[$object][$ext_dir]['configs']);
         if (in_array($var_type, array('bool', 'boolean', 'bol'))) {
             return $configs[$name] == "0" ? false : true;
         } elseif (in_array($var_type, array('int', 'integer'))) {
@@ -158,32 +145,33 @@ class extension extends singleton {
     }
 
     public function overloadExtension($type, $dir, $return_data = false) {
-        self::$extconfigs[$type][$dir] = null;
+        $this->extconfigs[$type][$dir] = null;
         $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_extensions WHERE `type` = ? AND `dir` = ?");
         $stmt->bindParam(1, $type, \PDO::PARAM_STR);
         $stmt->bindParam(2, $dir, \PDO::PARAM_STR);
         $stmt->execute();
         if($stmt->rowCount() == 1) {
             $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-            self::$extconfigs[$type][$dir] = $result;
+            $this->extconfigs[$type][$dir] = $result;
         }
         $stmt = null;
         if($return_data)
-            return self::$extconfigs[$type][$dir];
+            return $this->extconfigs[$type][$dir];
+        return null;
     }
 
     public function overloadConfigs() {
-        self::$extconfigs = null;
-        self::loadExtensionsData();
+        $this->extconfigs = null;
+        $this->init();
     }
 
-    protected static function loadExtensionsData() {
+    public function init() { // loadExtensionsData()
         $query = "SELECT * FROM ".property::getInstance()->get('db_prefix')."_extensions";
         $stmt = database::getInstance()->con()->query($query);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         foreach($result as $row) {
             foreach($row as $key=>$value) {
-                self::$extconfigs[$row['type']][$row['dir']][$key] = $value;
+                $this->extconfigs[$row['type']][$row['dir']][$key] = $value;
             }
         }
     }
@@ -193,6 +181,6 @@ class extension extends singleton {
      * @return array
      */
     public function getAllParams() {
-        return self::$extconfigs;
+        return $this->extconfigs;
     }
 }

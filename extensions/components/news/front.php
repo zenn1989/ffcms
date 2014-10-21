@@ -19,17 +19,11 @@ use engine\user;
 use engine\cache;
 
 class components_news_front extends \engine\singleton {
-    protected static $instance = null;
+
     const ALLOWED_HTML_TAGS = "<p><a><img><img/><table><tr><td><tbody><thead><th><pre><iframe><span><strong><em><s><blockquote><ul><ol><li><h1><h2><h3><h4><div>";
     const RSS_UPDATE_TIME = 600;
     const RSS_ITEM_LIMIT = 10;
 
-    public static function getInstance() {
-        if(is_null(self::$instance)) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
 
     public function make() {
         template::getInstance()->set(template::TYPE_CONTENT, 'body', $this->buildNews());

@@ -14,17 +14,10 @@ use engine\extension;
 use engine\system;
 
 class api_ckloader_back extends \engine\singleton {
-    protected static $instance = null;
 
     const TYPE_ALL = 0;
     const TYPE_IMAGE = 1;
     const TYPE_FLASH = 2;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function make() {
         if($_FILES['upload'] == null)

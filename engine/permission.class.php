@@ -10,15 +10,9 @@
 namespace engine;
 
 class permission extends singleton {
-    protected static $instance = null;
+
     protected $all_permissions = array();
     protected $full_access_data = array();
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     /**
      * Did current user have a $permission ?

@@ -10,13 +10,6 @@
 namespace engine;
 
 class ini extends singleton {
-    protected static $instance = null;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     /**
      * Read ini structure data and return as associative array or FALSE if file not founded
@@ -49,11 +42,11 @@ class ini extends singleton {
                     {
                         for($i=0;$i<count($elem2);$i++)
                         {
-                            $content .= $key2."[] = '".$elem2[$i]."'\n";
+                            $content .= $key2."[] = '".addslashes($elem2[$i])."'\n";
                         }
                     }
                     else if($elem2=="") $content .= $key2." = \n";
-                    else $content .= $key2." = '".$elem2."'\n";
+                    else $content .= $key2." = '".addslashes($elem2)."'\n";
                 }
             }
         }
@@ -63,11 +56,11 @@ class ini extends singleton {
                 {
                     for($i=0;$i<count($elem);$i++)
                     {
-                        $content .= $key."[] = '".$elem[$i]."'\n";
+                        $content .= $key."[] = '".addslashes($elem[$i])."'\n";
                     }
                 }
                 else if($elem=="") $content .= $key." = \n";
-                else $content .= $key." = '".$elem."'\n";
+                else $content .= $key." = '".addslashes($elem)."'\n";
             }
         }
 

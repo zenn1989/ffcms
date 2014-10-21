@@ -11,13 +11,6 @@ use engine\extension;
 use engine\template;
 
 class modules_static_on_main_front extends \engine\singleton {
-    protected static $instance = null;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function make() {
         $page_id = extension::getInstance()->getConfig('news_id', 'static_on_main', 'modules', 'int');

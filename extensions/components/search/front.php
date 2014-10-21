@@ -17,13 +17,6 @@ use engine\template;
 
 class components_search_front extends \engine\singleton {
 
-    protected static $instance = null;
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
-
     public function make() {
         $params = array();
         meta::getInstance()->add('title', language::getInstance()->get('search_seo_title'));

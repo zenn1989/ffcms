@@ -10,13 +10,6 @@
 namespace engine;
 
 class install extends singleton {
-    protected static $instance = null;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function make() {
         template::getInstance()->set(template::TYPE_SYSTEM, 'lang_available', language::getInstance()->getAvailable());

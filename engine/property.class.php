@@ -10,18 +10,8 @@
 namespace engine;
 
 class property extends singleton {
-    protected static $instance = null;
 
     protected $cfg = array();
-
-    /**
-     * @return property
-     */
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     /**
      * Get configure param

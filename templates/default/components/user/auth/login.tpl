@@ -68,7 +68,7 @@
             {% endif %}
             <div class="form-group">
                 <div class="col-md-9 col-md-offset-3">
-                    <input type="checkbox" name="longsession"> {{ language.usercontrol_auth_remember }}
+                    <input type="checkbox" name="longsession" id="loginsession"> <label for="loginsession">{{ language.usercontrol_auth_remember }}</label>
                 </div>
             </div>
             <div class="form-group">

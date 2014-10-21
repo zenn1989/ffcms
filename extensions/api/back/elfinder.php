@@ -12,13 +12,6 @@ use engine\property;
 use engine\system;
 
 class api_elfinder_back extends \engine\singleton {
-    protected static $instance = null;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function make() {
         if (!permission::getInstance()->have('admin/filemanager')) {

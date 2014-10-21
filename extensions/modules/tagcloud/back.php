@@ -13,13 +13,6 @@ use engine\admin;
 use engine\extension;
 
 class modules_tagcloud_back extends \engine\singleton {
-    protected static $instance = null;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function _version() {
         return '1.0.1';

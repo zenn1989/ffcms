@@ -14,14 +14,8 @@ use engine\database;
 use engine\property;
 
 class components_feedback_back extends \engine\singleton {
-    protected static $instance = null;
-    const ITEM_PER_PAGE = 10;
 
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
+    const ITEM_PER_PAGE = 10;
 
     public function _version() {
         return '1.0.1';

@@ -11,8 +11,6 @@ namespace engine;
 
 class template extends singleton {
 
-    protected static $instance = null;
-
     protected $twig_file = null;
     protected $twig_string = null;
     protected $variables = array();
@@ -24,15 +22,6 @@ class template extends singleton {
     const TYPE_USER = 'user';
     const TYPE_MODULE = 'module';
     const TYPE_META = 'meta';
-
-    /**
-     * @return template
-     */
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     protected function twigLoader() {
         $twig_cache = root . '/cache/';

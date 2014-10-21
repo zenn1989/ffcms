@@ -15,20 +15,7 @@ use RecursiveIteratorIterator;
 
 class system extends singleton {
 
-    protected static $instance = null;
-
     const MAX_INTEGER_32 = 2147483647;
-
-    /**
-     * @return system
-     */
-    public static function getInstance() {
-        if(is_null(self::$instance)) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
 
     /**
      * Get data from global $_POST with $key. Like $_POST[$key]
@@ -327,7 +314,16 @@ class system extends singleton {
      */
     public function isInt($data)
     {
-        return is_numeric($data) && $this->length($data) > 0;
+        return filter_var($data, FILTER_VALIDATE_INT) !== false;
+    }
+
+    /**
+     * Check if $data is numeric - integer, float, e^
+     * @param string $data
+     * @return bool
+     */
+    public function isNumeric($data) {
+        return is_numeric($data);
     }
 
     /**

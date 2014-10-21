@@ -13,13 +13,6 @@ use engine\property;
 use engine\user;
 
 class api_commentsave_front extends \engine\singleton {
-    protected static $instance = null;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function make() {
         $obj = api::getInstance()->call('front', 'commentedit');

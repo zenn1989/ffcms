@@ -13,14 +13,8 @@ use engine\property;
 use engine\permission;
 
 class api_jqueryfile_back extends \engine\singleton {
-    protected static $instance = null;
-    const filepath = '/news/gallery/';
 
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
+    const FILES_PATH = '/news/gallery/';
 
     public function make() {
         if(!permission::getInstance()->have('admin/components/news/add') && !permission::getInstance()->have('admin/components/news/edit'))
@@ -47,8 +41,8 @@ class api_jqueryfile_back extends \engine\singleton {
         if(!in_array($file_ext, array('jpg', 'png', 'gif', 'bmp', 'jpeg')) || $news_id < 1) {
             return;
         }
-        $full_img = root . '/upload' . self::filepath . $news_id . '/orig/' . $fname;
-        $thumb_img = root . '/upload' . self::filepath . $news_id . '/thumb/' . $fname;
+        $full_img = root . '/upload' . self::FILES_PATH . $news_id . '/orig/' . $fname;
+        $thumb_img = root . '/upload' . self::FILES_PATH . $news_id . '/thumb/' . $fname;
         if(file_exists($full_img) && file_exists($thumb_img)) {
             @unlink($full_img);
             @unlink($thumb_img);
@@ -57,7 +51,7 @@ class api_jqueryfile_back extends \engine\singleton {
 
     private function viewList() {
         $news_id = (int)system::getInstance()->get('id');
-        $path = root . '/upload' . self::filepath . $news_id . '/';
+        $path = root . '/upload' . self::FILES_PATH . $news_id . '/';
         if($news_id < 1 || !file_exists($path))
             return;
         $output = array();
@@ -67,8 +61,8 @@ class api_jqueryfile_back extends \engine\singleton {
             if(in_array($file_ext, array('jpg', 'png', 'gif', 'bmp', 'jpeg'))) {
                 $output[] = array(
                     'name' => $files,
-                    'url' => property::getInstance()->get('script_url') . '/upload' . self::filepath . $news_id . '/orig/' . $files,
-                    'thumbnailUrl' => property::getInstance()->get('script_url') . '/upload' . self::filepath . $news_id . '/thumb/' . $files,
+                    'url' => property::getInstance()->get('script_url') . '/upload' . self::FILES_PATH . $news_id . '/orig/' . $files,
+                    'thumbnailUrl' => property::getInstance()->get('script_url') . '/upload' . self::FILES_PATH . $news_id . '/thumb/' . $files,
                 );
             }
         }
@@ -83,7 +77,7 @@ class api_jqueryfile_back extends \engine\singleton {
             return;
         }
 
-        $dir = self::filepath . $news_id . '/';
+        $dir = self::FILES_PATH . $news_id . '/';
 
         $full_img = extension::getInstance()->call(extension::TYPE_HOOK, 'file')->uploadImage($dir . 'orig/', $file);
         if(!$full_img)

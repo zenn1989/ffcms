@@ -14,13 +14,6 @@ use engine\extension;
 
 
 class api_wysibbimage_front extends \engine\singleton {
-    protected static $instance = null;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function make() {
         $dir = system::getInstance()->get('dir');

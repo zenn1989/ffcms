@@ -7,27 +7,20 @@
 |==========================================================|
  */
 
-use engine\logger;
 use engine\system;
 use engine\property;
 use engine\user;
 
 class hooks_file_front extends \engine\singleton {
-    protected static $instance = null;
-    protected $directory = "/upload";
 
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
+    const UPLOAD_FOLDER = "/upload";
 
     public function uploadAvatar($file) {
         $userid = user::getInstance()->get('id');
         if (!$this->validImageMime($file) || $userid < 1) {
             return false;
         }
-        $dir_original = root . "/upload/user/avatar/original/";
+        $dir_original = root . self::UPLOAD_FOLDER . "/user/avatar/original/";
         $tmp_arr = explode(".", $file['name']);
         $image_extension = array_pop($tmp_arr);
         $file_save_original = "avatar_$userid.$image_extension";
@@ -65,16 +58,16 @@ class hooks_file_front extends \engine\singleton {
         imagecopyresized($image_medium_truecolor, $image_buffer, 0, 0, 0, 0, $image_medium_dx, $image_medium_dy, $image_ox, $image_oy);
         imagecopyresized($image_small_truecolor, $image_buffer, 0, 0, 0, 0, $image_small_dx, $image_small_dy, $image_ox, $image_oy);
 
-        if(!file_exists(root . '/upload/user/avatar/big/'))
-            system::getInstance()->createDirectory(root . '/upload/user/avatar/big/');
-        if(!file_exists(root . '/upload/user/avatar/medium/'))
-            system::getInstance()->createDirectory(root . '/upload/user/avatar/medium/');
-        if(!file_exists(root . '/upload/user/avatar/small/'))
-            system::getInstance()->createDirectory(root . '/upload/user/avatar/small/');
+        if(!file_exists(root . self::UPLOAD_FOLDER . '/user/avatar/big/'))
+            system::getInstance()->createDirectory(root . self::UPLOAD_FOLDER . '/user/avatar/big/');
+        if(!file_exists(root . self::UPLOAD_FOLDER . '/user/avatar/medium/'))
+            system::getInstance()->createDirectory(root . self::UPLOAD_FOLDER . '/user/avatar/medium/');
+        if(!file_exists(root . self::UPLOAD_FOLDER . '/user/avatar/small/'))
+            system::getInstance()->createDirectory(root . self::UPLOAD_FOLDER . '/user/avatar/small/');
 
-        imagejpeg($image_big_truecolor, root . "/upload/user/avatar/big/$file_save_min_jpg");
-        imagejpeg($image_medium_truecolor, root . "/upload/user/avatar/medium/$file_save_min_jpg");
-        imagejpeg($image_small_truecolor, root . "/upload/user/avatar/small/$file_save_min_jpg");
+        imagejpeg($image_big_truecolor, root . self::UPLOAD_FOLDER . "/user/avatar/big/$file_save_min_jpg");
+        imagejpeg($image_medium_truecolor, root . self::UPLOAD_FOLDER . "/user/avatar/medium/$file_save_min_jpg");
+        imagejpeg($image_small_truecolor, root . self::UPLOAD_FOLDER . "/user/avatar/small/$file_save_min_jpg");
 
         imagedestroy($image_big_truecolor);
         imagedestroy($image_medium_truecolor);
@@ -93,7 +86,7 @@ class hooks_file_front extends \engine\singleton {
      * @return bool|null|string
      */
     public function uploadResizedImage($dir = '/images/', $file, $dx, $dy = false, $static_name = false) {
-        $full_dir = root . $this->directory . $dir;
+        $full_dir = root . self::UPLOAD_FOLDER . $dir;
         // make directory for upload if it dosnt exists
         if(!file_exists($full_dir)) {
             system::getInstance()->createDirectory($full_dir);
@@ -138,13 +131,13 @@ class hooks_file_front extends \engine\singleton {
         $save_name = null;
         $clear_name = null;
         if($static_name) {
-            $save_name = $this->directory . $dir . $static_name;
+            $save_name = self::UPLOAD_FOLDER . $dir . $static_name;
             $clear_name = $static_name;
         } else {
             $object_pharse = explode(".", is_array($file) ? $file['name'] : $file); // filename after array_pop
             $image_extension = array_pop($object_pharse); // file extension
             $image_new_name = $this->analiseUploadName(implode('', $object_pharse), $image_extension, $full_dir);
-            $save_name = $this->directory . $dir .  $image_new_name . "." .$image_extension;
+            $save_name = self::UPLOAD_FOLDER . $dir .  $image_new_name . "." .$image_extension;
             $clear_name = $image_new_name . "." .$image_extension;
         }
         if(file_exists(root . $save_name))
@@ -163,7 +156,7 @@ class hooks_file_front extends \engine\singleton {
      */
     public function uploadImage($dir = '/images/', $file) {
         $dir = $this->checkFolderName($dir);
-        $full_dir = root . $this->directory . $dir;
+        $full_dir = root . self::UPLOAD_FOLDER . $dir;
         // make directory for upload if it dosnt exists
         if(!file_exists($full_dir)) {
             system::getInstance()->createDirectory($full_dir);
@@ -199,7 +192,7 @@ class hooks_file_front extends \engine\singleton {
      */
     public function uploadFile($dir = '/other/', $file, $allowed_ext = array('doc', 'docx', 'pdf')) {
         $dir = $this->checkFolderName($dir);
-        $full_dir = root . $this->directory . $dir;
+        $full_dir = root . self::UPLOAD_FOLDER . $dir;
         if(!file_exists($full_dir))
             system::getInstance()->createDirectory($full_dir);
         $object = explode(".", $file['name']);

@@ -19,15 +19,9 @@ use engine\csrf;
 use engine\extension;
 
 class components_static_back extends \engine\singleton {
-    protected static $instance = null;
+
     const ITEM_PER_PAGE = 10;
     const SEARCH_PER_PAGE = 50;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function _version() {
         return '1.0.1';

@@ -14,13 +14,16 @@ if(!file_exists("config.php")) {
 } else {
     require_once(root . '/config.php');
 }
-// default timezone from configs
-date_default_timezone_set(\engine\property::getInstance()->get('time_zone'));
 
 \engine\property::getInstance()->init(); // processing of URI for multi-language and friendly url's
+date_default_timezone_set(\engine\property::getInstance()->get('time_zone')); // default timezone from configs
+
 \engine\language::getInstance()->init();
+\engine\database::getInstance()->init(); // init database PDO connect
 \engine\user::getInstance()->init();
 \engine\router::getInstance()->init();
+
+\engine\extension::getInstance()->init(); // init extension controller
 
 \engine\template::getInstance()->init();
 

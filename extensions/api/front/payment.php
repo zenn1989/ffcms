@@ -13,13 +13,6 @@ use engine\logger;
 use engine\user;
 
 class api_payment_front extends \engine\singleton {
-    protected static $instance = null;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function make() {
         $type = system::getInstance()->get('type');

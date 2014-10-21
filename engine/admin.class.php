@@ -10,7 +10,6 @@
 namespace engine;
 
 class admin extends singleton {
-    protected static $instance = null;
     protected $get = array();
     protected $extension_link = array();
     const update_url = 'http://update.ffcms.ru/requestversion.php';
@@ -20,12 +19,6 @@ class admin extends singleton {
         'admin/cleanstats', 'admin/cleanlogs',
         'admin/imagebrowser', 'admin/flashbrowser', 'admin/filebrowser'
     );
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function make() {
         $this->get = array(

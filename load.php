@@ -10,6 +10,9 @@ error_reporting(E_ERROR);
 
 define('version', '2.0.3');
 
+header("Content-type:text/html; charset=utf-8");
+header('X-Powered-By: FFCMS');
+
 // load test - single thread * 10 times
 // -- type -- | nocache time | cache time | nocache ram | cache ram |
 //    static  | 0,96 - 0,99s | 0,12-0,17s |  6,8-7mb    |   4,452m  |

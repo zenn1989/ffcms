@@ -15,13 +15,6 @@ use engine\template;
 use engine\extension;
 
 class modules_news_top_view_front extends \engine\singleton {
-    protected static $instance = null;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function make() {
         $params = array();

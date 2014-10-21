@@ -10,15 +10,6 @@
 namespace engine;
 
 class ban extends singleton {
-    protected static $instance = null;
-
-    public static function getInstance() {
-        if(is_null(self::$instance)) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
 
     /**
      * Check if user is permament banned in database and display ban.tpl theme

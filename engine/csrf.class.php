@@ -10,15 +10,8 @@
 namespace engine;
 
 class csrf extends singleton {
-    protected static $instance = null;
 
     const SESSION_TIME = 600; // session lifetime 10min
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     /**
      * Check current form usage is safe for CSRF attack. Form must have <input type="hidden" name="csrf_token" value="{{system.csrf_token}}" />

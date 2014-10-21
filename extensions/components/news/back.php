@@ -19,7 +19,6 @@ use engine\permission;
 use engine\csrf;
 
 class components_news_back extends \engine\singleton {
-    protected static $instance = null;
 
     const ITEM_PER_PAGE = 10;
     const SEARCH_PER_PAGE = 50;
@@ -28,12 +27,6 @@ class components_news_back extends \engine\singleton {
     const FILTER_MODERATE = 1;
     const FILTER_IMPORTANT = 2;
     const FILTER_SEARCH = 3;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function _version() {
         return '1.0.1';

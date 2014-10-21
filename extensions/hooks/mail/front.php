@@ -10,14 +10,8 @@
 use engine\property;
 
 class hooks_mail_front extends \engine\singleton {
-    protected static $instance = null;
-    protected $mailer = null;
 
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
+    protected $mailer = null;
 
     public function send($to, $title, $text, $ownername = null) {
         if(is_null($this->mailer)) {

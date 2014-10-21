@@ -13,13 +13,6 @@ use engine\property;
 use engine\database;
 
 class api_bookmarkadd_front extends \engine\singleton {
-    protected static $instance = null;
-
-    public function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function make() {
         if(user::getInstance()->get('id') > 0) {

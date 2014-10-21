@@ -13,17 +13,10 @@ use engine\template;
 use engine\property;
 
 class api_ckbrowser_back extends \engine\singleton {
-    protected static $instance = null;
 
     const TYPE_ALL = 0;
     const TYPE_IMAGE = 1;
     const TYPE_FLASH = 2;
-
-    public static function getInstance() {
-        if(is_null(self::$instance))
-            self::$instance = new self();
-        return self::$instance;
-    }
 
     public function make() {
         $tpl = @file_get_contents(root . '/resource/ckeditor/customtpl/filebrowser.tpl');

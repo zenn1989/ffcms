@@ -10,9 +10,7 @@
 namespace engine;
 
 
-class antivirus extends singleton
-{
-    protected static $instance = null;
+class antivirus extends singleton {
     // ('dir/dir2/file.ext' => md5_size())
     protected $scan_md5 = array();
     protected $version_md5 = array();
@@ -22,13 +20,6 @@ class antivirus extends singleton
 
     const REMOTE_CHECKSUM = 'http://update.ffcms.ru/av_checksum.php';
     const REMOTE_CACHETIME = 86400; // 1 day
-
-    public static function getInstance() {
-        if(is_null(self::$instance)) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
 
     public function doFullScan($rescan = false)
     {
