@@ -205,7 +205,7 @@ class install extends singleton {
         if(!file_exists(root . '/install/.install')) {
             $params['notify']['prepare']['inst_unlock'] = true;
         }
-        $timezone_array = array('Pacific/Kwajalein', 'Pacific/Samoa', 'US/Hawaii', 'US/Alaska', 'US/Pacific', 'US/Arizona', 'America/Mexico_City', 'S/East-Indiana', 'America/Santiago', 'America/Buenos_Aires', 'Brazil/DeNoronha', 'Atlantic/Cape_Verde', 'Europe/London', 'Europe/Berlin', 'Europe/Kiev', 'Europe/Moscow', 'Europe/Samara', 'Asia/Yekaterinburg', 'Asia/Novosibirsk', 'Asia/Krasnoyarsk', 'Asia/Irkutsk', 'Asia/Yakutsk', 'Asia/Vladivostok', 'Asia/Magadan', 'Asia/Kamchatka', 'Pacific/Tongatapu', 'Pacific/Kiritimati');
+        $timezone_array = timezone::getInstance()->getZoneUTC();
         template::getInstance()->set(template::TYPE_SYSTEM, 'timezones', $timezone_array);
 
         if(sizeof($params['notify']) == 0) {

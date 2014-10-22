@@ -15,6 +15,7 @@ if(!file_exists("config.php")) {
 }
 
 \engine\property::getInstance()->init(); // processing of URI for multi-language and friendly url's
+\engine\timezone::getInstance()->init(); // prepare tz_data worker
 date_default_timezone_set(\engine\property::getInstance()->get('time_zone')); // default timezone from configs
 
 \engine\language::getInstance()->init();

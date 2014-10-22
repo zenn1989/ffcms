@@ -11,6 +11,7 @@ if(file_exists(root . '/config.php')) // mb its a update action?
     require_once(root . '/config.php');
 
 \engine\property::getInstance()->init(); // processing of URI for multi-language and friendly url's
+\engine\timezone::getInstance()->init(); // prepare tz_data worker
 \engine\language::getInstance()->init(); // prepare language
 \engine\database::getInstance()->init(); // init database PDO connect
 \engine\router::getInstance()->init(); // prepare URI worker

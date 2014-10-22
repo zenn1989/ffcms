@@ -1,5 +1,19 @@
+<script src="{{ system.script_url }}/resource/selectize/0.11.2/js/standalone/selectize.js"></script>
+<link rel="stylesheet" href="{{ system.script_url }}/resource/selectize/0.11.2/css/selectize.bootstrap3.css" />
 <script>
     var host_url = window.location.href.substring(0, window.location.href.indexOf('/install/'));
+
+    (function( $ ) {
+        "use strict";
+
+        $( document ).ready(function() {
+            $('.selectize-select').selectize({
+                create: false,
+                sortField: 'text'
+            });
+        });
+
+    })( jQuery );
 </script>
 
 {% import 'macro/notify.tpl' as ntpl %}
@@ -100,9 +114,9 @@
         <div class="form-group">
             <label class="control-label col-lg-3">{{ language.install_install_main_timezone_title }}</label>
             <div class="col-lg-9">
-                <select name="config:time_zone" class="form-control">
-                    {% for tzitem in system.timezones %}
-                        <option value="{{ tzitem }}"{% if tzitem == cfg.time_zone %} selected{% endif %}>{{ tzitem }}</option>
+                <select name="config:time_zone" class="form-control selectize-select">
+                    {% for tz_name,tz_utc in system.timezones %}
+                        <option value="{{ tz_name }}"{% if tz_name == cfg.time_zone %} selected{% endif %}>{{ tz_name }}({{ tz_utc }})</option>
                     {% endfor %}
                 </select>
                 <p class="help-block">{{ language.install_install_main_timezone_desc }}</p>

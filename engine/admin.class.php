@@ -489,7 +489,7 @@ class admin extends singleton {
         $params['config']['addon'] = array(
             'availableThemes' => $themeAvailable,
             'availableLang' => language::getInstance()->getAvailable(),
-            'availableZones' => array('Pacific/Kwajalein', 'Pacific/Samoa', 'US/Hawaii', 'US/Alaska', 'US/Pacific', 'US/Arizona', 'America/Mexico_City', 'S/East-Indiana', 'America/Santiago', 'America/Buenos_Aires', 'Brazil/DeNoronha', 'Atlantic/Cape_Verde', 'Europe/London', 'Europe/Berlin', 'Europe/Kiev', 'Europe/Moscow', 'Europe/Samara', 'Asia/Yekaterinburg', 'Asia/Novosibirsk', 'Asia/Krasnoyarsk', 'Asia/Irkutsk', 'Asia/Yakutsk', 'Asia/Vladivostok', 'Asia/Magadan', 'Asia/Kamchatka', 'Pacific/Tongatapu', 'Pacific/Kiritimati'),
+            'availableZones' => timezone::getInstance()->getZoneUTC(),
 
         );
         if($this->get['action'] === 'saved')
