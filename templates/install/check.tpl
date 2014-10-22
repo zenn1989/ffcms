@@ -43,5 +43,6 @@
     <a href="?action=install" class="btn btn-success">{{ language.install_check_btn_start }}</a>
 {% else %}
     {{ ntpl.error(language.install_check_fix_notify) }}
+    <a href="?action=install" class="btn btn-danger">{{ language.install_check_btn_wrongstart }}</a>
 {% endif %}
 {% endif %}

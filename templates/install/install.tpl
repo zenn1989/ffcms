@@ -39,35 +39,35 @@
         <div class="form-group">
             <label class="control-label col-lg-3">{{ language.install_install_db_host_title }}</label>
             <div class="col-lg-9">
-                <input type="text" name="config:db_host" value="{{ cfg.db_host }}" placeholder="localhost" class="form-control">
+                <input type="text" name="config:db_host" value="{{ cfg.db_host }}" placeholder="localhost" class="form-control" required="required">
                 <p class="help-block">{{ language.install_install_db_host_desc }}</p>
             </div>
         </div>
         <div class="form-group">
             <label class="control-label col-lg-3">{{ language.install_install_db_user_title }}</label>
             <div class="col-lg-9">
-                <input type="text" placeholder="root" name="config:db_user" value="{{ cfg.db_user }}" class="form-control">
+                <input type="text" placeholder="root" name="config:db_user" value="{{ cfg.db_user }}" class="form-control" required="required">
                 <p class="help-block">{{ language.install_install_db_user_desc }}</p>
             </div>
         </div>
         <div class="form-group">
             <label class="control-label col-lg-3">{{ language.install_install_db_pass_title }}</label>
             <div class="col-lg-9">
-                <input type="password" placeholder="Password" name="config:db_pass" value="{{ cfg.db_pass }}" class="form-control">
+                <input type="password" placeholder="Password" name="config:db_pass" value="{{ cfg.db_pass }}" class="form-control" required="required">
                 <p class="help-block">{{ language.install_install_db_pass_desc }}</p>
             </div>
         </div>
         <div class="form-group">
             <label class="control-label col-lg-3">{{ language.install_install_db_name_title }}</label>
             <div class="col-lg-9">
-                <input type="text" placeholder="ffcms" name="config:db_name" value="{{ cfg.db_name }}" class="form-control">
+                <input type="text" placeholder="ffcms" name="config:db_name" value="{{ cfg.db_name }}" class="form-control" required="required">
                 <p class="help-block">{{ language.install_install_db_name_desc }}</p>
             </div>
         </div>
         <div class="form-group">
             <label class="control-label col-lg-3">{{ language.install_install_db_prefix_title }}</label>
             <div class="col-lg-9">
-                <input type="text" placeholder="ffcms" name="config:db_prefix" value="{{ cfg.db_prefix }}" class="form-control">
+                <input type="text" placeholder="ffcms" name="config:db_prefix" value="{{ cfg.db_prefix }}" class="form-control" required="required">
                 <p class="help-block">{{ language.install_install_db_prefix_desc }}</p>
             </div>
         </div>
@@ -75,7 +75,7 @@
         <div class="form-group">
             <label class="control-label col-lg-3">{{ language.install_install_main_url_title }}</label>
             <div class="col-lg-9">
-                <input type="text" placeholder="http://ffcms.ru" name="config:url" value="{{ cfg.url }}" class="form-control">
+                <input type="text" placeholder="http://ffcms.ru" name="config:url" value="{{ cfg.url }}" class="form-control" id="hosturl" required="required">
                 <p class="help-block">{{ language.install_install_main_url_desc }}</p>
             </div>
         </div>
@@ -113,7 +113,7 @@
             <div class="form-group">
                 <label class="control-label col-lg-3">{{ language.install_install_main_seotitle_title }}[{{ itemlang }}]</label>
                 <div class="col-lg-9">
-                    <input type="text" placeholder="Dart Vader blog" name="config:seo_title[{{ itemlang }}]" value="{{ cfg.seo_title[itemlang] }}" class="form-control">
+                    <input type="text" placeholder="Dart Vader blog" name="config:seo_title[{{ itemlang }}]" value="{{ cfg.seo_title[itemlang] }}" class="form-control"{% if itemlang == system.lang %} required="required" {% endif %}>
                     <p class="help-block">{{ language.install_install_main_seotitle_desc }}</p>
                 </div>
             </div>
@@ -126,31 +126,34 @@
         <div class="form-group">
             <label class="control-label col-lg-3">{{ language.install_install_admin_login_title }}</label>
             <div class="col-lg-9">
-                <input type="text" placeholder="admin" name="admin:login" value="{{ cfg.login }}" class="form-control">
+                <input type="text" placeholder="admin" name="admin:login" value="{{ cfg.login }}" class="form-control" required="required">
                 <p class="help-block">{{ language.install_install_admin_login_desc }}</p>
             </div>
         </div>
         <div class="form-group">
             <label class="control-label col-lg-3">{{ language.install_install_admin_email_title }}</label>
             <div class="col-lg-9">
-                <input type="text" placeholder="admin@example.com" name="admin:email" value="{{ cfg.email }}" class="form-control">
+                <input type="text" placeholder="admin@example.com" name="admin:email" value="{{ cfg.email }}" class="form-control" required="required">
                 <p class="help-block">{{ language.install_install_admin_email_desc }}</p>
             </div>
         </div>
         <div class="form-group">
             <label class="control-label col-lg-3">{{ language.install_install_admin_pass_title }}</label>
             <div class="col-lg-9">
-                <input type="password" placeholder="StrOnGPas1s4ord" name="admin:pass" class="form-control">
+                <input type="password" placeholder="StrOnGPas1s4ord" name="admin:pass" class="form-control" required="required">
                 <p class="help-block">{{ language.install_install_admin_pass_desc }}</p>
             </div>
         </div>
         <div class="form-group">
             <label class="control-label col-lg-3">{{ language.install_install_admin_repass_title }}</label>
             <div class="col-lg-9">
-                <input type="password" placeholder="StrOnGPas1s4ord" name="admin:repass" class="form-control">
+                <input type="password" placeholder="StrOnGPas1s4ord" name="admin:repass" class="form-control" required="required">
                 <p class="help-block">{{ language.install_install_admin_repass_desc }}</p>
             </div>
         </div>
         <input type="submit" name="submit" value="{{ language.install_install_button }}" class="btn btn-success" />
     </form>
 {% endif %}
+<script>
+    document.getElementById('hosturl').value = window.location.href.substring(0, window.location.href.indexOf('/install/'));
+</script>

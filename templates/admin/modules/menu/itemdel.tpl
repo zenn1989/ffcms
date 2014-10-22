@@ -16,6 +16,7 @@
         </table>
     </div>
     <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
         <input type="submit" name="submit" class="btn btn-danger" value="{{ language.admin_modules_menu_itemdel_btn_del }}" />
         <a href="?object=modules&action=menu&make=manage&id={{ modmenu.data.menu_id }}" class="btn btn-default">{{ language.admin_modules_menu_itemdel_btn_cancel }}</a>
     </form>

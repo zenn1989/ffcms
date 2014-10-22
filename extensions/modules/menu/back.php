@@ -75,6 +75,7 @@ class modules_menu_back extends \engine\singleton {
     }
 
     private function viewMenuDependItemDelete() {
+        csrf::getInstance()->buildToken();
         $menu_id = (int)system::getInstance()->get('id');
         $menu_item_id = (int)system::getInstance()->get('did');
         $params = array();
@@ -98,7 +99,7 @@ class modules_menu_back extends \engine\singleton {
             'is_depend' => true
         );
 
-        if(system::getInstance()->post('submit')) {
+        if(system::getInstance()->post('submit') && csrf::getInstance()->check()) {
             $stmt = database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_mod_menu_ditem WHERE d_id = ?");
             $stmt->bindParam(1, $menu_item_id, \PDO::PARAM_INT);
             $stmt->execute();
@@ -110,6 +111,7 @@ class modules_menu_back extends \engine\singleton {
     }
 
     private function viewMenuDependItemEdit() {
+        csrf::getInstance()->buildToken();
         $menu_id = (int)system::getInstance()->get('id');
         $menu_item_id = (int)system::getInstance()->get('did');
         $params = array();
@@ -164,7 +166,7 @@ class modules_menu_back extends \engine\singleton {
             );
         }
 
-        if(system::getInstance()->post('submit')) {
+        if(system::getInstance()->post('submit') && csrf::getInstance()->check()) {
             $menu_name = system::getInstance()->nohtml(system::getInstance()->post('menu_name'));
             $menu_url = system::getInstance()->nohtml(system::getInstance()->post('menu_url'));
             $menu_owner = (int)system::getInstance()->post('menu_owner');
@@ -213,6 +215,7 @@ class modules_menu_back extends \engine\singleton {
     }
 
     private function viewMenuItemDelete() {
+        csrf::getInstance()->buildToken();
         $menu_id = (int)system::getInstance()->get('id');
         $menu_item_id = (int)system::getInstance()->get('owner');
         $params = array();
@@ -245,7 +248,7 @@ class modules_menu_back extends \engine\singleton {
         $stmt = null;
         $params['modmenu']['have_depend'] = $resCheck[0] > 0;
 
-        if(system::getInstance()->post('submit')) {
+        if(system::getInstance()->post('submit') && csrf::getInstance()->check()) {
             if(!$params['modmenu']['have_depend']) {
                 $stmt = database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_mod_menu_gitem WHERE g_menu_head_id = ? AND g_id = ?");
                 $stmt->bindParam(1, $menu_id, \PDO::PARAM_INT);
@@ -260,6 +263,7 @@ class modules_menu_back extends \engine\singleton {
     }
 
     private function viewMenuItemEdit() {
+        csrf::getInstance()->buildToken();
         $menu_id = (int)system::getInstance()->get('id');
         $menu_item_id = (int)system::getInstance()->get('owner');
         $params = array();
@@ -316,7 +320,7 @@ class modules_menu_back extends \engine\singleton {
 
         $params['modmenu']['have_chield'] = $checkRes[0] > 0;
 
-        if(system::getInstance()->post('submit')) {
+        if(system::getInstance()->post('submit') && csrf::getInstance()->check()) {
             $menu_name = system::getInstance()->nohtml(system::getInstance()->post('menu_name'));
             $menu_url = system::getInstance()->nohtml(system::getInstance()->post('menu_url'));
             $menu_owner = $params['modmenu']['have_chield'] ? 0 : (int)system::getInstance()->post('menu_owner');
@@ -363,6 +367,7 @@ class modules_menu_back extends \engine\singleton {
     }
 
     private function viewMenuItemAdd() {
+        csrf::getInstance()->buildToken();
         $menu_id = (int)system::getInstance()->get('id');
         $owner_item_id = (int)system::getInstance()->get('owner');
         $params = array();
@@ -378,7 +383,7 @@ class modules_menu_back extends \engine\singleton {
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
         $stmt = null;
 
-        if(system::getInstance()->post('submit')) {
+        if(system::getInstance()->post('submit') && csrf::getInstance()->check()) {
             $menu_name = system::getInstance()->nohtml(system::getInstance()->post('menu_name'));
             $menu_url = system::getInstance()->nohtml(system::getInstance()->post('menu_url'));
             $menu_owner = (int)system::getInstance()->post('menu_owner');
@@ -510,6 +515,7 @@ class modules_menu_back extends \engine\singleton {
     }
 
     private function viewMenuDelete() {
+        csrf::getInstance()->buildToken();
         $menu_id = (int)system::getInstance()->get('id');
         $params = array();
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
@@ -528,7 +534,7 @@ class modules_menu_back extends \engine\singleton {
             'tag' => $result['menu_tag']
         );
 
-        if(system::getInstance()->post('submit')) {
+        if(system::getInstance()->post('submit') && csrf::getInstance()->check()) {
             $stmt = database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_mod_menu_header WHERE menu_id = ?");
             $stmt->bindParam(1, $menu_id, \PDO::PARAM_INT);
             $stmt->execute();
@@ -563,7 +569,7 @@ class modules_menu_back extends \engine\singleton {
         if($stmt->rowCount() != 1)
             return null;
 
-        if(system::getInstance()->post('submit')) {
+        if(system::getInstance()->post('submit') && csrf::getInstance()->check()) {
             $menu_tag = system::getInstance()->nohtml(system::getInstance()->post('menu_tag'));
             $menu_tpl = system::getInstance()->post('menu_tpl');
             $menu_name = system::getInstance()->nohtml(system::getInstance()->post('menu_name'));

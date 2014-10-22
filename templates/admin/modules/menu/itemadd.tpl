@@ -8,6 +8,7 @@
     {{ notifytpl.error(language.admin_modules_menu_itemadd_notify_urlempty) }}
 {% endif %}
 <form class="form-horizontal" role="form" method="post">
+    <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
     <div class="form-group">
         <label class="col-lg-3 control-label">{{ language.admin_modules_menu_itemadd_owner_title }}</label>
         <div class="col-lg-9">
