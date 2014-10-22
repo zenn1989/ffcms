@@ -8,7 +8,7 @@
  */
 error_reporting(E_ERROR);
 
-define('version', '2.0.3');
+define('version', '2.0.4');
 
 header("Content-type:text/html; charset=utf-8");
 header('X-Powered-By: FFCMS');

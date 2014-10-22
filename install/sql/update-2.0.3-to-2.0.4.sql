@@ -40,4 +40,7 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}_mod_menu_header` (
 INSERT INTO `{$db_prefix}_mod_menu_header` (`menu_id`, `menu_name`, `menu_tag`, `menu_tpl`, `menu_display`) VALUES
 (1, 'a:2:{s:2:"en";s:4:"Menu";s:2:"ru";s:18:"Навигация";}', 'left', 'default.tpl', 1);
 
+INSERT INTO `{$db_prefix}_extensions` (`type`, `configs`, `dir`, `enabled`, `path_choice`, `path_allow`, `path_deny`, `version`, `compatable`) VALUES
+('modules', '', 'menu', '1', '1', '*', '', '1.0.1', '2.0.4');
+
 UPDATE `{$db_prefix}_version` SET `version` = '2.0.4';

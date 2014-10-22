@@ -15,7 +15,6 @@
 
     })( jQuery );
 </script>
-
 {% import 'macro/notify.tpl' as ntpl %}
 {% if notify.success %}
     {{ ntpl.success(language.install_done_success) }}
@@ -55,40 +54,45 @@
     {% if notify.process.reg_repass_nomatch %}
         {{ ntpl.error(language.install_install_error_mathcpass) }}
     {% endif %}
-    <h3>{{ language.install_install_db_title }}</h3>
     <form class="form-horizontal" method="post" action="" autocomplete="off">
-        <div class="form-group">
+        <h3>{{ language.install_install_db_title }}</h3>
+        <div class="form-group has-feedback">
             <label class="control-label col-lg-3">{{ language.install_install_db_host_title }}</label>
             <div class="col-lg-9">
-                <input type="text" name="config:db_host" value="{{ cfg.db_host }}" placeholder="localhost" class="form-control" required="required">
+                <input type="text" name="config:db_host" value="{{ cfg.db_host }}" placeholder="localhost" class="form-control input-primary" required="required">
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
                 <p class="help-block">{{ language.install_install_db_host_desc }}</p>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group has-feedback">
             <label class="control-label col-lg-3">{{ language.install_install_db_user_title }}</label>
             <div class="col-lg-9">
-                <input type="text" placeholder="root" name="config:db_user" value="{{ cfg.db_user }}" class="form-control" required="required">
+                <input type="text" placeholder="root" name="config:db_user" value="{{ cfg.db_user }}" class="form-control input-primary" required="required">
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
                 <p class="help-block">{{ language.install_install_db_user_desc }}</p>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group has-feedback">
             <label class="control-label col-lg-3">{{ language.install_install_db_pass_title }}</label>
             <div class="col-lg-9">
-                <input type="password" placeholder="Password" name="config:db_pass" value="{{ cfg.db_pass }}" class="form-control" required="required">
+                <input type="password" placeholder="Password" name="config:db_pass" value="{{ cfg.db_pass }}" class="form-control input-primary" required="required">
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
                 <p class="help-block">{{ language.install_install_db_pass_desc }}</p>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group has-feedback">
             <label class="control-label col-lg-3">{{ language.install_install_db_name_title }}</label>
             <div class="col-lg-9">
-                <input type="text" placeholder="ffcms" name="config:db_name" value="{{ cfg.db_name }}" class="form-control" required="required">
+                <input type="text" placeholder="ffcms" name="config:db_name" value="{{ cfg.db_name }}" class="form-control input-primary" required="required">
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
                 <p class="help-block">{{ language.install_install_db_name_desc }}</p>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group has-feedback">
             <label class="control-label col-lg-3">{{ language.install_install_db_prefix_title }}</label>
             <div class="col-lg-9">
-                <input type="text" placeholder="ffcms" name="config:db_prefix" value="{{ cfg.db_prefix }}" class="form-control" required="required">
+                <input type="text" placeholder="ffcms" name="config:db_prefix" value="{{ cfg.db_prefix|default('ffcms') }}" class="form-control input-primary" required="required">
+                <span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
                 <p class="help-block">{{ language.install_install_db_prefix_desc }}</p>
             </div>
         </div>
@@ -171,6 +175,11 @@
                 <input type="password" placeholder="StrOnGPas1s4ord" name="admin:repass" class="form-control" required="required">
                 <p class="help-block">{{ language.install_install_admin_repass_desc }}</p>
             </div>
+        </div>
+        <p>{{ language.install_install_afteraction_notify }}</p>
+        <div class="form-group">
+            <label class="col-lg-3 control-label"><a href="../license.txt" target="_blank">license.txt</a></label>
+            <div class="col-lg-9"><i class="glyphicon glyphicon-ok"></i> {{ language.install_install_gpl_notify }}</div>
         </div>
         <input type="submit" name="submit" value="{{ language.install_install_button }}" class="btn btn-success" />
     </form>
