@@ -113,7 +113,8 @@ INSERT INTO `{$db_prefix}_extensions` (`id`, `type`, `configs`, `dir`, `enabled`
 (22, 'modules', 'a:2:{s:13:"viewtop_count";s:1:"5";s:12:"viewtop_days";s:1:"0";}', 'news_top_view', 0, 1, '*', '', '1.0.1', '2.0.3'),
 (23, 'modules', 'a:1:{s:9:"new_count";s:1:"5";}', 'news_new', 0, 1, '*', '', '1.0.1', '2.0.3'),
 (24, 'components', 'a:1:{s:17:"count_stream_page";s:2:"20";}', 'stream', 1, 1, '*', '', '1.0.1', '2.0.3'),
-(25, 'hooks', '', 'urlfixer', '1', '1', '*', '', '1.0.1', '2.0.3');
+(25, 'hooks', '', 'urlfixer', '1', '1', '*', '', '1.0.1', '2.0.3'),
+(26, 'modules', '', 'menu', '1', '1', '*', '', '1.0.1', '2.0.3');
 
 DROP TABLE IF EXISTS `{$db_prefix}_mod_comments`;
 CREATE TABLE `{$db_prefix}_mod_comments` (

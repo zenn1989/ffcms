@@ -24,7 +24,7 @@ class api_redirect_front extends \engine\singleton {
                 <head>
                     <meta http-equiv=\"refresh\" content=\"0; url={$url}\">
                     <script type=\"text/javascript\">
-                        location.href(\"{$url}\");
+                        location.href = \"{$url}\";
                     </script>
                 </head>
                 <body>

@@ -1,6 +1,13 @@
+<script>
+    var host_url = window.location.href.substring(0, window.location.href.indexOf('/install/'));
+</script>
+
 {% import 'macro/notify.tpl' as ntpl %}
 {% if notify.success %}
     {{ ntpl.success(language.install_done_success) }}
+    <script>
+        location.href = host_url;
+    </script>
 {% endif %}
 {% if notify.prepare %}
     {% if notify.prepare.lock %}
@@ -155,5 +162,5 @@
     </form>
 {% endif %}
 <script>
-    document.getElementById('hosturl').value = window.location.href.substring(0, window.location.href.indexOf('/install/'));
+    document.getElementById('hosturl').value = host_url;
 </script>
