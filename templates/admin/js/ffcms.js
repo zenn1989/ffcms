@@ -18,6 +18,28 @@ $(document).ready(function () {
             $(':checkbox', this).trigger('click');
         }
     });
+    $('.keywords_count').click(function(){
+        var item_lang = this.id;
+        var c_selector = null;
+        for(var s=0;s<Jobject.length;s++) {
+            if(Jobject[s]['id'] == 'keywords_'+item_lang) {
+                c_selector = Jobject[s].selectize;
+                break;
+            }
+        }
+        var text = $('#textobject'+item_lang+'.wysi').val();
+        if(text.length < 1)
+            text = CKEDITOR.instances['textobject'+item_lang].getData();
+        var words_top = top_words(text, 15, 2);
+
+        for(var d=0;d<words_top.length;d++){
+            c_selector.addOption({
+                text:words_top[d],
+                value: words_top[d]
+            });
+            c_selector.addItem(words_top[d]);
+        }
+    });
 });
 function posterDelete(id) {
     $.get(ffcms_host+'/api.php?iface='+loader+'&object=newsposterdelete&id='+id, function(){
@@ -32,68 +54,42 @@ function pathCallback()
 {
     changed_path = true;
 }
-var keywords1, keywords2 = new Array(), keywords3 = new Array();
-function strip_tags(str, allow) {
-    // making sure the allow arg is a string containing only tags in lowercase (<a><b><c>)
-    allow = (((allow || "") + "").toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []).join('');
 
-    var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
-    var commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi;
-    return str.replace(commentsAndPhpTags, '').replace(tags, function ($0, $1) {
-        return allow.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
-    });
-}
-function nonbsp(str) {
-    return str.replace(/nbsp/gi, "");
-}
-function getWords(s) {
-    s = nonbsp(strip_tags(s));
-    return s.replace(/[^а-яА-Яa-zA-Z]+/g, " ").toLowerCase(); // returns text.. removing of numbers, commas, any spec chars
-}
-function getKeywords(s) {
-    var tmp;
-    tmp = getWords(s);
-    return tmp.split(" "); // returns Array of words
-}
-function countKeywords(current_lang) {
-    var s = $('#textobject'+current_lang+'.wysi').val();
-    if(s.length < 1)
-        s = CKEDITOR.instances['textobject'+current_lang].getData();
-    var minLengthKeyword = 3;
-    var minRepeatKeyword = 3;
-    var coincidence = parseFloat(0.7);
-    var keywords_count = 7;
+function top_words(text, count, repeat_time) {
+    // cleanup from html tags
+    var html = document.createElement("div");
+    html.innerHTML = text;
+    text = html.textContent || html.innerText || "";
+    // Split text on non word characters
+    var words = text.toLowerCase().split(/\W+/);
+    var positions = new Array();
+    var word_counts = new Array();
+    var word_output = new Array();
+    for (var i=0; i<words.length; i++) {
+        var word = words[i];
+        if (!word) {
+            continue
+        }
 
-    var tmpKeywords1 = getKeywords(s);
-    var tmpKeywords2 = new Array();
-
-
-    //alert(keywords1.length);
-    for (i = 0; i < tmpKeywords1.length; i++) {
-        var currentWord = tmpKeywords1[i];
-        //alert(currentWord.substring(0, 3) );
-        if (currentWord.length >= minLengthKeyword) {
-            keywords2.push(currentWord); // put the word to the Array keyword2 if the length >= minLengthKeyword
+        if (typeof positions[word] == 'undefined') {
+            positions[word] = word_counts.length;
+            word_counts.push([word, 1])
+        } else {
+            word_counts[positions[word]][1]++
         }
     }
-
-
-    for (i = 0; i < keywords2.length; i++) {
-        var currentWord = keywords2[i];
-        currentWordCore = currentWord.substr(0, Math.round(currentWord.length * coincidence));
-
-        //alert(currentWordCore);
-        var inwords2 = keywords2.grep(currentWordCore);
-        //alert(inwords2);
-        if (inwords2.length >= minRepeatKeyword && keywords3.grep(currentWordCore).length < 1) {
-            // the word must repeat 3 or more times .. and do not put the word one more time to result array of keywords3
-            keywords3.push(currentWord);
-        }
+    // Put most frequent words at the beginning.
+    word_counts.sort(function (a, b) {return b[1] - a[1]});
+    if(repeat_time < 1)
+        repeat_time = 1;
+    // check is repeat more then repeat_time
+    for(var c=0;c<word_counts.length;c++) {
+        if(word_counts[c][1] >= repeat_time && word_counts[c][0].length > 3)
+            word_output.push(word_counts[c][0]);
     }
-    document.getElementById('keywords_'+current_lang).value = keywords3.slice(0, keywords_count);
-    keywords2 = new Array();
-    keywords3 = new Array();
+    return word_output.slice(0,count);
 }
+
 function grep(str) {
     var ar = new Array();
     var arSub = 0;

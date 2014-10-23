@@ -1,5 +1,7 @@
 {% import 'macro/settings.tpl' as settingstpl %}
 {% import 'macro/notify.tpl' as notifytpl %}
+{% import 'macro/formdecorator.tpl' as formdecorator %}
+{{ formdecorator.switch(system.script_url) }}
 <h1>{{ extension.title }}<small>{{ language.admin_modules_staticonmain_settings }}</small></h1>
 <hr />
 {% include 'modules/comments/menu_include.tpl' %}

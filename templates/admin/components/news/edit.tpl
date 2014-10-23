@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="{{ system.script_url }}/resource/selectize/0.11.2/css/selectize.bootstrap3.css" />
 
 <script type="text/javascript">
+    var Jobject = {};
     $(document).ready(
             function()
             {
@@ -56,7 +57,7 @@
                     create: false,
                     sortField: 'text'
                 });
-                $('.selectize-tags').selectize({
+                Jobject = $('.selectize-tags').selectize({
                     plugins: ['remove_button'],
                     delimiter: ',',
                     persist: false,
@@ -161,7 +162,7 @@
                     <div class="col-lg-6">
                         <h2>{{ language.admin_component_news_edit_page_keywords }}[{{ itemlang }}]</h2>
                         <input type="text" id="keywords_{{ itemlang }}" name="keywords[{{ itemlang }}]" class="form-control selectize-tags" value="{{ news.keywords[itemlang] }}" maxlength="200" />
-                        <input class="btn btn-info pull-right" type="button" value="{{ language.admin_component_news_edit_page_keybutton_gen }}" onClick="countKeywords('{{ itemlang }}')">
+                        <input class="btn btn-info pull-right keywords_count" type="button" value="{{ language.admin_component_news_edit_page_keybutton_gen }}" id="{{ itemlang }}">
                         <span class="help-block">{{ language.admin_component_news_edit_page_keywords_description }}</span>
                     </div>
                 </div>

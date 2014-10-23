@@ -169,3 +169,6 @@ ul.side-links > li > .toggle-children:before {
 ul.side-links > li > .toggle-children.open:before {
     content: "-";
 }
+.wysibb {
+    font-size: 14px !important;
+}

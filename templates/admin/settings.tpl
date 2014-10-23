@@ -1,38 +1,7 @@
-<!-- selectize -->
-<script src="{{ system.script_url }}/resource/selectize/0.11.2/js/standalone/selectize.js"></script>
-<link rel="stylesheet" href="{{ system.script_url }}/resource/selectize/0.11.2/css/selectize.bootstrap3.css" />
-<!-- switchable -->
-<link rel="stylesheet" href="{{ system.script_url }}/resource/bootstrap-switch/3.0/css/bootstrap3/bootstrap-switch.css">
-<script src="{{ system.script_url }}/resource/bootstrap-switch/3.0/js/bootstrap-switch.min.js"></script>
-<script>
-    (function( $ ) {
-        "use strict";
-
-        $( document ).ready(function() {
-            $('.selectize-select').selectize({
-                create: false,
-                sortField: 'text'
-            });
-            $('.selectize-tags').selectize({
-                plugins: ['remove_button'],
-                delimiter: ',',
-                persist: false,
-                create: function (input) {
-                    return {
-                        value: input,
-                        text: input
-                    }
-                }
-            });
-            $(".switchable").bootstrapSwitch({
-                onColor: 'success',
-                offColor: 'danger'
-            });
-        });
-
-    })( jQuery );
-</script>
+{% import 'macro/formdecorator.tpl' as formdecorator %}
 {% import 'macro/notify.tpl' as notify_macro %}
+{{ formdecorator.selectize(system.script_url) }}
+{{ formdecorator.switch(system.script_url) }}
 <h1>{{ language.admin_settings_title }}<small>{{ language.admin_settings_list_desc }}</small></h1>
 <hr />
 {% if notify.saved %}

@@ -1,5 +1,7 @@
 {% import 'macro/settings.tpl' as settingstpl %}
 {% import 'macro/notify.tpl' as notifytpl %}
+{% import 'macro/formdecorator.tpl' as formdecorator %}
+{{ formdecorator.switch(system.script_url) }}
 <h1>{{ extension.title }}<small>{{ language.admin_component_news_settings }}</small></h1>
 <hr />
 {% include 'components/news/menu_include.tpl' %}
