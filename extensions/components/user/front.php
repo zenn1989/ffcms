@@ -57,9 +57,9 @@ class components_user_front extends \engine\singleton {
                 $content = $this->viewPayNotify();
                 break;
         }
-        if($way[0] == null || system::getInstance()->isInt($way[0])) {
+        if(system::getInstance()->isInt($way[0]) || in_array($way[0], array('search', 'karma', null))) {
             // user list
-            $content = $this->viewUserList();
+            $content = $this->viewUserList($way[0]);
         } elseif(substr($way[0], 0, 2) === "id" && system::getInstance()->isInt(substr($way[0], 2))) {
             if(user::getInstance()->get('id') > 0 || extension::getInstance()->getConfig('profile_view', 'user', 'components', 'boolean'))
                 $content = $this->viewUserProfile();
@@ -212,7 +212,7 @@ class components_user_front extends \engine\singleton {
     }
 
     private function viewUserBalance($target, $viewer) {
-        if($target != $viewer || !extension::getInstance()->getConfig('balance_view', 'news', extension::TYPE_COMPONENT, 'bol'))
+        if($target != $viewer || !extension::getInstance()->getConfig('balance_view', 'user', extension::TYPE_COMPONENT, 'bol'))
             return null;
         $params = array();
 
@@ -312,8 +312,9 @@ class components_user_front extends \engine\singleton {
         $params['profile']['is_request_friend'] = $this->inFriendRequestWith($target, $viewer);
         $params['profile']['add_menu']['public'] = $this->pub_menu_links;
         $params['profile']['add_menu']['private'] = $this->private_menu_links;
+
         $params['profile']['show_usernews'] = extension::getInstance()->getConfig('enable_useradd', 'news', extension::TYPE_COMPONENT, 'bol');
-        $params['profile']['show_balance'] = extension::getInstance()->getConfig('balance_view', 'news', extension::TYPE_COMPONENT, 'bol');
+        $params['profile']['show_balance'] = extension::getInstance()->getConfig('balance_view', 'user', extension::TYPE_COMPONENT, 'bol');
 
         $params['path'] = $way[1]; // variable for menu active item
         $params['action'] = $way[2]; // action or pagination id
@@ -903,7 +904,6 @@ class components_user_front extends \engine\singleton {
         $params['wall']['postperpage'] = $wall_count;
         $params['wall']['maxindex'] = $this->getWallPostCount($target);
 
-        // TODO: add custom fields there
         $params['wall']['ufields'] = $this->getUfieldData($target);
 
         $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_user_wall WHERE target = ? ORDER by time DESC LIMIT ?, ?");
@@ -927,33 +927,73 @@ class components_user_front extends \engine\singleton {
         return $this->viewUserProfileHeader($target, $viewer, $params);
     }
 
-    private function viewUserList() {
-        $way = router::getInstance()->shiftUriArray();
-        meta::getInstance()->add('title', language::getInstance()->get('seo_title_userlist'));
-        $index = $way[0] ?: 0;
-        $usercount_on_page = extension::getInstance()->getConfig('userlist_count', 'user', 'components', 'int');
+    private function viewUserList($type) {
+        $params = array();
+        $params['use_karma'] = extension::getInstance()->getConfig('use_karma', 'user', extension::TYPE_COMPONENT, 'bol');
         $totalUsers = $this->totalUserCount();
+        $resultAll = null;
+        $way = router::getInstance()->shiftUriArray();
+        $usercount_on_page = extension::getInstance()->getConfig('userlist_count', 'user', 'components', 'int');
+        if($type == null || system::getInstance()->isInt($type)) { // default user list with pagination
+            meta::getInstance()->add('title', language::getInstance()->get('seo_title_userlist'));
+            $index = (int)$type;
+            $limit_start = $index * $usercount_on_page;
+            $stmt = database::getInstance()->con()->prepare("SELECT a.id, a.nick, b.regdate, b.status, b.karma FROM ".property::getInstance()->get('db_prefix')."_user a,
+            ".property::getInstance()->get('db_prefix')."_user_custom b WHERE a.id = b.id AND a.aprove = 0 ORDER BY a.id DESC LIMIT ?, ?");
+            $stmt->bindParam(1, $limit_start, PDO::PARAM_INT);
+            $stmt->bindParam(2, $usercount_on_page, PDO::PARAM_INT);
+            $stmt->execute();
+            $resultAll = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $stmt = null;
+            $params['pagination'] = template::getInstance()->showFastPagination($index, $usercount_on_page, $totalUsers, 'user');
+            $params['tabtype'] = 'all';
+        } elseif($type == 'karma' && $params['use_karma']) {
+            $params['tabtype'] = 'karma';
+            meta::getInstance()->add('title', 'Рейтинг пользователей - Карма');
+
+            $index = (int)$way[1];
+            $limit_start = $index * $usercount_on_page;
+
+            $stmt = database::getInstance()->con()->prepare("SELECT a.id, a.nick, b.regdate, b.status, b.karma FROM ".property::getInstance()->get('db_prefix')."_user a,
+            ".property::getInstance()->get('db_prefix')."_user_custom b WHERE a.id = b.id AND a.aprove = 0 ORDER BY b.karma DESC LIMIT ?, ?");
+            $stmt->bindParam(1, $limit_start, PDO::PARAM_INT);
+            $stmt->bindParam(2, $usercount_on_page, PDO::PARAM_INT);
+            $stmt->execute();
+            $resultAll = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $stmt = null;
+            $params['pagination'] = template::getInstance()->showFastPagination($index, $usercount_on_page, $totalUsers, 'user/karma');
+        } elseif($type == 'search') {
+            $params['tabtype'] = 'search';
+            meta::getInstance()->add('title', 'Поиск пользователей');
+
+            if(system::getInstance()->post('submit')) {
+                $u_data = '%' . system::getInstance()->nohtml(system::getInstance()->post('search_user')) . '%';
+                $stmt = database::getInstance()->con()->prepare("SELECT a.id, a.nick, b.regdate, b.status, b.karma FROM ".property::getInstance()->get('db_prefix')."_user a,
+                ".property::getInstance()->get('db_prefix')."_user_custom b WHERE a.id = b.id AND a.aprove = 0 AND a.nick like ? ORDER BY a.id DESC LIMIT 0,50");
+                $stmt->bindParam(1, $u_data, \PDO::PARAM_STR);
+                $stmt->execute();
+                $resultAll = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            }
+        }
+
+
+        foreach($resultAll as $result) {
+            $params['user'][] = array(
+                'user_id' => $result['id'],
+                'user_name' => $result['nick'],
+                'user_avatar' => user::getInstance()->buildAvatar('small', $result['id']),
+                'user_regdate' => system::getInstance()->toDate($result['regdate'], 'd'),
+                'user_status' => $result['status'],
+                'user_karma' => $result['karma']
+            );
+        }
+
         $params['statistic'] = array(
             'total' => $totalUsers,
             'male' => $this->maleUserCount(),
             'female' => $this->femaleUserCount()
         );
-        $limit_start = $index * $usercount_on_page;
-        $stmt = database::getInstance()->con()->prepare("SELECT a.id, a.nick, b.regdate FROM ".property::getInstance()->get('db_prefix')."_user a,
-        ".property::getInstance()->get('db_prefix')."_user_custom b WHERE a.id = b.id AND a.aprove = 0 ORDER BY a.id DESC LIMIT ?, ?");
-        $stmt->bindParam(1, $limit_start, PDO::PARAM_INT);
-        $stmt->bindParam(2, $usercount_on_page, PDO::PARAM_INT);
-        $stmt->execute();
-        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $params['user'][] = array(
-                'user_id' => $result['id'],
-                'user_name' => $result['nick'],
-                'user_avatar' => user::getInstance()->buildAvatar('small', $result['id']),
-                'user_regdate' => system::getInstance()->toDate($result['regdate'], 'd')
-            );
-        }
-        $stmt = null;
-        $params['pagination'] = template::getInstance()->showFastPagination($index, $usercount_on_page, $totalUsers, 'user');
+
         $visit_time = time() - 15 * 60;
         $stmt = database::getInstance()->con()->prepare("SELECT a.reg_id, a.cookie, b.* FROM ".property::getInstance()->get('db_prefix')."_statistic a,
         ".property::getInstance()->get('db_prefix')."_user b WHERE a.`time` >= ? AND a.reg_id > 0 AND a.reg_id = b.id GROUP BY a.reg_id, a.cookie");
