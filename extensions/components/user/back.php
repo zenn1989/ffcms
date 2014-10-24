@@ -108,6 +108,14 @@ class components_user_back extends \engine\singleton {
             'admin/components/user/settings',
             'admin/components/user/edit',
             'admin/components/user/delete',
+            'admin/components/user/ufield',
+            'admin/components/user/ufieldaddtext',
+            'admin/components/user/ufieldedittext',
+            'admin/components/user/ufielddel',
+            'admin/components/user/ufieldaddimg',
+            'admin/components/user/ufieldeditimg',
+            'admin/components/user/ufieldaddlink',
+            'admin/components/user/ufieldeditlink'
         );
     }
 
@@ -713,6 +721,7 @@ class components_user_back extends \engine\singleton {
         $params['config']['balance_rk_mul'] = extension::getInstance()->getConfig('balance_rk_mul', 'user', extension::TYPE_COMPONENT, 'float');
         $params['config']['balance_rk_valute'] = extension::getInstance()->getConfig('balance_rk_valute', 'user', extension::TYPE_COMPONENT, 'str');
         $params['config']['balance_rk_test'] = extension::getInstance()->getConfig('balance_rk_test', 'user', extension::TYPE_COMPONENT, 'int');
+        $params['config']['pm_direct'] = extension::getInstance()->getConfig('pm_direct', 'user', extension::TYPE_COMPONENT, 'int');
 
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
 

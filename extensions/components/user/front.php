@@ -316,6 +316,8 @@ class components_user_front extends \engine\singleton {
         $params['profile']['show_usernews'] = extension::getInstance()->getConfig('enable_useradd', 'news', extension::TYPE_COMPONENT, 'bol');
         $params['profile']['show_balance'] = extension::getInstance()->getConfig('balance_view', 'user', extension::TYPE_COMPONENT, 'bol');
 
+        $params['profile']['pm_direct'] = extension::getInstance()->getConfig('pm_direct', 'user', extension::TYPE_COMPONENT, 'int');
+
         $params['path'] = $way[1]; // variable for menu active item
         $params['action'] = $way[2]; // action or pagination id
         if(is_array($addparams)) {
@@ -406,20 +408,32 @@ class components_user_front extends \engine\singleton {
         if($target != $viewer)
             return null;
         $way = router::getInstance()->shiftUriArray();
+        $message_without_request = extension::getInstance()->getConfig('pm_direct', 'user', extension::TYPE_COMPONENT, 'bol');
         $params = array();
         $friend_array = system::getInstance()->altexplode(',', user::getInstance()->get('friend_list', $target));
         user::getInstance()->listload($friend_array);
-        $params['message']['target'] = $way[3];
+        $params['message']['target'] = (int)$way[3];
+        $found_in_friends = false;
         foreach($friend_array as $friend_id) {
             $params['message']['friend'][] = array(
                 'user_id' => $friend_id,
                 'user_name' => user::getInstance()->get('nick', $friend_id)
             );
+            if($friend_id == $params['message']['target'])
+                $found_in_friends = true;
         }
+
+        if(!$found_in_friends && $message_without_request) {
+            $params['message']['friend'][] = array(
+                'user_id' => $params['message']['target'],
+                'user_name' => user::getInstance()->get('nick', $params['message']['target'])
+            );
+        }
+
         if(system::getInstance()->post('sendmessage')) {
             $message = system::getInstance()->nohtml(system::getInstance()->post('message'));
             $receiver = system::getInstance()->post('accepterid');
-            if(user::getInstance()->exists($receiver) && $this->inFriendsWith($receiver, $target) && system::getInstance()->length($message) > 0) {
+            if(user::getInstance()->exists($receiver) && ($this->inFriendsWith($receiver, $target) || $message_without_request) && system::getInstance()->length($message) > 0) {
                 $time = time();
                 $stmt = database::getInstance()->con()->prepare("INSERT INTO ".property::getInstance()->get('db_prefix')."_user_messages(`from`, `to`, `message`, `timeupdate`) VALUES(?, ?, ?, ?)");
                 $stmt->bindParam(1, $target, PDO::PARAM_INT);

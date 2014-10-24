@@ -33,6 +33,7 @@
             {{ settingstpl.textgroup('friend_page_count', config.friend_page_count, language.admin_component_usercontrol_config_friend_page_count_name, language.admin_component_usercontrol_config_friend_page_count_desc ) }}
             {{ settingstpl.textgroup('wall_post_delay', config.wall_post_delay, language.admin_component_usercontrol_config_wall_post_delay_name, language.admin_component_usercontrol_config_wall_post_delay_desc ) }}
             {{ settingstpl.textgroup('pm_count', config.pm_count, language.admin_component_usercontrol_config_pm_count_name, language.admin_component_usercontrol_config_pm_count_desc ) }}
+            {{ settingstpl.selectYNgroup('pm_direct', config.pm_direct, language.admin_component_usercontrol_config_pm_direct_name, language.admin_component_usercontrol_config_pm_direct_desc, _context) }}
             {{ settingstpl.selectYNgroup('use_karma', config.use_karma, language.admin_component_usercontrol_config_use_karma_title, language.admin_component_usercontrol_config_use_karma_desc, _context) }}
         </div>
         <div class="tab-pane" id="list">
