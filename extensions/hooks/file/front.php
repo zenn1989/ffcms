@@ -72,6 +72,7 @@ class hooks_file_front extends \engine\singleton {
         imagedestroy($image_big_truecolor);
         imagedestroy($image_medium_truecolor);
         imagedestroy($image_small_truecolor);
+        imagedestroy($image_buffer);
         return true;
     }
 
@@ -142,8 +143,9 @@ class hooks_file_front extends \engine\singleton {
         }
         if(file_exists(root . $save_name))
             @unlink(root . $save_name);
-        imagejpeg($true_color_snap, root . $save_name);
-        imagedestroy($true_color_snap);
+        @imagejpeg($true_color_snap, root . $save_name);
+        @imagedestroy($true_color_snap);
+        @imagedestroy($image_buffer);
 
         return $clear_name;
     }

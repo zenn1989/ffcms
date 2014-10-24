@@ -18,9 +18,9 @@ use engine\permission;
 class api_wallpost_front extends \engine\singleton {
 
     public function make() {
-        $post_id = system::getInstance()->get('id');
-        $user_id = user::getInstance()->get('id');
-        $message = system::getInstance()->post('message');
+        $post_id = (int)system::getInstance()->get('id');
+        $user_id = (int)user::getInstance()->get('id');
+        $message = system::getInstance()->nohtml(system::getInstance()->post('message')); // thank unknown tester for detect XSS vuln
         $time_between_posts = extension::getInstance()->getConfig('wall_post_delay', 'user', 'components', 'int');
         if($post_id > 0 && $user_id > 0 && system::getInstance()->length($message) > 0 && permission::getInstance()->have('global/write')) {
             $stmt = database::getInstance()->con()->prepare("SELECT time FROM ".property::getInstance()->get('db_prefix')."_user_wall_answer WHERE poster = ? ORDER BY id DESC LIMIT 1");

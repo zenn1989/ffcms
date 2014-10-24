@@ -236,6 +236,7 @@ CREATE TABLE `{$db_prefix}_user_custom` (
   `forum_posts` int(32) NOT NULL DEFAULT '0',
   `forum_last_message` int(16) NOT NULL DEFAULT '0',
   `karma` int(24) NOT NULL DEFAULT '0',
+  `ufields` TEXT NOT NULL DEFAULT  '',
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -379,7 +380,17 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}_mod_menu_header` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 INSERT INTO `{$db_prefix}_mod_menu_header` (`menu_id`, `menu_name`, `menu_tag`, `menu_tpl`, `menu_display`) VALUES
-  (1, 'a:2:{s:2:"en";s:4:"Menu";s:2:"ru";s:18:"Навигация";}', 'left', 'default.tpl', 1);
+(1, 'a:2:{s:2:"en";s:4:"Menu";s:2:"ru";s:18:"Навигация";}', 'left', 'default.tpl', 1);
+
+CREATE TABLE IF NOT EXISTS `{$db_prefix}_user_fields` (
+  `id` int(24) NOT NULL AUTO_INCREMENT,
+  `type` enum('text','img','link') NOT NULL,
+  `name` text NOT NULL,
+  `reg_exp` varchar(512) NOT NULL DEFAULT '',
+  `reg_cond` int(1) NOT NULL DEFAULT '0',
+  `params` varchar(4096) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 INSERT INTO `{$db_prefix}_version` (`version`) VALUES
 ('2.0.4');

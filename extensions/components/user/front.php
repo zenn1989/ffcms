@@ -539,6 +539,9 @@ class components_user_front extends \engine\singleton {
         if($target != $viewer)
             return null;
         $params = array();
+
+        $params['ufields']['data'] = $this->getUfieldData($target);
+
         if(system::getInstance()->post('saveprofile') && csrf::getInstance()->check()) {
             $params['form']['submit'] = true;
             $birthday_array = system::getInstance()->post('bitrhday');
@@ -547,7 +550,7 @@ class components_user_front extends \engine\singleton {
             $nick = system::getInstance()->nohtml(system::getInstance()->post('nickname'));
             $phone = system::getInstance()->post('phone');
             $sex = system::getInstance()->post('sex');
-            $webpage = system::getInstance()->post('website');
+            $webpage = system::getInstance()->nohtml(system::getInstance()->post('website'));
             // [old, new, repeat_new]
             $password_array = array(system::getInstance()->post('oldpwd'), system::getInstance()->post('newpwd'), system::getInstance()->post('renewpwd'));
             $password = user::getInstance()->get('pass');
@@ -577,17 +580,76 @@ class components_user_front extends \engine\singleton {
                 );
                 user::getInstance()->putLog($target, 'profile.changepass', $log_params, 'Change profile password');
             }
+            // prepare custom ufields data
+            $ufield_save = unserialize(user::getInstance()->get('ufields', $target)); // default data
+            foreach($params['ufields']['data'] as $allow_ufield) {
+                if($allow_ufield['type'] == 'text') {
+                    $post_ufield = system::getInstance()->nohtml(system::getInstance()->post('ufield_' . $allow_ufield['id']));
+                    if(system::getInstance()->length($post_ufield) > 0) {
+                        // check preg_match rules
+                        $checked = null;
+                        if($allow_ufield['reg_cond'] == '1') { // direct: if(preg_match(cond)). can be ternar shortly, but hardest for understand
+                            $checked = preg_match($allow_ufield['reg_exp'], $post_ufield);
+                        } else { // exclude: if(!preg_match(cond))
+                            $checked = !preg_match($allow_ufield['reg_exp'], $post_ufield);
+                        }
+
+                        if($checked) {
+                            $ufield_save[$allow_ufield['id']] = array(
+                                'type' => 'text',
+                                'data' => $post_ufield
+                            );
+                        }
+                    } else { // user remove data
+                        $ufield_save[$allow_ufield['id']] = null; // override data
+                    }
+                } elseif($allow_ufield['type'] == 'img') {
+                    $post_ufield = $_FILES['ufield_' . $allow_ufield['id']];
+                    if($post_ufield != null && $post_ufield['size'] > 0 && $post_ufield['error'] == 0) { // sounds like isset file
+                        $object = extension::getInstance()->call(extension::TYPE_HOOK, 'file');
+                        if(is_object($object)) {
+                            $upload_dir = '/user/ufield/' . $allow_ufield['id'] . '/';
+                            $upload_name = $object->uploadResizedImage($upload_dir, $post_ufield, $allow_ufield['img_dx'], $allow_ufield['img_dy']);
+                            if($upload_name != null) {
+                                $ufield_save[$allow_ufield['id']] = array(
+                                    'type' => 'img',
+                                    'data' => $upload_dir . $upload_name
+                                );
+                            }
+                        }
+                    }
+                } elseif($allow_ufield['type'] == 'link') {
+                    $post_ufield = system::getInstance()->nohtml(system::getInstance()->post('ufield_' . $allow_ufield['id']));
+                    if(system::getInstance()->length($post_ufield) > 0) {
+                        // validate url via domain
+                        $parse_url = parse_url($post_ufield);
+                        if($parse_url['host'] != null && $parse_url['host'] == $allow_ufield['domain']) {
+                            $ufield_save[$allow_ufield['id']] = array(
+                                'type' => 'link',
+                                'data' => $post_ufield
+                            );
+                        }
+                    } else { // user remove data
+                        $ufield_save[$allow_ufield['id']] = null; // override data
+                    }
+                }
+            }
+
+            $ufield_save = serialize($ufield_save);
             $stmt = database::getInstance()->con()->prepare("UPDATE ".property::getInstance()->get('db_prefix')."_user a
-            INNER JOIN ".property::getInstance()->get('db_prefix')."_user_custom b USING(id) SET a.nick = ?, a.pass = ?, b.birthday = ?, b.sex = ?, b.phone = ?, b.webpage = ? WHERE a.id = ?");
-            $stmt->bindParam(1, $nick, PDO::PARAM_STR);
-            $stmt->bindParam(2, $password, PDO::PARAM_STR, 32);
-            $stmt->bindParam(3, $birthday_string, PDO::PARAM_STR);
-            $stmt->bindParam(4, $sex, PDO::PARAM_INT);
-            $stmt->bindParam(5, $phone, PDO::PARAM_STR);
+            INNER JOIN ".property::getInstance()->get('db_prefix')."_user_custom b USING(id)
+            SET a.nick = ?, a.pass = ?, b.birthday = ?, b.sex = ?, b.phone = ?, b.webpage = ?, b.ufields = ? WHERE a.id = ?");
+            $stmt->bindParam(1, $nick, \PDO::PARAM_STR);
+            $stmt->bindParam(2, $password, \PDO::PARAM_STR, 32);
+            $stmt->bindParam(3, $birthday_string, \PDO::PARAM_STR);
+            $stmt->bindParam(4, $sex, \PDO::PARAM_INT);
+            $stmt->bindParam(5, $phone, \PDO::PARAM_STR);
             $stmt->bindParam(6, $webpage, PDO::PARAM_STR);
-            $stmt->bindParam(7, $target, PDO::PARAM_INT);
+            $stmt->bindParam(7, $ufield_save, \PDO::PARAM_STR);
+            $stmt->bindParam(8, $target, \PDO::PARAM_INT);
             $stmt->execute();
             user::getInstance()->overload($target);
+            $params['ufields']['data'] = $this->getUfieldData($target); // refresh data
         }
         list($birth_year, $birth_month, $birth_day) = explode("-", user::getInstance()->get('birthday'));
         $params['settings'] = array(
@@ -841,6 +903,9 @@ class components_user_front extends \engine\singleton {
         $params['wall']['postperpage'] = $wall_count;
         $params['wall']['maxindex'] = $this->getWallPostCount($target);
 
+        // TODO: add custom fields there
+        $params['wall']['ufields'] = $this->getUfieldData($target);
+
         $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_user_wall WHERE target = ? ORDER by time DESC LIMIT ?, ?");
         $stmt->bindParam(1, $target, PDO::PARAM_INT);
         $stmt->bindParam(2, $limit, PDO::PARAM_INT);
@@ -962,8 +1027,8 @@ class components_user_front extends \engine\singleton {
                 $params = array();
                 $token = $_SESSION['openid_token'];
                 $nickname = system::getInstance()->nohtml(system::getInstance()->post('nick'));
-                $email = system::getInstance()->post('email');
-                $login = system::getInstance()->post('login');
+                $email = system::getInstance()->nohtml(system::getInstance()->post('email'));
+                $login = system::getInstance()->nohtml(system::getInstance()->post('login'));
                 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     $params['notify']['email_invalid'] = true;
                 }
@@ -1033,6 +1098,7 @@ class components_user_front extends \engine\singleton {
                 system::getInstance()->redirect('/user/login.html');
             }
         }
+        return null;
     }
 
     private function viewRecovery() {
@@ -1167,7 +1233,7 @@ class components_user_front extends \engine\singleton {
             $notify = null;
             $nickname = system::getInstance()->nohtml(system::getInstance()->post('nick'));
             $email = system::getInstance()->post('email');
-            $login = system::getInstance()->post('login');
+            $login = system::getInstance()->nohtml(system::getInstance()->post('login'));
             $pass = system::getInstance()->post('password');
             $md5pwd = system::getInstance()->doublemd5($pass);
             if ($params['cfg']['use_captcha'] && !extension::getInstance()->call(extension::TYPE_HOOK, 'captcha')->validate(system::getInstance()->post('captcha'))) {
@@ -1491,6 +1557,48 @@ class components_user_front extends \engine\singleton {
             'link' => $link,
             'text' => $text
         );
+    }
+
+    public function getUfieldData($target_id) {
+        $stmt = database::getInstance()->con()->query("SELECT * FROM ".property::getInstance()->get('db_prefix')."_user_fields");
+        $allFields = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt = null;
+
+        $ufield_user = unserialize(user::getInstance()->get('ufields', $target_id));
+        $output = array();
+        foreach($allFields as $ufield) {
+            $title_serial = unserialize($ufield['name']);
+            $params_serial = unserialize($ufield['params']);
+            if($ufield['type'] == 'text') {
+                $output[] = array(
+                    'id' => $ufield['id'],
+                    'type' => $ufield['type'],
+                    'title' => $title_serial[language::getInstance()->getUseLanguage()],
+                    'reg_exp' => $params_serial['regexp'],
+                    'reg_cond' => $params_serial['regcond'],
+                    'default' => $ufield_user[$ufield['id']]['data']
+                );
+            } elseif($ufield['type'] == 'img') {
+                $output[] = array(
+                    'id' => $ufield['id'],
+                    'type' => $ufield['type'],
+                    'title' => $title_serial[language::getInstance()->getUseLanguage()],
+                    'img_dx' => $params_serial['dx'],
+                    'img_dy' => $params_serial['dy'],
+                    'default' => $ufield_user[$ufield['id']]['data']
+                );
+            } elseif($ufield['type'] == 'link') {
+                $output[] = array(
+                    'id' => $ufield['id'],
+                    'type' => $ufield['type'],
+                    'title' => $title_serial[language::getInstance()->getUseLanguage()],
+                    'domain' => $params_serial['domain'],
+                    'redirect' => $params_serial['redirect'],
+                    'default' => $ufield_user[$ufield['id']]['data']
+                );
+            }
+        }
+        return $output;
     }
 
 

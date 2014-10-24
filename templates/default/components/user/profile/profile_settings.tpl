@@ -1,6 +1,6 @@
 {% import 'macro/notify.tpl' as notify %}
 {% include 'components/user/profile/profile_settings_menu.tpl' %}
-<form method="post" action="" class="form-horizontal">
+<form method="post" action="" class="form-horizontal" enctype="multipart/form-data">
     <input type="hidden" name="csrf_token" value="{{ system.csrf_token }}" />
     <fieldset>
         <h3>{{ language.usercontrol_profile_settings_title_public }}</h3>
@@ -81,6 +81,40 @@
                 <p class="help-block">{{ language.usercontrol_profile_settings_label_website_desc }}</p>
             </div>
         </div>
+
+        {% if local.ufields.data %}
+        <h3>{{ language.usercontrol_profile_settings_ufields_title }}</h3>
+        <p>{{ language.usercontrol_profile_settings_ufields_desc }}</p>
+        {% for ufield in local.ufields.data %}
+            {% if ufield.type == 'text' %}
+            <div class="form-group">
+                <label class="col-md-3 control-label">{{ ufield.title }}</label>
+
+                <div class="col-md-9">
+                    <input type="text" name="ufield_{{ ufield.id }}" value="{{ ufield.default }}" class="form-control"/>
+                </div>
+            </div>
+            {% elseif ufield.type == 'img' %}
+                <div class="form-group">
+                    <label class="col-md-3 control-label">{{ ufield.title }}</label>
+
+                    <div class="col-md-9">
+                        <input type="file" name="ufield_{{ ufield.id }}" />
+                    </div>
+                </div>
+            {% elseif ufield.type == 'link' %}
+                <div class="form-group">
+                    <label class="col-md-3 control-label">{{ ufield.title }}</label>
+
+                    <div class="col-md-9">
+                        <input type="text" name="ufield_{{ ufield.id }}" value="{{ ufield.default }}" class="form-control"/>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        {% endif %}
+
+
         <h3>{{ language.usercontrol_profile_settings_title_password }}</h3>
 
         <p>{{ language.usercontrol_profile_settings_desc_password }}</p>

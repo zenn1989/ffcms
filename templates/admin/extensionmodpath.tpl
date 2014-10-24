@@ -48,8 +48,8 @@
         <label class="col-lg-3 control-label" for="mod_rule_type">{{ language.admin_extension_modroute_ruletype }}</label>
         <div class="col-lg-9">
             <select name="mod_rule_type" class="form-control" id="mod_rule_type">
-                <option value="0"{% if local.path_choice != 1 %} selected{% endif %}>Запрещено</option>
-                <option value="1"{% if local.path_choice == 1 %} selected{% endif %}>Разрешено</option>
+                <option value="0"{% if local.path_choice != 1 %} selected{% endif %}>Allow</option>
+                <option value="1"{% if local.path_choice == 1 %} selected{% endif %}>Deny</option>
             </select>
         </div>
     </div>

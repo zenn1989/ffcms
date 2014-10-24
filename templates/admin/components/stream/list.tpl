@@ -41,6 +41,6 @@
     {{ scriptdata.checkjs('#checkAll', '.check_array') }}
 </form>
 {% else %}
-    {{ notifytpl.warning('В ленте активности еще нет событий') }}
+    {{ notifytpl.warning(language.admin_components_stream_notify_empty) }}
 {% endif %}
 {{ pagination }}

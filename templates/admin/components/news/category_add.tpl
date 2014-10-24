@@ -63,7 +63,7 @@
     <div class="form-group">
         <label class="control-label col-lg-3">{{ language.admin_component_news_category_add_public_label }}</label>
         <div class="col-lg-9">
-            <input type="checkbox" name="show_rss_main" {% if cat.public is null or cat.public == 1 %}checked{% endif %} /> Выводить материалы на главную, в RSS?
+            <input type="checkbox" name="show_rss_main" {% if cat.public is null or cat.public == 1 %}checked{% endif %} /> {{ language.admin_component_news_category_add_public_checkbox }}
             <span class="help-block">{{ language.admin_component_news_category_add_public_desc }}</span>
         </div>
     </div>

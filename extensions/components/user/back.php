@@ -16,6 +16,7 @@ use engine\user;
 use engine\permission;
 use engine\extension;
 use engine\csrf;
+use engine\language;
 
 class components_user_back extends \engine\singleton {
 
@@ -66,6 +67,30 @@ class components_user_back extends \engine\singleton {
             case 'delete':
                 $content = $this->viewUserDelete();
                 break;
+            case 'ufield':
+                $content = $this->viewUserFields();
+                break;
+            case 'ufieldaddtext':
+                $content = $this->viewUserFieldAddText();
+                break;
+            case 'ufieldedittext':
+                $content = $this->viewUserFieldEditText();
+                break;
+            case 'ufielddel':
+                $content = $this->viewUserFieldDelete();
+                break;
+            case 'ufieldaddimg':
+                $content = $this->viewUserFieldAddImage();
+                break;
+            case 'ufieldeditimg':
+                $content = $this->viewUserFieldEditImage();
+                break;
+            case 'ufieldaddlink':
+                $content = $this->viewUserFieldAddLink();
+                break;
+            case 'ufieldeditlink':
+                $content = $this->viewUserFieldEditLink();
+                break;
         }
         template::getInstance()->set(template::TYPE_CONTENT, 'body', $content);
     }
@@ -84,6 +109,327 @@ class components_user_back extends \engine\singleton {
             'admin/components/user/edit',
             'admin/components/user/delete',
         );
+    }
+
+    private function viewUserFieldEditLink() {
+        csrf::getInstance()->buildToken();
+        $id = (int)system::getInstance()->get('id');
+        $params = array();
+
+        $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
+
+        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_user_fields WHERE `id` = ? AND `type` = 'link'");
+        $stmt->bindParam(1, $id, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        if($stmt->rowCount() < 1)
+            return null;
+
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $stmt = null;
+
+        $serial_title = unserialize($result['name']);
+        $add_params = unserialize($result['params']);
+        $params['ufields'] = array(
+            'name' => $serial_title,
+            'linkdomain' => $add_params['domain'],
+            'linkredirect' => $add_params['redirect']
+        );
+
+        if(system::getInstance()->post('submit')) {
+            $field_name = system::getInstance()->nohtml(system::getInstance()->post('field_name'));
+            $field_domain = system::getInstance()->nohtml(system::getInstance()->post('field_linkdomain'));
+            $field_redirect = system::getInstance()->post('field_linkredirect') == 1 ? true : false;
+
+            if(system::getInstance()->length($field_name[language::getInstance()->getUseLanguage()]) < 1)
+                $params['notify']['smallname'] = true;
+            if(system::getInstance()->length($field_domain) < 1)
+                $params['notify']['wrong_domain'] = true;
+
+            if(sizeof($params['notify']) < 1) {
+                $save_name = serialize($field_name);
+                $add_params = array('domain' => $field_domain, 'redirect' => $field_redirect);
+                $add_params = serialize($add_params);
+
+                $stmt = database::getInstance()->con()->prepare("UPDATE `".property::getInstance()->get('db_prefix')."_user_fields` SET `name` = ?, `params` = ? WHERE `id` = ?");
+                $stmt->bindParam(1, $save_name, \PDO::PARAM_STR);
+                $stmt->bindParam(2, $add_params, \PDO::PARAM_STR);
+                $stmt->bindParam(3, $id, \PDO::PARAM_INT);
+                $stmt->execute();
+                $stmt = null;
+
+                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=user&make=ufield');
+            }
+        }
+
+        return template::getInstance()->twigRender('components/user/ufield_addlink.tpl', $params);
+    }
+
+    private function viewUserFieldAddLink() {
+        csrf::getInstance()->buildToken();
+        $params = array();
+
+        $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
+
+        if(system::getInstance()->post('submit')) {
+            $field_name = system::getInstance()->nohtml(system::getInstance()->post('field_name'));
+            $field_domain = system::getInstance()->nohtml(system::getInstance()->post('field_linkdomain'));
+            $field_redirect = system::getInstance()->post('field_linkredirect') == 1 ? true : false;
+
+            if(system::getInstance()->length($field_name[language::getInstance()->getUseLanguage()]) < 1)
+                $params['notify']['smallname'] = true;
+            if(system::getInstance()->length($field_domain) < 1)
+                $params['notify']['wrong_domain'] = true;
+
+            if(sizeof($params['notify']) < 1) {
+                $save_name = serialize($field_name);
+                $add_params = array('domain' => $field_domain, 'redirect' => $field_redirect);
+                $add_params = serialize($add_params);
+
+                $stmt = database::getInstance()->con()->prepare("INSERT INTO `".property::getInstance()->get('db_prefix')."_user_fields` (`type`, `name`, `params`) VALUES ('link', ?, ?)");
+                $stmt->bindParam(1, $save_name, \PDO::PARAM_STR);
+                $stmt->bindParam(2, $add_params, \PDO::PARAM_STR);
+                $stmt->execute();
+                $stmt = null;
+
+                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=user&make=ufield');
+            }
+        }
+
+        return template::getInstance()->twigRender('components/user/ufield_addlink.tpl', $params);
+    }
+
+    private function viewUserFieldEditImage() {
+        csrf::getInstance()->buildToken();
+        $id = (int)system::getInstance()->get('id');
+        $params = array();
+
+        $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
+
+        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_user_fields WHERE `id` = ? AND `type` = 'img'");
+        $stmt->bindParam(1, $id, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        if($stmt->rowCount() < 1)
+            return null;
+
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $stmt = null;
+
+        $serial_title = unserialize($result['name']);
+        $add_params = unserialize($result['params']);
+        $params['ufields'] = array(
+            'name' => $serial_title,
+            'img_dx' => $add_params['dx'],
+            'img_dy' => $add_params['dy']
+        );
+
+        if(system::getInstance()->post('submit')) {
+            $field_name = system::getInstance()->nohtml(system::getInstance()->post('field_name'));
+            $field_dx = (int)system::getInstance()->post('field_img_dx');
+            $field_dy = (int)system::getInstance()->post('field_img_dy');
+            if(system::getInstance()->length($field_name[language::getInstance()->getUseLanguage()]) < 1)
+                $params['notify']['smallname'] = true;
+            if($field_dx < 1 || $field_dy < 1)
+                $params['notify']['wrong_dxdy'] = true;
+
+
+            if(sizeof($params['notify']) < 1) {
+                $save_name = serialize($field_name);
+                $add_params = array('dx' => $field_dx, 'dy' => $field_dy);
+                $add_params = serialize($add_params);
+
+                $stmt = database::getInstance()->con()->prepare("UPDATE `".property::getInstance()->get('db_prefix')."_user_fields` SET `name` = ?, `params` = ? WHERE `id` = ?");
+                $stmt->bindParam(1, $save_name, \PDO::PARAM_STR);
+                $stmt->bindParam(2, $add_params, \PDO::PARAM_STR);
+                $stmt->bindParam(3, $id, \PDO::PARAM_INT);
+                $stmt->execute();
+                $stmt = null;
+
+                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=user&make=ufield');
+            }
+        }
+
+        return template::getInstance()->twigRender('components/user/ufield_addimg.tpl', $params);
+    }
+
+    private function viewUserFieldAddImage() {
+        csrf::getInstance()->buildToken();
+        $params = array();
+
+        $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
+
+        if(system::getInstance()->post('submit')) {
+            $field_name = system::getInstance()->nohtml(system::getInstance()->post('field_name'));
+            $field_dx = (int)system::getInstance()->post('field_img_dx');
+            $field_dy = (int)system::getInstance()->post('field_img_dy');
+            if(system::getInstance()->length($field_name[language::getInstance()->getUseLanguage()]) < 1)
+                $params['notify']['smallname'] = true;
+            if($field_dx < 1 || $field_dy < 1)
+                $params['notify']['wrong_dxdy'] = true;
+
+
+            if(sizeof($params['notify']) < 1) {
+                $save_name = serialize($field_name);
+                $add_params = array('dx' => $field_dx, 'dy' => $field_dy);
+                $add_params = serialize($add_params);
+
+                $stmt = database::getInstance()->con()->prepare("INSERT INTO `".property::getInstance()->get('db_prefix')."_user_fields` (`type`, `name`, `params`) VALUES ('img', ?, ?)");
+                $stmt->bindParam(1, $save_name, \PDO::PARAM_STR);
+                $stmt->bindParam(2, $add_params, \PDO::PARAM_STR);
+                $stmt->execute();
+                $stmt = null;
+
+                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=user&make=ufield');
+            }
+        }
+
+        return template::getInstance()->twigRender('components/user/ufield_addimg.tpl', $params);
+    }
+
+    private function viewUserFieldDelete() {
+        csrf::getInstance()->buildToken();
+        $id = (int)system::getInstance()->get('id');
+        $params = array();
+
+        $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
+
+        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_user_fields WHERE id = ?");
+        $stmt->bindParam(1, $id, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        if($stmt->rowCount() < 1)
+            return null;
+
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $stmt = null;
+
+        $serial_title = unserialize($result['name']);
+        $params['ufields'] = array(
+            'id' => $id,
+            'name' => $serial_title[language::getInstance()->getUseLanguage()],
+            'type' => $result['type']
+        );
+
+        if(system::getInstance()->post('submit')) {
+            $stmt = database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_user_fields WHERE id = ?");
+            $stmt->bindParam(1, $id, \PDO::PARAM_INT);
+            $stmt->execute();
+            $stmt = null;
+            system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=user&make=ufield');
+        }
+
+        return template::getInstance()->twigRender('components/user/ufield_del.tpl', $params);
+    }
+
+    private function viewUserFieldEditText() {
+        csrf::getInstance()->buildToken();
+        $id = (int)system::getInstance()->get('id');
+        $params = array();
+
+        $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
+
+        $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_user_fields WHERE `id` = ? AND `type` = 'text'");
+        $stmt->bindParam(1, $id, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        if($stmt->rowCount() < 1)
+            return null;
+
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $stmt = null;
+
+        $serial_title = unserialize($result['name']);
+        $add_params = unserialize($result['params']);
+        $params['ufields'] = array(
+            'name' => $serial_title,
+            'pattern' => $add_params['regexp'],
+            'pway' => $add_params['regcond']
+        );
+
+        if(system::getInstance()->post('submit')) {
+            $field_name = system::getInstance()->nohtml(system::getInstance()->post('field_name'));
+            $field_regexp = system::getInstance()->post('field_regexp');
+            $field_regrule = (int)system::getInstance()->post('field_rule');
+            if($field_regrule > 1)
+                $field_regrule = 0;
+
+            if(system::getInstance()->length($field_name[language::getInstance()->getUseLanguage()]) < 1)
+                $params['notify']['smallname'] = true;
+            if(system::getInstance()->length($field_regexp) < 1 || @preg_match($field_regexp, "test1") === false)
+                $params['notify']['regexerror'] = true;
+
+            if(sizeof($params['notify']) < 1) {
+                $serialize_name = serialize($field_name);
+                $add_params = array('regexp' => $field_regexp, 'regcond' => $field_regrule);
+                $add_params = serialize($add_params);
+                $stmt = database::getInstance()->con()->prepare("UPDATE `".property::getInstance()->get('db_prefix')."_user_fields` SET `name` = ?, `params` = ? WHERE id = ?");
+                $stmt->bindParam(1, $serialize_name, \PDO::PARAM_STR);
+                $stmt->bindParam(2, $add_params, \PDO::PARAM_STR);
+                $stmt->bindParam(3, $id, \PDO::PARAM_INT);
+                $stmt->execute();
+                $stmt = null;
+                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=user&make=ufield');
+            }
+        }
+
+        return template::getInstance()->twigRender('components/user/ufield_addtext.tpl', $params);
+    }
+
+    private function viewUserFieldAddText() {
+        csrf::getInstance()->buildToken();
+        $params = array();
+
+        $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
+
+        if(system::getInstance()->post('submit')) {
+            $field_name = system::getInstance()->nohtml(system::getInstance()->post('field_name'));
+            $field_regexp = system::getInstance()->post('field_regexp');
+            $field_regrule = (int)system::getInstance()->post('field_rule');
+            if($field_regrule > 1)
+                $field_regrule = 0;
+
+            if(system::getInstance()->length($field_name[language::getInstance()->getUseLanguage()]) < 1)
+                $params['notify']['smallname'] = true;
+            if(system::getInstance()->length($field_regexp) < 1 || @preg_match($field_regexp, "test1") === false)
+                $params['notify']['regexerror'] = true;
+
+            if(sizeof($params['notify']) < 1) {
+                $serialize_name = serialize($field_name);
+                $add_params = array('regexp' => $field_regexp, 'regcond' => $field_regrule);
+                $add_params = serialize($add_params);
+                $stmt = database::getInstance()->con()->prepare("INSERT INTO `".property::getInstance()->get('db_prefix')."_user_fields` (`type`, `name`, `params`) VALUES ('text', ?, ?)");
+                $stmt->bindParam(1, $serialize_name, \PDO::PARAM_STR);
+                $stmt->bindParam(2, $add_params, \PDO::PARAM_STR);
+                $stmt->execute();
+                $stmt = null;
+                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=user&make=ufield');
+            }
+        }
+
+        return template::getInstance()->twigRender('components/user/ufield_addtext.tpl', $params);
+    }
+
+    private function viewUserFields() {
+        csrf::getInstance()->buildToken();
+        $params = array();
+
+        $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
+
+        $stmt = database::getInstance()->con()->query("SELECT * FROM ".property::getInstance()->get('db_prefix')."_user_fields ORDER BY `id` DESC");
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt = null;
+
+        foreach($result as $row) {
+            $name_serial = unserialize($row['name']);
+            $params['ufield']['data'][] = array(
+                'id' => $row['id'],
+                'type' => $row['type'],
+                'name' => $name_serial[language::getInstance()->getUseLanguage()]
+            );
+        }
+
+        return template::getInstance()->twigRender('components/user/ufield_list.tpl', $params);
     }
 
     private function viewUserBandelete() {

@@ -19,8 +19,8 @@ class api_commentpost_front extends \engine\singleton {
     public function make() {
         $text = system::getInstance()->nohtml(system::getInstance()->post('comment_message'), true);
         $authorid = user::getInstance()->get('id');
-        $position = system::getInstance()->post('comment_position');
-        $pathway = system::getInstance()->post('pathway');
+        $position = (int)system::getInstance()->post('comment_position');
+        $pathway = system::getInstance()->nohtml(system::getInstance()->post('pathway'));
         $guest_name = system::getInstance()->nohtml(system::getInstance()->post('guest_name'));
         $timestamp = time();
         $guest_type = false;

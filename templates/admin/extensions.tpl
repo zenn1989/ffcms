@@ -117,5 +117,6 @@
             </table>
             </div>
         {% endif %}
+        <p class="alert alert-warning">No extensions</p>
     </div>
 </div>

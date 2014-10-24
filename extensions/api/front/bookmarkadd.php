@@ -17,8 +17,8 @@ class api_bookmarkadd_front extends \engine\singleton {
     public function make() {
         if(user::getInstance()->get('id') > 0) {
             $userid = user::getInstance()->get('id');
-            $title = system::getInstance()->post('title');
-            $url = system::getInstance()->post('url');
+            $title = system::getInstance()->nohtml(system::getInstance()->post('title'));
+            $url = system::getInstance()->nohtml(system::getInstance()->post('url'));
             // only self domain
             if(system::getInstance()->prefixEquals($url, property::getInstance()->get('script_url')) && filter_var($url, FILTER_VALIDATE_URL) && system::getInstance()->length($title) > 0) {
                 $stmt = database::getInstance()->con()->prepare("SELECT COUNT(*) FROM ".property::getInstance()->get('db_prefix')."_user_bookmarks WHERE target = ? AND href = ?");

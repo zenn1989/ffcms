@@ -1,11 +1,11 @@
 {% import 'macro/notify.tpl' as notify %} {# fast notification macros #}
 <div class="tab-content">
     <div class="tab-pane active">
-        <div class="span4">
+       <div class="table-responsive">
             <table class="table table-striped">
                 <tr>
-                    <td width="40%">{{ language.usercontrol_profile_pers_reg_date }}</td>
-                    <td width="60%">{{ local.wall.reg_date }}</td>
+                    <td>{{ language.usercontrol_profile_pers_reg_date }}</td>
+                    <td>{{ local.wall.reg_date }}</td>
                 </tr>
                 <tr>
                     <td>{{ language.usercontrol_profile_pers_birthday_date }}</td>
@@ -28,7 +28,24 @@
                     </td>
                 </tr>
                 {% endif %}
+                {% for ufield in local.wall.ufields %}
+                    {% if ufield.default != null %}
+                    <tr>
+                        <td>{{ ufield.title }}</td>
+                        <td>
+                            {% if ufield.type == 'text' %}
+                            {{ ufield.default }}
+                            {% elseif ufield.type == 'img' %}
+                            <img src="{{ system.script_url }}/upload{{ ufield.default }}" alt="{{ ufield.title }}" />
+                            {% elseif ufield.type == 'link' %}
+                            <a href="{% if ufield.redirect %}{{ system.script_url }}/api.php?iface=front&object=redirect&url={% endif %}{{ ufield.default }}" target="_blank">{{ ufield.default }}</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
             </table>
+       </div>
             <h3 class="centered">{{ language.usercontrol_profile_pers_wall }}</h3>
             <hr/>
             <div class="row">
@@ -84,7 +101,6 @@
                 </ul>
             </div>
         </div>
-    </div>
 </div>
 {# modal item for reading answers #}
 <div id="readanswer" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">

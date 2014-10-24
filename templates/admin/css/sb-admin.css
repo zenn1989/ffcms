@@ -56,10 +56,14 @@ body {
     }
 }
 
+.table {
+    margin-top: 5px;
+}
+
 /* table style */
 .table thead > tr {
-    background-color: #8dbdd8;
-    color: #000000;
+    background-color: rgb(51, 51, 51);
+    color: rgb(255, 255, 255);
 }
 
 .table-line tbody > tr > td {
@@ -67,8 +71,8 @@ body {
 }
 
 .table tbody tr:hover td, .table tbody tr:hover th {
-    background-color: #cbcbcb;
-    color: #ffffff;
+    background-color: #f4e8e2;
+    color: #000000;
 }
 
 /* Top Navigation */

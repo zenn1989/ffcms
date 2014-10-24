@@ -1,4 +1,15 @@
 ALTER TABLE  `{$db_prefix}_com_news_category` ADD  `public` INT( 1 ) NOT NULL DEFAULT  '1';
+ALTER TABLE  `{$db_prefix}_user_custom` ADD  `ufields` TEXT NOT NULL DEFAULT  '';
+CREATE TABLE IF NOT EXISTS `{$db_prefix}_user_fields` (
+  `id` int(24) NOT NULL AUTO_INCREMENT,
+  `type` enum('text','img','link') NOT NULL,
+  `name` text NOT NULL,
+  `reg_exp` varchar(512) NOT NULL DEFAULT '',
+  `reg_cond` int(1) NOT NULL DEFAULT '0',
+  `params` varchar(4096) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
 CREATE TABLE IF NOT EXISTS `{$db_prefix}_mod_menu_ditem` (
   `d_id` int(24) NOT NULL AUTO_INCREMENT,
   `d_owner_gid` int(24) NOT NULL,
