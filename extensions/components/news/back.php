@@ -136,7 +136,7 @@ class components_news_back extends \engine\singleton {
                 $stmt->bindParam(5, $cat_id, \PDO::PARAM_INT);
                 $stmt->execute();
                 $stmt = null;
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=news&make=category');
+                system::getInstance()->redirect('?object=components&action=news&make=category');
             }
         }
 
@@ -162,7 +162,7 @@ class components_news_back extends \engine\singleton {
             }
             $stmt = null;
         } else {
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=news&make=category');
+            system::getInstance()->redirect('?object=components&action=news&make=category');
         }
 
 
@@ -180,7 +180,7 @@ class components_news_back extends \engine\singleton {
         $params['news']['selected_category'] = $cat_id;
 
         if($cat_id < 1)
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=news&make=category");
+            system::getInstance()->redirect("?object=components&action=news&make=category");
 
         $stmt = database::getInstance()->con()->prepare("SELECT * FROM " . property::getInstance()->get('db_prefix') . "_com_news_category WHERE category_id = ?");
         $stmt->bindParam(1, $cat_id, PDO::PARAM_INT);
@@ -215,7 +215,7 @@ class components_news_back extends \engine\singleton {
                     $stmt = database::getInstance()->con()->prepare("DELETE FROM " . property::getInstance()->get('db_prefix') . "_com_news_category WHERE category_id in ({$cat_remove_list})");
                     $stmt->execute();
                     $stmt = null;
-                    system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=news&make=category");;
+                    system::getInstance()->redirect("?object=components&action=news&make=category");;
                 }
             }
         } else {
@@ -268,7 +268,7 @@ class components_news_back extends \engine\singleton {
                     $stmt->bindParam(3, $new_category_path, \PDO::PARAM_STR);
                     $stmt->bindParam(4, $cat_public, \PDO::PARAM_INT);
                     $stmt->execute();
-                    system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=news&make=category");
+                    system::getInstance()->redirect("?object=components&action=news&make=category");
                 }
             }
         }
@@ -332,7 +332,7 @@ class components_news_back extends \engine\singleton {
                 @unlink(root . '/upload/news/poster_' . $news_id . '.jpg');
             if(file_exists(root . '/upload/news/gallery/' . $news_id . '/'))
                 system::getInstance()->removeDirectory(root . '/upload/news/gallery/' . $news_id . '/');
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=news");
+            system::getInstance()->redirect("?object=components&action=news");
         }
 
         $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_com_news_entery WHERE id = ?");
@@ -444,7 +444,7 @@ class components_news_back extends \engine\singleton {
                     }
                     $stmt = null;
                 }
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=news");
+                system::getInstance()->redirect("?object=components&action=news");
             }
         }
         return template::getInstance()->twigRender('components/news/edit.tpl', $params);
@@ -545,7 +545,7 @@ class components_news_back extends \engine\singleton {
                 $params['news']['poster_name'] = 'poster_' . $news_id . '.jpg';
             }
         } else {
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=static');
+            system::getInstance()->redirect('?object=components&action=static');
         }
 
 

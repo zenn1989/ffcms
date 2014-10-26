@@ -180,7 +180,7 @@ class admin extends singleton {
                         $this->installExtension();
                         break;
                 }
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object='.$this->get['object']);
+                system::getInstance()->redirect('?object='.$this->get['object']);
             }
             $ext_params = extension::getInstance()->getAllParams();
             if(array_key_exists($this->get['action'], $ext_params[$this->get['object']])) {
@@ -473,7 +473,7 @@ class admin extends singleton {
             if (is_readable(root . '/' . "config.php") && is_writable(root . '/' . "config.php")) {
                 file_put_contents(root . '/' . "config.php", $save_data);
             }
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=settings&action=saved");
+            system::getInstance()->redirect("?object=settings&action=saved");
         }
         foreach(property::getInstance()->getAll() as $config=>$value) {
             $params['config'][$config] = $value;

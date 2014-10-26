@@ -239,15 +239,27 @@ class system extends singleton {
 
     /**
      * Redirect user on website. Example : system::getInstance()->redirect("/page.html");
-     * @param string $uri
+     * @param null $uri
      */
     public function redirect($uri = null)
     {
-        if(loader === 'back')
-            header("Location: ".property::getInstance()->get('script_url').$uri);
-        else
-            header("Location: ".property::getInstance()->get('url').$uri);
-        exit();
+        $location = null;
+        if(loader === 'back') {
+            if(system::getInstance()->prefixEquals($uri, '?')) {
+                $self_script = $_SERVER['PHP_SELF']; // admin.php
+                if(system::getInstance()->prefixEquals($self_script, '/')) {
+                    $uri_prepare = system::getInstance()->altexplode('/', $self_script);
+                    $self_script = array_pop($uri_prepare);
+                }
+                $location = property::getInstance()->get('script_url') . '/' . $self_script . $uri;
+            } else {
+                $location = property::getInstance()->get('script_url') . $uri;
+            }
+        } else {
+            $location = property::getInstance()->get('url') . $uri;
+        }
+        header("Location: " . $location);
+        exit('Redirecting to: <a href="' . $location . '">' . $location . '</a>');
     }
 
     /**

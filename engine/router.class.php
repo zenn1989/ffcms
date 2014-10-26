@@ -33,6 +33,12 @@ class router extends singleton {
         $raw_uri = urldecode($_SERVER['REQUEST_URI']);
         if($get_pos = strpos($raw_uri, '?'))
             $raw_uri = substr($raw_uri, 0, $get_pos);
+        // maybe its a sub-directory website?
+        $general_url = parse_url(property::getInstance()->get('url'));
+        if($general_url['path'] != null) {
+            $raw_uri = substr($raw_uri, system::getInstance()->length($general_url['path']));
+        }
+        // predefine url array and string
         $this->pathstring = $raw_uri;
         $this->patharray = explode("/", $raw_uri);
         // remove 1st null element

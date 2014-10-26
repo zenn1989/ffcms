@@ -63,7 +63,7 @@ class components_feedback_back extends \engine\singleton {
             $result['text'] = system::getInstance()->htmlQuoteDecode($result['text']);
             $params['feedback']['result'] = $result;
         } else {
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=user");
+            system::getInstance()->redirect("?object=components&action=user");
         }
 
         return template::getInstance()->twigRender('components/feedback/read.tpl', $params);

@@ -75,7 +75,7 @@ class components_static_back extends \engine\singleton {
                 $stmt = database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_com_static WHERE id = ? LIMIT 1");
                 $stmt->bindParam(1, $page_id, PDO::PARAM_INT);
                 $stmt->execute();
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=static');
+                system::getInstance()->redirect('?object=components&action=static');
             }
             $title = unserialize($result['title']);
             $params['static'] = array(
@@ -84,7 +84,7 @@ class components_static_back extends \engine\singleton {
                 'pathway' => $result['pathway']
             );
         } else {
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=static');
+            system::getInstance()->redirect('?object=components&action=static');
         }
         return template::getInstance()->twigRender('components/static/delete.tpl', $params);
     }
@@ -130,7 +130,7 @@ class components_static_back extends \engine\singleton {
             $params['static']['keywords'] = unserialize($result['keywords']);
             $params['static']['description'] = unserialize($result['description']);
         } else {
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=static');
+            system::getInstance()->redirect('?object=components&action=static');
         }
         $stmt = null;
         return template::getInstance()->twigRender('components/static/edit.tpl', $params);
@@ -176,7 +176,7 @@ class components_static_back extends \engine\singleton {
                 $stream = extension::getInstance()->call(extension::TYPE_COMPONENT, 'stream');
                 if(is_object($stream))
                     $stream->add('static.add', $page_owner, property::getInstance()->get('url').'/static/'.$save_pathway, $params['static']['title'][language::getInstance()->getUseLanguage()]);
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=static");
+                system::getInstance()->redirect("?object=components&action=static");
             }
         }
         return template::getInstance()->twigRender('components/static/edit.tpl', $params);

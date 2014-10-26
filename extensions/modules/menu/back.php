@@ -104,7 +104,7 @@ class modules_menu_back extends \engine\singleton {
             $stmt->bindParam(1, $menu_item_id, \PDO::PARAM_INT);
             $stmt->execute();
             $stmt = null;
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=modules&action=menu&make=manage&id=" . $menu_id);
+            system::getInstance()->redirect("?object=modules&action=menu&make=manage&id=" . $menu_id);
         }
 
         return template::getInstance()->twigRender('modules/menu/itemdel.tpl', $params);
@@ -206,7 +206,7 @@ class modules_menu_back extends \engine\singleton {
                     $stmt->execute();
                     $stmt = null;
                 }
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=modules&action=menu&make=manage&id=' . $menu_id);
+                system::getInstance()->redirect('?object=modules&action=menu&make=manage&id=' . $menu_id);
             }
         }
 
@@ -256,7 +256,7 @@ class modules_menu_back extends \engine\singleton {
                 $stmt->execute();
                 $stmt = null;
             }
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=modules&action=menu&make=manage&id=" . $menu_id);
+            system::getInstance()->redirect("?object=modules&action=menu&make=manage&id=" . $menu_id);
         }
 
         return template::getInstance()->twigRender('modules/menu/itemdel.tpl', $params);
@@ -358,7 +358,7 @@ class modules_menu_back extends \engine\singleton {
                     $stmt->execute();
                     $stmt = null;
                 }
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=modules&action=menu&make=manage&id=' . $menu_id);
+                system::getInstance()->redirect('?object=modules&action=menu&make=manage&id=' . $menu_id);
             }
         }
 
@@ -415,7 +415,7 @@ class modules_menu_back extends \engine\singleton {
                     $stmt->execute();
                     $stmt = null;
                 }
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=modules&action=menu&make=manage&id=' . $menu_id);
+                system::getInstance()->redirect('?object=modules&action=menu&make=manage&id=' . $menu_id);
             }
         }
 
@@ -550,7 +550,7 @@ class modules_menu_back extends \engine\singleton {
             $stmt->bindParam(1, $menu_id, \PDO::PARAM_INT);
             $stmt->execute();
             $stmt = null;
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=modules&action=menu");
+            system::getInstance()->redirect("?object=modules&action=menu");
         }
 
         return template::getInstance()->twigRender('modules/menu/delete.tpl', $params);
@@ -594,7 +594,7 @@ class modules_menu_back extends \engine\singleton {
                 $stmt->bindParam(5, $menu_id, \PDO::PARAM_INT);
                 $stmt->execute();
                 $stmt = null;
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=modules&action=menu");
+                system::getInstance()->redirect("?object=modules&action=menu");
             }
         }
 
@@ -643,7 +643,7 @@ class modules_menu_back extends \engine\singleton {
                 $stmt->bindParam(4, $menu_display, \PDO::PARAM_INT);
                 $stmt->execute();
                 $stmt = null;
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=modules&action=menu");
+                system::getInstance()->redirect("?object=modules&action=menu");
             }
         }
 

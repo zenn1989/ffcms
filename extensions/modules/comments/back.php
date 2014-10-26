@@ -77,7 +77,7 @@ class modules_comments_back extends \engine\singleton {
         $stmt->execute();
         $stmt = null;
 
-        system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=modules&action=comments");
+        system::getInstance()->redirect("?object=modules&action=comments");
     }
 
     private function viewCommentAprove() {
@@ -88,7 +88,7 @@ class modules_comments_back extends \engine\singleton {
         $stmt->execute();
         $stmt = null;
 
-        system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=modules&action=comments");
+        system::getInstance()->redirect("?object=modules&action=comments");
     }
 
     private function viewCommentDelete() {
@@ -103,7 +103,7 @@ class modules_comments_back extends \engine\singleton {
             $stmt = database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE id = ?");
             $stmt->bindParam(1, $comment_id, PDO::PARAM_INT);
             $stmt->execute();
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=modules&action=comments");
+            system::getInstance()->redirect("?object=modules&action=comments");
         }
 
         $stmt = database::getInstance()->con()->prepare("SELECT comment,author,guest_name FROM ".property::getInstance()->get('db_prefix')."_mod_comments WHERE id = ?");
@@ -118,7 +118,7 @@ class modules_comments_back extends \engine\singleton {
                 'text' => extension::getInstance()->call(extension::TYPE_HOOK, 'bbtohtml')->nobbcode($result['comment'])
             );
         } else {
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=modules&action=comments');
+            system::getInstance()->redirect('?object=modules&action=comments');
         }
 
         return template::getInstance()->twigRender('modules/comments/delete.tpl', $params);
@@ -149,7 +149,7 @@ class modules_comments_back extends \engine\singleton {
             $stmt = null;
             $params['comments']['text'] = $result['comment'];
         } else {
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=modules&action=comments');
+            system::getInstance()->redirect('?object=modules&action=comments');
         }
 
         return template::getInstance()->twigRender('modules/comments/edit.tpl', $params);

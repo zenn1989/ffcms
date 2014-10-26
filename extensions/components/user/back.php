@@ -166,7 +166,7 @@ class components_user_back extends \engine\singleton {
                 $stmt->execute();
                 $stmt = null;
 
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=user&make=ufield');
+                system::getInstance()->redirect('?object=components&action=user&make=ufield');
             }
         }
 
@@ -200,7 +200,7 @@ class components_user_back extends \engine\singleton {
                 $stmt->execute();
                 $stmt = null;
 
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=user&make=ufield');
+                system::getInstance()->redirect('?object=components&action=user&make=ufield');
             }
         }
 
@@ -254,7 +254,7 @@ class components_user_back extends \engine\singleton {
                 $stmt->execute();
                 $stmt = null;
 
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=user&make=ufield');
+                system::getInstance()->redirect('?object=components&action=user&make=ufield');
             }
         }
 
@@ -288,7 +288,7 @@ class components_user_back extends \engine\singleton {
                 $stmt->execute();
                 $stmt = null;
 
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=user&make=ufield');
+                system::getInstance()->redirect('?object=components&action=user&make=ufield');
             }
         }
 
@@ -324,7 +324,7 @@ class components_user_back extends \engine\singleton {
             $stmt->bindParam(1, $id, \PDO::PARAM_INT);
             $stmt->execute();
             $stmt = null;
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=user&make=ufield');
+            system::getInstance()->redirect('?object=components&action=user&make=ufield');
         }
 
         return template::getInstance()->twigRender('components/user/ufield_del.tpl', $params);
@@ -377,7 +377,7 @@ class components_user_back extends \engine\singleton {
                 $stmt->bindParam(3, $id, \PDO::PARAM_INT);
                 $stmt->execute();
                 $stmt = null;
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=user&make=ufield');
+                system::getInstance()->redirect('?object=components&action=user&make=ufield');
             }
         }
 
@@ -411,7 +411,7 @@ class components_user_back extends \engine\singleton {
                 $stmt->bindParam(2, $add_params, \PDO::PARAM_STR);
                 $stmt->execute();
                 $stmt = null;
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . '?object=components&action=user&make=ufield');
+                system::getInstance()->redirect('?object=components&action=user&make=ufield');
             }
         }
 
@@ -457,10 +457,10 @@ class components_user_back extends \engine\singleton {
                 $stmt->bindParam(1, $ban_id, PDO::PARAM_INT);
                 $stmt->execute();
                 $stmt = null;
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=user&make=banlist");
+                system::getInstance()->redirect("?object=components&action=user&make=banlist");
             }
         } else {
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=user&make=banlist");
+            system::getInstance()->redirect("?object=components&action=user&make=banlist");
         }
 
 
@@ -577,7 +577,7 @@ class components_user_back extends \engine\singleton {
                 $stmt->bindParam(1, $group_name, PDO::PARAM_STR);
                 $stmt->bindParam(2, $string_perms, PDO::PARAM_STR);
                 $stmt->execute();
-                system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=user&make=grouplist");
+                system::getInstance()->redirect("?object=components&action=user&make=grouplist");
             } else {
                 $params['notify']['empty_name'] = true;
             }
@@ -605,12 +605,12 @@ class components_user_back extends \engine\singleton {
                     $stmt = database::getInstance()->con()->prepare("DELETE FROM ".property::getInstance()->get('db_prefix')."_user_access_level WHERE group_id = ?");
                     $stmt->bindParam(1, $group_id, PDO::PARAM_INT);
                     $stmt->execute();
-                    system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=user&make=grouplist");
+                    system::getInstance()->redirect("?object=components&action=user&make=grouplist");
                 }
             }
             $params['group']['name'] = $result['group_name'];
         } else {
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=user&make=grouplist");
+            system::getInstance()->redirect("?object=components&action=user&make=grouplist");
         }
 
         $params['extension']['title'] = admin::getInstance()->viewCurrentExtensionTitle();
@@ -634,7 +634,7 @@ class components_user_back extends \engine\singleton {
                 'rights' => system::getInstance()->altexplode(';', $result['permissions'])
             );
         } else {
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=user&make=grouplist");
+            system::getInstance()->redirect("?object=components&action=user&make=grouplist");
         }
 
         if(system::getInstance()->post('submit')) {
@@ -652,7 +652,7 @@ class components_user_back extends \engine\singleton {
             $stmt->bindParam(3, $group_id, PDO::PARAM_INT);
             $stmt->execute();
 
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=user&make=grouplist");
+            system::getInstance()->redirect("?object=components&action=user&make=grouplist");
         }
 
         $params['permission_general'] = permission::getInstance()->getAllPermissions();
@@ -735,7 +735,7 @@ class components_user_back extends \engine\singleton {
 
         $userid = system::getInstance()->get('id');
         if(!user::getInstance()->exists($userid) || permission::getInstance()->have('global/owner', $userid)) {
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=user");
+            system::getInstance()->redirect("?object=components&action=user");
         }
 
         if(system::getInstance()->post('deleteuser') && csrf::getInstance()->check()) {
@@ -746,7 +746,7 @@ class components_user_back extends \engine\singleton {
             $stmt->bindParam(1, $userid, PDO::PARAM_INT);
             $stmt->execute();
             // TODO: friendlist cleanup -> field friend_list, friend_request in user table
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=user");
+            system::getInstance()->redirect("?object=components&action=user");
         }
 
         $params['udata'] = array(
@@ -764,7 +764,7 @@ class components_user_back extends \engine\singleton {
 
         $userid = system::getInstance()->get('id');
         if(!user::getInstance()->exists($userid)) {
-            system::getInstance()->redirect($_SERVER['PHP_SELF'] . "?object=components&action=user");
+            system::getInstance()->redirect("?object=components&action=user");
         }
 
         if(system::getInstance()->post('submit')) {
