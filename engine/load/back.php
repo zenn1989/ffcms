@@ -8,7 +8,7 @@
  */
 
 // system are not installed or file is missed
-if(!file_exists("config.php")) {
+if(!file_exists(root . "/config.php")) {
     exit("System are not installed or file config.php is missed. Run <a href='/install/'>Installer</a>.");
 } else {
     require_once(root . '/config.php');

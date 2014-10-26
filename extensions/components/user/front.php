@@ -327,6 +327,7 @@ class components_user_front extends \engine\singleton {
         $params['profile']['use_karma'] = extension::getInstance()->getConfig('use_karma', 'user', extension::TYPE_COMPONENT, 'int');
         if($params['profile']['use_karma'] == 1) {
             $params['profile']['karma'] = user::getInstance()->get('karma', $target);
+            $params['profile']['karma_can_change'] = user::getInstance()->canKarmaChange($target, $viewer);
             // karma logs
             if($params['profile']['is_self']) {
                 $stmt = database::getInstance()->con()->prepare("SELECT * FROM ".property::getInstance()->get('db_prefix')."_user_karma WHERE `to_id` = ? ORDER BY `date` DESC LIMIT 0,10");
@@ -1364,6 +1365,9 @@ class components_user_front extends \engine\singleton {
         if(user::getInstance()->get('id') > 0) // its always authorised user, no reason to display form
             return null;
         $params = array();
+        $outpoint = system::getInstance()->nohtml(system::getInstance()->get('out'));
+        if($outpoint != null)
+            $outpoint = '/' . $outpoint;
         if(system::getInstance()->post('submit')) { // form is submited, try to check input params
             $params['submit'] = true;
             $loginoremail = system::getInstance()->post('email');
@@ -1412,7 +1416,7 @@ class components_user_front extends \engine\singleton {
                         $_SESSION['person'] = $loginoremail;
                         $_SESSION['token'] = $md5token;
                     }
-                    system::getInstance()->redirect();
+                    system::getInstance()->redirect($outpoint);
                 } else {
                     $params['notify']['wrong_data'] = true;
                 }

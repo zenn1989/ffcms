@@ -49,7 +49,7 @@
                 {% endif %}
                 {% if user.id < 1 %}
                     <li><a href="{{ system.url }}/user/register.html">{{ language.usercontrol_menu_reg }}</a></li>
-                    <li><a href="{{ system.url }}/user/login.html">{{ language.usercontrol_menu_auth }}</a></li>
+                    <li><a href="{{ system.url }}/user/login.html{% if system.uri != null %}?out={{ system.uri }}{% endif %}">{{ language.usercontrol_menu_auth }}</a></li>
                 {% endif %}
             </ul>
         </div>

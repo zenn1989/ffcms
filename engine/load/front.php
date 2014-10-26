@@ -8,7 +8,7 @@
  */
 
 // system are not installed or file is missed
-if(!file_exists("config.php")) {
+if(!file_exists(root . "/config.php")) {
     // redirect user to the "install process" page
     header('Location: ./install/');
     // if browser not accept redirect ( O_o ) header accept or ...

@@ -8,7 +8,7 @@
  */
 
 // system are not installed or file is missed
-if(!file_exists("config.php")) {
+if(!file_exists(root . "/config.php")) {
     if(loader !== 'install')
         exit();
 } else {

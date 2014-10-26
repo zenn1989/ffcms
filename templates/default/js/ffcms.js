@@ -34,12 +34,14 @@ function deletecomment(id) {
     }
 }
 
-function changeKarma(type, target_id, url) {
+function changeKarma(type, target_id, url, htmlid) {
     $.get(host + '/api.php?iface=front&object=userkarma&make=change&type='+type+'&target='+target_id+'&url='+url, function(response){
         if(response == 'error') {
             alert('Error');
         } else {
-            $('#karmabutton').html(response);
+            if(htmlid == null)
+                htmlid = '#karmabutton';
+            $(htmlid).html(response);
         }
     });
 }

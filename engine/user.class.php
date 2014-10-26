@@ -13,6 +13,7 @@ class user extends singleton {
 
     protected $userdata = array();
     protected $userindex = 0;
+    protected $karmadata = array();
 
     public function init() {
         $token = isset($_SESSION['token']) ? $_SESSION['token'] : $_COOKIE['token'];
@@ -298,6 +299,34 @@ class user extends singleton {
         $stmt->execute();
         $stmt = null;
         return true;
+    }
+
+    /**
+     * Check if $user_id can change karma rating for $target_id
+     * @param $target_id
+     * @param int $user_id
+     * @return bool
+     */
+    public function canKarmaChange($target_id, $user_id = 0) {
+        if($user_id == 0)
+            $user_id = $this->get('id');
+        if($user_id == $target_id || $user_id == 0)
+            return false;
+        if(!isset($this->karmadata[$user_id])) {
+            $check_date = strtotime('-1 day');
+            $stmt = database::getInstance()->con()->prepare("SELECT `to_id` FROM ".property::getInstance()->get('db_prefix')."_user_karma WHERE `from_id` = ? AND `date` >= ?");
+            $stmt->bindParam(1, $user_id, \PDO::PARAM_STR);
+            $stmt->bindParam(2, $check_date, \PDO::PARAM_INT);
+            $stmt->execute();
+
+            $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $stmt = null;
+
+            foreach($result as $row) {
+                $this->karmadata[$user_id][] = $row['to_id'];
+            }
+        }
+        return !in_array($target_id, $this->karmadata[$user_id]);
     }
 
 }

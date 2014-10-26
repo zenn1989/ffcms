@@ -116,7 +116,8 @@
                 </tbody>
             </table>
             </div>
+        {% else %}
+             <p class="alert alert-warning">No extensions</p>
         {% endif %}
-        <p class="alert alert-warning">No extensions</p>
     </div>
 </div>
