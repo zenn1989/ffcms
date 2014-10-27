@@ -296,8 +296,11 @@ class admin extends singleton {
                     $stmt->execute();
                     $stmt = null;
 
+                    // @deprecated
                     if(method_exists($object, 'install'))
                         $object->install();
+                    if(method_exists($object, '_install'))
+                        $object->_install();
                 }
             }
         }

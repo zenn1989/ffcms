@@ -79,8 +79,14 @@ class permission extends singleton {
                     require_once($pathway);
                     if(class_exists($cname)) {
                         $init = new $cname;
-                        if(method_exists($init, 'getInstance') && method_exists($init, 'accessData')) {
-                            $data = $init::getInstance()->accessData();
+                        if(method_exists($init, 'getInstance')) {
+                            $object = @$init::getInstance();
+                            $data = null;
+                            if(method_exists($object, 'accessData')) {
+                                $data = @$object->accessData(); // @deprecated
+                            } elseif(method_exists($init, '_accessData')) {
+                                $data = @$object->_accessData();
+                            }
                             foreach($data as $single) {
                                 $result[] = $single;
                             }
