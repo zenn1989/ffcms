@@ -42,7 +42,7 @@ class hooks_captcha_back extends \engine\singleton {
         return template::getInstance()->twigRender('hooks/captcha/settings.tpl', $params);
     }
 
-    public function accessData() {
+    public function _accessData() {
         return array(
             'admin/hooks/captcha'
         );

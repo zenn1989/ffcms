@@ -40,7 +40,7 @@ class modules_news_top_view_back extends \engine\singleton {
         return template::getInstance()->twigRender('modules/news_top_view/settings.tpl', $params);
     }
 
-    public function accessData() {
+    public function _accessData() {
         return array(
             'admin/modules/news_top_view',
         );

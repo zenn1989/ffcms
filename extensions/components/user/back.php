@@ -95,7 +95,7 @@ class components_user_back extends \engine\singleton {
         template::getInstance()->set(template::TYPE_CONTENT, 'body', $content);
     }
 
-    public function accessData() {
+    public function _accessData() {
         return array(
             'admin/components/user',
             'admin/components/user/grouplist',

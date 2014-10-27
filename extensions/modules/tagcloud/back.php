@@ -38,7 +38,7 @@ class modules_tagcloud_back extends \engine\singleton {
         return template::getInstance()->twigRender('modules/tagcloud/settings.tpl', $params);
     }
 
-    public function accessData() {
+    public function _accessData() {
         return array(
             'admin/modules/tagcloud',
         );

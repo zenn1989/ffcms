@@ -39,7 +39,7 @@ class modules_lastcomments_back extends \engine\singleton {
         return template::getInstance()->twigRender('modules/lastcomments/settings.tpl', $params);
     }
 
-    public function accessData() {
+    public function _accessData() {
         return array(
             'admin/modules/lastcomments',
         );

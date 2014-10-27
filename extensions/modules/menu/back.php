@@ -50,7 +50,7 @@ class modules_menu_back extends \engine\singleton {
         return $content;
     }
 
-    public function accessData() {
+    public function _accessData() {
         return array(
             'admin/modules/menu',
             'admin/modules/menu/add',

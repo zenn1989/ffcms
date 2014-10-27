@@ -29,7 +29,7 @@ class components_stream_back extends \engine\singleton {
         return '2.0.4';
     }
 
-    public function accessData() {
+    public function _accessData() {
         return array(
             'admin/components/stream',
             'admin/components/stream/list',

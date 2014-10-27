@@ -39,7 +39,7 @@ class components_feedback_back extends \engine\singleton {
         template::getInstance()->set(template::TYPE_CONTENT, 'body', $content);
     }
 
-    public function accessData() {
+    public function _accessData() {
         return array(
             'admin/components/feedback',
             'admin/components/feedback/list',

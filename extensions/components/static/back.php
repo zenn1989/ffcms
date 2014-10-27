@@ -50,7 +50,7 @@ class components_static_back extends \engine\singleton {
         return $content;
     }
 
-    public function accessData() {
+    public function _accessData() {
         return array(
             'admin/components/static',
             'admin/components/static/add',

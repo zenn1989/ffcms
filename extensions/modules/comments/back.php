@@ -57,7 +57,7 @@ class modules_comments_back extends \engine\singleton {
         return '2.0.4';
     }
 
-    public function accessData() {
+    public function _accessData() {
         return array(
             'admin/modules/comments',
             'admin/modules/comments/list',

@@ -39,7 +39,7 @@ class modules_news_new_back extends \engine\singleton {
         return template::getInstance()->twigRender('modules/news_new/settings.tpl', $params);
     }
 
-    public function accessData() {
+    public function _accessData() {
         return array(
             'admin/modules/news_new',
         );
