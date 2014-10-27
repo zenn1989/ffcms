@@ -31,7 +31,7 @@ class cache extends singleton {
      */
     public function store($name, $data) {
         $name = md5($name);
-        @file_put_contents(root . self::CACHE_DIR . $name . '.cache', $data);
+        system::getInstance()->putFile($data, root . self::CACHE_DIR . $name . '.cache');
     }
 
     /**

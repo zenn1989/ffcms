@@ -158,6 +158,7 @@ class antivirus extends singleton {
                 logger::getInstance()->log(logger::LEVEL_WARN, 'Local antivirus hashsum signature not founded:' . $md5file);
             }
         }
+        cache::getInstance()->save($save_cache_name, serialize($this->version_md5));
     }
 
     public function containsHackMethods($content)
