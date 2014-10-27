@@ -71,7 +71,7 @@ class modules_menu_back extends \engine\singleton {
     }
 
     public function _compatable() {
-        return '2.0.3';
+        return '2.0.4';
     }
 
     private function viewMenuDependItemDelete() {

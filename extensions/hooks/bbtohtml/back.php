@@ -15,6 +15,6 @@ class hooks_bbtohtml_back extends \engine\singleton {
     }
 
     public function _compatable() {
-        return '2.0.3';
+        return '2.0.4';
     }
 }

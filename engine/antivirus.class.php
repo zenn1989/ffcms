@@ -147,7 +147,6 @@ class antivirus extends singleton {
         $response = system::getInstance()->url_get_contents($ff_repo_url);
 
         if(!is_null($response) && $response != 'error') {
-            cache::getInstance()->save($save_cache_name, $response);
             $this->version_md5 = @unserialize($response);
         } else {
             $md5file = root . "/resource/antivirus/.md5sum";

@@ -20,7 +20,7 @@ class modules_news_new_back extends \engine\singleton {
     }
 
     public function _compatable() {
-        return '2.0.3';
+        return '2.0.4';
     }
 
     public function make() {
