@@ -22,13 +22,13 @@ date_default_timezone_set(\engine\property::getInstance()->get('time_zone')); //
 
 \engine\language::getInstance()->init(); // prepare language
 \engine\database::getInstance()->init(); // init database PDO connect
+\engine\extension::getInstance()->init(); // init extension controller
 \engine\user::getInstance()->init(); // prepare user data
 \engine\router::getInstance()->init(); // prepare URI worker
 
 \engine\meta::getInstance()->init();
 \engine\template::getInstance()->init(); // set default template variables according changes in dymanic variables
 
-\engine\extension::getInstance()->init(); // init extension controller
 \engine\extension::getInstance()->loadModules(); // prepare modules
 \engine\extension::getInstance()->loadHooks(); // prepare hooks
 

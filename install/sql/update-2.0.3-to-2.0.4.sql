@@ -54,4 +54,8 @@ INSERT INTO `{$db_prefix}_mod_menu_header` (`menu_id`, `menu_name`, `menu_tag`, 
 INSERT INTO `{$db_prefix}_extensions` (`type`, `configs`, `dir`, `enabled`, `path_choice`, `path_allow`, `path_deny`, `version`, `compatable`) VALUES
 ('modules', '', 'menu', '1', '1', '*', '', '1.0.1', '2.0.4');
 
+UPDATE `{$db_prefix}_extensions` SET `version` = '1.0.1', `compatable` = '2.0.4' WHERE `dir` IN
+('static', 'user', 'news', 'sitemap', 'feedback', 'search', 'captcha', 'profile', 'bbtohtml', 'comment', 'file', 'mail', 'news_on_main', 'static_on_main',
+'comments', 'usernotify', 'lastcomments', 'tagcloud', 'news_top_discus', 'news_top_view', 'news_new', 'stream', 'urlfixer');
+
 UPDATE `{$db_prefix}_version` SET `version` = '2.0.4';
