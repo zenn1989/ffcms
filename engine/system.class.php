@@ -688,10 +688,11 @@ class system extends singleton {
     public function putFile($file_data, $path) {
         $save_dir = null;
         $file_name = null;
-        $path_array = $this->altexplode("/", $path);
+        $path_array = explode("/", $path);
         $file_name = array_pop($path_array);
-        $path_dir = $this->altimplode("/", $path_array);
-        if(!$this->prefixEquals($path_dir, root)) {
+        $path_dir = implode("/", $path_array);
+
+        if(!$this->prefixEquals($path_dir, root) && !$this->prefixEquals('/' . $path_dir, root)) {
             $save_dir .= root;
             if(!$this->prefixEquals($path_dir, "/"))
                 $save_dir .= "/";
