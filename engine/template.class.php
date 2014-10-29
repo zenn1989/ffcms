@@ -86,8 +86,8 @@ class template extends singleton {
         $this->set(self::TYPE_SYSTEM, 'url', property::getInstance()->get('url'));
         $this->set(self::TYPE_SYSTEM, 'protocol', property::getInstance()->get('protocol'));
         $this->set(self::TYPE_SYSTEM, 'script_url', property::getInstance()->get('script_url'));
-        $this->set(self::TYPE_SYSTEM, 'nolang_url', property::getInstance()->get('nolang_url'));
-        $this->set(self::TYPE_SYSTEM, 'uri', $this->nolang_uri());
+        $this->set(self::TYPE_SYSTEM, 'nolang_url', system::getInstance()->nohtml(property::getInstance()->get('nolang_url')));
+        $this->set(self::TYPE_SYSTEM, 'uri', system::getInstance()->nohtml($this->nolang_uri()));
         $this->set(self::TYPE_SYSTEM, 'theme', property::getInstance()->get('script_url') . '/' . property::getInstance()->get('tpl_dir') . '/' . $this->getIfaceTemplate());
         $this->set(self::TYPE_SYSTEM, 'lang', language::getInstance()->getUseLanguage());
         $this->set(self::TYPE_SYSTEM, 'languages', language::getInstance()->getAvailable());
