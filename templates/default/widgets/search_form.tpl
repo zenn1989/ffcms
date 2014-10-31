@@ -2,7 +2,7 @@
     <div class="col-md-12">
         <form id="search">
             <div class="input-group">
-                <input type="text" class="form-control" id="search-term" placeholder="query...">
+                <input type="text" class="form-control" id="search-term" placeholder="{{ language.search_query_label }}">
                   <span class="input-group-btn">
                     <button class="btn btn-default" id="search-submit" type="submit">{{ language.global_search_button }}</button>
                   </span>
