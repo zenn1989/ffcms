@@ -1,4 +1,4 @@
-function translateText(lang_source, lang_target, source_text, api_key, blockname, ckeditor_instance) {
+function translateText(lang_source, lang_target, source_text, api_key, blockname, ckeditor_instance, selectize_instance) {
     var yandex_languages = {
         'ua' : 'uk'
     };
@@ -8,9 +8,18 @@ function translateText(lang_source, lang_target, source_text, api_key, blockname
 
     //$.getJSON('https://translate.yandex.net/api/v1.5/tr.json/translate?key='+api_key+'&text='+source_text+'&lang='+lang_yandex_source+'-'+lang_yandex_target+'&format=html&callback=?', function(result) {
     $.post('https://translate.yandex.net/api/v1.5/tr.json/translate', { key: api_key, text : source_text, lang : lang_yandex_source+'-'+lang_yandex_target, format : 'html'}, function(result) {
-        if(ckeditor_instance)
+        if(selectize_instance) {
+            var tag_array = result.text[0].split(',');
+            for(var i = 0;i < tag_array.length;i++) {
+                blockname.addOption({
+                    text: tag_array[i],
+                    value: tag_array[i]
+                });
+                blockname.addItem(tag_array[i]);
+            }
+        } else if(ckeditor_instance) {
             CKEDITOR.instances[blockname+lang_target].setData(result.text[0].replace('/'+lang_source+'/', '/' + lang_target + '/'));
-        else
+        } else
             $('#'+blockname+lang_target).val(result.text[0]);
     });
 }
@@ -29,8 +38,17 @@ function translateNews(lang_source, lang_target, api_key) {
         translateText(lang_source, lang_target, text_source, api_key, 'textobject', true);
     if(desc_source.length > 0)
         translateText(lang_source, lang_target, desc_source, api_key, 'news_desc_', false);
-    if(keywords_source.length > 0)
-        translateText(lang_source, lang_target, keywords_source, api_key, 'keywords_', false);
+    if(keywords_source.length > 0) {
+        var c_selector = null;
+        for(var s=0;s<Jobject.length;s++) {
+            if(Jobject[s]['id'] == 'keywords_'+lang_target) {
+                c_selector = Jobject[s].selectize;
+                break;
+            }
+        }
+        if(c_selector != null)
+            translateText(lang_source, lang_target, keywords_source, api_key, c_selector, false, true);
+    }
 }
 
 function translateStatic(lang_source, lang_target, api_key) {
@@ -47,6 +65,15 @@ function translateStatic(lang_source, lang_target, api_key) {
         translateText(lang_source, lang_target, text_source, api_key, 'textobject', true);
     if(desc_source.length > 0)
         translateText(lang_source, lang_target, desc_source, api_key, 'static_desc_', false);
-    if(keywords_source.length > 0)
-        translateText(lang_source, lang_target, keywords_source, api_key, 'keywords_', false);
+    if(keywords_source.length > 0) {
+        var c_selector = null;
+        for(var s=0;s<Jobject.length;s++) {
+            if(Jobject[s]['id'] == 'keywords_'+lang_target) {
+                c_selector = Jobject[s].selectize;
+                break;
+            }
+        }
+        if(c_selector != null)
+            translateText(lang_source, lang_target, keywords_source, api_key, c_selector, false, true);
+    }
 }
