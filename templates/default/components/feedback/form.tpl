@@ -44,7 +44,7 @@
             <label class="control-label col-md-3">{{ language.feedback_form_text_label }}</label>
 
             <div class="controls col-md-9">
-                <textarea name="topic_body" class="form-control" placeholder="Message ..." rows="5"></textarea>
+                <textarea name="topic_body" class="form-control" rows="5"></textarea>
                 <p class="help-block">{{ language.feedback_form_text_desc }}</p>
             </div>
         </div>
