@@ -2,5 +2,6 @@
 /cache/
 /log
 config.php
+/install/.lock
 .project
 .settings/
