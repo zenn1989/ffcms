@@ -1,4 +1,6 @@
 /nbproject/
 /cache/
+/log
+config.php
 .project
 .settings/
