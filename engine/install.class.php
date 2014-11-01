@@ -61,9 +61,6 @@ class install extends singleton {
         if(!file_exists(root . '/install/sql/install.sql')) {
             $params['notify']['prepare']['sql_notfound'] = true;
         }
-        if(!file_exists(root . '/install/.install')) {
-            $params['notify']['prepare']['inst_unlock'] = true;
-        }
 
         if(sizeof($params['notify']) == 0) {
             $check_all = false;
@@ -211,9 +208,6 @@ class install extends singleton {
         }
         if(!file_exists(root . '/install/sql/install.sql')) {
             $params['notify']['prepare']['sql_notfound'] = true;
-        }
-        if(!file_exists(root . '/install/.install')) {
-            $params['notify']['prepare']['inst_unlock'] = true;
         }
         $timezone_array = timezone::getInstance()->getZoneUTC();
         template::getInstance()->set(template::TYPE_SYSTEM, 'timezones', $timezone_array);

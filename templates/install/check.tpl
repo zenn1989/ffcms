@@ -12,9 +12,6 @@
     {% if notify.prepare.sql_notfound %}
         {{ ntpl.error(language.install_sql_not_found) }}
     {% endif %}
-    {% if notify.prepare.inst_unlock %}
-        {{ ntpl.error(language.install_unlock_file_require) }}
-    {% endif %}
 {% else %}
 <p>{{ language.install_check_desc }}</p>
 <div class="table-responsive">
