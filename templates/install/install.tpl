@@ -35,9 +35,6 @@
     {% if notify.prepare.sql_notfound %}
         {{ ntpl.error(language.install_sql_not_found) }}
     {% endif %}
-    {% if notify.prepare.inst_unlock %}
-        {{ ntpl.error(language.install_unlock_file_require) }}
-    {% endif %}
 {% else %}
     {% if notify.process.db_conn_miss %}
         {{ ntpl.error(language.install_db_wrongcon) }}
