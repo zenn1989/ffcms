@@ -1,6 +1,7 @@
 /nbproject/
 /cache/
 /log
+/upload
 config.php
 /install/.lock
 .project
