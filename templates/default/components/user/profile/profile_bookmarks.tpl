@@ -3,7 +3,7 @@
     {% for bookmark in local.bookmarks %}
     <tr>
         <td>{{ bookmark.title }} <br/>
-            <em class="pull-right"><a href="{{ system.url }}/api.php?iface=front&object=redirect&url={{ bookmark.link }}" target="_blank">{{ bookmark.link }}</a></em>
+            <em class="pull-right"><a href="{{ system.script_url }}/api.php?iface=front&object=redirect&url={{ bookmark.link }}" target="_blank">{{ bookmark.link }}</a></em>
         </td>
     </tr>
     {% else %}
