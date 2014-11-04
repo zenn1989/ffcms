@@ -40,7 +40,8 @@ class install extends singleton {
         $pre_url = system::getInstance()->getProtocol() . "://" .$_SERVER['HTTP_HOST'];
         $path_array = system::getInstance()->altexplode('/', strtok($_SERVER['REQUEST_URI'], '?'));
         array_pop($path_array);
-        $pre_url .= '/' . system::getInstance()->altimplode('/', $path_array);
+        if(sizeof($path_array) > 0)
+            $pre_url .= '/' . system::getInstance()->altimplode('/', $path_array);
 
         property::getInstance()->set('script_url', $pre_url);
         property::getInstance()->set('url', $pre_url);
