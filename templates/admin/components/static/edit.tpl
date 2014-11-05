@@ -135,7 +135,7 @@
                     </div>
                     <div class="col-lg-6">
                         <h2>{{ language.admin_component_static_edit_page_keywords }}[{{ itemlang }}]</h2>
-                        <input type="text" id="keywords_{{ itemlang }}" name="keywords[{{ itemlang }}]" class="form-control selectize-tags" value="{{ news.keywords[itemlang] }}" maxlength="200" />
+                        <input type="text" id="keywords_{{ itemlang }}" name="keywords[{{ itemlang }}]" class="form-control selectize-tags" value="{{ static.keywords[itemlang] }}" maxlength="200" />
                         <input class="btn btn-info pull-right keywords_count" type="button" value="{{ language.admin_component_static_edit_page_keybutton_gen }}" id="{{ itemlang }}">
                         <span class="help-block">{{ language.admin_component_static_edit_page_keywords_description }}</span>
                     </div>
