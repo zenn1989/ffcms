@@ -12,6 +12,13 @@ body {
     background-color: #222;
 }
 
+.label.label-success,
+.label.label-info
+{
+	cursor:pointer;
+}
+
+
 @media(min-width:768px) {
     body {
         margin-top: 50px;
