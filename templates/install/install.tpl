@@ -72,7 +72,7 @@
         <div class="form-group has-feedback">
             <label class="control-label col-lg-3">{{ language.install_install_db_pass_title }}</label>
             <div class="col-lg-9">
-                <input type="password" placeholder="Password" name="config:db_pass" value="{{ cfg.db_pass }}" class="form-control input-primary" required="required">
+                <input type="password" placeholder="Password" name="config:db_pass" value="{{ cfg.db_pass }}" class="form-control input-primary">
                 <span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
                 <p class="help-block">{{ language.install_install_db_pass_desc }}</p>
             </div>
